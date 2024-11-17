@@ -18,7 +18,11 @@ export class NewPasswordRequiredGuard implements CanActivate {
     private authService: AuthService,
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
+<<<<<<< HEAD
   ) { }
+=======
+  ) {}
+>>>>>>> f832f1df51e03a14c7129a12a7a4805dc022ab32
 
   canActivate(
     next: ActivatedRouteSnapshot,
@@ -26,7 +30,10 @@ export class NewPasswordRequiredGuard implements CanActivate {
   ): Observable<boolean> | Promise<boolean> | boolean {
     if (isPlatformBrowser(this.platformId)) {
       const challenge = localStorage.getItem('auth_challenge');
+<<<<<<< HEAD
       
+=======
+>>>>>>> f832f1df51e03a14c7129a12a7a4805dc022ab32
       if (challenge === 'NewPasswordRequired') {
         return true;
       }

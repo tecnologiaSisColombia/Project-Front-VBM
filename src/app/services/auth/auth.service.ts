@@ -3,11 +3,18 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core'
 import { catchError, of, tap } from 'rxjs'
 import { Router } from '@angular/router'
 import { environment } from '../../../environments/environment'
+<<<<<<< HEAD
+=======
+import { isPlatformBrowser } from '@angular/common'
+>>>>>>> f832f1df51e03a14c7129a12a7a4805dc022ab32
 
 @Injectable({
   providedIn: 'root',
 })
+<<<<<<< HEAD
 
+=======
+>>>>>>> f832f1df51e03a14c7129a12a7a4805dc022ab32
 export class AuthService {
   private hostname = environment.apiUrl
   private ACCESS_TOKEN = 'access_token'
@@ -18,7 +25,11 @@ export class AuthService {
     private http: HttpClient,
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object,
+<<<<<<< HEAD
   ) { }
+=======
+  ) {}
+>>>>>>> f832f1df51e03a14c7129a12a7a4805dc022ab32
 
   doLogin(data: any) {
     localStorage.setItem(this.ACCESS_TOKEN, data.AccessToken)
@@ -26,16 +37,23 @@ export class AuthService {
     localStorage.setItem(this.USER_ATTRIBUTES, JSON.stringify(data.user))
   }
 
+<<<<<<< HEAD
   getUserInfo() { }
+=======
+  getUserInfo() {}
+>>>>>>> f832f1df51e03a14c7129a12a7a4805dc022ab32
 
   viewToken() {
     const jwtToken = this.getJwtToken()
     const refreshToken = this.getRefreshToken()
 
+<<<<<<< HEAD
     if (!jwtToken) {
       return of({ status: false });
     }
 
+=======
+>>>>>>> f832f1df51e03a14c7129a12a7a4805dc022ab32
     const headers = new HttpHeaders().set('Authorization', `Bearer ${jwtToken}`)
 
     return this.http.post(
