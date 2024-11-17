@@ -1,0 +1,100 @@
+<nz-layout class="app-layout">
+  <nz-header>
+    <div class="logo"></div>
+    <ul nz-menu nzTheme="dark" nzMode="horizontal" class="header-menu" style="text-align: right;">
+      <!-- <li nz-menu-item nzSelected>nav 1</li>
+      <li nz-menu-item>nav 2</li>
+      <li nz-menu-item>nav 3</li> -->
+      <button nz-button (click)="logout()">Logout</button>
+    </ul>
+  </nz-header>
+  <nz-layout>
+    <nz-sider nzCollapsible nzWidth="280px">
+      <!-- <div class="logo"></div> -->
+      <ul nz-menu nzTheme="dark" nzMode="inline">
+        <li nz-submenu nzTitle="Control Access" nzIcon="lock">
+          <ul>
+            <li nz-menu-item>
+              <a routerLink="/user_management">User Management</a>
+            </li>
+          </ul>
+        </li>
+        <li nz-submenu nzTitle="Parameterize Insurers and Coverages" nzIcon="profile">
+          <ul>
+            <li nz-menu-item>
+              <a routerLink="/insurers">Insurers</a>
+            </li>
+            <li nz-menu-item>Coverages</li>
+          </ul>
+        </li>
+        <li nz-submenu nzTitle="Manage Product Catalogs" nzIcon="shopping">
+          <ul>
+            <li nz-menu-item>Create Sub-catalogs by Covers and Insurers</li>
+            <li nz-menu-item>Modify Sub-catalogs by Covers and Insurers</li>
+            <li nz-menu-item>Deactivate products in Sub-catalogs</li>
+            <li nz-menu-item>Consult Sub-catalogs</li>
+          </ul>
+        </li>
+        <li nz-submenu nzTitle="Eligibility" nzIcon="check-circle">
+          <ul>
+            <li nz-menu-item>
+              Check information about the insured in 2 insurance companies
+            </li>
+            <li nz-menu-item>
+              Validate active rights according to parameterized rules
+            </li>
+            <li nz-menu-item>View dashboard with insured data</li>
+          </ul>
+        </li>
+        <li nz-submenu nzTitle="Electronic Download of Orders" nzIcon="download">
+          <ul>
+            <li nz-menu-item>View Prescription Information</li>
+          </ul>
+        </li>
+        <li nz-submenu nzTitle="Billing" nzIcon="file-text">
+          <ul>
+            <li nz-menu-item>Generate invoice applying coverage rules</li>
+            <li nz-menu-item>Transmit EDI files on demand</li>
+            <li nz-menu-item>View results of clearinghouse validations</li>
+            <li nz-menu-item>Manage rejected invoices</li>
+          </ul>
+        </li>
+        <li nz-submenu nzTitle="Parameterization" nzIcon="control">
+          <ul>
+            <li nz-menu-item>Manage Insureds</li>
+            <li nz-menu-item>Manage Stores</li>
+            <li nz-menu-item>Manage Doctors</li>
+          </ul>
+        </li>
+        <li nz-submenu nzTitle="Reports and Reports" nzIcon="file-search">
+          <ul>
+            <li nz-menu-item>Generate General Operation Report</li>
+            <li nz-menu-item>Generate General Billing Report</li>
+          </ul>
+        </li>
+        <!-- <li nz-menu (click)="logout()" nzTitle="Logout" nzIcon="exit">
+        <ul>
+          <li nz-menu-item (click)="logout()">Logout</li>
+        </ul>
+      </li> -->
+      </ul>
+    </nz-sider>
+    <nz-layout class="inner-layout">
+      <!-- <nz-header>
+      <button nz-button (click)="logout()">Logout</button>
+    </nz-header> -->
+      <nz-content>
+        <nz-breadcrumb></nz-breadcrumb>
+        <br />
+        <router-outlet></router-outlet>
+      </nz-content>
+      <nz-footer class="footer">
+        <div class="footer-content">
+          <div class="company-info">
+            <p>© 2016 SIS Colombia - All rights reserved MEDICAR</p>
+          </div>
+        </div>
+      </nz-footer>
+    </nz-layout>
+  </nz-layout>
+</nz-layout>

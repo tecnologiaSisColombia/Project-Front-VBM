@@ -1,0 +1,50 @@
+.user-management-container {
+    background-color: #f5f5f5;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.boton-margen {
+    margin-right: 8px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.create-user-button {
+    margin-right: 20px;
+}
+
+.search-input {
+    flex: 1;
+    max-width: 300px;
+}
+
+/* Table styling */
+.user-table {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.user-table th {
+    font-weight: bold;
+    text-align: center;
+}
+
+.user-table td {
+    text-align: center;
+}
+
+/* Action buttons */
+.action-button {
+    margin-right: 10px;
+}

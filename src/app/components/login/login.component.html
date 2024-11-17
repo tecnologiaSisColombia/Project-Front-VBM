@@ -1,0 +1,54 @@
+<div class="layout-container">
+  <div class="container">
+    <app-notification
+      *ngIf="message"
+      [type]="messageType"
+      [message]="message"
+      (close)="closeMessage()"
+    ></app-notification>
+
+    <form [formGroup]="loginForm" class="box" [class.disabled]="isLoading">
+      <h4>Login</h4>
+      <h5>Sign in to your account</h5>
+
+      <div class="input-container">
+        <i class="fas fa-user icon"></i>
+
+        <input
+          type="text"
+          formControlName="username"
+          placeholder="Username"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="input-container">
+        <i class="fas fa-lock icon"></i>
+
+        <input
+          [type]="passwordToggle.passwordFieldType"
+          placeholder="Password"
+          formControlName="password"
+          autocomplete="off"
+        />
+
+        <app-password-toggle
+          [showEyeIcon]="!!loginForm.get('password')?.value"
+          #passwordToggle
+        ></app-password-toggle>
+      </div>
+
+      <div class="link-container">
+        <a routerLink="/reset_password" class="forget-pass">Forgot Password?</a>
+      </div>
+
+      <app-button
+        label="Sign in"
+        [isLoading]="isLoading"
+        (buttonClick)="signIn()"
+        [btnActive]="true"
+        [disabled]="isLoading"
+      ></app-button>
+    </form>
+  </div>
+</div>

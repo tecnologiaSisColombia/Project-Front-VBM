@@ -1,0 +1,58 @@
+<div nz-row nzJustify="center" nzAlign="middle" class="user-management-container">
+    <div nz-col nzSpan="20">
+        <div class="header-title">
+            <h1 class="title">User Management</h1>
+        </div>
+
+        <div class="header-actions">
+            <div>
+                <nz-demo-drawer-from-drawer class="boton-margen"></nz-demo-drawer-from-drawer>
+
+                <nz-demo-modal-basic></nz-demo-modal-basic>
+            </div>
+
+            <nz-input-group [nzSuffix]="suffixButton" nzSize="large" class="search-input">
+                <input nz-input placeholder="Search" [(ngModel)]="searchQuery" (ngModelChange)="onSearch()" />
+                <ng-template #suffixButton>
+                    <button nz-button nzType="default" nzShape="circle">
+                        <i nz-icon nzType="search"></i>
+                    </button>
+                </ng-template>
+            </nz-input-group>
+        </div>
+
+        <nz-table #userTable [nzBordered]="true" [nzLoading]="loading" [nzData]="userData" [nzShowPagination]="true"
+            [nzPageSize]="5" [nzTotal]="userData.length" class="user-table">
+            <thead>
+                <tr>
+                    <th nzShowSort nzSortKey="name">Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let user of userTable.data">
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.role }}</td>
+                    <td>
+                        <nz-tag [nzColor]="user.status === 'Active' ? 'green' : 'red'">
+                            {{ user.status }}
+                        </nz-tag>
+                    </td>
+                    <td>
+                        <button nz-button nzType="link" (click)="modifyUser(user)" class="action-button">
+                            Modify
+                        </button>
+                        <button nz-button nzType="link" nzDanger (click)="inactivateUser(user)" class="action-button">
+                            Inactivate
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </nz-table>
+
+    </div>
+</div>
