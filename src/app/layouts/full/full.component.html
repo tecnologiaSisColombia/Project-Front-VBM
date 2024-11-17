@@ -11,7 +11,18 @@
       <!-- <li nz-menu-item nzSelected>nav 1</li>
       <li nz-menu-item>nav 2</li>
       <li nz-menu-item>nav 3</li> -->
-      <button nz-button (click)="logout()">Logout</button>
+      <!-- <button nz-button (click)="logout()">Logout</button> -->
+      <nz-avatar
+        nzIcon="user"
+        nz-dropdown
+        nzTrigger="click"
+        [nzDropdownMenu]="menu"
+      ></nz-avatar>
+      <nz-dropdown-menu #menu="nzDropdownMenu">
+        <ul nz-menu nzSelectable>
+          <li nz-menu-item nzDanger (click)="logout()">Logout</li>
+        </ul>
+      </nz-dropdown-menu>
     </ul>
   </nz-header>
   <nz-layout>
@@ -35,7 +46,9 @@
             <li nz-menu-item>
               <a routerLink="/insurers">Insurers</a>
             </li>
-            <li nz-menu-item>Coverages</li>
+            <li nz-menu-item>
+              <a routerLink="/coverages">Coverages</a>
+            </li>
           </ul>
         </li>
         <li nz-submenu nzTitle="Manage Product Catalogs" nzIcon="shopping">

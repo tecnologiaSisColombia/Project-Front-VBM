@@ -10,6 +10,8 @@ import { NzLayoutModule } from 'ng-zorro-antd/layout'
 import { NzMenuModule } from 'ng-zorro-antd/menu'
 import { AuthService } from '../../services/auth/auth.service'
 import { NzButtonModule } from 'ng-zorro-antd/button'
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown'
+import { NzAvatarModule } from 'ng-zorro-antd/avatar'
 
 @Component({
   selector: 'app-full',
@@ -24,6 +26,8 @@ import { NzButtonModule } from 'ng-zorro-antd/button'
     RouterOutlet,
     RouterLink,
     NzButtonModule,
+    NzDropDownModule,
+    NzAvatarModule,
   ],
 })
 export class FullComponent implements OnInit {

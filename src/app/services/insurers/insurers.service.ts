@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http'
+import { HttpClient, HttpParams } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { environment } from '../../../environments/environment'
 
@@ -10,14 +10,38 @@ export class InsurersService {
 
   constructor(private http: HttpClient) {}
 
-  getInsurers() {
-    return this.http.get(`${this.hostname}insurers`)
+  getInsurers(
+    { name, address, phone, payer_id, status }: any,
+    page: number | null = 1,
+    pageSize: number | null = 10,
+    init = false,
+  ) {
+    let params = new HttpParams()
+      .set('page', page!.toString())
+      .set('page_size', pageSize!.toString())
+      .set('init', init)
+    if (name != null) {
+      params = params.set('name', name)
+    }
+    if (address != null) {
+      params = params.set('address', address)
+    }
+    if (phone != null) {
+      params = params.set('phone', phone)
+    }
+    if (payer_id != null) {
+      params = params.set('payer_id', payer_id)
+    }
+    if (status != null) {
+      params = params.set('status', status)
+    }
+    return this.http.get(`${this.hostname}insurers/`, { params })
   }
   getInsurer(id: number) {
     return this.http.get(`${this.hostname}insurers/${id}`)
   }
   createInsurer(data: any) {
-    return this.http.post(`${this.hostname}insurers`, data)
+    return this.http.post(`${this.hostname}insurers/`, data)
   }
   updateInsurer(id: number, data: any) {
     return this.http.put(`${this.hostname}insurers/${id}`, data)
