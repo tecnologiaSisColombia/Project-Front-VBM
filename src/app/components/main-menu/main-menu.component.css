@@ -1,0 +1,46 @@
+.logo {
+  height: 50px;
+  margin: 16px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+nz-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+nz-header {
+  padding: 0;
+  height: 120px;
+  background-color: cadetblue;
+  position: fixed;
+  z-index: 1;
+  width: 100%;
+  top: 0;
+}
+
+nz-content {
+  margin-top: 125px;
+  padding: 16px;
+}
+
+.inner-content {
+  padding: 24px;
+  background: #fff;
+  min-height: 360px;
+}
+
+nz-footer {
+  height: 100px;
+  text-align: center;
+  flex-shrink: 0;
+  margin-top: auto;
+  background-color: cadetblue ;
+}
+
+.company-info p {
+  margin: 0;
+  font-style: italic;
+  font-weight: 400;
+}
