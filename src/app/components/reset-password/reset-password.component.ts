@@ -1,18 +1,25 @@
 import { Component, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ResetPasswordService } from '../../services/reset-password/reset-password.service';
-import { 
-  PasswordToggleComponent, 
-  PasswordResetButtonComponent, 
-  NotificationComponent 
+import {
+  PasswordToggleComponent,
+  PasswordResetButtonComponent,
+  NotificationComponent
 } from '../../reusable-components';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [FormsModule, CommonModule, NotificationComponent, PasswordToggleComponent, PasswordResetButtonComponent],
+  imports: [
+    FormsModule,
+    CommonModule,
+    NotificationComponent,
+    PasswordToggleComponent,
+    PasswordResetButtonComponent,
+    RouterLink
+  ],
   templateUrl: './reset-password.component.html',
   styleUrls: ['./reset-password.component.css']
 })
@@ -30,9 +37,8 @@ export class ResetPasswordComponent {
   newPassword = '';
 
   constructor(
-    private resetPasswordService: ResetPasswordService, 
-    private router: Router) 
-    { }
+    private resetPasswordService: ResetPasswordService,
+    private router: Router) { }
 
   closeMessage(): void {
     this.message = null;

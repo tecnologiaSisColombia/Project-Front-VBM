@@ -8,7 +8,7 @@ import {
   NotificationComponent,
 } from '../../reusable-components';
 import { LoginService } from '../../services/login/login.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
@@ -20,6 +20,7 @@ import { AuthService } from '../../services/auth/auth.service';
     NotificationComponent,
     PasswordToggleComponent,
     PasswordResetButtonComponent,
+    RouterLink
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
@@ -49,7 +50,7 @@ export class LoginComponent implements OnInit {
     this.message = null;
     this.messageType = null;
   }
-
+  
   showMessage(message: string, type: 'error' | 'success'): void {
     this.message = message;
     this.messageType = type;
@@ -57,7 +58,6 @@ export class LoginComponent implements OnInit {
 
   signIn(): void {
     if (this.isLoading) return;
-    
     const username = this.loginForm.value.username;
     const password = this.loginForm.value.password;
 

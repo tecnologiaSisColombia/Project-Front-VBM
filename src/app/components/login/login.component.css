@@ -12,6 +12,17 @@
   --color-checkbox-checked: #896cec;
   --color-error-bg: #ff3333;
 }
+
+@keyframes fadeInBackground {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
 .layout-container {
   font-family: 'Source Sans Pro', sans-serif;
   background-image: url('../../../assets/body.jpg');
@@ -23,6 +34,7 @@
   height: 100%;
   display: flex;
   justify-content: center;
+  animation: fadeInBackground 1.3s ease-in-out;
 }
 
 .container {

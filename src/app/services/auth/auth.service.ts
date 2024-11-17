@@ -3,11 +3,11 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core'
 import { catchError, of, tap } from 'rxjs'
 import { Router } from '@angular/router'
 import { environment } from '../../../environments/environment'
-import { isPlatformBrowser } from '@angular/common'
 
 @Injectable({
   providedIn: 'root',
 })
+
 export class AuthService {
   private hostname = environment.apiUrl
   private ACCESS_TOKEN = 'access_token'
@@ -18,7 +18,7 @@ export class AuthService {
     private http: HttpClient,
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object,
-  ) {}
+  ) { }
 
   doLogin(data: any) {
     localStorage.setItem(this.ACCESS_TOKEN, data.AccessToken)
@@ -26,11 +26,15 @@ export class AuthService {
     localStorage.setItem(this.USER_ATTRIBUTES, JSON.stringify(data.user))
   }
 
-  getUserInfo() {}
+  getUserInfo() { }
 
   viewToken() {
     const jwtToken = this.getJwtToken()
     const refreshToken = this.getRefreshToken()
+
+    if (!jwtToken) {
+      return of({ status: false });
+    }
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${jwtToken}`)
 

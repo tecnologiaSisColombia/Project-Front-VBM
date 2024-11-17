@@ -9,7 +9,6 @@ export class LoginGuardService implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot): any {
     if (this.authService.getJwtToken()) {
       this.router.navigate(['/home'])
-      // return false
     }
     return true
   }

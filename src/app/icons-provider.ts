@@ -1,8 +1,6 @@
-import {
-  MenuFoldOutline,
-  MenuUnfoldOutline,
-  FormOutline,
-  DashboardOutline
-} from '@ant-design/icons-angular/icons';
+import * as AllIcons from '@ant-design/icons-angular/icons';
+import { IconDefinition } from '@ant-design/icons-angular';
 
-export const icons = [MenuFoldOutline, MenuUnfoldOutline, DashboardOutline, FormOutline];
+const allIcons: IconDefinition[] = Object.values(AllIcons) as IconDefinition[];
+
+export const icons = allIcons;

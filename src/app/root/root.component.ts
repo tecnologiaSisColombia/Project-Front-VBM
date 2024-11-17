@@ -9,10 +9,11 @@ import { RouterOutlet } from '@angular/router'
   standalone: true,
   imports: [RouterOutlet],
 })
+
 export class AppComponent implements OnInit {
   isLoading = true
 
-  constructor() {}
+  constructor() { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 }
