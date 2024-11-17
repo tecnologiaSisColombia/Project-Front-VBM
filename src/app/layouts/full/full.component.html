@@ -32,7 +32,9 @@
         <ul nz-menu nzTheme="dark" nzMode="inline">
           <li nz-submenu nzTitle="Control Access" nzIcon="lock">
             <ul>
-              <a routerLink="/user_management">User Management</a>
+              <li nz-menu-item>
+                <a routerLink="/users/user_management">User Management</a>
+              </li>
             </ul>
           </li>
           <li
@@ -45,7 +47,7 @@
                 <a routerLink="/insurers">Insurers</a>
               </li>
               <li nz-menu-item>
-                <a routerLink="/coverages">Coverages</a>
+                <a routerLink="/insurers/coverages">Coverages</a>
               </li>
             </ul>
           </li>

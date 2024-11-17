@@ -47,18 +47,33 @@ export const routes: Routes = [
       },
       {
         path: 'insurers',
-        component: InsurersComponent,
-        canActivate: [AuthGuardService],
+        children: [
+          {
+            path: '',
+            component: InsurersComponent,
+            canActivate: [AuthGuardService],
+          },
+          {
+            path: 'coverages',
+            component: PlansComponent,
+            canActivate: [AuthGuardService],
+          },
+          {
+            path: 'subplans',
+            component: SubplansComponent,
+            canActivate: [AuthGuardService],
+          },
+        ],
       },
       {
-        path: 'coverages',
-        component: PlansComponent,
-        canActivate: [AuthGuardService],
-      },
-      {
-        path: 'subplans',
-        component: SubplansComponent,
-        canActivate: [AuthGuardService],
+        path: 'users',
+        children: [
+          {
+            path: 'user_management',
+            component: UserManagementComponent,
+            canActivate: [AuthGuardService],
+          },
+        ],
       },
       {
         path: 'tabla',
@@ -67,11 +82,7 @@ export const routes: Routes = [
       },
     ],
   },
-  {
-    path: 'user_management',
-    component: UserManagementComponent,
-    canActivate: [AuthGuardService],
-  },
+
   {
     path: '**',
     redirectTo: '/login',
