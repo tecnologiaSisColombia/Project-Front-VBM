@@ -30,8 +30,8 @@ export class ChangePasswordComponent implements OnInit {
   username: string | null = null
   message: string | null = null
   messageType: 'error' | 'success' | null = null
-  isLoading: boolean = false // Define isLoading here
-  btnActive: boolean = false // Define isLoading here
+  isLoading: boolean = false 
+  btnActive: boolean = false 
 
   passwordRight: boolean = false
   passwordConfirm: boolean = false

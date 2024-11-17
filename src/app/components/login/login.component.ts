@@ -8,11 +8,7 @@ import {
   NotificationComponent,
 } from '../../reusable-components';
 import { LoginService } from '../../services/login/login.service';
-<<<<<<< HEAD
 import { Router, RouterLink } from '@angular/router';
-=======
-import { Router } from '@angular/router';
->>>>>>> f832f1df51e03a14c7129a12a7a4805dc022ab32
 import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
@@ -24,10 +20,7 @@ import { AuthService } from '../../services/auth/auth.service';
     NotificationComponent,
     PasswordToggleComponent,
     PasswordResetButtonComponent,
-<<<<<<< HEAD
     RouterLink
-=======
->>>>>>> f832f1df51e03a14c7129a12a7a4805dc022ab32
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
@@ -57,11 +50,7 @@ export class LoginComponent implements OnInit {
     this.message = null;
     this.messageType = null;
   }
-<<<<<<< HEAD
   
-=======
-
->>>>>>> f832f1df51e03a14c7129a12a7a4805dc022ab32
   showMessage(message: string, type: 'error' | 'success'): void {
     this.message = message;
     this.messageType = type;
@@ -69,11 +58,6 @@ export class LoginComponent implements OnInit {
 
   signIn(): void {
     if (this.isLoading) return;
-<<<<<<< HEAD
-
-=======
-    
->>>>>>> f832f1df51e03a14c7129a12a7a4805dc022ab32
     const username = this.loginForm.value.username;
     const password = this.loginForm.value.password;
 

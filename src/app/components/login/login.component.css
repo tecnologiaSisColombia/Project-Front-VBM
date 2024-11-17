@@ -12,7 +12,6 @@
   --color-checkbox-checked: #896cec;
   --color-error-bg: #ff3333;
 }
-<<<<<<< HEAD
 
 @keyframes fadeInBackground {
   0% {
@@ -24,8 +23,6 @@
   }
 }
 
-=======
->>>>>>> f832f1df51e03a14c7129a12a7a4805dc022ab32
 .layout-container {
   font-family: 'Source Sans Pro', sans-serif;
   background-image: url('../../../assets/body.jpg');
@@ -37,10 +34,7 @@
   height: 100%;
   display: flex;
   justify-content: center;
-<<<<<<< HEAD
   animation: fadeInBackground 1.3s ease-in-out;
-=======
->>>>>>> f832f1df51e03a14c7129a12a7a4805dc022ab32
 }
 
 .container {
@@ -121,8 +115,4 @@ a:hover {
 form.disabled {
   opacity: 10;
   pointer-events: none;
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> f832f1df51e03a14c7129a12a7a4805dc022ab32
