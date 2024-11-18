@@ -10,6 +10,7 @@
     justify-content: space-between;
     margin-bottom: 20px;
 }
+
 .boton-margen {
     margin-right: 8px;
 }
@@ -28,7 +29,6 @@
     max-width: 300px;
 }
 
-/* Table styling */
 .user-table {
     background-color: #ffffff;
     border-radius: 8px;
@@ -44,7 +44,20 @@
     text-align: center;
 }
 
-/* Action buttons */
 .action-button {
     margin-right: 10px;
 }
+
+.green-link-button {
+    color: green !important;
+}
+
+.button-separator {
+    display: inline-block;
+    width: 1px;
+    height: 20px;
+    background-color: #d9d9d9; /* Gris claro */
+    margin: 0 8px; /* Espaciado horizontal */
+    vertical-align: middle; /* Alineación con los botones */
+  }
+  

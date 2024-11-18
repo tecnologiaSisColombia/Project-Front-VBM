@@ -2,7 +2,6 @@ import { Routes } from '@angular/router'
 import { LoginComponent } from './components/login/login.component'
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component'
 import { MainMenuComponent } from './components/main-menu/main-menu.component'
-import { InsurersCoversComponent } from './components/insurers-covers/insurers-covers.component'
 import { AuthGuardService } from './services/guards/auth-guard.service'
 import { ChangePasswordComponent } from './components/change-password/change-password.component'
 import { LoginGuardService } from './services/guards/login.guard'
@@ -74,11 +73,6 @@ export const routes: Routes = [
             canActivate: [AuthGuardService],
           },
         ],
-      },
-      {
-        path: 'tabla',
-        component: InsurersCoversComponent,
-        canActivate: [AuthGuardService],
       },
     ],
   },

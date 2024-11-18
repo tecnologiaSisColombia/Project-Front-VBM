@@ -1,39 +1,27 @@
-<!-- <div nz-row nzJustify="center" nzAlign="middle" class="user-management-container">
-    <div nz-col nzSpan="20">
-        <div class="header-title">
-            <h1 class="title">User Management</h1>
-        </div>
-
-        
-
-    </div>
-</div> -->
-
 <div class="title-page">
   <div class="breadcrumb-container">
     <nz-breadcrumb>
-      <nz-breadcrumb-item>
-        Mar Chiquita
-      </nz-breadcrumb-item>
-      <nz-breadcrumb-item>
-        User managment
-      </nz-breadcrumb-item>
+      <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+      <nz-breadcrumb-item>User management</nz-breadcrumb-item>
     </nz-breadcrumb>
   </div>
 </div>
-<br />
-<br />
-<br />
+
 <div class="header-actions">
   <div>
     <nz-demo-drawer-from-drawer
       class="boton-margen"
+      (userCreated)="addUserToList($event)"
     ></nz-demo-drawer-from-drawer>
 
     <nz-demo-modal-basic></nz-demo-modal-basic>
   </div>
 
-  <nz-input-group [nzSuffix]="suffixButton" nzSize="large" class="search-input">
+  <nz-input-group
+    [nzSuffix]="suffixButton"
+    nzSize="large"
+    class="search-input"
+  >
     <input
       nz-input
       placeholder="Search"
@@ -48,54 +36,71 @@
   </nz-input-group>
 </div>
 
-<nz-table
-  #userTable
-  [nzBordered]="true"
-  [nzLoading]="loading"
-  [nzData]="userData"
-  [nzShowPagination]="true"
-  [nzPageSize]="5"
-  [nzTotal]="userData.length"
-  class="user-table"
->
-  <thead>
-    <tr>
-      <th nzShowSort nzSortKey="name">Name</th>
-      <th>Email</th>
-      <th>Role</th>
-      <th>Status</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let user of userTable.data">
-      <td>{{ user.name }}</td>
-      <td>{{ user.email }}</td>
-      <td>{{ user.role }}</td>
-      <td>
-        <nz-tag [nzColor]="user.status === 'Active' ? 'green' : 'red'">
-          {{ user.status }}
-        </nz-tag>
-      </td>
-      <td>
-        <button
+<div class="table-container">
+  <nz-table
+    #userTable
+    [nzBordered]="true"
+    [nzLoading]="loading"
+    [nzData]="data"
+    [nzShowPagination]="true"
+    [nzPageSize]="7"
+    class="user-table"
+  >
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of userTable.data">
+        <td>{{ user.username }}</td>
+        <td>{{ user.first_name }}</td>
+        <td>{{ user.last_name }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.phone }}</td>
+        <td>
+          <nz-tag [nzColor]="user.is_active ? 'green' : 'red'">
+            {{ user.is_active ? 'Active' : 'Inactive' }}
+          </nz-tag>
+        </td>
+        <td>
+          <button
           nz-button
           nzType="link"
           (click)="modifyUser(user)"
-          class="action-button"
         >
-          Modify
+          <i nz-icon nzType="edit"></i>
         </button>
+        
+        <span class="button-separator"></span>
+        
         <button
           nz-button
           nzType="link"
           nzDanger
           (click)="inactivateUser(user)"
-          class="action-button"
         >
-          Inactivate
+          <i nz-icon nzType="stop"></i>
         </button>
-      </td>
-    </tr>
-  </tbody>
-</nz-table>
+        
+        <span class="button-separator"></span>
+        
+        <button
+          nz-button
+          nzType="link"
+          class="green-link-button"
+          (click)="enableUser(user)"
+        >
+          <i nz-icon nzType="check-circle"></i>
+        </button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</div>

@@ -76,7 +76,7 @@ export class LoginComponent implements OnInit {
     this.loginService.signIn(username, password).subscribe({
       next: (res: any) => {
         res.properties.user = {
-          name: res.attributes.find((e: any) => e.Name === 'name').Value,
+          id: res.attributes.find((e: any) => e.Name === 'sub').Value,
           email: res.attributes.find((e: any) => e.Name === 'email').Value,
         };
 
