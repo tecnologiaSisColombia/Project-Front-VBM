@@ -56,8 +56,8 @@
     display: inline-block;
     width: 1px;
     height: 20px;
-    background-color: #d9d9d9; /* Gris claro */
-    margin: 0 8px; /* Espaciado horizontal */
-    vertical-align: middle; /* Alineación con los botones */
+    background-color: #d9d9d9;
+    margin: 0 8px;
+    vertical-align: middle;
   }
   

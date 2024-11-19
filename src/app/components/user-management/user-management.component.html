@@ -70,13 +70,10 @@
           </nz-tag>
         </td>
         <td>
-          <button
-          nz-button
-          nzType="link"
-          (click)="modifyUser(user)"
-        >
-          <i nz-icon nzType="edit"></i>
-        </button>
+          <nz-demo-modal-locale
+          [user]="user"
+          (userUpdated)="updateUser($event)"
+        ></nz-demo-modal-locale>
         
         <span class="button-separator"></span>
         
@@ -99,6 +96,17 @@
         >
           <i nz-icon nzType="check-circle"></i>
         </button>
+        
+        <span class="button-separator"></span>
+
+        <button
+        nz-button
+        nzType="link"
+        nzDanger
+        (click)="deleteUser(user)"
+      >
+        <i nz-icon nzType="delete"></i>
+      </button>
         </td>
       </tr>
     </tbody>

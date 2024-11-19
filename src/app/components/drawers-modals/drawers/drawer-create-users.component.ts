@@ -132,6 +132,22 @@ import { usernameRegex } from '../../../utils/username_regex'
             </nz-form-item>
           </div>
         </div>
+
+        <div nz-col nzSpan="24">
+  <nz-form-item>
+    <nz-form-label [nzRequired]="true" style="width: 100%;">User Type</nz-form-label>
+    <nz-form-control>
+      <nz-select
+        [(ngModel)]="form.type_user"
+        name="userType"
+        [nzOptions]="userTypeOptions"
+        nzPlaceHolder="Select a user type"
+        style="width: 100%; border-radius: 6px;"
+      ></nz-select>
+    </nz-form-control>
+  </nz-form-item>
+</div>
+
       </form>
 
       <ng-template #footerTpl>
@@ -167,13 +183,33 @@ export class NzDemoDrawerFromDrawerComponent {
     email: '',
     phone: '',
     username: '',
-    password: ''
+    password: '',
+    type_user: ''
   };
+
+  userTypeOptions: { label: string; value: string }[] = [];
 
   constructor(
     private createUserService: UserService,
     private msgService: NzMessageService,
-  ) { }
+  ) {
+    this.loadUserTypes();
+
+  }
+
+  loadUserTypes(): void {
+    this.createUserService.getUserTypes().subscribe(
+      (response: any[]) => {
+        this.userTypeOptions = response.map(type => ({
+          label: type.name,
+          value: type.name
+        }));
+      },
+      error => {
+        this.msgService.error('Failed to load user types');
+      }
+    );
+  }
 
   open(): void {
     this.visible = true;
@@ -201,6 +237,11 @@ export class NzDemoDrawerFromDrawerComponent {
       return;
     }
 
+    if (!this.form.type_user) {
+      this.msgService.error('User Type is required.');
+      return;
+    }
+
     const userData = {
       email: this.form.email,
       password: this.form.password,
@@ -208,6 +249,8 @@ export class NzDemoDrawerFromDrawerComponent {
       first_name: this.form.firstName,
       last_name: this.form.lastName,
       phone: this.form.phone,
+      is_active: true,
+      type_user: this.form.type_user,
     };
 
     this.createUserService.requestCreateUser(userData).subscribe(
@@ -231,6 +274,7 @@ export class NzDemoDrawerFromDrawerComponent {
       phone: '',
       username: '',
       password: '',
+      type_user: ''
     };
   }
 }

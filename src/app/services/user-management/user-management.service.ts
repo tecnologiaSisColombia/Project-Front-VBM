@@ -21,7 +21,8 @@ export class UserService extends BaseService {
         username: string,
         first_name: string,
         last_name: string,
-        phone: string
+        phone: string,
+        type_user: string
     }): Observable<any> {
         return this.http.post(`${this.baseUrl}UserAccessControl/CreateUser`,
             userData
@@ -46,4 +47,30 @@ export class UserService extends BaseService {
         );
     }
 
+    deleteUser(username: string): Observable<any> {
+        return this.http.post(`${this.baseUrl}UserAccessControl/DeleteUser`, {
+            username
+        }
+        );
+    }
+
+    updateAttributes(userData: {
+        email: string,
+        username: string,
+        first_name: string,
+        last_name: string,
+        phone: string
+    }): Observable<any> {
+        return this.http.post(`${this.baseUrl}UserAccessControl/UpdateAttributes`,
+            userData
+        );
+    }
+
+    getUserTypes(): Observable<any> {
+        return this.http.get<any[]>(`${this.baseUrl}core/user-types`);
+    }
+
+    createUserType(userTypeData: { name: string }): Observable<any> {
+        return this.http.post<any>(`${this.baseUrl}core/user-types`, userTypeData);
+    }
 }
