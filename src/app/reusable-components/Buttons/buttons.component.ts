@@ -46,6 +46,7 @@ import { CommonModule } from '@angular/common'
     `,
   ],
 })
+
 export class PasswordResetButtonComponent {
   @Input() label!: string
   @Input() isLoading: boolean = false

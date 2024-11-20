@@ -30,6 +30,7 @@ import { CommonModule } from '@angular/common';
 
 export class PasswordToggleComponent {
   @Input() showEyeIcon: boolean = false;
+  
   passwordFieldType: string = 'password';
 
   togglePasswordVisibility() {

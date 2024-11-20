@@ -8,6 +8,7 @@ import { RouterOutlet } from '@angular/router'
   standalone: true,
   imports: [RouterOutlet],
 })
+
 export class BlankComponent implements OnInit {
   isCollapsed = false
 

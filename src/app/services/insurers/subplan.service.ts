@@ -8,7 +8,9 @@ import { HttpClient, HttpParams } from '@angular/common/http'
 export class SubplanService {
   hostname = environment.apiUrl
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient
+  ) {}
 
   getSubPlans(
     plan_id: number | null = null,
@@ -21,6 +23,7 @@ export class SubplanService {
       .set('page', page.toString())
       .set('page_size', pageSize.toString())
       .set('init', init)
+
     if (name != null) {
       params = params.set('name', name)
     }
@@ -38,15 +41,19 @@ export class SubplanService {
     }
     return this.http.get(`${this.hostname}insurers/subplan/`, { params })
   }
+
   getSubPlan(id: number) {
     return this.http.get(`${this.hostname}insurers/subplan/${id}`)
   }
+
   createSubPlan(data: any) {
     return this.http.post(`${this.hostname}insurers/subplan/`, data)
   }
+
   updateSubPlan(id: number, data: any) {
     return this.http.put(`${this.hostname}insurers/subplan/${id}`, data)
   }
+  
   deleteSubPlan(id: number) {
     return this.http.delete(`${this.hostname}insurers/subplan/${id}`)
   }
