@@ -58,11 +58,17 @@ export class LoginComponent implements OnInit {
 
   signIn(): void {
     if (this.isLoading) return;
+
     const username = this.loginForm.value.username;
     const password = this.loginForm.value.password;
 
     if (!username.trim()) {
       this.showMessage('Please enter username', 'error');
+      return;
+    }
+
+    if (/\s/.test(username)) {
+      this.showMessage('Username cannot contain spaces', 'error');
       return;
     }
 
@@ -78,6 +84,7 @@ export class LoginComponent implements OnInit {
         res.properties.user = {
           id: res.attributes.find((e: any) => e.Name === 'sub').Value,
           email: res.attributes.find((e: any) => e.Name === 'email').Value,
+          username: res.attributes.find((e: any) => e.Name === 'username').Value,
         };
 
         localStorage.removeItem('auth_challenge');

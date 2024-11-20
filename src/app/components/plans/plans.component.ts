@@ -51,6 +51,7 @@ import { SubplansComponent } from '../subplans/subplans.component'
   templateUrl: './plans.component.html',
   styleUrl: './plans.component.css',
 })
+
 export class PlansComponent implements OnInit {
   constructor(
     private fb: UntypedFormBuilder,

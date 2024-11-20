@@ -47,6 +47,7 @@ import { SubplanService } from '../../services/insurers/subplan.service'
   templateUrl: './subplans.component.html',
   styleUrl: './subplans.component.css',
 })
+
 export class SubplansComponent implements OnInit {
   constructor(
     private fb: UntypedFormBuilder,

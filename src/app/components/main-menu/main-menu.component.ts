@@ -25,6 +25,7 @@ import {
   templateUrl: './main-menu.component.html',
   styleUrls: ['./main-menu.component.css'],
 })
+
 export class MainMenuComponent {
   constructor(private iconService: NzIconService) {
     this.iconService.addIcon(

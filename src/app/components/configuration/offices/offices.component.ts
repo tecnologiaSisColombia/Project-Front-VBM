@@ -143,7 +143,7 @@ export class OfficesComponent {
 
   openDrawer(): void {
     this.visible = true;
-    this.drawerTitle = 'New Store';
+    this.drawerTitle = 'New Office';
   }
   openEditDrawer(data: any): void {
     this.visible = true;

@@ -13,8 +13,6 @@
       class="boton-margen"
       (userCreated)="addUserToList($event)"
     ></nz-demo-drawer-from-drawer>
-
-    <!-- <nz-demo-modal-basic></nz-demo-modal-basic> -->
   </div>
 
   <nz-input-group
@@ -77,26 +75,14 @@
         
         <span class="button-separator"></span>
         
-        <button
-          nz-button
-          nzType="link"
-          nzDanger
-          (click)="inactivateUser(user)"
-        >
-          <i nz-icon nzType="stop"></i>
-        </button>
-        
-        <span class="button-separator"></span>
-        
-        <button
-          nz-button
-          nzType="link"
-          class="green-link-button"
-          (click)="enableUser(user)"
-        >
-          <i nz-icon nzType="check-circle"></i>
-        </button>
-        
+        <nz-switch
+        [(ngModel)]="user.is_active"
+        (ngModelChange)="toggleUserStatus(user)"
+        [nzSize]="'small'"
+        [nzCheckedChildren]="''"
+        [nzUnCheckedChildren]="''"
+      ></nz-switch>
+      
         <span class="button-separator"></span>
 
         <button

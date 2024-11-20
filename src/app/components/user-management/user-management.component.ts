@@ -11,15 +11,14 @@ import {
   NzDemoDrawerFromDrawerComponent 
 } from '../drawers-modals/drawers/drawer-create-users.component'
 import { 
-  NzDemoModalBasicComponent 
-} from '../drawers-modals/modals/modal-create-type-user.component'
-import { 
   NzDemoModalLocaleComponent 
 } from '../drawers-modals/modals/modal-edit-user.component'
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb'
 import { UserService } from '../../services/user-management/user-management.service';
 import { NzMessageService } from 'ng-zorro-antd/message'
 import Swal from 'sweetalert2';
+import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-user-management',
@@ -34,9 +33,9 @@ import Swal from 'sweetalert2';
     NzTagModule,
     NzDrawerModule,
     NzDemoDrawerFromDrawerComponent,
-    NzDemoModalBasicComponent,
     NzBreadCrumbModule,
-    NzDemoModalLocaleComponent
+    NzDemoModalLocaleComponent,
+    NzSwitchModule
   ],
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.css'],
@@ -50,6 +49,7 @@ export class UserManagementComponent implements OnInit {
   constructor(
     private userService: UserService,
     private msgService: NzMessageService,
+    private authService: AuthService,
   ) { }
 
   ngOnInit(): void {
@@ -65,7 +65,7 @@ export class UserManagementComponent implements OnInit {
         this.loading = false;
       },
       (error) => {
-        console.error('Error fetching users:', error);
+        this.msgService.error(`Error fetching users`);
         this.loading = false;
       }
     );
@@ -83,83 +83,92 @@ export class UserManagementComponent implements OnInit {
     }
   }
   
-
-  inactivateUser(user: any): void {
-    if (!user.is_active) {
-      this.msgService.warning(`The user ${user.username} is already inactive.`);
-      return;
-    }
-
-    Swal.fire({
-      title: 'Are you sure?',
-      text: `You are about to inactivate ${user.username}. Do you want to continue?`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, inactivate',
-      cancelButtonText: 'Cancel',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          title: 'Processing...',
-          text: 'Please wait while the user is being inactivated.',
-          allowOutsideClick: false,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        });
-        this.userService.disableUser(user.username).subscribe(
-          (response) => {
-            Swal.fire('Inactivated!', 'The user has been inactivated', 'success');
-            user.is_active = false;
-          },
-          (error) => {
-            Swal.fire('Error', 'There was an issue inactivating the user', 'error');
-          }
-        );
-      }
-    });
-  }
-
-  enableUser(user: any): void {
+  toggleUserStatus(user: any): void {
     if (user.is_active) {
-      this.msgService.warning(`The user ${user.username} is already active.`);
-      return;
+      Swal.fire({
+        title: 'Are you sure?',
+        text: `You are about to activate ${user.username}. Do you want to continue?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, activate',
+        cancelButtonText: 'Cancel',
+        allowOutsideClick: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: 'Processing...',
+            text: 'Please wait while the user is being activated.',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          });
+  
+          this.userService.enableUser(user.username).subscribe(
+            (response) => {
+              Swal.fire('Activated!', 'The user has been activated.', 'success');
+              user.is_active = true;
+            },
+            (error) => {
+              Swal.fire('Error', 'There was an issue activating the user.', 'error');
+              user.is_active = false;
+            }
+          );
+        } else {
+          user.is_active = false;
+        }
+      });
+    } else {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: `You are about to inactivate ${user.username}. Do you want to continue?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, inactivate',
+        cancelButtonText: 'Cancel',
+        allowOutsideClick: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: 'Processing...',
+            text: 'Please wait while the user is being inactivated.',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          });
+  
+          this.userService.disableUser(user.username).subscribe(
+            (response) => {
+              Swal.fire('Inactivated!', 'The user has been inactivated.', 'success');
+
+              const userAttributes = localStorage.getItem('user_attributes');
+              const currentUser = userAttributes ? JSON.parse(userAttributes) : null;
+
+              if (currentUser && currentUser.username === user.username) {
+                this.authService.doLogout();
+              }
+
+              user.is_active = false;
+            },
+            (error) => {
+              Swal.fire('Error', 'There was an issue inactivating the user.', 'error');
+              user.is_active = true;
+            }
+          );
+        } else {
+          user.is_active = true;
+        }
+      });
     }
-
-    Swal.fire({
-      title: 'Are you sure?',
-      text: `You are about to activate ${user.username}. Do you want to continue?`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, activate',
-      cancelButtonText: 'Cancel',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          title: 'Processing...',
-          text: 'Please wait while the user is being activated',
-          allowOutsideClick: false,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        });
-        this.userService.enableUser(user.username).subscribe(
-          (response) => {
-            Swal.fire('Activated!', 'The user has been activated', 'success');
-            user.is_active = true;
-          },
-          (error) => {
-            Swal.fire('Error', 'There was an issue activating the user', 'error');
-          }
-        );
-      }
-    });
   }
-
+  
   deleteUser(user: any): void {
     if (user.is_active) {
       Swal.fire({
@@ -171,6 +180,7 @@ export class UserManagementComponent implements OnInit {
         cancelButtonColor: '#d33',
         confirmButtonText: 'Yes, deactivate and delete',
         cancelButtonText: 'Cancel',
+        allowOutsideClick: false,
       }).then((result) => {
         if (result.isConfirmed) {
           Swal.fire({
@@ -189,6 +199,7 @@ export class UserManagementComponent implements OnInit {
                 text: 'The user has been deactivated successfully. Proceeding with deletion...',
                 icon: 'success',
                 showConfirmButton: false,
+                allowOutsideClick: false,
                 timer: 2000,
               });
 
@@ -210,11 +221,11 @@ export class UserManagementComponent implements OnInit {
       title: 'Are you sure?',
       text: `You are about to delete ${user.username}. Do you want to continue?`,
       icon: 'warning',
-      showCancelButton: true,
+      showCancelButton: false,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, delete',
-      cancelButtonText: 'Cancel',
+      allowOutsideClick: false,
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire({
@@ -229,6 +240,13 @@ export class UserManagementComponent implements OnInit {
           (response) => {
             Swal.fire('Deleted!', 'The user has been deleted successfully', 'success');
             this.data = this.data.filter((u) => u.username !== user.username);
+
+            const userAttributes = localStorage.getItem('user_attributes');
+            const currentUser = userAttributes ? JSON.parse(userAttributes) : null;
+
+            if (currentUser && currentUser.username === user.username) {
+              this.authService.doLogout();
+            }
           },
           (error) => {
             Swal.fire('Error', 'There was an issue deleting the user', 'error');

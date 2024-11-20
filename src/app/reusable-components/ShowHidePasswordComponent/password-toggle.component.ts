@@ -19,7 +19,7 @@ import { CommonModule } from '@angular/common';
       .typcn {
         position: absolute;
         left: 310px;
-        top: 11px;
+        top: 15px;
         color: #aaa;
         font-size: 22px;
         cursor: pointer;

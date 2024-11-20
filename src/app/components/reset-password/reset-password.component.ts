@@ -38,7 +38,8 @@ export class ResetPasswordComponent {
 
   constructor(
     private resetPasswordService: ResetPasswordService,
-    private router: Router) { }
+    private router: Router) 
+    { }
 
   closeMessage(): void {
     this.message = null;
@@ -60,7 +61,10 @@ export class ResetPasswordComponent {
       this.resetPasswordService.requestReset(this.email),
       this,
       () => {
-        this.showVerificationCode = this.showResendLink = this.showPasswordInput = this.emailReadOnly = true;
+        this.showVerificationCode = 
+        this.showResendLink = 
+        this.showPasswordInput = 
+        this.emailReadOnly = true;
       }
     );
   }
@@ -70,7 +74,10 @@ export class ResetPasswordComponent {
       this.resetPasswordService.resendConfirmationCode(this.email),
       this,
       () => {
-        this.showVerificationCode = this.showResendLink = this.showPasswordInput = this.emailReadOnly = true;
+        this.showVerificationCode = 
+        this.showResendLink = 
+        this.showPasswordInput = 
+        this.emailReadOnly = true;
       }
     );
   }
@@ -87,7 +94,9 @@ export class ResetPasswordComponent {
     }
 
     this.resetPasswordService.handleRequest(
-      this.resetPasswordService.confirmResetPassword(this.email, this.verificationCode, this.newPassword),
+      this.resetPasswordService.confirmResetPassword(
+        this.email, this.verificationCode, this.newPassword
+      ),
       this,
       () => setTimeout(() => this.router.navigate(['./login']), 900)
     );

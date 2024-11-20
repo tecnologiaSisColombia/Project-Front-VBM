@@ -45,6 +45,7 @@ import { NzPaginationModule } from 'ng-zorro-antd/pagination'
   templateUrl: './insurers.component.html',
   styleUrl: './insurers.component.css',
 })
+
 export class InsurersComponent implements OnInit {
   constructor(
     private fb: UntypedFormBuilder,

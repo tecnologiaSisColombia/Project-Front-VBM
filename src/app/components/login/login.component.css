@@ -1,18 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400');
 
-:root {
-  --color-container-bg: white;
-  --color-text-primary: #dfdeee;
-  --color-text-secondary: #a1a4ad;
-  --color-border: #464d64;
-  --color-input-bg: #262e49;
-  --color-input-focus: #1d243d;
-  --color-btn: #5d33e6;
-  --color-btn-hover: #4122a7;
-  --color-checkbox-checked: #896cec;
-  --color-error-bg: #ff3333;
-}
-
 @keyframes fadeInBackground {
   0% {
     opacity: 0;

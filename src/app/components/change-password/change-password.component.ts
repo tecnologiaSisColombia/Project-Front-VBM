@@ -24,6 +24,7 @@ import { passwordRegex } from '../../utils/password_regex'
   templateUrl: './change-password.component.html',
   styleUrls: ['./change-password.component.css'],
 })
+
 export class ChangePasswordComponent implements OnInit {
   changePasswordForm: FormGroup
   session: string | null = null
@@ -32,7 +33,6 @@ export class ChangePasswordComponent implements OnInit {
   messageType: 'error' | 'success' | null = null
   isLoading: boolean = false 
   btnActive: boolean = false 
-
   passwordRight: boolean = false
   passwordConfirm: boolean = false
 
