@@ -1,0 +1,104 @@
+<div class="title-page">
+    <div class="breadcrumb-container">
+        <nz-breadcrumb>
+            <nz-breadcrumb-item>
+                Mar Chiquita
+            </nz-breadcrumb-item>
+            <nz-breadcrumb-item>
+                Configuration
+            </nz-breadcrumb-item>
+            <nz-breadcrumb-item>
+                Offices
+            </nz-breadcrumb-item>
+        </nz-breadcrumb>
+    </div>
+    <div class="btn-container">
+        <button nz-button nzType="primary" (click)="openDrawer()">
+            New Office
+        </button>
+    </div>
+</div>
+
+<div class="main-table">
+    <div class="table-filters">
+        <!-- name -->
+        <nz-input-group [nzSuffix]="suffixIconSearch">
+            <input type="text" nz-input placeholder="Name..." [(ngModel)]="nameSearch"
+                (ngModelChange)="search($event, 'name')" />
+        </nz-input-group>
+        <ng-template #suffixIconSearch>
+            <span nz-icon nzType="search"></span>
+        </ng-template>
+    </div>
+    <nz-table #basicTable [nzData]="dataToDisplay" [nzLoading]="isDataLoading" [nzFrontPagination]="false">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Created</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let data of basicTable.data">
+                <td>{{ data.name }}</td>
+                <td>{{ data.created | date }}</td>
+                <td>
+                    <a>
+                        <nz-switch title="Status" [(ngModel)]="data.active" nzSize="small"
+                            (ngModelChange)="changeStatus(data.id, data)"></nz-switch>
+                    </a>
+                    <nz-divider nzType="vertical"></nz-divider>
+                    <a>
+                        <span nz-icon title="Edit" nzType="edit" nzTheme="outline"
+                            (click)="openEditDrawer(data)"></span>
+                    </a>
+                    <nz-divider nzType="vertical"></nz-divider>
+                    <a>
+                        <span nz-icon title="Delete" nzType="delete" nzTheme="outline" (click)="delete(data.id)"></span>
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </nz-table>
+    <nz-pagination [nzPageIndex]="page" [nzResponsive]="true" [nzTotal]="count_records" [nzPageSize]="page_size"
+        (nzPageIndexChange)="pageChange($event)" nzShowQuickJumper></nz-pagination>
+</div>
+
+<!-- Client drawer -->
+<nz-drawer [nzBodyStyle]="{ overflow: 'auto' }" [nzMaskClosable]="false" [nzClosable]="false" [nzVisible]="visible"
+    nzPlacement="right" [nzTitle]="drawerTitle" (nzOnClose)="closeDrawer()" [nzWidth]="720" [nzFooter]="footerTpl">
+    <ng-container *nzDrawerContent>
+        <nz-spin [nzSpinning]="drawerLoader">
+            <form nz-form [formGroup]="form" (ngSubmit)="submit()">
+                <!-- Store -->
+                <nz-form-item>
+                    <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="store" style="text-align: center;">
+                        Store
+                    </nz-form-label>
+                    <nz-form-control [nzSm]="16" [nzXs]="24" nzErrorTip="This field is required">
+                        <nz-select nzShowSearch nzAllowClear id="store" nzPlaceHolder="Select Store" formControlName="store">
+                            <nz-option *ngFor="let o of stores" [nzLabel]="o.name" [nzValue]="o.id"></nz-option>
+                        </nz-select>
+                    </nz-form-control>
+                </nz-form-item>
+                <!-- name -->
+                <nz-form-item>
+                    <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="name" style="text-align: center;">
+                        Name
+                    </nz-form-label>
+                    <nz-form-control [nzSm]="16" [nzXs]="24" nzErrorTip="This field is required">
+                        <input nz-input formControlName="name" id="name" />
+                    </nz-form-control>
+                </nz-form-item>
+            </form>
+        </nz-spin>
+    </ng-container>
+    <ng-template #footerTpl>
+        <div style="display: flex; float: right;">
+            <button nz-button style="display: flex; margin-right: 8px;" (click)="closeDrawer()">
+                close
+            </button>
+            <button nz-button nzType="primary" (click)="submit()">Save</button>
+        </div>
+    </ng-template>
+</nz-drawer>

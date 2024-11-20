@@ -8,9 +8,13 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { FormsModule } from '@angular/forms';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { UserService } from '../../../services/user-management/user-management.service';
-import { NzMessageService } from 'ng-zorro-antd/message'
-import { nameRegex } from '../../../utils/name_regex'
-import { usernameRegex } from '../../../utils/username_regex'
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { nameRegex } from '../../../utils/name_regex';
+import { usernameRegex } from '../../../utils/username_regex';
+import { CommonModule } from '@angular/common';
+import { EspecialitiesService } from 'app/services/config/especialities.service';
+import { StoresService } from 'app/services/config/stores.service';
+import { OfficesService } from 'app/services/config/offices.service';
 
 @Component({
   selector: 'nz-demo-drawer-from-drawer',
@@ -23,160 +27,16 @@ import { usernameRegex } from '../../../utils/username_regex'
     NzInputModule,
     NzSelectModule,
     FormsModule,
-    NzIconModule
+    CommonModule,
+    NzIconModule,
   ],
-  template: `
-    <button nz-button nzType="primary" (click)="open()">
-      <i nz-icon nzType="user"></i> Create User
-    </button>
-    <nz-drawer
-      [nzBodyStyle]="{ overflow: 'auto', padding: '24px' }"
-      [nzMaskClosable]="false"
-      [nzWidth]="450"
-      [nzVisible]="visible"
-      nzTitle="Create User"
-      [nzFooter]="footerTpl"
-      (nzOnClose)="close()"
-    >
-      <form nz-form nzLayout="vertical" *nzDrawerContent>
-        <div nz-row style="margin-bottom: 16px;">
-          <div nz-col nzSpan="24">
-            <nz-form-item>
-              <nz-form-label [nzRequired]="true" style="width: 100%;">First Name</nz-form-label>
-              <nz-form-control>
-                <input
-                  nz-input
-                  required
-                  [(ngModel)]="form.firstName"
-                  name="firstName"
-                  style="width: 100%; border-radius: 6px; font-size: 14px; padding: 8px;"
-                />
-              </nz-form-control>
-            </nz-form-item>
-          </div>
-
-          <div nz-col nzSpan="24">
-            <nz-form-item>
-              <nz-form-label [nzRequired]="true" style="width: 100%;">Last Name</nz-form-label>
-              <nz-form-control>
-                <input
-                  nz-input
-                  required
-                  [(ngModel)]="form.lastName"
-                  name="lastName"
-                  style="width: 100%; border-radius: 6px; font-size: 14px; padding: 8px;"
-                />
-              </nz-form-control>
-            </nz-form-item>
-          </div>
-
-          <div nz-col nzSpan="24">
-            <nz-form-item>
-              <nz-form-label [nzRequired]="true" style="width: 100%;">Email</nz-form-label>
-              <nz-form-control>
-                <input
-                  nz-input
-                  type="email"
-                  required
-                  [(ngModel)]="form.email"
-                  name="email"
-                  style="width: 100%; border-radius: 6px; font-size: 14px; padding: 8px;"
-                />
-              </nz-form-control>
-            </nz-form-item>
-          </div>
-
-          <div nz-col nzSpan="24">
-            <nz-form-item>
-              <nz-form-label [nzRequired]="true" style="width: 100%;">Phone</nz-form-label>
-              <nz-form-control>
-                <input
-                  nz-input
-                  type="tel"
-                  [(ngModel)]="form.phone"
-                  name="phone"
-                  style="width: 100%; border-radius: 6px; font-size: 14px; padding: 8px;"
-                />
-              </nz-form-control>
-            </nz-form-item>
-          </div>
-
-          <div nz-col nzSpan="24">
-            <nz-form-item>
-              <nz-form-label [nzRequired]="true" style="width: 100%;">Username</nz-form-label>
-              <nz-form-control>
-                <input
-                  nz-input
-                  required
-                  [(ngModel)]="form.username"
-                  name="username"
-                  style="width: 100%; border-radius: 6px; font-size: 14px; padding: 8px;"
-                />
-              </nz-form-control>
-            </nz-form-item>
-          </div>
-
-          <div nz-col nzSpan="24">
-            <nz-form-item>
-              <nz-form-label [nzRequired]="true" style="width: 100%;">Password</nz-form-label>
-              <nz-form-control>
-                <input
-                  nz-input
-                  type="password"
-                  required
-                  [(ngModel)]="form.password"
-                  name="password"
-                  style="width: 100%; border-radius: 6px; font-size: 14px; padding: 8px;"
-                />
-              </nz-form-control>
-            </nz-form-item>
-          </div>
-        </div>
-
-        <div nz-col nzSpan="24">
-  <nz-form-item>
-    <nz-form-label [nzRequired]="true" style="width: 100%;">User Type</nz-form-label>
-    <nz-form-control>
-      <nz-select
-        [(ngModel)]="form.type_user"
-        name="userType"
-        [nzOptions]="userTypeOptions"
-        nzPlaceHolder="Select a user type"
-        style="width: 100%; border-radius: 6px;"
-      ></nz-select>
-    </nz-form-control>
-  </nz-form-item>
-</div>
-
-      </form>
-
-      <ng-template #footerTpl>
-        <div style="text-align: right; padding-top: 16px; border-top: 1px solid #f0f0f0;">
-          <button
-            nz-button
-            style="margin-right: 8px; border-radius: 4px;"
-            (click)="close()"
-          >
-            Cancel
-          </button>
-          <button
-            nz-button
-            nzType="primary"
-            style="border-radius: 4px;"
-            (click)="submit()"
-          >
-            Create User
-          </button>
-        </div>
-      </ng-template>
-    </nz-drawer>
-  `,
+  templateUrl: './drawer-create-users.component.html',
 })
-
 export class NzDemoDrawerFromDrawerComponent {
   @Output() userCreated = new EventEmitter<any>();
 
   visible = false;
+  extraForm: any = null;
   form = {
     firstName: '',
     lastName: '',
@@ -184,28 +44,72 @@ export class NzDemoDrawerFromDrawerComponent {
     phone: '',
     username: '',
     password: '',
-    type_user: ''
+    type_user: '',
+    speciality_id: null,
+    store_id: null,
+    office_id: null,
+    number_license: '',
   };
 
-  userTypeOptions: { label: string; value: string }[] = [];
+  userTypeOptions: { id: number; label: string; value: string }[] = [];
+
+  specialities: any[] = [];
+  stores: any[] = [];
+  offices: any[] = [];
 
   constructor(
     private createUserService: UserService,
     private msgService: NzMessageService,
+    private specialityService: EspecialitiesService,
+    private storeService: StoresService,
+    private officeService: OfficesService
   ) {
     this.loadUserTypes();
-
+    this.getSpecialities();
+    this.getStores();
+    this.getOffices();
   }
 
+  getSpecialities() {
+    this.specialityService.get({ status: 1 }, 1, 1, true).subscribe({
+      next: (res: any) => (this.specialities = res),
+      error: (err) => {
+        console.error(err);
+
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
+  }
+  getStores() {
+    this.storeService.get({ status: 1 }, 1, 1, true).subscribe({
+      next: (res: any) => (this.stores = res),
+      error: (err) => {
+        console.error(err);
+
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
+  }
+  getOffices() {
+    this.officeService.get({ status: 1 }, 1, 1, true).subscribe({
+      next: (res: any) => (this.offices = res),
+      error: (err) => {
+        console.error(err);
+
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
+  }
   loadUserTypes(): void {
     this.createUserService.getUserTypes().subscribe(
       (response: any[]) => {
-        this.userTypeOptions = response.map(type => ({
+        this.userTypeOptions = response.map((type) => ({
           label: type.name,
-          value: type.name
+          value: type.name,
+          id: type.id,
         }));
       },
-      error => {
+      (error) => {
         this.msgService.error('Failed to load user types');
       }
     );
@@ -222,18 +126,42 @@ export class NzDemoDrawerFromDrawerComponent {
   submit(): void {
     for (const key of Object.keys(this.form)) {
       if (!this.form[key as keyof typeof this.form]) {
-        this.msgService.error(`Field ${key} is required.`);
-        return;
+        if (
+          !this.extraForm &&
+          ['speciality_id', 'store_id', 'office_id', 'number_license'].includes(
+            key
+          )
+        ) {
+          // }else if (
+          //   ['speciality_id', 'store_id', 'office_id', 'number_license'].includes(
+          //     key
+          //   )
+          // ) {
+        } else if (
+          this.extraForm == 'Seller' &&
+          ['speciality_id', 'office_id', 'number_license'].includes(key)
+        ) {
+        } else {
+          this.msgService.error(`Field ${key} is required.`);
+          return;
+        }
       }
     }
 
-    if (!nameRegex.test(this.form.firstName) || !nameRegex.test(this.form.lastName)) {
-      this.msgService.error('Names cannot contain numbers or special characters.');
+    if (
+      !nameRegex.test(this.form.firstName) ||
+      !nameRegex.test(this.form.lastName)
+    ) {
+      this.msgService.error(
+        'Names cannot contain numbers or special characters.'
+      );
       return;
     }
 
     if (!usernameRegex.test(this.form.username)) {
-      this.msgService.error('Username must be at least 5 characters long and can contain letters, numbers, dots, underscores, or hyphens.');
+      this.msgService.error(
+        'Username must be at least 5 characters long and can contain letters, numbers, dots, underscores, or hyphens.'
+      );
       return;
     }
 
@@ -242,7 +170,7 @@ export class NzDemoDrawerFromDrawerComponent {
       return;
     }
 
-    const userData = {
+    let userData: any = {
       email: this.form.email,
       password: this.form.password,
       username: this.form.username,
@@ -252,6 +180,34 @@ export class NzDemoDrawerFromDrawerComponent {
       is_active: true,
       type_user: this.form.type_user,
     };
+
+    if (this.form.type_user == 'Doctor') {
+      if (
+        !this.form.speciality_id ||
+        !this.form.store_id ||
+        !this.form.office_id ||
+        !this.form.number_license
+      ) {
+        this.msgService.error('Please fill all the required fields.');
+        return;
+      }
+      userData = {
+        ...userData,
+        speciality_id: this.form.speciality_id,
+        store_id: this.form.store_id,
+        office_id: this.form.office_id,
+        number_license: this.form.number_license,
+      };
+    } else if (this.form.type_user == 'Seller') {
+      if (!this.form.store_id) {
+        this.msgService.error('Please fill all the required fields.');
+        return;
+      }
+      userData = {
+        ...userData,
+        store_id: this.form.store_id,
+      };
+    }
 
     this.createUserService.requestCreateUser(userData).subscribe(
       (response) => {
@@ -274,7 +230,28 @@ export class NzDemoDrawerFromDrawerComponent {
       phone: '',
       username: '',
       password: '',
-      type_user: ''
+      type_user: '',
+      speciality_id: null,
+      store_id: null,
+      office_id: null,
+      number_license: '',
     };
+  }
+
+  userTypeChange(event: string) {
+    console.log(event, this.userTypeOptions);
+
+    if (event) {
+      const type = this.userTypeOptions.find((e) => e.value == event);
+      if (type?.value == 'Doctor') {
+        this.extraForm = 'Doctor';
+      } else if (type?.value == 'Seller') {
+        this.extraForm = 'Seller';
+      } else {
+        this.extraForm = null;
+      }
+      return;
+    }
+    this.extraForm = null;
   }
 }

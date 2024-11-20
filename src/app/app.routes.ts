@@ -12,6 +12,9 @@ import { BlankComponent } from './layouts/blank/blank.component'
 import { FullComponent } from './layouts/full/full.component'
 import { SubplansComponent } from './components/subplans/subplans.component'
 import { UserManagementComponent } from './components/user-management/user-management.component'
+import { SpecialitiesComponent } from './components/configuration/specialities/specialities.component'
+import { StoresComponent } from './components/configuration/stores/stores.component'
+import { OfficesComponent } from './components/configuration/offices/offices.component'
 
 export const routes: Routes = [
   {
@@ -43,6 +46,24 @@ export const routes: Routes = [
         path: 'home',
         component: MainMenuComponent,
         canActivate: [AuthGuardService],
+      },
+      {
+        path: 'config',
+        canActivate: [AuthGuardService],
+        children: [
+          {
+            path: 'specialities',
+            component: SpecialitiesComponent,
+          },
+          {
+            path: 'stores',
+            component: StoresComponent,
+          },
+          {
+            path: 'offices',
+            component: OfficesComponent,
+          },
+        ]
       },
       {
         path: 'insurers',
