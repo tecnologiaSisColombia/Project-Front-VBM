@@ -43,6 +43,7 @@ import { AuthService } from '../../services/auth/auth.service';
 
 export class UserManagementComponent implements OnInit {
   data: any[] = [];
+  originalData: any[] = [];
   searchQuery = '';
   loading = false;
 
@@ -61,6 +62,7 @@ export class UserManagementComponent implements OnInit {
     this.userService.getUsers().subscribe(
       (data) => {
         this.data = data;
+        this.originalData = [...data];
         console.log('Data fetched:', this.data);
         this.loading = false;
       },
@@ -257,6 +259,15 @@ export class UserManagementComponent implements OnInit {
   }
 
   onSearch(): void {
-    console.log('Search:', this.searchQuery);
+    const query = this.searchQuery.toLowerCase().trim();
+    if (query) {
+      this.data = this.originalData.filter((user) => {
+        const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
+        return fullName.includes(query);
+      });
+    } else {
+      this.data = [...this.originalData];
+    }
   }
+  
 }

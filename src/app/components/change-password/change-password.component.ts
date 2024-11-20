@@ -11,6 +11,7 @@ import { NotificationComponent } from '../../reusable-components'
 import { PasswordResetButtonComponent } from '../../reusable-components'
 import { CommonModule } from '@angular/common'
 import { passwordRegex } from '../../utils/password_regex'
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-change-password',
@@ -31,8 +32,8 @@ export class ChangePasswordComponent implements OnInit {
   username: string | null = null
   message: string | null = null
   messageType: 'error' | 'success' | null = null
-  isLoading: boolean = false 
-  btnActive: boolean = false 
+  isLoading: boolean = false
+  btnActive: boolean = false
   passwordRight: boolean = false
   passwordConfirm: boolean = false
 
@@ -43,6 +44,7 @@ export class ChangePasswordComponent implements OnInit {
     private loginService: LoginService,
     private route: ActivatedRoute,
     private router: Router,
+    private authService: AuthService,
   ) {
     this.changePasswordForm = this.fb.group({
       new_password: ['', [Validators.required, Validators.minLength(8)]],
@@ -99,26 +101,31 @@ export class ChangePasswordComponent implements OnInit {
     }
 
     if (this.username && this.session) {
-      this.isLoading = true
-      this.loginService
-        .changeTemporaryPassword(this.username, new_password, this.session)
-        .subscribe(
-          (response) => {
-            this.isLoading = false
-            if (response.status) {
-              this.router.navigate(['/login'])
-            } else {
-              this.message = response.error.message
-              this.messageType = 'error'
-            }
+      this.isLoading = true;
+      this.loginService.changeTemporaryPassword(this.username, new_password, this.session)
+        .subscribe({
+          next: (res: any) => {
+            res.properties.user = {
+              id: res.attributes.find((e: any) => e.Name === 'sub')?.Value,
+              email: res.attributes.find((e: any) => e.Name === 'email')?.Value,
+              username: res.attributes.find((e: any) => e.Name === 'username')?.Value,
+            };
+            
+            this.authService.doLogin(res.properties);
+
+            this.router.navigate(['/home']).then(() => {
+              this.isLoading = false;
+            });
           },
-          (error) => {
-            this.isLoading = false
+          error: (error) => {
+            this.isLoading = false;
+
             const errorMessage =
               error.error?.error?.message || 'Change Password failed. Please try again.';
             this.showMessage(errorMessage, 'error');
-          },
-        )
+          }
+        });
     }
+
   }
 }

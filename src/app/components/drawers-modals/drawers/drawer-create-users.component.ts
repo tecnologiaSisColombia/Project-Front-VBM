@@ -132,11 +132,6 @@ export class NzDemoDrawerFromDrawerComponent {
             key
           )
         ) {
-          // }else if (
-          //   ['speciality_id', 'store_id', 'office_id', 'number_license'].includes(
-          //     key
-          //   )
-          // ) {
         } else if (
           this.extraForm == 'Seller' &&
           ['speciality_id', 'office_id', 'number_license'].includes(key)
