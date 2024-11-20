@@ -65,6 +65,7 @@ export class AuthInterceptor implements HttpInterceptor {
           return next.handle(this.addToken(request, token.access_token));
         }),
       );
+      
     } else {
       return this.refreshTokenSubject.pipe(
         filter((token) => token != null),
