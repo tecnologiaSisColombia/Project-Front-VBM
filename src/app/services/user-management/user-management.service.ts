@@ -88,4 +88,17 @@ export class UserService extends BaseService {
       data
     );
   }
+
+  createWorkingHour(data: any) {
+    return this.http.post(`${this.baseUrl}core/user-working-hours`, data);
+  }
+  updateWorkingHour(id: any, data: any) {
+    return this.http.put(`${this.baseUrl}core/user-working-hours/${id}`, data);
+  }
+  deleteWorkingHour(id: any) {
+    return this.http.delete(`${this.baseUrl}core/user-working-hours/${id}`);
+  }
+  getWorkingHour(user_id: any) {
+    return this.http.get(`${this.baseUrl}core/user-working-hours/${user_id}`);
+  }
 }

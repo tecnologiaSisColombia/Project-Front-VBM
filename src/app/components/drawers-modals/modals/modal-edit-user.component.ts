@@ -14,6 +14,9 @@ import { StoresService } from 'app/services/config/stores.service';
 import { OfficesService } from 'app/services/config/offices.service';
 import { CommonModule } from '@angular/common';
 import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 
 @Component({
   selector: 'nz-demo-modal-locale',
@@ -28,178 +31,12 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
     NzIconModule,
     CommonModule,
     NzSelectModule,
+    NzTableModule,
+    NzDividerModule,
+    NzDrawerModule,
+    NzButtonModule,
   ],
-  template: `
-    <button nz-button nzType="link" (click)="showModal()">
-      <i nz-icon nzType="edit" nzTheme="outline"></i>
-    </button>
-    <nz-modal
-      [(nzVisible)]="isVisible"
-      nzTitle="Edit User Attributes"
-      nzOkText="Update Attributes"
-      nzCancelText="Cancel"
-      (nzOnOk)="handleOk()"
-      (nzOnCancel)="handleCancel()"
-    >
-      <ng-container *nzModalContent>
-        <form nz-form [nzLayout]="'vertical'" class="form-container">
-          <div nz-row [nzGutter]="16">
-            <div nz-col [nzSpan]="12">
-              <nz-form-item>
-                <nz-form-label [nzSpan]="24">First Name</nz-form-label>
-                <nz-form-control [nzSpan]="24">
-                  <input
-                    nz-input
-                    [(ngModel)]="user.first_name"
-                    name="firstName"
-                    placeholder="Enter first name"
-                  />
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-            <div nz-col [nzSpan]="12">
-              <nz-form-item>
-                <nz-form-label [nzSpan]="24">Last Name</nz-form-label>
-                <nz-form-control [nzSpan]="24">
-                  <input
-                    nz-input
-                    [(ngModel)]="user.last_name"
-                    name="lastName"
-                    placeholder="Enter last name"
-                  />
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-          </div>
-          <div nz-row [nzGutter]="16">
-            <div nz-col [nzSpan]="12">
-              <nz-form-item>
-                <nz-form-label [nzSpan]="24">Email</nz-form-label>
-                <nz-form-control [nzSpan]="24">
-                  <input
-                    nz-input
-                    [(ngModel)]="user.email"
-                    name="email"
-                    type="email"
-                    placeholder="Enter email"
-                  />
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-            <div nz-col [nzSpan]="12">
-              <nz-form-item>
-                <nz-form-label [nzSpan]="24">Phone</nz-form-label>
-                <nz-form-control [nzSpan]="24">
-                  <input
-                    nz-input
-                    [(ngModel)]="user.phone"
-                    name="phone"
-                    type="tel"
-                    placeholder="Enter phone"
-                  />
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-
-            <div
-              nz-col
-              [nzSpan]="12"
-              *ngIf="user.extra_data && user_type == 'Doctor'"
-            >
-              <nz-form-item>
-                <nz-form-label [nzSpan]="24">Speciality</nz-form-label>
-                <nz-form-control [nzSpan]="24">
-                  <nz-select
-                    name="speciality_id"
-                    [(ngModel)]="user.extra_data[0].speciality_id"
-                    nzPlaceHolder="Select speciality"
-                    style="width: 100%; border-radius: 6px"
-                  >
-                    <nz-option
-                      *ngFor="let o of specialities"
-                      [nzLabel]="o.description"
-                      [nzValue]="o.id"
-                    ></nz-option>
-                  </nz-select>
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-
-            <div
-              nz-col
-              [nzSpan]="12"
-              *ngIf="user.extra_data && user_type == 'Doctor'"
-            >
-              <nz-form-item>
-                <nz-form-label [nzSpan]="24">License number</nz-form-label>
-                <nz-form-control [nzSpan]="24">
-                  <input
-                    name="license_number"
-                    nz-input
-                    [(ngModel)]="user.extra_data[0].license_number"
-                    type="tel"
-                    placeholder="Enter license number"
-                  />
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-
-            <div
-              nz-col
-              [nzSpan]="12"
-              *ngIf="
-                user.extra_data &&
-                (user_type == 'Doctor' || user_type == 'Seller')
-              "
-            >
-              <nz-form-item>
-                <nz-form-label [nzSpan]="24">Store</nz-form-label>
-                <nz-form-control [nzSpan]="24">
-                  <nz-select
-                    (ngModelChange)="storeChange($event)"
-                    [(ngModel)]="user.extra_data[0].store_id"
-                    nzPlaceHolder="Select store"
-                    style="width: 100%; border-radius: 6px"
-                    name="store_id"
-                  >
-                    <nz-option
-                      *ngFor="let o of stores"
-                      [nzLabel]="o.name"
-                      [nzValue]="o.id"
-                    ></nz-option>
-                  </nz-select>
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-
-            <div
-              nz-col
-              [nzSpan]="12"
-              *ngIf="user.extra_data && user_type == 'Doctor'"
-            >
-              <nz-form-item>
-                <nz-form-label [nzSpan]="24">Office</nz-form-label>
-                <nz-form-control [nzSpan]="24">
-                  <nz-select
-                    name="office_id"
-                    [(ngModel)]="user.extra_data[0].office_id"
-                    nzPlaceHolder="Select office"
-                    style="width: 100%; border-radius: 6px"
-                  >
-                    <nz-option
-                      *ngFor="let o of officesToDisplay"
-                      [nzLabel]="o.name"
-                      [nzValue]="o.id"
-                    ></nz-option>
-                  </nz-select>
-                </nz-form-control>
-              </nz-form-item>
-            </div>
-          </div>
-        </form>
-      </ng-container>
-    </nz-modal>
-  `,
+  templateUrl: `./modal-edit-user.component.html`,
   styles: [
     `
       .form-container {
@@ -223,6 +60,31 @@ export class NzDemoModalLocaleComponent implements OnInit {
 
   user_type: string = '';
   officesToDisplay: any[] = [];
+  working_hours: any[] = [];
+
+  // drawer
+  titleDrawer = '';
+  visibleDrawer = false;
+  isUpdatingDrawer: boolean = false;
+  dataCacheDrawer: any = null;
+  workingHourForm = {
+    id: 0,
+    day: '',
+    hour_start: 0,
+    hour_end: 0,
+    user: 0,
+  };
+
+  days = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+  ];
+  workingHours: any;
 
   constructor(
     private userService: UserService,
@@ -240,6 +102,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
   }
 
   showModal(): void {
+    this.getWorkingHours();
     this.isVisible = true;
     if (!this.user.extra_data) return;
     this.user_type = this.userTypeOptions.find(
@@ -362,5 +225,82 @@ export class NzDemoModalLocaleComponent implements OnInit {
     } else {
       this.officesToDisplay = this.offices;
     }
+  }
+  getWorkingHours() {
+    this.userService.getWorkingHour(this.user.id).subscribe({
+      next: (res: any) => {
+        this.workingHours = res;
+      },
+      error: (err) => {
+        this.msgService.error('Failed to load user working hours');
+      },
+    });
+  }
+  open() {
+    this.titleDrawer = 'Add working hour';
+    this.visibleDrawer = true;
+    this.workingHourForm.user = this.user.id;
+  }
+  openEdit(data: any) {
+    this.titleDrawer = 'Update working hour';
+    this.visibleDrawer = true;
+    this.isUpdatingDrawer = true;
+    this.dataCacheDrawer = data;
+    this.workingHourForm = { ...data };
+  }
+
+  closeDrawer() {
+    this.visibleDrawer = false;
+    this.isUpdatingDrawer = false;
+    this.dataCacheDrawer = null;
+    this.workingHourForm = {
+      id: 0,
+      day: '',
+      hour_start: 0,
+      hour_end: 0,
+      user: 0,
+    };
+  }
+  deleteHour(id: number) {
+    this.userService.deleteWorkingHour(id).subscribe({
+      next: (res: any) => {
+        this.getWorkingHours();
+      },
+      error: (err) => {
+        this.msgService.error(
+          `Failed to delete user working hours: ${JSON.stringify(err.error)}`
+        );
+      },
+    });
+  }
+  updateHour(id: number, data: any) {
+    this.userService.updateWorkingHour(id, data).subscribe({
+      next: (res: any) => {
+        this.closeDrawer();
+        this.getWorkingHours();
+      },
+      error: (err) => {
+        this.msgService.error(
+          `Failed to update user working hours: ${JSON.stringify(err.error)}`
+        );
+      },
+    });
+  }
+  submitDrawer() {
+    if (this.isUpdatingDrawer) {
+      this.updateHour(this.dataCacheDrawer.id, this.workingHourForm);
+      return;
+    }
+    this.userService.createWorkingHour(this.workingHourForm).subscribe({
+      next: (res: any) => {
+        this.closeDrawer();
+        this.getWorkingHours();
+      },
+      error: (err) => {
+        this.msgService.error(
+          `Failed to save user working hour: ${JSON.stringify(err.error)}`
+        );
+      },
+    });
   }
 }
