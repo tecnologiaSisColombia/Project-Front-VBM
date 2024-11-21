@@ -213,6 +213,7 @@
         <nz-form-label style="width: 100%">Store</nz-form-label>
         <nz-form-control>
           <nz-select
+            (ngModelChange)="storeChange($event)"
             [(ngModel)]="form.store_id"
             name="store_id"
             nzPlaceHolder="Select store"
@@ -239,7 +240,7 @@
             style="width: 100%; border-radius: 6px"
           >
             <nz-option
-              *ngFor="let o of offices"
+              *ngFor="let o of officesToDisplay"
               [nzLabel]="o.name"
               [nzValue]="o.id"
             ></nz-option>

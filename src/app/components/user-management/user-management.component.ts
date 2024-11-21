@@ -1,21 +1,17 @@
-import { Component, OnInit } from '@angular/core'
-import { CommonModule } from '@angular/common'
-import { FormsModule } from '@angular/forms'
-import { NzButtonModule } from 'ng-zorro-antd/button'
-import { NzIconModule } from 'ng-zorro-antd/icon'
-import { NzInputModule } from 'ng-zorro-antd/input'
-import { NzTableModule } from 'ng-zorro-antd/table'
-import { NzTagModule } from 'ng-zorro-antd/tag'
-import { NzDrawerModule } from 'ng-zorro-antd/drawer'
-import { 
-  NzDemoDrawerFromDrawerComponent 
-} from '../drawers-modals/drawers/drawer-create-users.component'
-import { 
-  NzDemoModalLocaleComponent 
-} from '../drawers-modals/modals/modal-edit-user.component'
-import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb'
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzTagModule } from 'ng-zorro-antd/tag';
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
+import { NzDemoDrawerFromDrawerComponent } from '../drawers-modals/drawers/drawer-create-users.component';
+import { NzDemoModalLocaleComponent } from '../drawers-modals/modals/modal-edit-user.component';
+import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { UserService } from '../../services/user-management/user-management.service';
-import { NzMessageService } from 'ng-zorro-antd/message'
+import { NzMessageService } from 'ng-zorro-antd/message';
 import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { AuthService } from '../../services/auth/auth.service';
@@ -35,12 +31,11 @@ import { AuthService } from '../../services/auth/auth.service';
     NzDemoDrawerFromDrawerComponent,
     NzBreadCrumbModule,
     NzDemoModalLocaleComponent,
-    NzSwitchModule
+    NzSwitchModule,
   ],
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.css'],
 })
-
 export class UserManagementComponent implements OnInit {
   data: any[] = [];
   originalData: any[] = [];
@@ -50,8 +45,8 @@ export class UserManagementComponent implements OnInit {
   constructor(
     private userService: UserService,
     private msgService: NzMessageService,
-    private authService: AuthService,
-  ) { }
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.fetchUsers();
@@ -78,13 +73,14 @@ export class UserManagementComponent implements OnInit {
   }
 
   updateUser(updatedUser: any): void {
-    const index = this.data.findIndex((u) => u.username === updatedUser.username);
-    if (index !== -1) {
-      this.data[index] = { ...updatedUser };
-      console.log('User updated:', updatedUser);
-    }
+    // const index = this.data.findIndex((u) => u.username === updatedUser.username);
+    // if (index !== -1) {
+    //   this.data[index] = { ...updatedUser };
+    //   console.log('User updated:', updatedUser);
+    // }
+    this.fetchUsers();
   }
-  
+
   toggleUserStatus(user: any): void {
     if (user.is_active) {
       Swal.fire({
@@ -108,14 +104,22 @@ export class UserManagementComponent implements OnInit {
               Swal.showLoading();
             },
           });
-  
+
           this.userService.enableUser(user.username).subscribe(
             (response) => {
-              Swal.fire('Activated!', 'The user has been activated.', 'success');
+              Swal.fire(
+                'Activated!',
+                'The user has been activated.',
+                'success'
+              );
               user.is_active = true;
             },
             (error) => {
-              Swal.fire('Error', 'There was an issue activating the user.', 'error');
+              Swal.fire(
+                'Error',
+                'There was an issue activating the user.',
+                'error'
+              );
               user.is_active = false;
             }
           );
@@ -145,13 +149,19 @@ export class UserManagementComponent implements OnInit {
               Swal.showLoading();
             },
           });
-  
+
           this.userService.disableUser(user.username).subscribe(
             (response) => {
-              Swal.fire('Inactivated!', 'The user has been inactivated.', 'success');
+              Swal.fire(
+                'Inactivated!',
+                'The user has been inactivated.',
+                'success'
+              );
 
               const userAttributes = localStorage.getItem('user_attributes');
-              const currentUser = userAttributes ? JSON.parse(userAttributes) : null;
+              const currentUser = userAttributes
+                ? JSON.parse(userAttributes)
+                : null;
 
               if (currentUser && currentUser.username === user.username) {
                 this.authService.doLogout();
@@ -160,7 +170,11 @@ export class UserManagementComponent implements OnInit {
               user.is_active = false;
             },
             (error) => {
-              Swal.fire('Error', 'There was an issue inactivating the user.', 'error');
+              Swal.fire(
+                'Error',
+                'There was an issue inactivating the user.',
+                'error'
+              );
               user.is_active = true;
             }
           );
@@ -170,7 +184,7 @@ export class UserManagementComponent implements OnInit {
       });
     }
   }
-  
+
   deleteUser(user: any): void {
     if (user.is_active) {
       Swal.fire({
@@ -208,7 +222,11 @@ export class UserManagementComponent implements OnInit {
               this.confirmDeleteUser(user);
             },
             (error) => {
-              Swal.fire('Error', 'There was an issue deactivating the user', 'error');
+              Swal.fire(
+                'Error',
+                'There was an issue deactivating the user',
+                'error'
+              );
             }
           );
         }
@@ -240,11 +258,17 @@ export class UserManagementComponent implements OnInit {
         });
         this.userService.deleteUser(user.username).subscribe(
           (response) => {
-            Swal.fire('Deleted!', 'The user has been deleted successfully', 'success');
+            Swal.fire(
+              'Deleted!',
+              'The user has been deleted successfully',
+              'success'
+            );
             this.data = this.data.filter((u) => u.username !== user.username);
 
             const userAttributes = localStorage.getItem('user_attributes');
-            const currentUser = userAttributes ? JSON.parse(userAttributes) : null;
+            const currentUser = userAttributes
+              ? JSON.parse(userAttributes)
+              : null;
 
             if (currentUser && currentUser.username === user.username) {
               this.authService.doLogout();
@@ -269,5 +293,4 @@ export class UserManagementComponent implements OnInit {
       this.data = [...this.originalData];
     }
   }
-  
 }

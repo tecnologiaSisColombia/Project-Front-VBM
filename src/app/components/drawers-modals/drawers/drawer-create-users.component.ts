@@ -56,6 +56,7 @@ export class NzDemoDrawerFromDrawerComponent {
   specialities: any[] = [];
   stores: any[] = [];
   offices: any[] = [];
+  officesToDisplay: any[] = [];
 
   constructor(
     private createUserService: UserService,
@@ -92,10 +93,12 @@ export class NzDemoDrawerFromDrawerComponent {
   }
   getOffices() {
     this.officeService.get({ status: 1 }, 1, 1, true).subscribe({
-      next: (res: any) => (this.offices = res),
+      next: (res: any) => {
+        this.offices = res;
+        this.officesToDisplay = res;
+      },
       error: (err) => {
         console.error(err);
-
         this.msgService.error(JSON.stringify(err.error));
       },
     });
@@ -248,5 +251,15 @@ export class NzDemoDrawerFromDrawerComponent {
       return;
     }
     this.extraForm = null;
+  }
+
+  storeChange(event: number) {
+    console.log(this.offices, event);
+
+    if (event) {
+      this.officesToDisplay = this.offices.filter((e) => e.store == event);
+    } else {
+      this.officesToDisplay = this.offices;
+    }
   }
 }
