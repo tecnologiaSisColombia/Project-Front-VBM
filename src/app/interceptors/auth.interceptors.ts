@@ -5,11 +5,11 @@ import {
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
-} from '@angular/common/http'
-import { Observable, throwError, BehaviorSubject } from 'rxjs'
-import { switchMap, catchError, filter, take } from 'rxjs/operators'
-import { AuthService } from '../services/auth/auth.service'
-import { Router } from '@angular/router'
+} from '@angular/common/http';
+import { Observable, throwError, BehaviorSubject } from 'rxjs';
+import { switchMap, catchError, filter, take } from 'rxjs/operators';
+import { AuthService } from '../services/auth/auth.service';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -18,34 +18,31 @@ export class AuthInterceptor implements HttpInterceptor {
 
   constructor(
     private authService: AuthService,
-    private router: Router,
-  ) { }
+    private router: Router
+  ) {}
 
-  intercept(
-    request: HttpRequest<any>,
-    next: HttpHandler,
-  ): Observable<HttpEvent<any>> {
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (this.authService.getJwtToken()) {
-      request = this.addToken(request, this.authService.getJwtToken())
+      request = this.addToken(request, this.authService.getJwtToken());
     }
 
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401 || error.status === 403) {
           if (this.authService.getJwtToken()) {
-            return this.handle401Error(request, next)
+            return this.handle401Error(request, next);
           } else {
-            this.router.navigate(['/'])
+            this.router.navigate(['/']);
             return throwError(() => error);
           }
         } else {
           return throwError(() => error);
         }
-      }),
-    )
+      })
+    );
   }
 
-  private addToken(request: HttpRequest<any>, token: string | null) {
+  private addToken(request: HttpRequest<any>, token: string | null): HttpRequest<any> {
     return request.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`,
@@ -53,7 +50,7 @@ export class AuthInterceptor implements HttpInterceptor {
     });
   }
 
-  private handle401Error(request: HttpRequest<any>, next: HttpHandler) {
+  private handle401Error(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (!this.isRefreshing) {
       this.isRefreshing = true;
       this.refreshTokenSubject.next(null);
@@ -64,13 +61,17 @@ export class AuthInterceptor implements HttpInterceptor {
           this.refreshTokenSubject.next(token.access_token);
           return next.handle(this.addToken(request, token.access_token));
         }),
+        catchError((error) => {
+          this.isRefreshing = false;
+          this.router.navigate(['/']);
+          return throwError(() => error);
+        })
       );
-      
     } else {
       return this.refreshTokenSubject.pipe(
         filter((token) => token != null),
         take(1),
-        switchMap((jwt) => next.handle(this.addToken(request, jwt))),
+        switchMap((jwt) => next.handle(this.addToken(request, jwt)))
       );
     }
   }

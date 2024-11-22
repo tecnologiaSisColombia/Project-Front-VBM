@@ -62,7 +62,6 @@ export class NzDemoModalLocaleComponent implements OnInit {
   officesToDisplay: any[] = [];
   working_hours: any[] = [];
 
-  // drawer
   titleDrawer = '';
   visibleDrawer = false;
   isUpdatingDrawer: boolean = false;
@@ -93,7 +92,8 @@ export class NzDemoModalLocaleComponent implements OnInit {
     private createUserService: UserService,
     private storeService: StoresService,
     private officeService: OfficesService
-  ) {}
+  ) { }
+
   ngOnInit(): void {
     this.loadUserTypes();
     this.getOffices();
@@ -111,15 +111,6 @@ export class NzDemoModalLocaleComponent implements OnInit {
   }
 
   handleOk(): void {
-    Swal.fire({
-      title: 'Updating User',
-      text: 'Please wait while the user is being updated...',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-
     this.userService.updateAttributes(this.user).subscribe(
       (response) => {
         if (this.user.extra_data) {
@@ -133,40 +124,28 @@ export class NzDemoModalLocaleComponent implements OnInit {
               next: (res) => {
                 this.isVisible = false;
                 this.userUpdated.emit(res);
-                Swal.fire({
-                  icon: 'success',
-                  title: 'User Updated',
-                  text: 'The user has been updated successfully!',
-                });
+                this.msgService.success('The user has been updated successfully');
               },
               error: (err) => {
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Update Failed',
-                  text: JSON.stringify(err.error),
-                });
+                const errorMessage = err?.error;
+                this.msgService.error(errorMessage);
               },
             });
-        }
-        Swal.fire({
-          icon: 'success',
-          title: 'User Updated',
-          text: 'The user has been updated successfully!',
-        }).then(() => {
+        } else {
+          this.msgService.success('The user has been updated successfully!');
           this.isVisible = false;
           this.userUpdated.emit(response);
-        });
+        }
       },
       (error) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Update Failed',
-          text: 'There was an error updating the user. Please try again.',
-        });
-        console.error('Error updating user:', error);
+        const errorMessage = error?.error?.error?.message;
+        this.msgService.error(errorMessage);
+        console.error('Error updating user:', errorMessage);
       }
     );
+    
   }
+
   getSpecialities() {
     this.specialityService.get({ status: 1 }, 1, 1, true).subscribe({
       next: (res: any) => (this.specialities = res),
@@ -177,6 +156,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
       },
     });
   }
+
   getStores() {
     this.storeService.get({ status: 1 }, 1, 1, true).subscribe({
       next: (res: any) => (this.stores = res),
@@ -187,6 +167,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
       },
     });
   }
+
   getOffices() {
     this.officeService.get({ status: 1 }, 1, 1, true).subscribe({
       next: (res: any) => {
@@ -200,6 +181,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
       },
     });
   }
+
   loadUserTypes(): void {
     this.createUserService.getUserTypes().subscribe(
       (response: any[]) => {
@@ -214,9 +196,11 @@ export class NzDemoModalLocaleComponent implements OnInit {
       }
     );
   }
+
   handleCancel(): void {
     this.isVisible = false;
   }
+
   storeChange(event: number) {
     console.log(this.offices, event);
 
@@ -226,6 +210,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
       this.officesToDisplay = this.offices;
     }
   }
+
   getWorkingHours() {
     this.userService.getWorkingHour(this.user.id).subscribe({
       next: (res: any) => {
@@ -236,11 +221,13 @@ export class NzDemoModalLocaleComponent implements OnInit {
       },
     });
   }
+
   open() {
     this.titleDrawer = 'Add working hour';
     this.visibleDrawer = true;
     this.workingHourForm.user = this.user.id;
   }
+
   openEdit(data: any) {
     this.titleDrawer = 'Update working hour';
     this.visibleDrawer = true;
@@ -261,6 +248,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
       user: 0,
     };
   }
+
   deleteHour(id: number) {
     this.userService.deleteWorkingHour(id).subscribe({
       next: (res: any) => {
@@ -273,6 +261,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
       },
     });
   }
+
   updateHour(id: number, data: any) {
     this.userService.updateWorkingHour(id, data).subscribe({
       next: (res: any) => {
@@ -286,6 +275,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
       },
     });
   }
+
   submitDrawer() {
     if (this.isUpdatingDrawer) {
       this.updateHour(this.dataCacheDrawer.id, this.workingHourForm);

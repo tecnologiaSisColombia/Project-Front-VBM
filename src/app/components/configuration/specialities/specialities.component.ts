@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -17,11 +17,12 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { debounceTime, Subject } from 'rxjs';
-import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { EspecialitiesService } from 'app/services/config/especialities.service';
+import { debounceTime, Subject } from 'rxjs';
+import Swal from 'sweetalert2';
+
 @Component({
   selector: 'app-specialities',
   standalone: true,
@@ -45,6 +46,22 @@ import { EspecialitiesService } from 'app/services/config/especialities.service'
   styleUrl: './specialities.component.css',
 })
 export class SpecialitiesComponent {
+  descriptionSearch: any = null;
+  isDataLoading = false;
+  dataToDisplay: any[] = [];
+  visible = false;
+  drawerLoader = false;
+  drawerTitle = '';
+  dataDrawerCahe: any;
+  isUpdating = false;
+  num_pages = 1;
+  count_records = 0;
+  page_size = 10;
+  page = 1;
+
+  form: UntypedFormGroup;
+  private searchNameSubject: Subject<{ type: string; value: string }> = new Subject();
+
   constructor(
     private fb: UntypedFormBuilder,
     private specialitiesService: EspecialitiesService,
@@ -53,58 +70,23 @@ export class SpecialitiesComponent {
     this.form = this.fb.group({
       description: [null, [Validators.required]],
     });
-    this.searchNameSubject
-      .pipe(debounceTime(2000))
-      .subscribe((data: { type: string; value: string }) => {
-        // Aquí puedes realizar una acción después de que ha pasado el tiempo de debounce
-        if (data.type == 'description') {
-          this.descriptionSearch = data.value;
-        }
 
-        this.getInitData();
-      });
+    this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
+      if (data.type === 'description') {
+        this.descriptionSearch = data.value;
+      }
+      this.getInitData();
+    });
   }
 
   ngOnInit(): void {
     this.getInitData();
   }
-  // searches
-  private searchNameSubject: Subject<{
-    type: string;
-    value: string;
-  }> = new Subject<{ type: string; value: string }>();
-  descriptionSearch: any = null;
-
-  // Table
-  isDataLoading = false;
-  dataToDisplay: any[] = [];
-
-  // Form
-  form: UntypedFormGroup;
-
-  // Drawer
-  visible = false;
-  drawerLoader = false;
-  drawerTitle = '';
-  dataDrawerCahe: any;
-  isUpdating = false;
-
-  // Paginator search vars
-  num_pages: number = 1;
-  count_records: number = 0;
-  page_size: number = 10;
-  page: number = 1;
 
   getInitData() {
     this.isDataLoading = true;
     this.specialitiesService
-      .get(
-        {
-          name: this.descriptionSearch,
-        },
-        this.page,
-        this.page_size
-      )
+      .get({ name: this.descriptionSearch, description: this.descriptionSearch}, this.page, this.page_size)
       .subscribe({
         next: (res: any) => {
           this.isDataLoading = false;
@@ -113,8 +95,6 @@ export class SpecialitiesComponent {
         },
         error: (err) => {
           this.isDataLoading = false;
-          console.log(err);
-
           this.msgService.error(JSON.stringify(err.error));
         },
       });
@@ -124,6 +104,7 @@ export class SpecialitiesComponent {
     this.visible = true;
     this.drawerTitle = 'New Speciality';
   }
+
   openEditDrawer(data: any): void {
     this.visible = true;
     this.isUpdating = true;
@@ -145,11 +126,10 @@ export class SpecialitiesComponent {
     Swal.fire({
       title: 'Are you sure to delete?',
       showDenyButton: true,
-      // showCancelButton: true,
       confirmButtonText: 'Yes',
       denyButtonText: `No`,
+      allowOutsideClick: false
     }).then((result) => {
-      /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
         this.isDataLoading = true;
         this.specialitiesService.delete(id).subscribe({
@@ -213,20 +193,20 @@ export class SpecialitiesComponent {
       });
     }
   }
+
   changeStatus(id: number, data: any) {
     this.update(id, data);
   }
-  // searches
+
   search(value: string, type: string) {
-    this.searchNameSubject.next({
-      type,
-      value,
-    });
+    this.searchNameSubject.next({ type, value });
   }
+
   pageChange(event: number) {
     this.page = event;
     this.getInitData();
   }
+
   setPagination(count: number) {
     this.count_records = count;
     this.num_pages = Math.ceil(this.count_records / this.page_size);

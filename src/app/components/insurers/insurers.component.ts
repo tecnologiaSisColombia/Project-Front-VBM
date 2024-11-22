@@ -1,27 +1,28 @@
-import { CommonModule } from '@angular/common'
-import { Component, OnInit } from '@angular/core'
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import {
   FormsModule,
   ReactiveFormsModule,
   UntypedFormBuilder,
   UntypedFormGroup,
   Validators,
-} from '@angular/forms'
-import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb'
-import { NzButtonComponent } from 'ng-zorro-antd/button'
-import { NzDividerModule } from 'ng-zorro-antd/divider'
-import { NzDrawerModule } from 'ng-zorro-antd/drawer'
-import { NzFormModule } from 'ng-zorro-antd/form'
-import { NzIconModule } from 'ng-zorro-antd/icon'
-import { NzInputModule } from 'ng-zorro-antd/input'
-import { NzSpinModule } from 'ng-zorro-antd/spin'
-import { NzTableModule } from 'ng-zorro-antd/table'
-import { InsurersService } from '../../services/insurers/insurers.service'
-import { NzMessageService } from 'ng-zorro-antd/message'
-import { debounceTime, Subject } from 'rxjs'
-import Swal from 'sweetalert2'
-import { NzSwitchModule } from 'ng-zorro-antd/switch'
-import { NzPaginationModule } from 'ng-zorro-antd/pagination'
+} from '@angular/forms';
+import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
+import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
+import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzTableModule } from 'ng-zorro-antd/table';
+import { InsurersService } from '../../services/insurers/insurers.service';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { debounceTime, Subject } from 'rxjs';
+import Swal from 'sweetalert2';
+import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { S3Service } from '../../services/upload-s3/upload-s3.service';
 
 @Component({
   selector: 'app-insurers',
@@ -45,12 +46,31 @@ import { NzPaginationModule } from 'ng-zorro-antd/pagination'
   templateUrl: './insurers.component.html',
   styleUrl: './insurers.component.css',
 })
-
 export class InsurersComponent implements OnInit {
+  form: UntypedFormGroup;
+  nameSearch: any = null;
+  addresSearch: any = null;
+  phoneSearch: any = null;
+  payerIdSearch: any = null;
+  isDataLoading = false;
+  dataToDisplay: any[] = [];
+  visible = false;
+  drawerLoader = false;
+  drawerTitle = '';
+  dataDrawerCahe: any;
+  isUpdating = false;
+  num_pages = 1;
+  count_records = 0;
+  page_size = 10;
+  page = 1;
+
+  private searchNameSubject: Subject<{ type: string; value: string }> = new Subject();
+
   constructor(
     private fb: UntypedFormBuilder,
     private insurerService: InsurersService,
     private msgService: NzMessageService,
+    private s3Service: S3Service
   ) {
     this.form = this.fb.group({
       logo: ['null', [Validators.required]],
@@ -59,66 +79,24 @@ export class InsurersComponent implements OnInit {
       phone: [null, [Validators.required]],
       address: [null, [Validators.required]],
       name: [null, [Validators.required]],
-    })
-    this.searchNameSubject
-      .pipe(debounceTime(2000))
-      .subscribe((data: { type: string; value: string }) => {
-        // Aquí puedes realizar una acción después de que ha pasado el tiempo de debounce
-        if (data.type == 'name') {
-          this.nameSearch = data.value
-        }
+    });
 
-        if (data.type == 'address') {
-          this.addresSearch = data.value
-        }
+    this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data: { type: string; value: string }) => {
+      if (data.type === 'name') this.nameSearch = data.value;
+      if (data.type === 'address') this.addresSearch = data.value;
+      if (data.type === 'phone') this.phoneSearch = data.value;
+      if (data.type === 'payerId') this.payerIdSearch = data.value;
 
-        if (data.type == 'phone') {
-          this.phoneSearch = data.value
-        }
-
-        if (data.type == 'payerId') {
-          this.payerIdSearch = data.value
-        }
-
-        this.getInitData()
-      })
+      this.getInitData();
+    });
   }
 
   ngOnInit(): void {
-    this.getInitData()
+    this.getInitData();
   }
-  // searches
-  private searchNameSubject: Subject<{
-    type: string
-    value: string
-  }> = new Subject<{ type: string; value: string }>()
-  nameSearch: any = null
-  addresSearch: any = null
-  phoneSearch: any = null
-  payerIdSearch: any = null
 
-  // Table
-  isDataLoading = false
-  dataToDisplay: any[] = []
-
-  // Form
-  form: UntypedFormGroup
-
-  // Drawer
-  visible = false
-  drawerLoader = false
-  drawerTitle = ''
-  dataDrawerCahe: any
-  isUpdating = false
-
-  // Paginator search vars
-  num_pages: number = 1
-  count_records: number = 0
-  page_size: number = 10
-  page: number = 1
-
-  getInitData() {
-    this.isDataLoading = true
+  getInitData(): void {
+    this.isDataLoading = true;
     this.insurerService
       .getInsurers(
         {
@@ -128,132 +106,178 @@ export class InsurersComponent implements OnInit {
           phone: this.phoneSearch,
         },
         this.page,
-        this.page_size,
+        this.page_size
       )
       .subscribe({
         next: (res: any) => {
-          this.isDataLoading = false
-          this.dataToDisplay = res.results
-          this.setPagination(res.total)
+          this.isDataLoading = false;
+          this.dataToDisplay = res.results;
+          this.setPagination(res.total);
         },
         error: (err) => {
-          this.isDataLoading = false
-          console.log(err)
-
-          this.msgService.error(JSON.stringify(err.error))
+          this.isDataLoading = false;
+          console.log(err);
+          this.msgService.error(JSON.stringify(err.error));
         },
-      })
+      });
   }
 
   openDrawer(): void {
-    this.visible = true
-    this.drawerTitle = 'New Insurer'
+    this.visible = true;
+    this.drawerTitle = 'New Insurer';
   }
+
   openEditDrawer(data: any): void {
-    this.visible = true
-    this.isUpdating = true
-    this.drawerTitle = 'Edit Insurer'
-    this.dataDrawerCahe = data
-    this.form.patchValue({ ...data })
+    this.visible = true;
+    this.isUpdating = true;
+    this.drawerTitle = 'Edit Insurer';
+    this.dataDrawerCahe = data;
+    this.form.patchValue({ ...data });
   }
 
   closeDrawer(): void {
-    this.drawerLoader = false
-    this.isUpdating = false
-    this.visible = false
-    this.dataDrawerCahe = null
-    this.drawerTitle = ''
-    this.form.reset()
+    this.drawerLoader = false;
+    this.isUpdating = false;
+    this.visible = false;
+    this.dataDrawerCahe = null;
+    this.drawerTitle = '';
+    this.form.reset({
+      logo: 'null',
+      logo_description: 'null',
+      payer_id: null,
+      phone: null,
+      address: null,
+      name: null,
+    });
   }
 
-  delete(id: number) {
+  delete(id: number): void {
     Swal.fire({
       title: 'Are you sure to delete?',
       showDenyButton: true,
-      // showCancelButton: true,
       confirmButtonText: 'Yes',
-      denyButtonText: `No`,
+      denyButtonText: 'No',
     }).then((result) => {
-      /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        this.isDataLoading = true
+        this.isDataLoading = true;
         this.insurerService.deleteInsurer(id).subscribe({
           next: (res: any) => {
-            this.msgService.success(res)
-            this.isDataLoading = false
-            this.getInitData()
+            this.msgService.success(res);
+            this.isDataLoading = false;
+            this.getInitData();
           },
           error: (err) => {
-            this.isDataLoading = false
-            this.msgService.error(JSON.stringify(err.error))
+            this.isDataLoading = false;
+            this.msgService.error(JSON.stringify(err.error));
           },
-        })
+        });
       }
-    })
+    });
   }
 
-  update(id: number, data: any) {
-    this.isDataLoading = true
+  update(id: number, data: any): void {
+    this.isDataLoading = true;
     this.insurerService.updateInsurer(id, data).subscribe({
       next: (res: any) => {
-        this.msgService.success(res)
-        this.isDataLoading = false
-        this.closeDrawer()
-        this.getInitData()
+        this.msgService.success(res);
+        this.isDataLoading = false;
+        this.closeDrawer();
+        this.getInitData();
       },
       error: (err) => {
-        this.drawerLoader = false
-        this.isDataLoading = false
-        this.msgService.error(JSON.stringify(err.error))
+        this.drawerLoader = false;
+        this.isDataLoading = false;
+        this.msgService.error(JSON.stringify(err.error));
       },
-    })
+    });
   }
 
-  submit() {
-    if (this.form.valid) {
-      this.drawerLoader = true
-      if (this.isUpdating) {
-        return this.update(this.dataDrawerCahe.id, this.form.value)
-      }
-
-      this.insurerService.createInsurer(this.form.value).subscribe({
-        next: (res: any) => {
-          this.msgService.success('New Insurer created')
-          this.isDataLoading = false
-          this.getInitData()
-          this.closeDrawer()
-        },
-        error: (err) => {
-          this.drawerLoader = false
-          this.isDataLoading = false
-          this.msgService.error(JSON.stringify(err.error))
-        },
-      })
+  onFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      this.form.patchValue({ logo: file });
+      this.form.get('logo')?.updateValueAndValidity();
     } else {
-      Object.values(this.form.controls).forEach((control) => {
-        if (control.invalid) {
-          control.markAsDirty()
-          control.updateValueAndValidity({ onlySelf: true })
-        }
-      })
+      this.form.get('logo')?.setErrors({ required: true });
     }
   }
-  changeStatus(id: number, data: any) {
-    this.update(id, data)
+
+  submit(): void {
+    if (this.form.valid) {
+      const formData = this.form.value;
+
+      if (formData.logo && formData.logo instanceof File) {
+        const allowedTypes = ['image/jpeg', 'image/png'];
+        if (!allowedTypes.includes(formData.logo.type)) {
+          this.msgService.error('Only image files (JPEG, PNG) are allowed.');
+          this.drawerLoader = false;
+          this.form.get('logo')?.setErrors({ invalidType: true });
+          return;
+        }
+
+        this.drawerLoader = true;
+
+        const uploadData = new FormData();
+        uploadData.append('logo', formData.logo);
+        uploadData.append('name', formData.name);
+
+        this.s3Service.uploadLogo(uploadData).subscribe({
+          next: (response) => {
+            formData.logo = response.url;
+            this.saveOrUpdate(formData);
+          },
+          error: () => {
+            this.drawerLoader = false;
+            this.msgService.error('Error uploading logo');
+          },
+        });
+      } else {
+        this.saveOrUpdate(formData);
+      }
+    } else {
+      Object.values(this.form.controls).forEach((control) => {
+        control.markAsDirty();
+        control.updateValueAndValidity({ onlySelf: true });
+      });
+    }
   }
-  // searches
-  search(value: string, type: string) {
-    this.searchNameSubject.next({
-      type,
-      value,
-    })
+
+  private saveOrUpdate(formData: any): void {
+    if (this.isUpdating) {
+      this.update(this.dataDrawerCahe.id, formData);
+    } else {
+      this.insurerService.createInsurer(formData).subscribe({
+        next: () => {
+          this.msgService.success('New Insurer created');
+          this.isDataLoading = false;
+          this.getInitData();
+          this.closeDrawer();
+        },
+        error: (err) => {
+          this.drawerLoader = false;
+          this.isDataLoading = false;
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
+    }
   }
-  pageChange(event: number) {
-    this.page = event
-    this.getInitData()
+
+  changeStatus(id: number, data: any): void {
+    this.update(id, data);
   }
-  setPagination(count: number) {
-    this.count_records = count
-    this.num_pages = Math.ceil(this.count_records / this.page_size)
+
+  search(value: string, type: string): void {
+    this.searchNameSubject.next({ type, value });
+  }
+
+  pageChange(event: number): void {
+    this.page = event;
+    this.getInitData();
+  }
+
+  setPagination(count: number): void {
+    this.count_records = count;
+    this.num_pages = Math.ceil(this.count_records / this.page_size);
   }
 }

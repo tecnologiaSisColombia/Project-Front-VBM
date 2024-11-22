@@ -20,19 +20,16 @@ import { AuthService } from '../../services/auth/auth.service';
     NotificationComponent,
     PasswordToggleComponent,
     PasswordResetButtonComponent,
-    RouterLink
+    RouterLink,
   ],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
 })
-
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   message: string | null = null;
   messageType: 'error' | 'success' | null = null;
   isLoading: boolean = false;
-
-  ngOnInit(): void { }
 
   constructor(
     private fb: FormBuilder,
@@ -42,15 +39,17 @@ export class LoginComponent implements OnInit {
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],
-      password: ['', Validators.required],
+      password: ['', [Validators.required]],
     });
   }
+
+  ngOnInit(): void {}
 
   closeMessage(): void {
     this.message = null;
     this.messageType = null;
   }
-  
+
   showMessage(message: string, type: 'error' | 'success'): void {
     this.message = message;
     this.messageType = type;
@@ -59,8 +58,7 @@ export class LoginComponent implements OnInit {
   signIn(): void {
     if (this.isLoading) return;
 
-    const username = this.loginForm.value.username;
-    const password = this.loginForm.value.password;
+    const { username, password } = this.loginForm.value;
 
     if (!username.trim()) {
       this.showMessage('Please enter username', 'error');
@@ -88,7 +86,6 @@ export class LoginComponent implements OnInit {
         };
 
         localStorage.removeItem('auth_challenge');
-
         this.authService.doLogin(res.properties);
 
         this.router.navigate(['/home']).then(() => {
@@ -97,7 +94,8 @@ export class LoginComponent implements OnInit {
       },
       error: (error) => {
         this.isLoading = false;
-        if (error.error.error.code === 'NewPasswordRequired') {
+
+        if (error.error?.error?.code === 'NewPasswordRequired') {
           localStorage.setItem('auth_challenge', 'NewPasswordRequired');
           this.router
             .navigate(['/change_password'], {
@@ -105,7 +103,8 @@ export class LoginComponent implements OnInit {
                 session: error.error.error.session,
                 username,
               },
-            }).then(() => {
+            })
+            .then(() => {
               this.isLoading = false;
             });
         } else {
@@ -116,5 +115,4 @@ export class LoginComponent implements OnInit {
       },
     });
   }
-
 }

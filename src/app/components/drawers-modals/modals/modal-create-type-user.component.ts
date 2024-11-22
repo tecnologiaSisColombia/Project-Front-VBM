@@ -10,16 +10,23 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 @Component({
   selector: 'nz-demo-modal-basic',
   standalone: true,
-  imports: [NzButtonModule, NzModalModule, NzInputModule, NzFormModule, FormsModule],
+  imports: [
+    NzButtonModule,
+    NzModalModule,
+    NzInputModule,
+    NzFormModule,
+    FormsModule
+  ],
   template: `
     <button nz-button nzType="primary" (click)="showModal()">Create Type User</button>
     <nz-modal
-    [(nzVisible)]="isVisible"
-    nzTitle="Create User Type"
-    (nzOnCancel)="handleCancel()"
-    (nzOnOk)="handleOk()"
-    nzOkText="Create"
-    nzCancelText="Cancel">
+      [(nzVisible)]="isVisible"
+      nzTitle="Create User Type"
+      (nzOnCancel)="handleCancel()"
+      (nzOnOk)="handleOk()"
+      nzOkText="Create"
+      nzCancelText="Cancel"
+    >
       <ng-container *nzModalContent>
         <form nz-form>
           <nz-form-item>
@@ -49,8 +56,10 @@ export class NzDemoModalBasicComponent {
   isVisible = false;
   newUserType = { name: '' };
 
-  constructor(private userService: UserService, private msgService: NzMessageService
-  ) { }
+  constructor(
+    private userService: UserService,
+    private msgService: NzMessageService
+  ) {}
 
   showModal(): void {
     this.isVisible = true;
@@ -58,29 +67,30 @@ export class NzDemoModalBasicComponent {
 
   handleOk(): void {
     const name = this.newUserType.name;
-  
+
     if (!name) {
       this.msgService.error('User type name is required!');
       return;
     }
-  
+
     if (/\d/.test(name)) {
       this.msgService.error('User type name cannot contain numbers!');
       return;
     }
-  
+
     this.userService.createUserType(this.newUserType).subscribe(
-      (response) => {
+      () => {
         this.msgService.success('User type created successfully');
         this.isVisible = false;
         this.newUserType.name = '';
       },
       (error) => {
         console.error('Error creating user type', error);
+        this.msgService.error('Failed to create user type. Please try again.');
       }
     );
   }
-  
+
   handleCancel(): void {
     this.isVisible = false;
     this.newUserType.name = '';

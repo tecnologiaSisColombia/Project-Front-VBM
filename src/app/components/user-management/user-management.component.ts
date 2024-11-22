@@ -39,7 +39,8 @@ import { AuthService } from '../../services/auth/auth.service';
 export class UserManagementComponent implements OnInit {
   data: any[] = [];
   originalData: any[] = [];
-  searchQuery = '';
+  searchQueryUsername = '';
+  searchQueryFullName = '';
   loading = false;
   user_types: any[] = [];
 
@@ -88,11 +89,6 @@ export class UserManagementComponent implements OnInit {
   }
 
   updateUser(updatedUser: any): void {
-    // const index = this.data.findIndex((u) => u.username === updatedUser.username);
-    // if (index !== -1) {
-    //   this.data[index] = { ...updatedUser };
-    //   console.log('User updated:', updatedUser);
-    // }
     this.fetchUsers();
   }
 
@@ -301,15 +297,26 @@ export class UserManagementComponent implements OnInit {
     const type = this.user_types.find((t) => (
       t.id == user_type_id
     ))
-
     return type.name
   }
 
-  onSearch(): void {
-    const query = this.searchQuery.toLowerCase().trim();
+  onSearchUsername(): void {
+    const query = this.searchQueryUsername.trim();
     if (query) {
       this.data = this.originalData.filter((user) => {
-        const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
+        const username = `${user.username}`;
+        return username.includes(query);
+      });
+    } else {
+      this.data = [...this.originalData];
+    }
+  }
+
+  onSearchFullName(): void {
+    const query = this.searchQueryFullName.trim();
+    if (query) {
+      this.data = this.originalData.filter((user) => {
+        const fullName = `${user.first_name} ${user.last_name}`;
         return fullName.includes(query);
       });
     } else {

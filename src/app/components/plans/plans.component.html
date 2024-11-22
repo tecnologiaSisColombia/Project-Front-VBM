@@ -1,27 +1,18 @@
 <div class="title-page">
   <div class="breadcrumb-container">
     <nz-breadcrumb>
-      <nz-breadcrumb-item>
-        Mar Chiquita
-      </nz-breadcrumb-item>
-      <nz-breadcrumb-item>
-        Insurers
-      </nz-breadcrumb-item>
-      <nz-breadcrumb-item>
-        Coverages
-      </nz-breadcrumb-item>
+      <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Insurers</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Coverages</nz-breadcrumb-item>
     </nz-breadcrumb>
   </div>
   <div class="btn-container">
-    <button nz-button nzType="primary" (click)="openDrawer()">
-      New Coverage
-    </button>
+    <button nz-button nzType="primary" (click)="openDrawer()">New Coverage</button>
   </div>
 </div>
 
 <div class="main-table">
   <div class="table-filters">
-    <!-- name -->
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -34,7 +25,7 @@
     <ng-template #suffixIconSearch>
       <span nz-icon nzType="search"></span>
     </ng-template>
-    <!-- insurer -->
+
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -44,10 +35,8 @@
         (ngModelChange)="search($event, 'insurer')"
       />
     </nz-input-group>
-    <ng-template #suffixIconSearch>
-      <span nz-icon nzType="search"></span>
-    </ng-template>
   </div>
+
   <nz-table
     #basicTable
     [nzData]="dataToDisplay"
@@ -110,6 +99,7 @@
       </tr>
     </tbody>
   </nz-table>
+
   <nz-pagination
     [nzPageIndex]="page"
     [nzResponsive]="true"
@@ -120,7 +110,6 @@
   ></nz-pagination>
 </div>
 
-<!-- Client drawer -->
 <nz-drawer
   [nzBodyStyle]="{ overflow: 'auto' }"
   [nzMaskClosable]="false"
@@ -135,51 +124,24 @@
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="drawerLoader">
       <form nz-form [formGroup]="form" (ngSubmit)="submit()">
-        <!-- Name -->
         <nz-form-item>
-          <nz-form-label
-            [nzSm]="8"
-            [nzXs]="24"
-            nzFor="name"
-            style="text-align: center;"
-          >
-            Name
-          </nz-form-label>
-          <nz-form-control
-            [nzSm]="16"
-            [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
+          <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="name" style="text-align: center;">Name</nz-form-label>
+          <nz-form-control [nzSm]="16" [nzXs]="24" nzErrorTip="This field is required">
             <input nz-input formControlName="name" id="name" />
           </nz-form-control>
         </nz-form-item>
-        <!-- Insurer -->
+
         <nz-form-item>
-          <nz-form-label
-            [nzSm]="8"
-            [nzXs]="24"
-            nzFor="insurer"
-            style="text-align: center;"
-          >
-            Insurer
-          </nz-form-label>
-          <nz-form-control
-            [nzSm]="16"
-            [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
+          <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="insurer" style="text-align: center;">Insurer</nz-form-label>
+          <nz-form-control [nzSm]="16" [nzXs]="24" nzErrorTip="This field is required">
             <nz-select
               nzShowSearch
               nzAllowClear
               id="insurer"
-              nzPlaceHolder="Select a Insurer"
+              nzPlaceHolder="Select an Insurer"
               formControlName="insurer"
             >
-              <nz-option
-                *ngFor="let o of insurers"
-                [nzLabel]="o.name"
-                [nzValue]="o.id"
-              ></nz-option>
+              <nz-option *ngFor="let o of insurers" [nzLabel]="o.name" [nzValue]="o.id"></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -187,20 +149,13 @@
     </nz-spin>
   </ng-container>
   <ng-template #footerTpl>
-    <div style="display: flex; float: right;">
-      <button
-        nz-button
-        style="display: flex; margin-right: 8px;"
-        (click)="closeDrawer()"
-      >
-        close
-      </button>
+    <div style="display: flex; justify-content: flex-end;">
+      <button nz-button style="margin-right: 8px;" (click)="closeDrawer()">Close</button>
       <button nz-button nzType="primary" (click)="submit()">Save</button>
     </div>
   </ng-template>
 </nz-drawer>
 
-<!-- Modal Subplans -->
 <nz-modal
   [(nzVisible)]="isVisibleModal"
   nzTitle="Subplans"

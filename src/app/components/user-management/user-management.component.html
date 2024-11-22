@@ -5,31 +5,44 @@
       <nz-breadcrumb-item>User management</nz-breadcrumb-item>
     </nz-breadcrumb>
   </div>
-</div>
-
-<div class="header-actions">
   <div>
     <nz-demo-drawer-from-drawer
       class="boton-margen"
       (userCreated)="addUserToList($event)"
     ></nz-demo-drawer-from-drawer>
   </div>
+</div>
 
+<div class="header-actions">
   <nz-input-group
-    [nzSuffix]="suffixButton"
-    nzSize="large"
+    [nzSuffix]="suffixIcon"
+    nzSize="small"
     class="search-input"
   >
     <input
       nz-input
-      placeholder="Search"
-      [(ngModel)]="searchQuery"
-      (ngModelChange)="onSearch()"
+      placeholder="Search Username"
+      [(ngModel)]="searchQueryUsername"
+      (ngModelChange)="onSearchUsername()"
     />
-    <ng-template #suffixButton>
-      <button nz-button nzType="default" nzShape="circle">
-        <i nz-icon nzType="search"></i>
-      </button>
+    <ng-template #suffixIcon>
+      <i nz-icon nzType="search" style="font-size: 16px;"></i>
+    </ng-template>
+  </nz-input-group>
+
+  <nz-input-group
+    [nzSuffix]="suffixIcon"
+    nzSize="small"
+    class="search-input"
+  >
+    <input
+      nz-input
+      placeholder="Search Full Name"
+      [(ngModel)]="searchQueryFullName"
+      (ngModelChange)="onSearchFullName()"
+    />
+    <ng-template #suffixIcon>
+      <i nz-icon nzType="search" style="font-size: 16px;"></i>
     </ng-template>
   </nz-input-group>
 </div>
@@ -37,11 +50,11 @@
 <div class="table-container">
   <nz-table
     #userTable
-    [nzBordered]="true"
+    [nzBordered]="false"
     [nzLoading]="loading"
     [nzData]="data"
     [nzShowPagination]="true"
-    [nzPageSize]="7"
+    [nzPageSize]="10"
     class="user-table"
   >
     <thead>
@@ -58,7 +71,9 @@
     </thead>
     <tbody>
       <tr *ngFor="let user of userTable.data">
-        <td>{{user.extra_data ? mapUserRole(user.extra_data[0].user_type_id ) : 'Admin'}}</td>
+        <td>
+          {{ user.extra_data ? mapUserRole(user.extra_data[0].user_type_id) : 'Admin' }}
+        </td>
         <td>{{ user.username }}</td>
         <td>{{ user.first_name }}</td>
         <td>{{ user.last_name }}</td>
@@ -70,31 +85,25 @@
           </nz-tag>
         </td>
         <td>
+          <nz-switch
+            [(ngModel)]="user.is_active"
+            (ngModelChange)="toggleUserStatus(user)"
+            [nzSize]="'small'"
+            [nzCheckedChildren]="''"
+            [nzUnCheckedChildren]="''"
+          ></nz-switch>
           <nz-demo-modal-locale
-          [user]="user"
-          (userUpdated)="updateUser($event)"
-        ></nz-demo-modal-locale>
-        
-        <span class="button-separator"></span>
-        
-        <nz-switch
-        [(ngModel)]="user.is_active"
-        (ngModelChange)="toggleUserStatus(user)"
-        [nzSize]="'small'"
-        [nzCheckedChildren]="''"
-        [nzUnCheckedChildren]="''"
-      ></nz-switch>
-      
-        <span class="button-separator"></span>
-
-        <button
-        nz-button
-        nzType="link"
-        nzDanger
-        (click)="deleteUser(user)"
-      >
-        <i nz-icon nzType="delete"></i>
-      </button>
+            [user]="user"
+            (userUpdated)="updateUser($event)"
+          ></nz-demo-modal-locale>
+          <button
+            nz-button
+            nzType="link"
+            [nzSize]="'small'"
+            (click)="deleteUser(user)"
+          >
+            <i nz-icon nzType="delete"></i>
+          </button>
         </td>
       </tr>
     </tbody>

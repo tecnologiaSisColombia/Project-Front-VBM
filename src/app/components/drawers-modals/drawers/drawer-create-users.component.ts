@@ -36,7 +36,7 @@ export class NzDemoDrawerFromDrawerComponent {
   @Output() userCreated = new EventEmitter<any>();
 
   visible = false;
-  extraForm: any = null;
+  extraForm: string | null = null;
   form = {
     firstName: '',
     lastName: '',
@@ -52,7 +52,6 @@ export class NzDemoDrawerFromDrawerComponent {
   };
 
   userTypeOptions: { id: number; label: string; value: string }[] = [];
-
   specialities: any[] = [];
   stores: any[] = [];
   offices: any[] = [];
@@ -71,27 +70,27 @@ export class NzDemoDrawerFromDrawerComponent {
     this.getOffices();
   }
 
-  getSpecialities() {
+  getSpecialities(): void {
     this.specialityService.get({ status: 1 }, 1, 1, true).subscribe({
       next: (res: any) => (this.specialities = res),
       error: (err) => {
         console.error(err);
-
         this.msgService.error(JSON.stringify(err.error));
       },
     });
   }
-  getStores() {
+
+  getStores(): void {
     this.storeService.get({ status: 1 }, 1, 1, true).subscribe({
       next: (res: any) => (this.stores = res),
       error: (err) => {
         console.error(err);
-
         this.msgService.error(JSON.stringify(err.error));
       },
     });
   }
-  getOffices() {
+
+  getOffices(): void {
     this.officeService.get({ status: 1 }, 1, 1, true).subscribe({
       next: (res: any) => {
         this.offices = res;
@@ -103,19 +102,20 @@ export class NzDemoDrawerFromDrawerComponent {
       },
     });
   }
+
   loadUserTypes(): void {
-    this.createUserService.getUserTypes().subscribe(
-      (response: any[]) => {
+    this.createUserService.getUserTypes().subscribe({
+      next: (response: any[]) => {
         this.userTypeOptions = response.map((type) => ({
           label: type.name,
           value: type.name,
           id: type.id,
         }));
       },
-      (error) => {
+      error: () => {
         this.msgService.error('Failed to load user types');
-      }
-    );
+      },
+    });
   }
 
   open(): void {
@@ -131,14 +131,14 @@ export class NzDemoDrawerFromDrawerComponent {
       if (!this.form[key as keyof typeof this.form]) {
         if (
           !this.extraForm &&
-          ['speciality_id', 'store_id', 'office_id', 'number_license'].includes(
-            key
-          )
+          ['speciality_id', 'store_id', 'office_id', 'number_license'].includes(key)
         ) {
+          continue;
         } else if (
-          this.extraForm == 'Seller' &&
+          this.extraForm === 'Seller' &&
           ['speciality_id', 'office_id', 'number_license'].includes(key)
         ) {
+          continue;
         } else {
           this.msgService.error(`Field ${key} is required.`);
           return;
@@ -146,13 +146,8 @@ export class NzDemoDrawerFromDrawerComponent {
       }
     }
 
-    if (
-      !nameRegex.test(this.form.firstName) ||
-      !nameRegex.test(this.form.lastName)
-    ) {
-      this.msgService.error(
-        'Names cannot contain numbers or special characters.'
-      );
+    if (!nameRegex.test(this.form.firstName) || !nameRegex.test(this.form.lastName)) {
+      this.msgService.error('Names cannot contain numbers or special characters.');
       return;
     }
 
@@ -179,7 +174,7 @@ export class NzDemoDrawerFromDrawerComponent {
       type_user: this.form.type_user,
     };
 
-    if (this.form.type_user == 'Doctor') {
+    if (this.form.type_user === 'Doctor') {
       if (
         !this.form.speciality_id ||
         !this.form.store_id ||
@@ -196,7 +191,7 @@ export class NzDemoDrawerFromDrawerComponent {
         office_id: this.form.office_id,
         number_license: this.form.number_license,
       };
-    } else if (this.form.type_user == 'Seller') {
+    } else if (this.form.type_user === 'Seller') {
       if (!this.form.store_id) {
         this.msgService.error('Please fill all the required fields.');
         return;
@@ -207,17 +202,17 @@ export class NzDemoDrawerFromDrawerComponent {
       };
     }
 
-    this.createUserService.requestCreateUser(userData).subscribe(
-      (response) => {
+    this.createUserService.requestCreateUser(userData).subscribe({
+      next: () => {
         this.msgService.success('New user created');
         this.userCreated.emit(userData);
         this.resetForm();
         this.close();
       },
-      (error) => {
+      error: (error) => {
         this.msgService.error(JSON.stringify(error.error.error.message));
-      }
-    );
+      },
+    });
   }
 
   resetForm(): void {
@@ -236,30 +231,18 @@ export class NzDemoDrawerFromDrawerComponent {
     };
   }
 
-  userTypeChange(event: string) {
-    console.log(event, this.userTypeOptions);
-
+  userTypeChange(event: string): void {
     if (event) {
-      const type = this.userTypeOptions.find((e) => e.value == event);
-      if (type?.value == 'Doctor') {
-        this.extraForm = 'Doctor';
-      } else if (type?.value == 'Seller') {
-        this.extraForm = 'Seller';
-      } else {
-        this.extraForm = null;
-      }
-      return;
+      const type = this.userTypeOptions.find((e) => e.value === event);
+      this.extraForm = type?.value === 'Doctor' ? 'Doctor' : type?.value === 'Seller' ? 'Seller' : null;
+    } else {
+      this.extraForm = null;
     }
-    this.extraForm = null;
   }
 
-  storeChange(event: number) {
-    console.log(this.offices, event);
-
-    if (event) {
-      this.officesToDisplay = this.offices.filter((e) => e.store == event);
-    } else {
-      this.officesToDisplay = this.offices;
-    }
+  storeChange(event: number): void {
+    this.officesToDisplay = event
+      ? this.offices.filter((e) => e.store === event)
+      : this.offices;
   }
 }

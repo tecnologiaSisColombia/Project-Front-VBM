@@ -13,7 +13,6 @@
 
       <div class="input-container">
         <i class="fas fa-user icon"></i>
-
         <input
           type="text"
           formControlName="username"
@@ -24,14 +23,12 @@
 
       <div class="input-container">
         <i class="fas fa-lock icon"></i>
-
         <input
           [type]="passwordToggle.passwordFieldType"
           placeholder="Password"
           formControlName="password"
           autocomplete="off"
         />
-
         <app-password-toggle
           [showEyeIcon]="!!loginForm.get('password')?.value"
           #passwordToggle

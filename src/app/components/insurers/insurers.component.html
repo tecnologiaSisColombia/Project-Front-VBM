@@ -1,24 +1,17 @@
 <div class="title-page">
   <div class="breadcrumb-container">
     <nz-breadcrumb>
-      <nz-breadcrumb-item>
-        Mar Chiquita
-      </nz-breadcrumb-item>
-      <nz-breadcrumb-item>
-        Insurers
-      </nz-breadcrumb-item>
+      <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Insurers</nz-breadcrumb-item>
     </nz-breadcrumb>
   </div>
   <div class="btn-container">
-    <button nz-button nzType="primary" (click)="openDrawer()">
-      New Insurer
-    </button>
+    <button nz-button nzType="primary" (click)="openDrawer()">New Insurer</button>
   </div>
 </div>
 
 <div class="main-table">
   <div class="table-filters">
-    <!-- name -->
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -31,7 +24,7 @@
     <ng-template #suffixIconSearch>
       <span nz-icon nzType="search"></span>
     </ng-template>
-    <!-- payer id -->
+
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -44,7 +37,7 @@
     <ng-template #suffixIconSearch>
       <span nz-icon nzType="search"></span>
     </ng-template>
-    <!-- address -->
+
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -57,7 +50,7 @@
     <ng-template #suffixIconSearch>
       <span nz-icon nzType="search"></span>
     </ng-template>
-    <!-- Phone -->
+
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -71,6 +64,7 @@
       <span nz-icon nzType="search"></span>
     </ng-template>
   </div>
+
   <nz-table
     #basicTable
     [nzData]="dataToDisplay"
@@ -127,6 +121,7 @@
       </tr>
     </tbody>
   </nz-table>
+
   <nz-pagination
     [nzPageIndex]="page"
     [nzResponsive]="true"
@@ -137,7 +132,6 @@
   ></nz-pagination>
 </div>
 
-<!-- Client drawer -->
 <nz-drawer
   [nzBodyStyle]="{ overflow: 'auto' }"
   [nzMaskClosable]="false"
@@ -152,130 +146,62 @@
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="drawerLoader">
       <form nz-form [formGroup]="form" (ngSubmit)="submit()">
-        <!-- name -->
         <nz-form-item>
-          <nz-form-label
-            [nzSm]="8"
-            [nzXs]="24"
-            nzFor="name"
-            style="text-align: center;"
-          >
-            Name
-          </nz-form-label>
-          <nz-form-control
-            [nzSm]="16"
-            [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
+          <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="name">Name</nz-form-label>
+          <nz-form-control [nzSm]="16" [nzXs]="24" nzErrorTip="This field is required">
             <input nz-input formControlName="name" id="name" />
           </nz-form-control>
         </nz-form-item>
-        <!-- item -->
+
         <nz-form-item>
-          <nz-form-label
-            [nzSm]="8"
-            [nzXs]="24"
-            nzFor="logo"
-            style="text-align: center;"
-          >
-            Logo
-          </nz-form-label>
-          <nz-form-control
-            [nzSm]="16"
-            [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
-            <input nz-input formControlName="logo" id="logo" />
-          </nz-form-control>
-        </nz-form-item>
-        <!-- logo descrip -->
-        <nz-form-item>
-          <nz-form-label
-            [nzSm]="8"
-            [nzXs]="24"
-            nzFor="item"
-            style="text-align: center;"
-          >
-            Logo description
-          </nz-form-label>
-          <nz-form-control
-            [nzSm]="16"
-            [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
+          <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="logo">Logo</nz-form-label>
+          <nz-form-control [nzSm]="16" [nzXs]="24">
             <input
+              type="file"
               nz-input
-              formControlName="logo_description"
-              id="logo_description"
+              accept="image/*"
+              id="logo"
+              (change)="onFileChange($event)"
             />
           </nz-form-control>
         </nz-form-item>
-        <!-- Address -->
+        
         <nz-form-item>
-          <nz-form-label
-            [nzSm]="8"
-            [nzXs]="24"
-            nzFor="address"
-            style="text-align: center;"
-          >
-            Address
+          <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="logo_description">
+            Logo Description
           </nz-form-label>
-          <nz-form-control
-            [nzSm]="16"
-            [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
+          <nz-form-control [nzSm]="16" [nzXs]="24" nzErrorTip="This field is required">
+            <input nz-input formControlName="logo_description" id="logo_description" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="address">Address</nz-form-label>
+          <nz-form-control [nzSm]="16" [nzXs]="24" nzErrorTip="This field is required">
             <input nz-input formControlName="address" id="address" />
           </nz-form-control>
         </nz-form-item>
-        <!-- Phone -->
+
         <nz-form-item>
-          <nz-form-label
-            [nzSm]="8"
-            [nzXs]="24"
-            nzFor="phone"
-            style="text-align: center;"
-          >
-            Phone
-          </nz-form-label>
-          <nz-form-control
-            [nzSm]="16"
-            [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
+          <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="phone">Phone</nz-form-label>
+          <nz-form-control [nzSm]="16" [nzXs]="24" nzErrorTip="This field is required">
             <input nz-input formControlName="phone" id="phone" />
           </nz-form-control>
         </nz-form-item>
-        <!-- payer_id -->
+
         <nz-form-item>
-          <nz-form-label
-            [nzSm]="8"
-            [nzXs]="24"
-            nzFor="payer_id"
-            style="text-align: center;"
-          >
-            Payer ID
-          </nz-form-label>
-          <nz-form-control
-            [nzSm]="16"
-            [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
+          <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="payer_id">Payer ID</nz-form-label>
+          <nz-form-control [nzSm]="16" [nzXs]="24" nzErrorTip="This field is required">
             <input nz-input formControlName="payer_id" id="payer_id" />
           </nz-form-control>
         </nz-form-item>
       </form>
     </nz-spin>
   </ng-container>
+
   <ng-template #footerTpl>
-    <div style="display: flex; float: right;">
-      <button
-        nz-button
-        style="display: flex; margin-right: 8px;"
-        (click)="closeDrawer()"
-      >
-        close
-      </button>
+    <div style="display: flex; justify-content: flex-end;">
+      <button nz-button style="margin-right: 8px;" (click)="closeDrawer()">Close</button>
       <button nz-button nzType="primary" (click)="submit()">Save</button>
     </div>
   </ng-template>
