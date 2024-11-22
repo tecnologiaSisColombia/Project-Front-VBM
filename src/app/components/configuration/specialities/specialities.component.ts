@@ -100,7 +100,7 @@ export class SpecialitiesComponent {
     this.specialitiesService
       .get(
         {
-          name: this.descriptionSearch,
+          description: this.descriptionSearch,
         },
         this.page,
         this.page_size
