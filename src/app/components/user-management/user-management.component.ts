@@ -41,15 +41,30 @@ export class UserManagementComponent implements OnInit {
   originalData: any[] = [];
   searchQuery = '';
   loading = false;
+  user_types: any[] = [];
 
   constructor(
     private userService: UserService,
     private msgService: NzMessageService,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.fetchUsers();
+    this.getUserTypes()
+  }
+
+  getUserTypes(): void {
+    this.userService.getUserTypes().subscribe({
+      next: (response: any) => {
+        this.user_types = response
+      },
+      error: (error) => {
+        this.msgService.error(`Error fetching users`);
+        console.log(error)
+      }
+
+    })
   }
 
   fetchUsers(): void {
@@ -280,6 +295,14 @@ export class UserManagementComponent implements OnInit {
         );
       }
     });
+  }
+
+  mapUserRole(user_type_id: number): string {
+    const type = this.user_types.find((t) => (
+      t.id == user_type_id
+    ))
+
+    return type.name
   }
 
   onSearch(): void {
