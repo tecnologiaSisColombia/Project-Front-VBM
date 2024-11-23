@@ -134,7 +134,7 @@ export class SpecialitiesComponent {
         this.isDataLoading = true;
         this.specialitiesService.delete(id).subscribe({
           next: (res: any) => {
-            this.msgService.success(res);
+            this.msgService.success('Speciality deleted successfully');
             this.isDataLoading = false;
             this.getInitData();
           },
@@ -151,7 +151,7 @@ export class SpecialitiesComponent {
     this.isDataLoading = true;
     this.specialitiesService.update(id, data).subscribe({
       next: (res: any) => {
-        this.msgService.success(res);
+        this.msgService.success('Specialty updated successfully');
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -199,7 +199,19 @@ export class SpecialitiesComponent {
   }
 
   search(value: string, type: string) {
+    this.isDataLoading = true;
+  
     this.searchNameSubject.next({ type, value });
+
+    this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
+      next: () => {
+        this.isDataLoading = false; 
+      },
+      error: (err) => {
+        this.isDataLoading = false; 
+        this.msgService.error('Error during search'); 
+      },
+    });
   }
 
   pageChange(event: number) {

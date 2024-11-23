@@ -1,12 +1,5 @@
 <div class="layout-container">
   <div class="container">
-    <app-notification
-      *ngIf="message"
-      [type]="messageType"
-      [message]="message"
-      (close)="closeMessage()"
-    ></app-notification>
-
     <form [formGroup]="loginForm" class="box" [class.disabled]="isLoading">
       <h4>Login</h4>
       <h5>Sign in to your account</h5>

@@ -1,13 +1,13 @@
-import { Component, HostListener } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { ResetPasswordService } from '../../services/reset-password/reset-password.service';
 import {
   PasswordToggleComponent,
-  PasswordResetButtonComponent,
-  NotificationComponent
+  PasswordResetButtonComponent
 } from '../../reusable-components';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-reset-password',
@@ -15,7 +15,6 @@ import {
   imports: [
     FormsModule,
     CommonModule,
-    NotificationComponent,
     PasswordToggleComponent,
     PasswordResetButtonComponent,
     RouterLink
@@ -30,77 +29,89 @@ export class ResetPasswordComponent {
   showVerificationCode = false;
   showResendLink = false;
   showPasswordInput = false;
-  message: string | null = null;
-  messageType: 'error' | 'success' | null = null;
   emailReadOnly = false;
-  isLoading = false;
+  isLoading: boolean = false;
   newPassword = '';
 
   constructor(
     private resetPasswordService: ResetPasswordService,
-    private router: Router) 
-    { }
+    private router: Router,
+    private msg: NzMessageService
+  ) { }
 
-  closeMessage(): void {
-    this.message = null;
-    this.messageType = null;
-  }
-
-  showMessage(message: string, type: 'error' | 'success'): void {
-    this.message = message;
-    this.messageType = type;
-  }
-
+  
   onRequestReset(): void {
     if (!this.isValidEmail(this.email)) {
-      this.showMessage('Please enter a valid email address', 'error');
+      this.msg.error('Please enter a valid email address');
       return;
     }
+    this.isLoading = true;
 
-    this.resetPasswordService.handleRequest(
-      this.resetPasswordService.requestReset(this.email),
-      this,
-      () => {
-        this.showVerificationCode = 
-        this.showResendLink = 
-        this.showPasswordInput = 
-        this.emailReadOnly = true;
+    this.resetPasswordService.requestReset(this.email).subscribe({
+      next: () => {
+        this.showVerificationCode =
+          this.showResendLink =
+          this.showPasswordInput =
+          this.emailReadOnly = true;
+        this.msg.success('Reset request sent successfully');
+        this.isLoading = false;
+      },
+      error: (error) => {
+        this.msg.error(error.error?.error?.message || 'Failed to send reset request');
+        this.isLoading = false;
       }
-    );
-  }
+    });
+}
 
-  onResendCode(): void {
-    this.resetPasswordService.handleRequest(
-      this.resetPasswordService.resendConfirmationCode(this.email),
-      this,
-      () => {
-        this.showVerificationCode = 
-        this.showResendLink = 
-        this.showPasswordInput = 
+
+onResendCode(): void {
+  this.isLoading = true;
+  this.resetPasswordService.resendConfirmationCode(this.email).subscribe({
+    next: () => {
+      this.showVerificationCode =
+        this.showResendLink =
+        this.showPasswordInput =
         this.emailReadOnly = true;
-      }
-    );
+      this.msg.success('Verification code resent successfully');
+      this.isLoading = false;
+    },
+    error: (error) => {
+      this.msg.error(error.error?.error?.message || 'Failed to resend verification code');
+      this.isLoading = false;
+    }
+  });
+}
+
+
+onConfirmResetPassword(): void {
+  if (!this.verificationCode.trim()) {
+    this.msg.error('Please enter verification code');
+    return;
   }
 
-  onConfirmResetPassword(): void {
-    if (!this.verificationCode.trim()) {
-      this.showMessage('Please enter verification code', 'error');
-      return;
-    }
-
-    if (!this.newPassword.trim()) {
-      this.showMessage('Please enter new password', 'error');
-      return;
-    }
-
-    this.resetPasswordService.handleRequest(
-      this.resetPasswordService.confirmResetPassword(
-        this.email, this.verificationCode, this.newPassword
-      ),
-      this,
-      () => setTimeout(() => this.router.navigate(['./login']), 900)
-    );
+  if (!this.newPassword.trim()) {
+    this.msg.error('New password is required');
+    return;
   }
+  this.isLoading = true;
+
+  this.resetPasswordService.confirmResetPassword(
+    this.email,
+    this.verificationCode,
+    this.newPassword
+  ).subscribe({
+    next: () => {
+      this.msg.success('Password reset successfully');
+      setTimeout(() => this.router.navigate(['./login']), 900);
+      this.isLoading = false;
+    },
+    error: (error) => {
+      this.msg.error(error.error?.error?.message || 'Failed to reset password');
+      this.isLoading = false;
+    }
+  });
+}
+
 
   private isValidEmail(email: string): boolean {
     return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);

@@ -197,7 +197,19 @@ export class StoresComponent implements OnInit {
   }
 
   search(value: string, type: string) {
+    this.isDataLoading = true;
+  
     this.searchNameSubject.next({ type, value });
+
+    this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
+      next: () => {
+        this.isDataLoading = false; 
+      },
+      error: (err) => {
+        this.isDataLoading = false; 
+        this.msgService.error('Error during search'); 
+      },
+    });
   }
 
   pageChange(event: number) {

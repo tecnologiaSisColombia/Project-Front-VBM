@@ -167,6 +167,7 @@ export class SubplansComponent implements OnInit {
       showDenyButton: true,
       confirmButtonText: 'Yes',
       denyButtonText: 'No',
+      allowOutsideClick: false,
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
@@ -237,8 +238,20 @@ export class SubplansComponent implements OnInit {
     this.update(id, data);
   }
 
-  search(value: string, type: string): void {
+  search(value: string, type: string) {
+    this.isDataLoading = true;
+
     this.searchNameSubject.next({ type, value });
+
+    this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
+      next: () => {
+        this.isDataLoading = false;
+      },
+      error: (err) => {
+        this.isDataLoading = false;
+        this.msgService.error('Error during search');
+      },
+    });
   }
 
   pageChange(event: number): void {

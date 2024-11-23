@@ -1,18 +1,15 @@
 import { Host, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { BaseService } from '../base/base.service';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
-export class UserService extends BaseService {
+export class UserService {
   private baseUrl = environment.apiUrl;
 
-  constructor(protected override http: HttpClient) {
-    super(http);
-  }
+  constructor(private http: HttpClient) { }
 
   requestCreateUser(userData: {
     email: string;
@@ -23,8 +20,7 @@ export class UserService extends BaseService {
     phone: string;
     type_user: string;
   }): Observable<any> {
-    return this.http.post(
-      `${this.baseUrl}UserAccessControl/CreateUser`,
+    return this.http.post(`${this.baseUrl}UserAccessControl/CreateUser`,
       userData
     );
   }
@@ -58,8 +54,7 @@ export class UserService extends BaseService {
     last_name: string;
     phone: string;
   }): Observable<any> {
-    return this.http.post(
-      `${this.baseUrl}UserAccessControl/UpdateAttributes`,
+    return this.http.post(`${this.baseUrl}UserAccessControl/UpdateAttributes`,
       userData
     );
   }
@@ -100,7 +95,7 @@ export class UserService extends BaseService {
   deleteWorkingHour(id: any) {
     return this.http.delete(`${this.baseUrl}core/user-working-hours/${id}`);
   }
-  
+
   getWorkingHour(user_id: any) {
     return this.http.get(`${this.baseUrl}core/user-working-hours/${user_id}`);
   }

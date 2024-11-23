@@ -15,6 +15,8 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { AuthService } from '../../services/auth/auth.service';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-user-management',
@@ -43,6 +45,8 @@ export class UserManagementComponent implements OnInit {
   searchQueryFullName = '';
   loading = false;
   user_types: any[] = [];
+  searchQueryUsernameSubject: Subject<string> = new Subject<string>();
+  searchQueryFullNameSubject: Subject<string> = new Subject<string>();
 
   constructor(
     private userService: UserService,
@@ -52,8 +56,23 @@ export class UserManagementComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchUsers();
-    this.getUserTypes()
+    this.getUserTypes();
+
+    // Escuchar cambios en el input de búsqueda por username
+    this.searchQueryUsernameSubject.pipe(debounceTime(500)).subscribe((query) => {
+      this.loading = true; // Activar loading al iniciar la búsqueda
+      this.filterByUsername(query);
+      this.loading = false; // Desactivar loading al finalizar
+    });
+
+    // Escuchar cambios en el input de búsqueda por fullname
+    this.searchQueryFullNameSubject.pipe(debounceTime(500)).subscribe((query) => {
+      this.loading = true; // Activar loading al iniciar la búsqueda
+      this.filterByFullName(query);
+      this.loading = false; // Desactivar loading al finalizar
+    });
   }
+
 
   getUserTypes(): void {
     this.userService.getUserTypes().subscribe({
@@ -74,7 +93,6 @@ export class UserManagementComponent implements OnInit {
       (data) => {
         this.data = data;
         this.originalData = [...data];
-        console.log('Data fetched:', this.data);
         this.loading = false;
       },
       (error) => {
@@ -301,26 +319,35 @@ export class UserManagementComponent implements OnInit {
   }
 
   onSearchUsername(): void {
-    const query = this.searchQueryUsername.trim();
+    this.loading = true; // Mostrar el loading al escribir
+    this.searchQueryUsernameSubject.next(this.searchQueryUsername.trim());
+  }
+
+  onSearchFullName(): void {
+    this.loading = true; // Mostrar el loading al escribir
+    this.searchQueryFullNameSubject.next(this.searchQueryFullName.trim());
+  }
+
+  filterByUsername(query: string): void {
     if (query) {
       this.data = this.originalData.filter((user) => {
         const username = `${user.username}`;
-        return username.includes(query);
+        return username.toLowerCase().includes(query.toLowerCase());
       });
     } else {
       this.data = [...this.originalData];
     }
   }
 
-  onSearchFullName(): void {
-    const query = this.searchQueryFullName.trim();
+  filterByFullName(query: string): void {
     if (query) {
       this.data = this.originalData.filter((user) => {
         const fullName = `${user.first_name} ${user.last_name}`;
-        return fullName.includes(query);
+        return fullName.toLowerCase().includes(query.toLowerCase());
       });
     } else {
       this.data = [...this.originalData];
     }
   }
+
 }

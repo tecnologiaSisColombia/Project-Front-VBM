@@ -7,17 +7,16 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoginService } from '../../services/login/login.service';
-import { NotificationComponent } from '../../reusable-components';
 import { PasswordResetButtonComponent } from '../../reusable-components';
 import { CommonModule } from '@angular/common';
 import { passwordRegex } from '../../utils/password_regex';
 import { AuthService } from '../../services/auth/auth.service';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-change-password',
   standalone: true,
   imports: [
-    NotificationComponent,
     PasswordResetButtonComponent,
     ReactiveFormsModule,
     CommonModule,
@@ -29,8 +28,6 @@ export class ChangePasswordComponent implements OnInit {
   changePasswordForm: FormGroup;
   session: string | null = null;
   username: string | null = null;
-  message: string | null = null;
-  messageType: 'error' | 'success' | null = null;
   isLoading: boolean = false;
   btnActive: boolean = false;
   passwordRight: boolean = false;
@@ -43,7 +40,8 @@ export class ChangePasswordComponent implements OnInit {
     private loginService: LoginService,
     private route: ActivatedRoute,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private msg: NzMessageService
   ) {
     this.changePasswordForm = this.fb.group({
       new_password: ['', [Validators.required, Validators.minLength(8)]],
@@ -58,31 +56,21 @@ export class ChangePasswordComponent implements OnInit {
 
   passwordChange(value: string): void {
     this.passwordRight = this.regex.test(value);
-    this.btnActive = 
-    this.passwordRight && 
-    this.passwordConfirm && 
-    !!this.session && 
-    !!this.username;
+    this.btnActive =
+      this.passwordRight &&
+      this.passwordConfirm &&
+      !!this.session &&
+      !!this.username;
   }
 
   confirmPasswordChange(value: string): void {
     const newPassword = this.changePasswordForm.value.new_password;
     this.passwordConfirm = value === newPassword;
-    this.btnActive = 
-    this.passwordRight && 
-    this.passwordConfirm && 
-    !!this.session && 
-    !!this.username;
-  }
-
-  closeMessage(): void {
-    this.message = null;
-    this.messageType = null;
-  }
-
-  showMessage(message: string, type: 'error' | 'success'): void {
-    this.message = message;
-    this.messageType = type;
+    this.btnActive =
+      this.passwordRight &&
+      this.passwordConfirm &&
+      !!this.session &&
+      !!this.username;
   }
 
   changePassword(): void {
@@ -111,9 +99,8 @@ export class ChangePasswordComponent implements OnInit {
         },
         error: (error) => {
           this.isLoading = false;
-          const errorMessage =
-            error.error?.error?.message || 'Change Password failed. Please try again.';
-          this.showMessage(errorMessage, 'error');
+          const errorMessage = error.error?.error?.message || 'Change Password failed';
+          this.msg.error(errorMessage);
         },
       });
     }

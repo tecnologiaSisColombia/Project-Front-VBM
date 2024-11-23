@@ -14,37 +14,29 @@
 </div>
 
 <div class="header-actions">
-  <nz-input-group
-    [nzSuffix]="suffixIcon"
-    nzSize="small"
-    class="search-input"
-  >
+  <nz-input-group [nzSuffix]="suffixIconSearch">
     <input
       nz-input
-      placeholder="Search Username"
+      placeholder="Username"
       [(ngModel)]="searchQueryUsername"
       (ngModelChange)="onSearchUsername()"
     />
-    <ng-template #suffixIcon>
-      <i nz-icon nzType="search" style="font-size: 16px;"></i>
-    </ng-template>
   </nz-input-group>
+  <ng-template #suffixIconSearch>
+    <span nz-icon nzType="search"></span>
+  </ng-template>
 
-  <nz-input-group
-    [nzSuffix]="suffixIcon"
-    nzSize="small"
-    class="search-input"
-  >
+  <nz-input-group [nzSuffix]="suffixIconSearch">
     <input
       nz-input
-      placeholder="Search Full Name"
-      [(ngModel)]="searchQueryFullName"
+      placeholder="Full Name"
+      [(ngModel)]="searchQueryUsername"
       (ngModelChange)="onSearchFullName()"
     />
-    <ng-template #suffixIcon>
-      <i nz-icon nzType="search" style="font-size: 16px;"></i>
-    </ng-template>
   </nz-input-group>
+  <ng-template #suffixIconSearch>
+    <span nz-icon nzType="search"></span>
+  </ng-template>
 </div>
 
 <div class="table-container">

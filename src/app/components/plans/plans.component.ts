@@ -158,12 +158,13 @@ export class PlansComponent implements OnInit {
       showDenyButton: true,
       confirmButtonText: 'Yes',
       denyButtonText: 'No',
+      allowOutsideClick: false,
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
         this.planService.deletePlan(id).subscribe({
           next: (res: any) => {
-            this.msgService.success(res);
+            this.msgService.success('Coverage deleted successfully');
             this.isDataLoading = false;
             this.getInitData();
           },
@@ -180,7 +181,7 @@ export class PlansComponent implements OnInit {
     this.isDataLoading = true;
     this.planService.updatePlan(id, data).subscribe({
       next: (res: any) => {
-        this.msgService.success(res);
+        this.msgService.success('Coverage updated successfully');
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -227,8 +228,20 @@ export class PlansComponent implements OnInit {
     this.update(id, data);
   }
 
-  search(value: string, type: string): void {
+  search(value: string, type: string) {
+    this.isDataLoading = true;
+
     this.searchNameSubject.next({ type, value });
+
+    this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
+      next: () => {
+        this.isDataLoading = false;
+      },
+      error: (err) => {
+        this.isDataLoading = false;
+        this.msgService.error('Error during search');
+      },
+    });
   }
 
   pageChange(event: number): void {

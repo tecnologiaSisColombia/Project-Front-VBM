@@ -152,7 +152,7 @@ export class OfficesComponent implements OnInit {
         this.isDataLoading = true;
         this.officeService.delete(id).subscribe({
           next: () => {
-            this.msgService.success('Deleted successfully');
+            this.msgService.success('Office deleted successfully');
             this.isDataLoading = false;
             this.getInitData();
           },
@@ -169,7 +169,7 @@ export class OfficesComponent implements OnInit {
     this.isDataLoading = true;
     this.officeService.update(id, data).subscribe({
       next: () => {
-        this.msgService.success('Updated successfully');
+        this.msgService.success('Office updated successfully');
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -212,7 +212,19 @@ export class OfficesComponent implements OnInit {
   }
 
   search(value: string, type: string) {
+    this.isDataLoading = true;
+  
     this.searchNameSubject.next({ type, value });
+
+    this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
+      next: () => {
+        this.isDataLoading = false; 
+      },
+      error: (err) => {
+        this.isDataLoading = false; 
+        this.msgService.error('Error during search'); 
+      },
+    });
   }
 
   pageChange(event: number) {

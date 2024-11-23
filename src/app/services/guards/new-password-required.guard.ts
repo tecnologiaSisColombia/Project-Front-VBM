@@ -12,7 +12,6 @@ import { isPlatformBrowser } from '@angular/common';
 @Injectable({
   providedIn: 'root',
 })
-
 export class NewPasswordRequiredGuard implements CanActivate {
   constructor(
     private authService: AuthService,
