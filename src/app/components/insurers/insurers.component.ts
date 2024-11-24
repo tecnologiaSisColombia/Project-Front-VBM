@@ -64,7 +64,8 @@ export class InsurersComponent implements OnInit {
   page_size = 10;
   page = 1;
 
-  private searchNameSubject: Subject<{ type: string; value: string }> = new Subject();
+  private searchNameSubject: Subject<{ type: string; value: string }> =
+    new Subject();
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -73,22 +74,24 @@ export class InsurersComponent implements OnInit {
     private s3Service: S3Service
   ) {
     this.form = this.fb.group({
-      logo: ['null', [Validators.required]],
-      logo_description: ['null', [Validators.required]],
+      logo: [null, [Validators.required]],
+      logo_description: [null, [Validators.required]],
       payer_id: [null, [Validators.required]],
       phone: [null, [Validators.required]],
       address: [null, [Validators.required]],
       name: [null, [Validators.required]],
     });
 
-    this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data: { type: string; value: string }) => {
-      if (data.type === 'name') this.nameSearch = data.value;
-      if (data.type === 'address') this.addresSearch = data.value;
-      if (data.type === 'phone') this.phoneSearch = data.value;
-      if (data.type === 'payerId') this.payerIdSearch = data.value;
+    this.searchNameSubject
+      .pipe(debounceTime(2000))
+      .subscribe((data: { type: string; value: string }) => {
+        if (data.type === 'name') this.nameSearch = data.value;
+        if (data.type === 'address') this.addresSearch = data.value;
+        if (data.type === 'phone') this.phoneSearch = data.value;
+        if (data.type === 'payerId') this.payerIdSearch = data.value;
 
-      this.getInitData();
-    });
+        this.getInitData();
+      });
   }
 
   ngOnInit(): void {
