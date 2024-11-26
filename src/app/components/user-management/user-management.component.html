@@ -18,8 +18,8 @@
     <input
       nz-input
       placeholder="Username"
-      [(ngModel)]="searchQueryUsername"
-      (ngModelChange)="onSearchUsername()"
+      [(ngModel)]="usernameSearch"
+      (ngModelChange)="search($event, 'username')"
     />
   </nz-input-group>
   <ng-template #suffixIconSearch>
@@ -29,9 +29,21 @@
   <nz-input-group [nzSuffix]="suffixIconSearch">
     <input
       nz-input
-      placeholder="Full Name"
-      [(ngModel)]="searchQueryUsername"
-      (ngModelChange)="onSearchFullName()"
+      placeholder="First Name"
+      [(ngModel)]="nameSearch"
+      (ngModelChange)="search($event, 'name')"
+    />
+  </nz-input-group>
+  <ng-template #suffixIconSearch>
+    <span nz-icon nzType="search"></span>
+  </ng-template>
+
+  <nz-input-group [nzSuffix]="suffixIconSearch">
+    <input
+      nz-input
+      placeholder="Last Name"
+      [(ngModel)]="lastnameSearch"
+      (ngModelChange)="search($event, 'lastname')"
     />
   </nz-input-group>
   <ng-template #suffixIconSearch>
@@ -64,7 +76,11 @@
     <tbody>
       <tr *ngFor="let user of userTable.data">
         <td>
-          {{ user.extra_data ? mapUserRole(user.extra_data[0].user_type_id) : 'Admin' }}
+          {{
+            user.extra_data
+              ? mapUserRole(user.extra_data[0].user_type_id)
+              : "Admin"
+          }}
         </td>
         <td>{{ user.username }}</td>
         <td>{{ user.first_name }}</td>
@@ -73,7 +89,7 @@
         <td>{{ user.phone }}</td>
         <td>
           <nz-tag [nzColor]="user.is_active ? 'green' : 'red'">
-            {{ user.is_active ? 'Active' : 'Inactive' }}
+            {{ user.is_active ? "Active" : "Inactive" }}
           </nz-tag>
         </td>
         <td>

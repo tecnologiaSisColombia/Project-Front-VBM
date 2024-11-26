@@ -48,58 +48,86 @@ export class UserManagementComponent implements OnInit {
   searchQueryUsernameSubject: Subject<string> = new Subject<string>();
   searchQueryFullNameSubject: Subject<string> = new Subject<string>();
 
+  num_pages = 1;
+  count_records = 0;
+  page_size = 10;
+  page = 1;
+
+  private searchNameSubject = new Subject<{ type: string; value: string }>();
+  nameSearch: any = null;
+  usernameSearch: any = null;
+  lastnameSearch: any = null;
+
   constructor(
     private userService: UserService,
     private msgService: NzMessageService,
     private authService: AuthService
-  ) { }
+  ) {
+    this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
+      if (data.type === 'name') this.nameSearch = data.value;
+      if (data.type === 'username') this.usernameSearch = data.value;
+      if (data.type === 'lastname') this.lastnameSearch = data.value;
+      console.log('pasó');
+
+      this.page = 1;
+      this.fetchUsers();
+    });
+  }
 
   ngOnInit(): void {
     this.fetchUsers();
     this.getUserTypes();
 
     // Escuchar cambios en el input de búsqueda por username
-    this.searchQueryUsernameSubject.pipe(debounceTime(500)).subscribe((query) => {
-      this.loading = true; // Activar loading al iniciar la búsqueda
-      this.filterByUsername(query);
-      this.loading = false; // Desactivar loading al finalizar
-    });
+    this.searchQueryUsernameSubject
+      .pipe(debounceTime(500))
+      .subscribe((query) => {
+        this.loading = true; // Activar loading al iniciar la búsqueda
+        this.filterByUsername(query);
+        this.loading = false; // Desactivar loading al finalizar
+      });
 
     // Escuchar cambios en el input de búsqueda por fullname
-    this.searchQueryFullNameSubject.pipe(debounceTime(500)).subscribe((query) => {
-      this.loading = true; // Activar loading al iniciar la búsqueda
-      this.filterByFullName(query);
-      this.loading = false; // Desactivar loading al finalizar
-    });
+    this.searchQueryFullNameSubject
+      .pipe(debounceTime(500))
+      .subscribe((query) => {
+        this.loading = true; // Activar loading al iniciar la búsqueda
+        this.filterByFullName(query);
+        this.loading = false; // Desactivar loading al finalizar
+      });
   }
-
 
   getUserTypes(): void {
     this.userService.getUserTypes().subscribe({
       next: (response: any) => {
-        this.user_types = response
+        this.user_types = response;
       },
       error: (error) => {
         this.msgService.error(`Error fetching users`);
-        console.log(error)
-      }
-
-    })
+        console.log(error);
+      },
+    });
   }
 
   fetchUsers(): void {
     this.loading = true;
-    this.userService.getUsers().subscribe(
-      (data) => {
-        this.data = data;
-        this.originalData = [...data];
-        this.loading = false;
-      },
-      (error) => {
-        this.msgService.error(`Error fetching users`);
-        this.loading = false;
-      }
-    );
+    this.userService
+      .getUsers({
+        name: this.nameSearch,
+        lastname: this.lastnameSearch,
+        username: this.usernameSearch,
+      })
+      .subscribe({
+        next: (data: any) => {
+          this.data = data.results;
+          this.originalData = [...data.results];
+          this.loading = false;
+        },
+        error: (error) => {
+          this.msgService.error(`Error fetching users`);
+          this.loading = false;
+        },
+      });
   }
 
   addUserToList(newUser: any): void {
@@ -312,10 +340,8 @@ export class UserManagementComponent implements OnInit {
   }
 
   mapUserRole(user_type_id: number): string {
-    const type = this.user_types.find((t) => (
-      t.id == user_type_id
-    ))
-    return type.name
+    const type = this.user_types.find((t) => t.id == user_type_id);
+    return type.name;
   }
 
   onSearchUsername(): void {
@@ -350,4 +376,17 @@ export class UserManagementComponent implements OnInit {
     }
   }
 
+  pageChange(event: number): void {
+    this.page = event;
+    this.fetchUsers();
+  }
+
+  setPagination(count: number): void {
+    this.count_records = count;
+    this.num_pages = Math.ceil(this.count_records / this.page_size);
+  }
+
+  search(value: string, type: string) {
+    this.searchNameSubject.next({ type, value });
+  }
 }

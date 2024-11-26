@@ -60,7 +60,8 @@ export class SpecialitiesComponent {
   page = 1;
 
   form: UntypedFormGroup;
-  private searchNameSubject: Subject<{ type: string; value: string }> = new Subject();
+  private searchNameSubject: Subject<{ type: string; value: string }> =
+    new Subject();
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -75,6 +76,7 @@ export class SpecialitiesComponent {
       if (data.type === 'description') {
         this.descriptionSearch = data.value;
       }
+      this.page = 1;
       this.getInitData();
     });
   }
@@ -86,7 +88,11 @@ export class SpecialitiesComponent {
   getInitData() {
     this.isDataLoading = true;
     this.specialitiesService
-      .get({ name: this.descriptionSearch, description: this.descriptionSearch}, this.page, this.page_size)
+      .get(
+        { name: this.descriptionSearch, description: this.descriptionSearch },
+        this.page,
+        this.page_size
+      )
       .subscribe({
         next: (res: any) => {
           this.isDataLoading = false;
@@ -128,7 +134,7 @@ export class SpecialitiesComponent {
       showDenyButton: true,
       confirmButtonText: 'Yes',
       denyButtonText: `No`,
-      allowOutsideClick: false
+      allowOutsideClick: false,
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
@@ -200,16 +206,16 @@ export class SpecialitiesComponent {
 
   search(value: string, type: string) {
     this.isDataLoading = true;
-  
+
     this.searchNameSubject.next({ type, value });
 
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
       next: () => {
-        this.isDataLoading = false; 
+        this.isDataLoading = false;
       },
       error: (err) => {
-        this.isDataLoading = false; 
-        this.msgService.error('Error during search'); 
+        this.isDataLoading = false;
+        this.msgService.error('Error during search');
       },
     });
   }

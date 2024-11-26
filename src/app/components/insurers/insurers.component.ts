@@ -90,6 +90,7 @@ export class InsurersComponent implements OnInit {
         if (data.type === 'phone') this.phoneSearch = data.value;
         if (data.type === 'payerId') this.payerIdSearch = data.value;
 
+        this.page = 1;
         this.getInitData();
       });
   }

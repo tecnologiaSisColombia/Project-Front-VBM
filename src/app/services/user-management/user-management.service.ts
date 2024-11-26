@@ -1,5 +1,5 @@
 import { Host, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
 export class UserService {
   private baseUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   requestCreateUser(userData: {
     email: string;
@@ -20,13 +20,33 @@ export class UserService {
     phone: string;
     type_user: string;
   }): Observable<any> {
-    return this.http.post(`${this.baseUrl}UserAccessControl/CreateUser`,
+    return this.http.post(
+      `${this.baseUrl}UserAccessControl/CreateUser`,
       userData
     );
   }
 
-  getUsers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}core/users`);
+  getUsers(
+    { name, lastname, username }: any,
+    page: number = 1,
+    pageSize: number = 10,
+    init = false
+  ) {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('page_size', pageSize.toString())
+      .set('init', init);
+
+    if (name != null) {
+      params = params.set('name', name);
+    }
+    if (lastname != null) {
+      params = params.set('lastname', lastname);
+    }
+    if (username != null) {
+      params = params.set('username', username);
+    }
+    return this.http.get<any[]>(`${this.baseUrl}core/users`, { params });
   }
 
   disableUser(username: string): Observable<any> {
@@ -54,7 +74,8 @@ export class UserService {
     last_name: string;
     phone: string;
   }): Observable<any> {
-    return this.http.post(`${this.baseUrl}UserAccessControl/UpdateAttributes`,
+    return this.http.post(
+      `${this.baseUrl}UserAccessControl/UpdateAttributes`,
       userData
     );
   }

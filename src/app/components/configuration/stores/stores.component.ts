@@ -78,6 +78,7 @@ export class StoresComponent implements OnInit {
       if (data.type === 'description') {
         this.nameSearch = data.value;
       }
+      this.page = 1;
       this.getInitData();
     });
   }
@@ -131,7 +132,7 @@ export class StoresComponent implements OnInit {
       showDenyButton: true,
       confirmButtonText: 'Yes',
       denyButtonText: `No`,
-      allowOutsideClick: false
+      allowOutsideClick: false,
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
@@ -198,16 +199,16 @@ export class StoresComponent implements OnInit {
 
   search(value: string, type: string) {
     this.isDataLoading = true;
-  
+
     this.searchNameSubject.next({ type, value });
 
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
       next: () => {
-        this.isDataLoading = false; 
+        this.isDataLoading = false;
       },
       error: (err) => {
-        this.isDataLoading = false; 
-        this.msgService.error('Error during search'); 
+        this.isDataLoading = false;
+        this.msgService.error('Error during search');
       },
     });
   }

@@ -96,6 +96,7 @@ export class SubplansComponent implements OnInit {
       if (data.type === 'group') this.groupSearch = data.value;
       if (data.type === 'planContract') this.planContractSearch = data.value;
 
+      this.page = 1;
       this.getInitData();
     });
   }
