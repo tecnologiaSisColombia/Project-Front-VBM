@@ -96,6 +96,7 @@ export class PlansComponent implements OnInit {
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
       if (data.type === 'name') this.nameSearch = data.value;
       if (data.type === 'insurer') this.insurerSearch = data.value;
+      this.page = 1;
       this.getInitData();
     });
   }
@@ -107,21 +108,23 @@ export class PlansComponent implements OnInit {
 
   getInitData(): void {
     this.isDataLoading = true;
-    this.planService.getPlans(
-      { name: this.nameSearch, insurer: this.insurerSearch },
-      this.page,
-      this.page_size
-    ).subscribe({
-      next: (res: any) => {
-        this.isDataLoading = false;
-        this.dataToDisplay = res.results;
-        this.setPagination(res.total);
-      },
-      error: (err) => {
-        this.isDataLoading = false;
-        this.msgService.error(JSON.stringify(err.error));
-      },
-    });
+    this.planService
+      .getPlans(
+        { name: this.nameSearch, insurer: this.insurerSearch },
+        this.page,
+        this.page_size
+      )
+      .subscribe({
+        next: (res: any) => {
+          this.isDataLoading = false;
+          this.dataToDisplay = res.results;
+          this.setPagination(res.total);
+        },
+        error: (err) => {
+          this.isDataLoading = false;
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 
   getInsurers(): void {

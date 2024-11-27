@@ -80,6 +80,7 @@ export class StoresComponent implements OnInit {
       if (data.type === 'description') {
         this.nameSearch = data.value;
       }
+      this.page = 1;
       this.getInitData();
     });
   }
@@ -133,7 +134,7 @@ export class StoresComponent implements OnInit {
       showDenyButton: true,
       confirmButtonText: 'Yes',
       denyButtonText: `No`,
-      allowOutsideClick: false
+      allowOutsideClick: false,
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;

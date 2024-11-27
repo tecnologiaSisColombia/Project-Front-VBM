@@ -59,7 +59,8 @@ export class SpecialitiesComponent {
   page_size = 10;
   page = 1;
   form: UntypedFormGroup;
-  private searchNameSubject: Subject<{ type: string; value: string }> = new Subject();
+  private searchNameSubject: Subject<{ type: string; value: string }> =
+    new Subject();
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -80,6 +81,7 @@ export class SpecialitiesComponent {
       if (data.type === 'description') {
         this.descriptionSearch = data.value;
       }
+      this.page = 1;
       this.getInitData();
     });
   }
@@ -140,7 +142,7 @@ export class SpecialitiesComponent {
       showDenyButton: true,
       confirmButtonText: 'Yes',
       denyButtonText: `No`,
-      allowOutsideClick: false
+      allowOutsideClick: false,
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
@@ -214,7 +216,7 @@ export class SpecialitiesComponent {
     this.searchNameSubject.next({ type, value });
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
       next: () => {
-        this.isDataLoading = false; 
+        this.isDataLoading = false;
       },
       error: (err) => {
         this.isDataLoading = false; 

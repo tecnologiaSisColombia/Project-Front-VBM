@@ -50,11 +50,31 @@ export class UserManagementComponent implements OnInit {
     field: 'username' | 'fullName'; query: string
   }> = new Subject();
 
+  num_pages = 1;
+  count_records = 0;
+  page_size = 10;
+  page = 1;
+
+  private searchNameSubject = new Subject<{ type: string; value: string }>();
+  nameSearch: any = null;
+  usernameSearch: any = null;
+  lastnameSearch: any = null;
+
   constructor(
     private userService: UserService,
     private msgService: NzMessageService,
     private authService: AuthService
-  ) { }
+  ) {
+    this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
+      if (data.type === 'name') this.nameSearch = data.value;
+      if (data.type === 'username') this.usernameSearch = data.value;
+      if (data.type === 'lastname') this.lastnameSearch = data.value;
+      console.log('pasó');
+
+      this.page = 1;
+      this.fetchUsers();
+    });
+  }
 
   ngOnInit(): void {
     this.fetchUsers();
@@ -68,27 +88,33 @@ export class UserManagementComponent implements OnInit {
   getUserTypes(): void {
     this.userService.getUserTypes().subscribe({
       next: (response: any) => {
-        this.user_types = response
+        this.user_types = response;
       },
       error: (error) => {
-        this.msgService.error(`Error fetching users types ${error}`);
-      }
-    })
+        this.msgService.error(`Error fetching users`);
+      },
+    });
   }
 
   fetchUsers(): void {
     this.loading = true;
-    this.userService.getUsers().subscribe(
-      (data) => {
-        this.data = data;
-        this.originalData = [...data];
-        this.loading = false;
-      },
-      (error) => {
-        this.msgService.error(`Error fetching users ${error}`);
-        this.loading = false;
-      }
-    );
+    this.userService
+      .getUsers({
+        name: this.nameSearch,
+        lastname: this.lastnameSearch,
+        username: this.usernameSearch,
+      })
+      .subscribe({
+        next: (data: any) => {
+          this.data = data.results;
+          this.originalData = [...data.results];
+          this.loading = false;
+        },
+        error: (error) => {
+          this.msgService.error(`Error fetching users`);
+          this.loading = false;
+        },
+      });
   }
 
   addUserToList(newUser: any): void {
@@ -289,8 +315,8 @@ export class UserManagementComponent implements OnInit {
   }
 
   mapUserRole(user_type_id: number): string {
-    const type = this.user_types.find((t) => (t.id == user_type_id))
-    return type.name
+    const type = this.user_types.find((t) => t.id == user_type_id);
+    return type.name;
   }
 
   onSearch(field: 'username' | 'fullName'): void {

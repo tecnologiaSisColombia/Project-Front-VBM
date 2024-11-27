@@ -66,7 +66,11 @@
     <tbody>
       <tr *ngFor="let user of userTable.data">
         <td>
-          {{ user.extra_data ? mapUserRole(user.extra_data[0].user_type_id) : 'Admin' }}
+          {{
+            user.extra_data
+              ? mapUserRole(user.extra_data[0].user_type_id)
+              : "Admin"
+          }}
         </td>
         <td>{{ user.username }}</td>
         <td>{{ user.first_name }}</td>
@@ -76,7 +80,7 @@
         <td>{{ user.created | date }}</td>
         <td>
           <nz-tag [nzColor]="user.is_active ? 'green' : 'red'">
-            {{ user.is_active ? 'Active' : 'Inactive' }}
+            {{ user.is_active ? "Active" : "Inactive" }}
           </nz-tag>
         </td>
         <td>
