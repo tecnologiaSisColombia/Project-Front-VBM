@@ -6,9 +6,7 @@
     </nz-breadcrumb>
   </div>
   <div class="btn-container">
-    <button nz-button nzType="primary" (click)="openDrawer()">
-      New Insurer
-    </button>
+    <button nz-button nzType="primary" (click)="openDrawer()">New Insurer</button>
   </div>
 </div>
 
@@ -23,10 +21,7 @@
         (ngModelChange)="search($event, 'name')"
       />
     </nz-input-group>
-    <ng-template #suffixIconSearch>
-      <span nz-icon nzType="search"></span>
-    </ng-template>
-
+  
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -36,10 +31,7 @@
         (ngModelChange)="search($event, 'payerId')"
       />
     </nz-input-group>
-    <ng-template #suffixIconSearch>
-      <span nz-icon nzType="search"></span>
-    </ng-template>
-
+  
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -49,10 +41,7 @@
         (ngModelChange)="search($event, 'address')"
       />
     </nz-input-group>
-    <ng-template #suffixIconSearch>
-      <span nz-icon nzType="search"></span>
-    </ng-template>
-
+  
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -62,66 +51,67 @@
         (ngModelChange)="search($event, 'phone')"
       />
     </nz-input-group>
+  
     <ng-template #suffixIconSearch>
       <span nz-icon nzType="search"></span>
     </ng-template>
   </div>
-
+  
   <nz-table
     #basicTable
     [nzData]="dataToDisplay"
     [nzLoading]="isDataLoading"
     [nzFrontPagination]="false"
   >
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Address</th>
-        <th>Phone</th>
-        <th>Payer ID</th>
-        <th>Created</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let data of basicTable.data">
-        <td>{{ data.name }}</td>
-        <td>{{ data.address }}</td>
-        <td>{{ data.phone }}</td>
-        <td>{{ data.payer_id }}</td>
-        <td>{{ data.created | date }}</td>
-        <td>
-          <a>
-            <nz-switch
-              title="Status"
-              [(ngModel)]="data.active"
-              nzSize="small"
-              (ngModelChange)="changeStatus(data.id, data)"
-            ></nz-switch>
-          </a>
-          <nz-divider nzType="vertical"></nz-divider>
-          <a>
-            <span
-              nz-icon
-              title="Edit"
-              nzType="edit"
-              nzTheme="outline"
-              (click)="openEditDrawer(data)"
-            ></span>
-          </a>
-          <nz-divider nzType="vertical"></nz-divider>
-          <a>
-            <span
-              nz-icon
-              title="Delete"
-              nzType="delete"
-              nzTheme="outline"
-              (click)="delete(data.id)"
-            ></span>
-          </a>
-        </td>
-      </tr>
-    </tbody>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Address</th>
+          <th>Phone</th>
+          <th>Payer ID</th>
+          <th>Created</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of basicTable.data">
+          <td>{{ data.name }}</td>
+          <td>{{ data.address }}</td>
+          <td>{{ data.phone }}</td>
+          <td>{{ data.payer_id }}</td>
+          <td>{{ data.created | date }}</td>
+          <td>
+            <a>
+              <nz-switch
+                title="Status"
+                [(ngModel)]="data.active"
+                nzSize="small"
+                (ngModelChange)="changeStatus(data.id, data)"
+              ></nz-switch>
+            </a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a>
+              <span
+                nz-icon
+                title="Edit"
+                nzType="edit"
+                nzTheme="outline"
+                (click)="openEditDrawer(data)"
+              ></span>
+            </a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a>
+              <span
+                nz-icon
+                title="Delete"
+                nzType="delete"
+                nzTheme="outline"
+                (click)="delete(data.id)"
+              ></span>
+            </a>
+          </td>
+        </tr>
+      </tbody>
   </nz-table>
 
   <nz-pagination
@@ -149,20 +139,42 @@
     <nz-spin [nzSpinning]="drawerLoader">
       <form nz-form [formGroup]="form" (ngSubmit)="submit()">
         <nz-form-item>
-          <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="name"
-            >Name</nz-form-label
+          <nz-form-label 
+            [nzSm]="8" 
+            [nzXs]="24" 
+            nzFor="name"
           >
+            Name
+          </nz-form-label>
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
+            [nzErrorTip]="nameError"
           >
-            <input nz-input formControlName="name" id="name" />
+            <input 
+              nz-input 
+              formControlName="name" 
+              id="name" 
+            />
           </nz-form-control>
         </nz-form-item>
+        <ng-template #nameError>
+          <span *ngIf="form.get('name')?.hasError('required')">
+            This field is required
+          </span>
+          <span *ngIf="form.get('name')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
+        </ng-template>
 
         <nz-form-item>
-          <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="logo">Logo</nz-form-label>
+          <nz-form-label 
+            [nzSm]="8" 
+            [nzXs]="24" 
+            nzFor="logo"
+          >
+            Logo
+          </nz-form-label>
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
@@ -178,13 +190,17 @@
         </nz-form-item>
         
         <nz-form-item>
-          <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="logo_description">
+          <nz-form-label 
+            [nzSm]="8" 
+            [nzXs]="24" 
+            nzFor="logo_description"
+          >
             Logo Description
           </nz-form-label>
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
+            [nzErrorTip]="logo_descriptionError"
           >
             <input
               nz-input
@@ -193,45 +209,101 @@
             />
           </nz-form-control>
         </nz-form-item>
+        <ng-template #logo_descriptionError>
+          <span *ngIf="form.get('logo_description')?.hasError('required')">
+            This field is required
+          </span>
+          <span *ngIf="form.get('logo_description')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
+        </ng-template>
 
         <nz-form-item>
-          <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="address"
-            >Address</nz-form-label
+          <nz-form-label 
+            [nzSm]="8" 
+            [nzXs]="24" 
+            nzFor="address"
           >
+            Address
+          </nz-form-label>
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
+            [nzErrorTip]="addressError"
           >
-            <input nz-input formControlName="address" id="address" />
+            <input 
+              nz-input 
+              formControlName="address" 
+              id="address" 
+            />
           </nz-form-control>
         </nz-form-item>
+        <ng-template #addressError>
+          <span *ngIf="form.get('address')?.hasError('required')">
+            This field is required
+          </span>
+          <span *ngIf="form.get('address')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
+        </ng-template>
 
         <nz-form-item>
-          <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="phone"
-            >Phone</nz-form-label
+          <nz-form-label 
+            [nzSm]="8" 
+            [nzXs]="24" 
+            nzFor="phone"
           >
+            Phone
+          </nz-form-label>
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
+            [nzErrorTip]="phoneError"
           >
-            <input nz-input formControlName="phone" id="phone" />
+            <input 
+              nz-input 
+              formControlName="phone"
+               id="phone" 
+            />
           </nz-form-control>
         </nz-form-item>
+        <ng-template #phoneError>
+          <span *ngIf="form.get('phone')?.hasError('required')">
+            This field is required
+          </span>
+          <span *ngIf="form.get('phone')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
+        </ng-template>
 
         <nz-form-item>
-          <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="payer_id"
-            >Payer ID</nz-form-label
+          <nz-form-label 
+            [nzSm]="8" 
+            [nzXs]="24" 
+            nzFor="payer_id"
           >
+            Payer ID
+          </nz-form-label>
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
+            [nzErrorTip]="payerError"
           >
-            <input nz-input formControlName="payer_id" id="payer_id" />
+            <input 
+              nz-input 
+              formControlName="payer_id" 
+              id="payer_id" 
+            />
           </nz-form-control>
         </nz-form-item>
+        <ng-template #payerError>
+          <span *ngIf="form.get('payer_id')?.hasError('required')">
+            This field is required
+          </span>
+          <span *ngIf="form.get('payer_id')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
+      </ng-template>
       </form>
     </nz-spin>
   </ng-container>

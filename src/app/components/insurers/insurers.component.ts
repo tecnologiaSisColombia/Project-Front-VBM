@@ -63,10 +63,7 @@ export class InsurersComponent implements OnInit {
   count_records = 0;
   page_size = 10;
   page = 1;
-  uploadedFile: File | null = null;
-
-  private searchNameSubject: Subject<{ type: string; value: string }> =
-    new Subject();
+  private searchNameSubject: Subject<{ type: string; value: string }> = new Subject();
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -75,12 +72,12 @@ export class InsurersComponent implements OnInit {
     private s3Service: S3Service
   ) {
     this.form = this.fb.group({
-      // logo: [null, [Validators.required]],
-      logo_description: [null, [Validators.required]],
-      payer_id: [null, [Validators.required]],
-      phone: [null, [Validators.required]],
-      address: [null, [Validators.required]],
-      name: [null, [Validators.required]],
+      logo: [null],
+      logo_description: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      payer_id: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      phone: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      address: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
     });
 
     this.searchNameSubject
@@ -90,7 +87,6 @@ export class InsurersComponent implements OnInit {
         if (data.type === 'address') this.addresSearch = data.value;
         if (data.type === 'phone') this.phoneSearch = data.value;
         if (data.type === 'payerId') this.payerIdSearch = data.value;
-
         this.page = 1;
         this.getInitData();
       });
@@ -121,7 +117,6 @@ export class InsurersComponent implements OnInit {
         },
         error: (err) => {
           this.isDataLoading = false;
-          console.log(err);
           this.msgService.error(JSON.stringify(err.error));
         },
       });
@@ -167,7 +162,7 @@ export class InsurersComponent implements OnInit {
       if (result.isConfirmed) {
         this.isDataLoading = true;
         this.insurerService.deleteInsurer(id).subscribe({
-          next: (res: any) => {
+          next: () => {
             this.msgService.success('Insurer deleted successfully');
             this.isDataLoading = false;
             this.getInitData();
@@ -184,7 +179,7 @@ export class InsurersComponent implements OnInit {
   update(id: number, data: any): void {
     this.isDataLoading = true;
     this.insurerService.updateInsurer(id, data).subscribe({
-      next: (res: any) => {
+      next: () => {
         this.msgService.success('Insurer updated successfully');
         this.isDataLoading = false;
         this.closeDrawer();
@@ -200,48 +195,51 @@ export class InsurersComponent implements OnInit {
 
   onFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
-
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      const allowedTypes = ['image/jpeg', 'image/png'];
+      const validFileTypes = ['image/jpeg', 'image/png'];
 
-      if (!allowedTypes.includes(file.type)) {
-        this.msgService.error('Only image files (JPEG, PNG) are allowed');
-        this.uploadedFile = null;
+      if (!validFileTypes.includes(file.type)) {
+        this.msgService.error('The image will not be uploaded because only JPG and PNG files are allowed');
+        this.form.patchValue({ logo: null });
         return;
       }
-      this.uploadedFile = file;
-    } else {
-      this.uploadedFile = null;
+
+      this.form.patchValue({
+        logo: file,
+      });
+      this.form.get('logo')?.updateValueAndValidity();
     }
   }
-
+  
   submit(): void {
     if (this.form.valid) {
-      if (!this.isUpdating && !this.uploadedFile) {
-        this.msgService.error('Required Logo');
-        return;
-      }
+      this.drawerLoader = true;
       const formData = this.form.value;
-
-      if (this.uploadedFile) {
-        this.drawerLoader = true;
+  
+      if (!formData.logo) {
+        formData.logo = this.isUpdating ? this.dataDrawerCahe.logo : 'None';
+      }
+  
+      const logoFile = this.form.get('logo')?.value;
+  
+      if (logoFile instanceof File) {
         const uploadData = new FormData();
-        uploadData.append('logo', this.uploadedFile);
         uploadData.append('name', formData.name);
-
+        uploadData.append('logo', logoFile);
+  
         this.s3Service.uploadLogo(uploadData).subscribe({
-          next: (response) => {
+          next: (response: any) => {
             formData.logo = response.url;
             this.saveOrUpdate(formData);
           },
-          error: () => {
+          error: (err: any) => {
             this.drawerLoader = false;
-            this.msgService.error('Error uploading logo');
+            this.msgService.error('Error uploading logo: ' + JSON.stringify(err.error));
           },
         });
       } else {
-        this.saveOrUpdate(formData);
+        this.saveOrUpdate(formData); 
       }
     } else {
       Object.values(this.form.controls).forEach((control) => {
@@ -250,21 +248,15 @@ export class InsurersComponent implements OnInit {
       });
     }
   }
-
+  
   private saveOrUpdate(formData: any): void {
     if (this.isUpdating) {
-      if (!this.uploadedFile) {
-        delete formData.logo;
-        this.uploadedFile = null;
-      }
-      this.uploadedFile = null;
       this.update(this.dataDrawerCahe.id, formData);
     } else {
       this.insurerService.createInsurer(formData).subscribe({
         next: () => {
           this.msgService.success('New Insurer created');
           this.isDataLoading = false;
-          this.uploadedFile = null;
           this.getInitData();
           this.closeDrawer();
         },
@@ -283,14 +275,12 @@ export class InsurersComponent implements OnInit {
 
   search(value: string, type: string) {
     this.isDataLoading = true;
-
     this.searchNameSubject.next({ type, value });
-
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
       next: () => {
         this.isDataLoading = false;
       },
-      error: (err) => {
+      error: () => {
         this.isDataLoading = false;
         this.msgService.error('Error during search');
       },
