@@ -89,56 +89,100 @@
 </div>
 
 <nz-drawer
-    [nzBodyStyle]="{ overflow: 'auto' }"
-    [nzMaskClosable]="false"
-    [nzClosable]="false"
-    [nzVisible]="visible"
-    nzPlacement="right"
-    [nzTitle]="drawerTitle"
-    (nzOnClose)="closeDrawer()"
-    [nzWidth]="720"
-    [nzFooter]="footerTpl"
+  [nzBodyStyle]="{ overflow: 'auto' }"
+  [nzMaskClosable]="false"
+  [nzClosable]="false"
+  [nzVisible]="visible"
+  nzPlacement="right"
+  [nzTitle]="drawerTitle"
+  (nzOnClose)="closeDrawer()"
+  [nzWidth]="720"
+  [nzFooter]="footerTpl"
 >
-    <ng-container *nzDrawerContent>
-        <nz-spin [nzSpinning]="drawerLoader">
-            <form nz-form [formGroup]="form" (ngSubmit)="submit()">
-                <nz-form-item>
-                    <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="store" style="text-align: center;">
-                        Store
-                    </nz-form-label>
-                    <nz-form-control [nzSm]="16" [nzXs]="24" nzErrorTip="This field is required">
-                        <nz-select
-                            nzShowSearch
-                            nzAllowClear
-                            id="store"
-                            nzPlaceHolder="Select Store"
-                            formControlName="store"
-                        >
-                            <nz-option
-                                *ngFor="let o of stores"
-                                [nzLabel]="o.name"
-                                [nzValue]="o.id"
-                            ></nz-option>
-                        </nz-select>
-                    </nz-form-control>
-                </nz-form-item>
+  <ng-container *nzDrawerContent>
+    <nz-spin [nzSpinning]="drawerLoader">
+      <form nz-form [formGroup]="form" (ngSubmit)="submit()">
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="store"
+            style="text-align: center;"
+          >
+            Store
+          </nz-form-label>
+          <nz-form-control
+            [nzSm]="16"
+            [nzXs]="24"
+            nzErrorTip="This field is required"
+          >
+            <nz-select
+              nzShowSearch
+              nzAllowClear
+              id="store"
+              nzPlaceHolder="Select Store"
+              formControlName="store"
+            >
+              <nz-option
+                *ngFor="let o of stores"
+                [nzLabel]="o.name"
+                [nzValue]="o.id"
+              >
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
 
-                <nz-form-item>
-                    <nz-form-label [nzSm]="8" [nzXs]="24" nzFor="name" style="text-align: center;">
-                        Name
-                    </nz-form-label>
-                    <nz-form-control [nzSm]="16" [nzXs]="24" nzErrorTip="This field is required">
-                        <input nz-input formControlName="name" id="name" />
-                    </nz-form-control>
-                </nz-form-item>
-            </form>
-        </nz-spin>
-    </ng-container>
-    
-    <ng-template #footerTpl>
-        <div style="display: flex; float: right;">
-            <button nz-button style="margin-right: 8px;" (click)="closeDrawer()">Close</button>
-            <button nz-button nzType="primary" (click)="submit()">Save</button>
-        </div>
-    </ng-template>
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="name"
+            style="text-align: center;"
+          >
+            Name
+          </nz-form-label>
+          <nz-form-control
+            [nzSm]="16"
+            [nzXs]="24"
+            [nzErrorTip]="nameError"
+          >
+            <input
+              nz-input
+              formControlName="name"
+              id="name"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <ng-template #nameError>
+          <span *ngIf="form.get('name')?.hasError('required')">
+            This field is required
+          </span>
+          <span *ngIf="form.get('name')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
+        </ng-template>
+      </form>
+    </nz-spin>
+  </ng-container>
+
+  <ng-template #footerTpl>
+    <div style="display: flex; float: right;">
+      <button
+        nz-button
+        style="margin-right: 8px;"
+        (click)="closeDrawer()"
+      >
+        Close
+      </button>
+      <button
+        nz-button
+        nzType="primary"
+        (click)="submit()"
+      >
+        Save
+      </button>
+    </div>
+  </ng-template>
 </nz-drawer>

@@ -36,17 +36,19 @@ import { debounceTime } from 'rxjs/operators';
     NzSwitchModule,
   ],
   templateUrl: './user-management.component.html',
-  styleUrls: ['./user-management.component.css'],
+  styleUrls: ['./user-management.component.css', '../../../animations/styles.css'],
 })
 export class UserManagementComponent implements OnInit {
+  loading = false;
   data: any[] = [];
   originalData: any[] = [];
-  searchQueryUsername = '';
-  searchQueryFullName = '';
-  loading = false;
   user_types: any[] = [];
-  searchQueryUsernameSubject: Subject<string> = new Subject<string>();
-  searchQueryFullNameSubject: Subject<string> = new Subject<string>();
+  searchQuery: { username: string; fullName: string } = {
+    username: '', fullName: ''
+  };
+  searchQuerySubject: Subject<{
+    field: 'username' | 'fullName'; query: string
+  }> = new Subject();
 
   constructor(
     private userService: UserService,
@@ -58,21 +60,10 @@ export class UserManagementComponent implements OnInit {
     this.fetchUsers();
     this.getUserTypes();
 
-    // Escuchar cambios en el input de búsqueda por username
-    this.searchQueryUsernameSubject.pipe(debounceTime(500)).subscribe((query) => {
-      this.loading = true; // Activar loading al iniciar la búsqueda
-      this.filterByUsername(query);
-      this.loading = false; // Desactivar loading al finalizar
-    });
-
-    // Escuchar cambios en el input de búsqueda por fullname
-    this.searchQueryFullNameSubject.pipe(debounceTime(500)).subscribe((query) => {
-      this.loading = true; // Activar loading al iniciar la búsqueda
-      this.filterByFullName(query);
-      this.loading = false; // Desactivar loading al finalizar
-    });
+    this.searchQuerySubject
+      .pipe(debounceTime(300))
+      .subscribe(({ field, query }) => this.filterData(field, query));
   }
-
 
   getUserTypes(): void {
     this.userService.getUserTypes().subscribe({
@@ -80,10 +71,8 @@ export class UserManagementComponent implements OnInit {
         this.user_types = response
       },
       error: (error) => {
-        this.msgService.error(`Error fetching users`);
-        console.log(error)
+        this.msgService.error(`Error fetching users types ${error}`);
       }
-
     })
   }
 
@@ -96,7 +85,7 @@ export class UserManagementComponent implements OnInit {
         this.loading = false;
       },
       (error) => {
-        this.msgService.error(`Error fetching users`);
+        this.msgService.error(`Error fetching users ${error}`);
         this.loading = false;
       }
     );
@@ -113,8 +102,7 @@ export class UserManagementComponent implements OnInit {
   toggleUserStatus(user: any): void {
     if (user.is_active) {
       Swal.fire({
-        title: 'Are you sure?',
-        text: `You are about to activate ${user.username}. Do you want to continue?`,
+        text: `Activate ${user.username}? Confirm?`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -125,8 +113,7 @@ export class UserManagementComponent implements OnInit {
       }).then((result) => {
         if (result.isConfirmed) {
           Swal.fire({
-            title: 'Processing...',
-            text: 'Please wait while the user is being activated.',
+            text: 'Please wait while the user is being activated',
             allowOutsideClick: false,
             showConfirmButton: false,
             didOpen: () => {
@@ -135,18 +122,18 @@ export class UserManagementComponent implements OnInit {
           });
 
           this.userService.enableUser(user.username).subscribe(
-            (response) => {
+            () => {
               Swal.fire(
-                'Activated!',
-                'The user has been activated.',
+                '',
+                'The user has been activated',
                 'success'
               );
               user.is_active = true;
             },
             (error) => {
               Swal.fire(
-                'Error',
-                'There was an issue activating the user.',
+                '',
+                `There was an issue activating the user ${error}`,
                 'error'
               );
               user.is_active = false;
@@ -158,8 +145,7 @@ export class UserManagementComponent implements OnInit {
       });
     } else {
       Swal.fire({
-        title: 'Are you sure?',
-        text: `You are about to inactivate ${user.username}. Do you want to continue?`,
+        text: `Inactivate ${user.username}? Confirm?`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -170,8 +156,7 @@ export class UserManagementComponent implements OnInit {
       }).then((result) => {
         if (result.isConfirmed) {
           Swal.fire({
-            title: 'Processing...',
-            text: 'Please wait while the user is being inactivated.',
+            text: 'Please wait while the user is being inactivated',
             allowOutsideClick: false,
             showConfirmButton: false,
             didOpen: () => {
@@ -180,17 +165,15 @@ export class UserManagementComponent implements OnInit {
           });
 
           this.userService.disableUser(user.username).subscribe(
-            (response) => {
+            () => {
               Swal.fire(
-                'Inactivated!',
-                'The user has been inactivated.',
+                '',
+                'The user has been inactivated',
                 'success'
               );
 
               const userAttributes = localStorage.getItem('user_attributes');
-              const currentUser = userAttributes
-                ? JSON.parse(userAttributes)
-                : null;
+              const currentUser = userAttributes ? JSON.parse(userAttributes) : null;
 
               if (currentUser && currentUser.username === user.username) {
                 this.authService.doLogout();
@@ -200,8 +183,8 @@ export class UserManagementComponent implements OnInit {
             },
             (error) => {
               Swal.fire(
-                'Error',
-                'There was an issue inactivating the user.',
+                '',
+                `There was an issue inactivating the user ${error}`,
                 'error'
               );
               user.is_active = true;
@@ -217,8 +200,7 @@ export class UserManagementComponent implements OnInit {
   deleteUser(user: any): void {
     if (user.is_active) {
       Swal.fire({
-        title: 'The user is active',
-        text: `The user ${user.username} is currently active. Do you want to deactivate and then delete the user?`,
+        text: `User ${user.username} is active. Deactivate and delete?`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -229,7 +211,6 @@ export class UserManagementComponent implements OnInit {
       }).then((result) => {
         if (result.isConfirmed) {
           Swal.fire({
-            title: 'Processing...',
             text: 'Deactivating the user. Please wait...',
             allowOutsideClick: false,
             didOpen: () => {
@@ -237,10 +218,9 @@ export class UserManagementComponent implements OnInit {
             },
           });
           this.userService.disableUser(user.username).subscribe(
-            (response) => {
+            () => {
               user.is_active = false;
               Swal.fire({
-                title: 'User Deactivated',
                 text: 'The user has been deactivated successfully. Proceeding with deletion...',
                 icon: 'success',
                 showConfirmButton: false,
@@ -252,8 +232,8 @@ export class UserManagementComponent implements OnInit {
             },
             (error) => {
               Swal.fire(
-                'Error',
-                'There was an issue deactivating the user',
+                '',
+                `There was an issue deactivating the user: ${error}`,
                 'error'
               );
             }
@@ -267,10 +247,9 @@ export class UserManagementComponent implements OnInit {
 
   confirmDeleteUser(user: any): void {
     Swal.fire({
-      title: 'Are you sure?',
       text: `You are about to delete ${user.username}. Do you want to continue?`,
       icon: 'warning',
-      showCancelButton: false,
+      showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, delete',
@@ -278,7 +257,6 @@ export class UserManagementComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire({
-          title: 'Processing...',
           text: 'Please wait while the user is being deleted',
           allowOutsideClick: false,
           didOpen: () => {
@@ -286,25 +264,24 @@ export class UserManagementComponent implements OnInit {
           },
         });
         this.userService.deleteUser(user.username).subscribe(
-          (response) => {
+          () => {
             Swal.fire(
-              'Deleted!',
+              '',
               'The user has been deleted successfully',
               'success'
             );
+
             this.data = this.data.filter((u) => u.username !== user.username);
 
             const userAttributes = localStorage.getItem('user_attributes');
-            const currentUser = userAttributes
-              ? JSON.parse(userAttributes)
-              : null;
+            const currentUser = userAttributes ? JSON.parse(userAttributes) : null;
 
             if (currentUser && currentUser.username === user.username) {
               this.authService.doLogout();
             }
           },
           (error) => {
-            Swal.fire('Error', 'There was an issue deleting the user', 'error');
+            Swal.fire('', `There was an issue deleting the user ${error}`, 'error');
           }
         );
       }
@@ -312,42 +289,31 @@ export class UserManagementComponent implements OnInit {
   }
 
   mapUserRole(user_type_id: number): string {
-    const type = this.user_types.find((t) => (
-      t.id == user_type_id
-    ))
+    const type = this.user_types.find((t) => (t.id == user_type_id))
     return type.name
   }
 
-  onSearchUsername(): void {
-    this.loading = true; // Mostrar el loading al escribir
-    this.searchQueryUsernameSubject.next(this.searchQueryUsername.trim());
+  onSearch(field: 'username' | 'fullName'): void {
+    this.loading = true;
+    const query = this.searchQuery[field].trim();
+    this.searchQuerySubject.next({ field, query });
   }
 
-  onSearchFullName(): void {
-    this.loading = true; // Mostrar el loading al escribir
-    this.searchQueryFullNameSubject.next(this.searchQueryFullName.trim());
-  }
-
-  filterByUsername(query: string): void {
+  filterData(field: string, query: string): void {
     if (query) {
       this.data = this.originalData.filter((user) => {
-        const username = `${user.username}`;
-        return username.toLowerCase().includes(query.toLowerCase());
+        if (field === 'username') {
+          const username = `${user.username}`;
+          return username.includes(query);
+        } else if (field === 'fullName') {
+          const fullName = `${user.first_name} ${user.last_name}`;
+          return fullName.includes(query);
+        }
+        return true;
       });
     } else {
       this.data = [...this.originalData];
     }
+    this.loading = false;
   }
-
-  filterByFullName(query: string): void {
-    if (query) {
-      this.data = this.originalData.filter((user) => {
-        const fullName = `${user.first_name} ${user.last_name}`;
-        return fullName.toLowerCase().includes(query.toLowerCase());
-      });
-    } else {
-      this.data = [...this.originalData];
-    }
-  }
-
 }

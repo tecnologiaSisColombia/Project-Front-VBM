@@ -2,6 +2,7 @@
   <div class="breadcrumb-container">
     <nz-breadcrumb>
       <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Control Access</nz-breadcrumb-item>
       <nz-breadcrumb-item>User management</nz-breadcrumb-item>
     </nz-breadcrumb>
   </div>
@@ -13,33 +14,33 @@
   </div>
 </div>
 
-<div class="header-actions">
-  <nz-input-group [nzSuffix]="suffixIconSearch">
-    <input
-      nz-input
-      placeholder="Username"
-      [(ngModel)]="searchQueryUsername"
-      (ngModelChange)="onSearchUsername()"
-    />
-  </nz-input-group>
-  <ng-template #suffixIconSearch>
-    <span nz-icon nzType="search"></span>
-  </ng-template>
-
-  <nz-input-group [nzSuffix]="suffixIconSearch">
-    <input
-      nz-input
-      placeholder="Full Name"
-      [(ngModel)]="searchQueryUsername"
-      (ngModelChange)="onSearchFullName()"
-    />
-  </nz-input-group>
-  <ng-template #suffixIconSearch>
-    <span nz-icon nzType="search"></span>
-  </ng-template>
-</div>
-
-<div class="table-container">
+<div class="main-table">
+  <div class="header-actions">
+    <nz-input-group [nzSuffix]="suffixIconSearch">
+      <input
+        nz-input
+        placeholder="Username"
+        [(ngModel)]="searchQuery.username"
+        (ngModelChange)="onSearch('username')"
+      />
+    </nz-input-group>
+    <ng-template #suffixIconSearch>
+      <span nz-icon nzType="search"></span>
+    </ng-template>
+  
+    <nz-input-group [nzSuffix]="suffixIconSearch">
+      <input
+        nz-input
+        placeholder="Full Name"
+        [(ngModel)]="searchQuery.fullName"
+        (ngModelChange)="onSearch('fullName')"
+      />
+    </nz-input-group>
+    <ng-template #suffixIconSearch>
+      <span nz-icon nzType="search"></span>
+    </ng-template>
+  </div>  
+  
   <nz-table
     #userTable
     [nzBordered]="false"
@@ -57,6 +58,7 @@
         <th>Last Name</th>
         <th>Email</th>
         <th>Phone</th>
+        <th>Created</th>
         <th>Status</th>
         <th>Actions</th>
       </tr>
@@ -71,6 +73,7 @@
         <td>{{ user.last_name }}</td>
         <td>{{ user.email }}</td>
         <td>{{ user.phone }}</td>
+        <td>{{ user.created | date }}</td>
         <td>
           <nz-tag [nzColor]="user.is_active ? 'green' : 'red'">
             {{ user.is_active ? 'Active' : 'Inactive' }}
@@ -81,8 +84,6 @@
             [(ngModel)]="user.is_active"
             (ngModelChange)="toggleUserStatus(user)"
             [nzSize]="'small'"
-            [nzCheckedChildren]="''"
-            [nzUnCheckedChildren]="''"
           ></nz-switch>
           <nz-demo-modal-locale
             [user]="user"

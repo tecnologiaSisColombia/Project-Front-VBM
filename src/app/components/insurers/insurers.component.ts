@@ -44,7 +44,7 @@ import { S3Service } from '../../services/upload-s3/upload-s3.service';
     NzSwitchModule,
   ],
   templateUrl: './insurers.component.html',
-  styleUrl: './insurers.component.css',
+  styleUrls: ['./insurers.component.css', '../../../animations/styles.css'],
 })
 export class InsurersComponent implements OnInit {
   form: UntypedFormGroup;
@@ -63,6 +63,7 @@ export class InsurersComponent implements OnInit {
   count_records = 0;
   page_size = 10;
   page = 1;
+  uploadedFile: File | null = null;
 
   private searchNameSubject: Subject<{ type: string; value: string }> =
     new Subject();
@@ -74,7 +75,7 @@ export class InsurersComponent implements OnInit {
     private s3Service: S3Service
   ) {
     this.form = this.fb.group({
-      logo: [null, [Validators.required]],
+      // logo: [null, [Validators.required]],
       logo_description: [null, [Validators.required]],
       payer_id: [null, [Validators.required]],
       phone: [null, [Validators.required]],
@@ -145,8 +146,8 @@ export class InsurersComponent implements OnInit {
     this.dataDrawerCahe = null;
     this.drawerTitle = '';
     this.form.reset({
-      logo: 'null',
-      logo_description: 'null',
+      logo: null,
+      logo_description: null,
       payer_id: null,
       phone: null,
       address: null,
@@ -198,32 +199,34 @@ export class InsurersComponent implements OnInit {
 
   onFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
+
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      this.form.patchValue({ logo: file });
-      this.form.get('logo')?.updateValueAndValidity();
+      const allowedTypes = ['image/jpeg', 'image/png'];
+
+      if (!allowedTypes.includes(file.type)) {
+        this.msgService.error('Only image files (JPEG, PNG) are allowed');
+        this.uploadedFile = null;
+        return;
+      }
+      this.uploadedFile = file;
     } else {
-      this.form.get('logo')?.setErrors({ required: true });
+      this.uploadedFile = null;
     }
   }
 
   submit(): void {
     if (this.form.valid) {
+      if (!this.isUpdating && !this.uploadedFile) {
+        this.msgService.error('Required Logo');
+        return;
+      }
       const formData = this.form.value;
 
-      if (formData.logo && formData.logo instanceof File) {
-        const allowedTypes = ['image/jpeg', 'image/png'];
-        if (!allowedTypes.includes(formData.logo.type)) {
-          this.msgService.error('Only image files (JPEG, PNG) are allowed.');
-          this.drawerLoader = false;
-          this.form.get('logo')?.setErrors({ invalidType: true });
-          return;
-        }
-
+      if (this.uploadedFile) {
         this.drawerLoader = true;
-
         const uploadData = new FormData();
-        uploadData.append('logo', formData.logo);
+        uploadData.append('logo', this.uploadedFile);
         uploadData.append('name', formData.name);
 
         this.s3Service.uploadLogo(uploadData).subscribe({
@@ -249,12 +252,18 @@ export class InsurersComponent implements OnInit {
 
   private saveOrUpdate(formData: any): void {
     if (this.isUpdating) {
+      if (!this.uploadedFile) {
+        delete formData.logo;
+        this.uploadedFile = null;
+      }
+      this.uploadedFile = null;
       this.update(this.dataDrawerCahe.id, formData);
     } else {
       this.insurerService.createInsurer(formData).subscribe({
         next: () => {
           this.msgService.success('New Insurer created');
           this.isDataLoading = false;
+          this.uploadedFile = null;
           this.getInitData();
           this.closeDrawer();
         },

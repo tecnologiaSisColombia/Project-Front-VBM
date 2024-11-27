@@ -87,7 +87,6 @@
     nzShowQuickJumper
   ></nz-pagination>
 </div>
-
 <nz-drawer
   [nzBodyStyle]="{ overflow: 'auto' }"
   [nzMaskClosable]="false"
@@ -114,18 +113,45 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
+            [nzErrorTip]="descriptionError"
           >
-            <input nz-input formControlName="description" id="description" />
+            <input
+              nz-input
+              formControlName="description"
+              id="description"
+              placeholder="Enter a description"
+            />
           </nz-form-control>
         </nz-form-item>
+
+        <ng-template #descriptionError>
+          <span *ngIf="form.get('description')?.hasError('required')">
+            This field is required
+          </span>
+          <span *ngIf="form.get('description')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
+        </ng-template>
       </form>
     </nz-spin>
   </ng-container>
+
   <ng-template #footerTpl>
     <div style="display: flex; float: right;">
-      <button nz-button style="margin-right: 8px;" (click)="closeDrawer()">Close</button>
-      <button nz-button nzType="primary" (click)="submit()">Save</button>
+      <button
+        nz-button
+        style="margin-right: 8px;"
+        (click)="closeDrawer()"
+      >
+        Close
+      </button>
+      <button
+        nz-button
+        nzType="primary"
+        (click)="submit()"
+      >
+        Save
+      </button>
     </div>
   </ng-template>
 </nz-drawer>

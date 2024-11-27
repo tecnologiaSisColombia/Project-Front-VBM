@@ -32,7 +32,6 @@ export class ChangePasswordComponent implements OnInit {
   btnActive: boolean = false;
   passwordRight: boolean = false;
   passwordConfirm: boolean = false;
-
   regex = passwordRegex;
 
   constructor(
@@ -44,8 +43,20 @@ export class ChangePasswordComponent implements OnInit {
     private msg: NzMessageService
   ) {
     this.changePasswordForm = this.fb.group({
-      new_password: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', [Validators.required, Validators.minLength(8)]],
+      new_password: [
+        '', 
+        [
+          Validators.required, 
+          Validators.minLength(8)
+        ]
+      ],
+      confirmPassword: [
+        '', 
+        [
+          Validators.required, 
+          Validators.minLength(8)
+        ]
+      ],
     });
   }
 
@@ -57,32 +68,29 @@ export class ChangePasswordComponent implements OnInit {
   passwordChange(value: string): void {
     this.passwordRight = this.regex.test(value);
     this.btnActive =
-      this.passwordRight &&
-      this.passwordConfirm &&
-      !!this.session &&
-      !!this.username;
+    this.passwordRight &&
+    this.passwordConfirm &&
+    !!this.session &&
+    !!this.username;
   }
 
   confirmPasswordChange(value: string): void {
     const newPassword = this.changePasswordForm.value.new_password;
     this.passwordConfirm = value === newPassword;
     this.btnActive =
-      this.passwordRight &&
-      this.passwordConfirm &&
-      !!this.session &&
-      !!this.username;
+    this.passwordRight &&
+    this.passwordConfirm &&
+    !!this.session &&
+    !!this.username;
   }
 
   changePassword(): void {
     const { new_password, confirmPassword } = this.changePasswordForm.value;
-
     if (!this.regex.test(new_password) || new_password !== confirmPassword) {
       return;
     }
-
     if (this.username && this.session) {
       this.isLoading = true;
-
       this.loginService.changeTemporaryPassword(this.username, new_password, this.session).subscribe({
         next: (res: any) => {
           res.properties.user = {
@@ -90,9 +98,7 @@ export class ChangePasswordComponent implements OnInit {
             email: res.attributes.find((e: any) => e.Name === 'email')?.Value,
             username: res.attributes.find((e: any) => e.Name === 'username')?.Value,
           };
-
           this.authService.doLogin(res.properties);
-
           this.router.navigate(['/home']).then(() => {
             this.isLoading = false;
           });
