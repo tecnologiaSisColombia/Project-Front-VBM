@@ -7,7 +7,7 @@ import { Component } from '@angular/core'
   styleUrls: ['./main-menu.component.css'],
 })
 export class MainMenuComponent {
-  constructor() {
-  }
+  constructor() { }
+
   isCollapsed = false
 }

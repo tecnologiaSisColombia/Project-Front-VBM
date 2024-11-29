@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core'
-import { Router, RouterLink, RouterOutlet } from '@angular/router'
+import { RouterLink, RouterOutlet } from '@angular/router'
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb'
 import { NzIconModule } from 'ng-zorro-antd/icon'
 import { NzLayoutModule } from 'ng-zorro-antd/layout'
@@ -30,14 +30,10 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar'
 export class FullComponent implements OnInit {
   isCollapsed = false
 
-  constructor(
-    private authService: AuthService, 
-    private router: Router
-  ) {}
+  constructor(private authService: AuthService) { }
 
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void { }
 
   logout() {
     this.authService.doLogout()

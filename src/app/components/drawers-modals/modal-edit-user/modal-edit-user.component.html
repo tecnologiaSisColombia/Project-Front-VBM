@@ -1,0 +1,255 @@
+<button nz-button nzType="link" (click)="showModal()">
+  <i nz-icon nzType="edit" nzTheme="outline"></i>
+</button>
+
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="Edit User Attributes"
+  nzOkText="Update Attributes"
+  nzCancelText="Cancel"
+  (nzOnOk)="handleOk()"
+  (nzOnCancel)="handleCancel()"
+  
+>
+  <ng-container *nzModalContent>
+    <nz-spin [nzSpinning]="loading">
+      <form nz-form [nzLayout]="'vertical'" class="form-container" *ngIf="tempUser">
+        <div nz-row [nzGutter]="16">
+          <div nz-col [nzSpan]="12">
+            <nz-form-item>
+              <nz-form-label [nzSpan]="24">First Name</nz-form-label>
+              <nz-form-control [nzSpan]="24">
+                <input
+                  nz-input
+                  [(ngModel)]="tempUser.first_name"
+                  name="firstName"
+                  placeholder="Enter first name"
+                />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div nz-col [nzSpan]="12">
+            <nz-form-item>
+              <nz-form-label [nzSpan]="24">Last Name</nz-form-label>
+              <nz-form-control [nzSpan]="24">
+                <input
+                  nz-input
+                  [(ngModel)]="tempUser.last_name"
+                  name="lastName"
+                  placeholder="Enter last name"
+                />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+
+        <div nz-row [nzGutter]="16">
+          <div nz-col [nzSpan]="12">
+            <nz-form-item>
+              <nz-form-label [nzSpan]="24">Email</nz-form-label>
+              <nz-form-control [nzSpan]="24">
+                <input
+                  nz-input
+                  [(ngModel)]="tempUser.email"
+                  name="email"
+                  type="email"
+                  placeholder="Enter email"
+                />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div nz-col [nzSpan]="12">
+            <nz-form-item>
+              <nz-form-label [nzSpan]="24">Phone</nz-form-label>
+              <nz-form-control [nzSpan]="24">
+                <input
+                  nz-input
+                  [(ngModel)]="tempUser.phone"
+                  name="phone"
+                  type="tel"
+                  placeholder="Enter phone"
+                />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+
+        <div nz-row [nzGutter]="16" *ngIf="user.extra_data && user_type == 'Doctor'">
+          <div nz-col [nzSpan]="12">
+            <nz-form-item>
+              <nz-form-label [nzSpan]="24">Speciality</nz-form-label>
+              <nz-form-control [nzSpan]="24">
+                <nz-select
+                  name="speciality_id"
+                  [(ngModel)]="tempUser.extra_data[0].speciality_id"
+                  nzPlaceHolder="Select speciality"
+                  style="width: 100%; border-radius: 6px"
+                >
+                  <nz-option
+                    *ngFor="let o of specialities"
+                    [nzLabel]="o.description"
+                    [nzValue]="o.id"
+                  ></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div nz-col [nzSpan]="12">
+            <nz-form-item>
+              <nz-form-label [nzSpan]="24">License Number</nz-form-label>
+              <nz-form-control [nzSpan]="24">
+                <input
+                  name="license_number"
+                  nz-input
+                  [(ngModel)]="tempUser.extra_data[0].license_number"
+                  placeholder="Enter license number"
+                />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+
+        <div
+          nz-row
+          [nzGutter]="16"
+          *ngIf="user.extra_data && (user_type == 'Doctor' || user_type == 'Seller')"
+        >
+          <div nz-col [nzSpan]="12">
+            <nz-form-item>
+              <nz-form-label [nzSpan]="24">Store</nz-form-label>
+              <nz-form-control [nzSpan]="24">
+                <nz-select
+                  (ngModelChange)="storeChange($event)"
+                  [(ngModel)]="tempUser.extra_data[0].store_id"
+                  nzPlaceHolder="Select store"
+                  style="width: 100%; border-radius: 6px"
+                  name="store_id"
+                >
+                  <nz-option
+                    *ngFor="let o of stores"
+                    [nzLabel]="o.name"
+                    [nzValue]="o.id"
+                  ></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div nz-col [nzSpan]="12" *ngIf="user_type == 'Doctor'">
+            <nz-form-item>
+              <nz-form-label [nzSpan]="24">Office</nz-form-label>
+              <nz-form-control [nzSpan]="24">
+                <nz-select
+                  name="office_id"
+                  [(ngModel)]="tempUser.extra_data[0].office_id"
+                  nzPlaceHolder="Select office"
+                  style="width: 100%; border-radius: 6px"
+                >
+                  <nz-option
+                    *ngFor="let o of officesToDisplay"
+                    [nzLabel]="o.name"
+                    [nzValue]="o.id"
+                  ></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+      </form>
+
+    <div
+      style="display: flex; justify-content: space-between; align-items: center"
+      *ngIf="user_type == 'Doctor' || user_type == 'Seller'"
+    >
+      <h3>Working Hours</h3>
+      <button nz-button nzType="primary" [nzSize]="'small'" (click)="open()">Add</button>
+    </div>
+
+    <nz-table
+      #basicTable
+      [nzData]="workingHours"
+      [nzFrontPagination]="false"
+      *ngIf="user_type == 'Doctor' || user_type == 'Seller'"
+    >
+      <thead>
+        <tr>
+          <th>Day</th>
+          <th>Start Hour</th>
+          <th>End Hour</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of basicTable.data">
+          <td>{{ data.day }}</td>
+          <td>{{ data.hour_start }}</td>
+          <td>{{ data.hour_end }}</td>
+          <td>
+            <a><i nz-icon nzType="edit" (click)="openEdit(data)" nzTheme="outline"></i></a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a><i nz-icon nzType="delete" (click)="deleteHour(data.id)"></i></a>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+    </nz-spin>
+  </ng-container>
+</nz-modal>
+
+<nz-modal
+  [(nzVisible)]="visibleDrawer"
+  [nzTitle]="titleDrawer"
+  (nzOnCancel)="closeDrawer()"
+  (nzOnOk)="submitDrawer()"
+>
+  <ng-container *nzModalContent>
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label>Day</nz-form-label>
+        <nz-form-control>
+          <nz-select
+            [(ngModel)]="workingHourForm.day"
+            name="day"
+            nzPlaceHolder="Select day"
+            style="width: 100%; border-radius: 6px"
+          >
+            <nz-option *ngFor="let o of days" [nzLabel]="o" [nzValue]="o"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label>Start Hour</nz-form-label>
+        <nz-form-control>
+          <input
+            nz-input
+            type="number"
+            name="hour_start"
+            [(ngModel)]="workingHourForm.hour_start"
+            style="width: 100%; border-radius: 6px; font-size: 14px; padding: 8px;"
+          />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col nzSpan="24">
+      <nz-form-item>
+        <nz-form-label>End Hour</nz-form-label>
+        <nz-form-control>
+          <input
+            nz-input
+            type="number"
+            name="hour_end"
+            [(ngModel)]="workingHourForm.hour_end"
+            style="width: 100%; border-radius: 6px; font-size: 14px; padding: 8px;"
+          />
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </ng-container>
+</nz-modal>

@@ -8,7 +8,6 @@ import { FormsModule } from '@angular/forms';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { UserService } from '../../../services/user-management/user-management.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import Swal from 'sweetalert2';
 import { EspecialitiesService } from 'app/services/config/especialities.service';
 import { StoresService } from 'app/services/config/stores.service';
 import { OfficesService } from 'app/services/config/offices.service';
@@ -17,6 +16,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
 
 @Component({
   selector: 'nz-demo-modal-locale',
@@ -35,6 +35,7 @@ import { NzDrawerModule } from 'ng-zorro-antd/drawer';
     NzDividerModule,
     NzDrawerModule,
     NzButtonModule,
+    NzSpinModule
   ],
   templateUrl: `./modal-edit-user.component.html`,
   styles: [
@@ -57,11 +58,11 @@ export class NzDemoModalLocaleComponent implements OnInit {
   stores: any[] = [];
   userTypeOptions: { id: number; label: string; value: string }[] = [];
   offices: any[] = [];
-
+  loading = false;
+  tempUser: any = null;
   user_type: string = '';
   officesToDisplay: any[] = [];
   working_hours: any[] = [];
-
   titleDrawer = '';
   visibleDrawer = false;
   isUpdatingDrawer: boolean = false;
@@ -73,7 +74,6 @@ export class NzDemoModalLocaleComponent implements OnInit {
     hour_end: 0,
     user: 0,
   };
-
   days = [
     'Monday',
     'Tuesday',
@@ -104,54 +104,59 @@ export class NzDemoModalLocaleComponent implements OnInit {
   showModal(): void {
     this.getWorkingHours();
     this.isVisible = true;
-    if (!this.user.extra_data) return;
+  
+    this.tempUser = JSON.parse(JSON.stringify(this.user));
+  
+    if (!this.tempUser.extra_data) return;
+
     this.user_type = this.userTypeOptions.find(
-      (e) => e.id == this.user.extra_data[0].user_type_id
+      (e) => e.id == this.tempUser.extra_data[0].user_type_id
     )?.value!;
   }
 
   handleOk(): void {
-    this.userService.updateAttributes(this.user).subscribe(
+    this.loading = true;
+    this.userService.updateAttributes(this.tempUser).subscribe(
       (response) => {
-        if (this.user.extra_data) {
+        if (this.tempUser.extra_data) {
           this.userService
             .updateDataByType(
               this.userTypeOptions.find((e) => e.value == this.user_type)!,
-              this.user.id,
-              this.user
+              this.tempUser.id,
+              this.tempUser
             )
             .subscribe({
               next: (res) => {
+                this.msgService.success('The user has been updated successfully');
+                this.user = { ...this.tempUser };
                 this.isVisible = false;
                 this.userUpdated.emit(res);
-                this.msgService.success('The user has been updated successfully');
               },
               error: (err) => {
-                const errorMessage = err?.error;
-                this.msgService.error(errorMessage);
+                this.msgService.error(err?.error);
               },
             });
+          this.loading = false;
         } else {
           this.msgService.success('The user has been updated successfully!');
+          this.user = { ...this.tempUser };
           this.isVisible = false;
           this.userUpdated.emit(response);
+          this.loading = false;
         }
+        this.loading = false;
       },
       (error) => {
-        const errorMessage = error?.error?.error?.message;
-        this.msgService.error(errorMessage);
-        console.error('Error updating user:', errorMessage);
+        this.msgService.error(error?.error?.error?.message);
+        this.loading = false;
       }
     );
-    
   }
-
+  
   getSpecialities() {
     this.specialityService.get({ status: 1 }, 1, 1, true).subscribe({
       next: (res: any) => (this.specialities = res),
       error: (err) => {
-        console.error(err);
-
         this.msgService.error(JSON.stringify(err.error));
       },
     });
@@ -161,8 +166,6 @@ export class NzDemoModalLocaleComponent implements OnInit {
     this.storeService.get({ status: 1 }, 1, 1, true).subscribe({
       next: (res: any) => (this.stores = res),
       error: (err) => {
-        console.error(err);
-
         this.msgService.error(JSON.stringify(err.error));
       },
     });
@@ -175,8 +178,6 @@ export class NzDemoModalLocaleComponent implements OnInit {
         this.officesToDisplay = res;
       },
       error: (err) => {
-        console.error(err);
-
         this.msgService.error(JSON.stringify(err.error));
       },
     });
@@ -192,18 +193,17 @@ export class NzDemoModalLocaleComponent implements OnInit {
         }));
       },
       (error) => {
-        this.msgService.error('Failed to load user types');
+        this.msgService.error(JSON.stringify(error.error));
       }
     );
   }
 
   handleCancel(): void {
     this.isVisible = false;
+    this.tempUser = null; 
   }
 
   storeChange(event: number) {
-    console.log(this.offices, event);
-
     if (event) {
       this.officesToDisplay = this.offices.filter((e) => e.store == event);
     } else {
@@ -217,7 +217,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
         this.workingHours = res;
       },
       error: (err) => {
-        this.msgService.error('Failed to load user working hours');
+        this.msgService.error(JSON.stringify(err.error));
       },
     });
   }
@@ -237,6 +237,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
   }
 
   closeDrawer() {
+    this.tempUser = {};
     this.visibleDrawer = false;
     this.isUpdatingDrawer = false;
     this.dataCacheDrawer = null;
@@ -251,7 +252,8 @@ export class NzDemoModalLocaleComponent implements OnInit {
 
   deleteHour(id: number) {
     this.userService.deleteWorkingHour(id).subscribe({
-      next: (res: any) => {
+      next: () => {
+        this.msgService.success('Work time deleted successfully');
         this.getWorkingHours();
       },
       error: (err) => {
@@ -264,7 +266,8 @@ export class NzDemoModalLocaleComponent implements OnInit {
 
   updateHour(id: number, data: any) {
     this.userService.updateWorkingHour(id, data).subscribe({
-      next: (res: any) => {
+      next: () => {
+        this.msgService.success('Work time update successfully');
         this.closeDrawer();
         this.getWorkingHours();
       },
@@ -281,8 +284,13 @@ export class NzDemoModalLocaleComponent implements OnInit {
       this.updateHour(this.dataCacheDrawer.id, this.workingHourForm);
       return;
     }
+    if (!this.workingHourForm.day) {
+      this.msgService.error('The "Day" field is required');
+      return;
+    }
     this.userService.createWorkingHour(this.workingHourForm).subscribe({
-      next: (res: any) => {
+      next: () => {
+        this.msgService.success('Work time created successfully');
         this.closeDrawer();
         this.getWorkingHours();
       },

@@ -5,13 +5,10 @@ import { HttpClient, HttpParams } from '@angular/common/http'
 @Injectable({
   providedIn: 'root',
 })
-
 export class PlanService {
   hostname = environment.apiUrl
 
-  constructor(
-    private http: HttpClient
-  ) {}
+  constructor(private http: HttpClient) { }
 
   getPlans(
     { name, insurer }: any,
@@ -27,6 +24,7 @@ export class PlanService {
     if (name != null) {
       params = params.set('name', name)
     }
+    
     if (insurer != null) {
       params = params.set('insurer', insurer)
     }
@@ -45,7 +43,7 @@ export class PlanService {
   updatePlan(id: number, data: any) {
     return this.http.put(`${this.hostname}insurers/plan/${id}`, data)
   }
-  
+
   deletePlan(id: number) {
     return this.http.delete(`${this.hostname}insurers/plan/${id}`)
   }

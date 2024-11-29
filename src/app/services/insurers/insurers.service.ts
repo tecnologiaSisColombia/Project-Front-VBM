@@ -5,13 +5,10 @@ import { environment } from '../../../environments/environment'
 @Injectable({
   providedIn: 'root',
 })
-
 export class InsurersService {
   hostname = environment.apiUrl
 
-  constructor(
-    private http: HttpClient
-  ) {}
+  constructor(private http: HttpClient) {}
 
   getInsurers(
     { name, address, phone, payer_id, status }: any,
@@ -27,18 +24,23 @@ export class InsurersService {
     if (name != null) {
       params = params.set('name', name)
     }
+
     if (address != null) {
       params = params.set('address', address)
     }
+
     if (phone != null) {
       params = params.set('phone', phone)
     }
+
     if (payer_id != null) {
       params = params.set('payer_id', payer_id)
     }
+
     if (status != null) {
       params = params.set('status', status)
     }
+    
     return this.http.get(`${this.hostname}insurers/`, { params })
   }
 

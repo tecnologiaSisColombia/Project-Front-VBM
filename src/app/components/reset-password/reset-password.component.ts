@@ -44,7 +44,9 @@ export class ResetPasswordComponent {
       this.msg.error('Please enter a valid email address');
       return;
     }
+
     this.isLoading = true;
+
     this.resetPasswordService.requestReset(this.email).subscribe({
       next: () => {
         this.showVerificationCode =
@@ -63,6 +65,7 @@ export class ResetPasswordComponent {
 
   onResendCode(): void {
     this.isLoading = true;
+
     this.resetPasswordService.resendConfirmationCode(this.email).subscribe({
       next: () => {
         this.showVerificationCode =
@@ -85,11 +88,14 @@ export class ResetPasswordComponent {
       this.msg.error('Please enter verification code');
       return;
     }
+
     if (!this.newPassword.trim()) {
       this.msg.error('New password is required');
       return;
     }
+
     this.isLoading = true;
+
     this.resetPasswordService.confirmResetPassword(
       this.email,
       this.verificationCode,
@@ -97,7 +103,11 @@ export class ResetPasswordComponent {
     ).subscribe({
       next: () => {
         this.msg.success('Password reset successfully');
-        setTimeout(() => this.router.navigate(['./login']), 900);
+
+        setTimeout(() => {
+          this.router.navigate(['./login']);
+        }, 900);
+
         this.isLoading = false;
       },
       error: (error) => {

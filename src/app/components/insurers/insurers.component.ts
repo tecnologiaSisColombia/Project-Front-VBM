@@ -195,51 +195,50 @@ export class InsurersComponent implements OnInit {
 
   onFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
+
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
       const validFileTypes = ['image/jpeg', 'image/png'];
 
       if (!validFileTypes.includes(file.type)) {
-        this.msgService.error('The image will not be uploaded because only JPG and PNG files are allowed');
+        this.msgService.error('The image will not be uploaded only JPG and PNG files');
         this.form.patchValue({ logo: null });
         return;
       }
-
-      this.form.patchValue({
-        logo: file,
-      });
+      
+      this.form.patchValue({ logo: file });
       this.form.get('logo')?.updateValueAndValidity();
     }
   }
-  
+
   submit(): void {
     if (this.form.valid) {
       this.drawerLoader = true;
       const formData = this.form.value;
-  
+
       if (!formData.logo) {
         formData.logo = this.isUpdating ? this.dataDrawerCahe.logo : 'None';
       }
-  
+
       const logoFile = this.form.get('logo')?.value;
-  
+
       if (logoFile instanceof File) {
         const uploadData = new FormData();
         uploadData.append('name', formData.name);
         uploadData.append('logo', logoFile);
-  
+
         this.s3Service.uploadLogo(uploadData).subscribe({
           next: (response: any) => {
             formData.logo = response.url;
             this.saveOrUpdate(formData);
           },
-          error: (err: any) => {
+          error: (error: any) => {
             this.drawerLoader = false;
-            this.msgService.error('Error uploading logo: ' + JSON.stringify(err.error));
+            this.msgService.error(JSON.stringify(error.error));
           },
         });
       } else {
-        this.saveOrUpdate(formData); 
+        this.saveOrUpdate(formData);
       }
     } else {
       Object.values(this.form.controls).forEach((control) => {
@@ -248,7 +247,7 @@ export class InsurersComponent implements OnInit {
       });
     }
   }
-  
+
   private saveOrUpdate(formData: any): void {
     if (this.isUpdating) {
       this.update(this.dataDrawerCahe.id, formData);
@@ -260,10 +259,10 @@ export class InsurersComponent implements OnInit {
           this.getInitData();
           this.closeDrawer();
         },
-        error: (err) => {
+        error: (error) => {
           this.drawerLoader = false;
           this.isDataLoading = false;
-          this.msgService.error(JSON.stringify(err.error));
+          this.msgService.error(JSON.stringify(error.error));
         },
       });
     }
@@ -280,9 +279,9 @@ export class InsurersComponent implements OnInit {
       next: () => {
         this.isDataLoading = false;
       },
-      error: () => {
+      error: (error) => {
         this.isDataLoading = false;
-        this.msgService.error('Error during search');
+        this.msgService.error(JSON.stringify(error.error));
       },
     });
   }

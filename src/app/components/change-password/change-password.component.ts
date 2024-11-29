@@ -9,7 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LoginService } from '../../services/login/login.service';
 import { PasswordResetButtonComponent } from '../../reusable-components';
 import { CommonModule } from '@angular/common';
-import { passwordRegex } from '../../utils/password_regex';
+import { passwordRegex } from '../../utils/regex/password_regex';
 import { AuthService } from '../../services/auth/auth.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 
@@ -44,16 +44,16 @@ export class ChangePasswordComponent implements OnInit {
   ) {
     this.changePasswordForm = this.fb.group({
       new_password: [
-        '', 
+        '',
         [
-          Validators.required, 
+          Validators.required,
           Validators.minLength(8)
         ]
       ],
       confirmPassword: [
-        '', 
+        '',
         [
-          Validators.required, 
+          Validators.required,
           Validators.minLength(8)
         ]
       ],
@@ -68,29 +68,32 @@ export class ChangePasswordComponent implements OnInit {
   passwordChange(value: string): void {
     this.passwordRight = this.regex.test(value);
     this.btnActive =
-    this.passwordRight &&
-    this.passwordConfirm &&
-    !!this.session &&
-    !!this.username;
+      this.passwordRight &&
+      this.passwordConfirm &&
+      !!this.session &&
+      !!this.username;
   }
 
   confirmPasswordChange(value: string): void {
     const newPassword = this.changePasswordForm.value.new_password;
     this.passwordConfirm = value === newPassword;
     this.btnActive =
-    this.passwordRight &&
-    this.passwordConfirm &&
-    !!this.session &&
-    !!this.username;
+      this.passwordRight &&
+      this.passwordConfirm &&
+      !!this.session &&
+      !!this.username;
   }
 
   changePassword(): void {
     const { new_password, confirmPassword } = this.changePasswordForm.value;
+
     if (!this.regex.test(new_password) || new_password !== confirmPassword) {
       return;
     }
+
     if (this.username && this.session) {
       this.isLoading = true;
+
       this.loginService.changeTemporaryPassword(this.username, new_password, this.session).subscribe({
         next: (res: any) => {
           res.properties.user = {
@@ -98,15 +101,16 @@ export class ChangePasswordComponent implements OnInit {
             email: res.attributes.find((e: any) => e.Name === 'email')?.Value,
             username: res.attributes.find((e: any) => e.Name === 'username')?.Value,
           };
+
           this.authService.doLogin(res.properties);
+
           this.router.navigate(['/home']).then(() => {
             this.isLoading = false;
           });
         },
         error: (error) => {
           this.isLoading = false;
-          const errorMessage = error.error?.error?.message || 'Change Password failed';
-          this.msg.error(errorMessage);
+          this.msg.error(error.error?.error?.message || 'Change Password failed');
         },
       });
     }

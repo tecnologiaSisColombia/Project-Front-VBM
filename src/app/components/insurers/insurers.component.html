@@ -6,7 +6,12 @@
     </nz-breadcrumb>
   </div>
   <div class="btn-container">
-    <button nz-button nzType="primary" (click)="openDrawer()">New Insurer</button>
+    <button 
+      nz-button 
+      nzType="primary" 
+      (click)="openDrawer()">
+      New Insurer
+    </button>
   </div>
 </div>
 
@@ -123,7 +128,7 @@
     nzShowQuickJumper
   ></nz-pagination>
 </div>
-
+ 
 <nz-drawer
   [nzBodyStyle]="{ overflow: 'auto' }"
   [nzMaskClosable]="false"
@@ -154,7 +159,8 @@
             <input 
               nz-input 
               formControlName="name" 
-              id="name" 
+              id="name"
+              [readonly]="isUpdating"
             />
           </nz-form-control>
         </nz-form-item>

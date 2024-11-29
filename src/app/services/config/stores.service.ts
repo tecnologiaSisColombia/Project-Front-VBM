@@ -20,20 +20,26 @@ export class StoresService {
       .set('page', page!.toString())
       .set('page_size', pageSize!.toString())
       .set('init', init);
+      
     if (name != null) {
       params = params.set('name', name);
     }
+
     if (status != null) {
       params = params.set('status', status);
     }
+
     return this.http.get(`${this.hostname}core/stores`, { params });
   }
+
   create(data: any) {
     return this.http.post(`${this.hostname}core/stores`, data);
   }
+  
   delete(id: number) {
     return this.http.delete(`${this.hostname}core/stores/${id}`);
   }
+
   update(id: number, data: any) {
     return this.http.put(`${this.hostname}core/stores/${id}`, data);
   }

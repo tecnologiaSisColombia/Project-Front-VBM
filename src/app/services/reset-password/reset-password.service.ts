@@ -9,9 +9,7 @@ import { environment } from '../../../environments/environment';
 export class ResetPasswordService {
     private baseUrl = environment.apiUrl
 
-    constructor(
-        private http: HttpClient
-    ) { }
+    constructor(private http: HttpClient) { }
 
     requestReset(email: string): Observable<any> {
         return this.http.post(`${this.baseUrl}UserAccessControl/ResetPassword`, {
