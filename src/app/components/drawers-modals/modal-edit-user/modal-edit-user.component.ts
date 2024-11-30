@@ -105,13 +105,21 @@ export class NzDemoModalLocaleComponent implements OnInit {
     this.getWorkingHours();
     this.isVisible = true;
   
-    this.tempUser = JSON.parse(JSON.stringify(this.user));
+    this.tempUser = {
+      ...this.user,
+      extra_data: this.user?.extra_data || [{}],
+    };
   
-    if (!this.tempUser.extra_data) return;
-
-    this.user_type = this.userTypeOptions.find(
-      (e) => e.id == this.tempUser.extra_data[0].user_type_id
-    )?.value!;
+    if (
+      this.tempUser.extra_data.length > 0 &&
+      this.tempUser.extra_data[0].user_type_id
+    ) {
+      this.user_type = this.userTypeOptions.find(
+        (e) => e.id == this.tempUser.extra_data[0].user_type_id
+      )?.value || '';
+    } else {
+      this.user_type = '';
+    }
   }
 
   handleOk(): void {
@@ -200,7 +208,6 @@ export class NzDemoModalLocaleComponent implements OnInit {
 
   handleCancel(): void {
     this.isVisible = false;
-    this.tempUser = null; 
   }
 
   storeChange(event: number) {
@@ -237,7 +244,6 @@ export class NzDemoModalLocaleComponent implements OnInit {
   }
 
   closeDrawer() {
-    this.tempUser = {};
     this.visibleDrawer = false;
     this.isUpdatingDrawer = false;
     this.dataCacheDrawer = null;

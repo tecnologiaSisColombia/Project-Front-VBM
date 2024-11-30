@@ -82,6 +82,7 @@
               <nz-form-label [nzSpan]="24">Speciality</nz-form-label>
               <nz-form-control [nzSpan]="24">
                 <nz-select
+                  *ngIf="tempUser?.extra_data?.length > 0"
                   name="speciality_id"
                   [(ngModel)]="tempUser.extra_data[0].speciality_id"
                   nzPlaceHolder="Select speciality"
@@ -102,6 +103,7 @@
               <nz-form-label [nzSpan]="24">License Number</nz-form-label>
               <nz-form-control [nzSpan]="24">
                 <input
+                *ngIf="tempUser?.extra_data?.length > 0"
                   name="license_number"
                   nz-input
                   [(ngModel)]="tempUser.extra_data[0].license_number"
@@ -122,6 +124,7 @@
               <nz-form-label [nzSpan]="24">Store</nz-form-label>
               <nz-form-control [nzSpan]="24">
                 <nz-select
+                  *ngIf="tempUser?.extra_data?.length > 0"
                   (ngModelChange)="storeChange($event)"
                   [(ngModel)]="tempUser.extra_data[0].store_id"
                   nzPlaceHolder="Select store"
@@ -143,6 +146,7 @@
               <nz-form-label [nzSpan]="24">Office</nz-form-label>
               <nz-form-control [nzSpan]="24">
                 <nz-select
+                  *ngIf="tempUser?.extra_data?.length > 0"
                   name="office_id"
                   [(ngModel)]="tempUser.extra_data[0].office_id"
                   nzPlaceHolder="Select office"
