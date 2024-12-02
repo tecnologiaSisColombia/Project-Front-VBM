@@ -14,14 +14,16 @@ import { Router } from '@angular/router';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   private isRefreshing = false;
-  private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(
+    null
+  );
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(
+    request: HttpRequest<any>,
+    next: HttpHandler
+  ): Observable<HttpEvent<any>> {
     if (this.authService.getJwtToken()) {
       request = this.addToken(request, this.authService.getJwtToken());
     }
@@ -32,17 +34,22 @@ export class AuthInterceptor implements HttpInterceptor {
           if (this.authService.getJwtToken()) {
             return this.handle401Error(request, next);
           } else {
-            this.router.navigate(['/']);
+            this.router.navigate(['/login']);
             return throwError(() => error);
           }
         } else {
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
           return throwError(() => error);
         }
       })
     );
   }
 
-  private addToken(request: HttpRequest<any>, token: string | null): HttpRequest<any> {
+  private addToken(
+    request: HttpRequest<any>,
+    token: string | null
+  ): HttpRequest<any> {
     return request.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`,
@@ -50,7 +57,10 @@ export class AuthInterceptor implements HttpInterceptor {
     });
   }
 
-  private handle401Error(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  private handle401Error(
+    request: HttpRequest<any>,
+    next: HttpHandler
+  ): Observable<HttpEvent<any>> {
     if (!this.isRefreshing) {
       this.isRefreshing = true;
       this.refreshTokenSubject.next(null);
