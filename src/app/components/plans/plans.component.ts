@@ -50,31 +50,26 @@ import { SubplansComponent } from '../subplans/subplans.component';
     SubplansComponent,
   ],
   templateUrl: './plans.component.html',
-  styleUrl: './plans.component.css',
+  styleUrls: ['./plans.component.css', '../../../animations/styles.css'],
 })
 export class PlansComponent implements OnInit {
   form: UntypedFormGroup;
   nameSearch: any = null;
   insurerSearch: any = null;
-
   isDataLoading = false;
   dataToDisplay: any[] = [];
   num_pages = 1;
   count_records = 0;
   page_size = 10;
   page = 1;
-
   visible = false;
   drawerLoader = false;
   drawerTitle = '';
   dataDrawerCahe: any;
   isUpdating = false;
-
   isVisibleModal = false;
   dataCacheModal: any;
-
   insurers: any[] = [];
-
   private searchNameSubject = new Subject<{ type: string; value: string }>();
 
   constructor(
@@ -84,10 +79,20 @@ export class PlansComponent implements OnInit {
     private insurerService: InsurersService
   ) {
     this.form = this.fb.group({
-      insurer: [null, [Validators.required]],
-      name: [null, [Validators.required]],
+      insurer: [
+        null, 
+        [
+          Validators.required
+        ]
+      ],
+      name: [
+        null, 
+        [
+          Validators.required,
+          Validators.pattern(/^(?!\s*$).+/)
+        ]
+      ],
     });
-
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
       if (data.type === 'name') this.nameSearch = data.value;
       if (data.type === 'insurer') this.insurerSearch = data.value;
@@ -166,7 +171,7 @@ export class PlansComponent implements OnInit {
       if (result.isConfirmed) {
         this.isDataLoading = true;
         this.planService.deletePlan(id).subscribe({
-          next: (res: any) => {
+          next: () => {
             this.msgService.success('Coverage deleted successfully');
             this.isDataLoading = false;
             this.getInitData();
@@ -183,7 +188,7 @@ export class PlansComponent implements OnInit {
   update(id: number, data: any): void {
     this.isDataLoading = true;
     this.planService.updatePlan(id, data).subscribe({
-      next: (res: any) => {
+      next: () => {
         this.msgService.success('Coverage updated successfully');
         this.isDataLoading = false;
         this.closeDrawer();
@@ -233,14 +238,12 @@ export class PlansComponent implements OnInit {
 
   search(value: string, type: string) {
     this.isDataLoading = true;
-
     this.searchNameSubject.next({ type, value });
-
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
       next: () => {
         this.isDataLoading = false;
       },
-      error: (err) => {
+      error: () => {
         this.isDataLoading = false;
         this.msgService.error('Error during search');
       },

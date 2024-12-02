@@ -43,7 +43,7 @@ export class LoginComponent implements OnInit {
     if (this.isLoading) return;
 
     const { username, password } = this.loginForm.value;
-
+    
     if (!username.trim() || !password.trim()) {
       this.msg.error(`${!username.trim() ? 'Username' : 'Password'} is required`);
       return;
@@ -60,6 +60,7 @@ export class LoginComponent implements OnInit {
         };
 
         localStorage.removeItem('auth_challenge');
+
         this.authService.doLogin(res.properties);
 
         this.router.navigate(['/home']).then(() => {
@@ -68,7 +69,6 @@ export class LoginComponent implements OnInit {
       },
       error: (error) => {
         this.isLoading = false;
-
         if (error.error?.error?.code === 'NewPasswordRequired') {
           localStorage.setItem('auth_challenge', 'NewPasswordRequired');
           this.router
@@ -82,8 +82,7 @@ export class LoginComponent implements OnInit {
               this.isLoading = false;
             });
         } else {
-          const errorMessage = error.error?.error?.message || 'Login failed';
-          this.msg.error(errorMessage);
+          this.msg.error(error.error?.error?.message || 'Login failed');
         }
       },
     });

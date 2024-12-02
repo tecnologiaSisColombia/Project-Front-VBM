@@ -1,0 +1,379 @@
+<button 
+  nz-button 
+  nzType="primary" 
+  (click)="open()"
+>
+  <i nz-icon nzType="user"></i>
+  Create User
+</button>
+
+<nz-drawer
+  [nzBodyStyle]="{ overflow: 'auto' }"
+  [nzMaskClosable]="false"
+  [nzVisible]="visible"
+  nzTitle="Create User"
+  [nzFooter]="footerTpl"
+  (nzOnClose)="close()"
+  [nzWidth]="720"
+  nzPlacement="right"
+  [nzClosable]="false"
+>
+  <form nz-form nzLayout="vertical" [formGroup]="formm" *nzDrawerContent>
+    <nz-spin [nzSpinning]="drawerLoader">
+      <nz-form-item>
+        <nz-form-label 
+          [nzSm]="8"
+          [nzXs]="24"
+          nzFor="first_name"
+          style="text-align: center;"
+        >
+          First Name:
+        </nz-form-label>
+        <nz-form-control
+          [nzSm]="16"
+          [nzXs]="24"
+          [nzErrorTip]="firstNameError"
+        >
+          <input
+            nz-input
+            required
+            formControlName="first_name"
+            name="first_name"
+          />
+        </nz-form-control>
+      </nz-form-item>
+      
+      <ng-template #firstNameError>
+        <span *ngIf="formm.get('first_name')?.hasError('required')">
+          This field is required
+        </span>
+        <span *ngIf="formm.get('first_name')?.hasError('pattern')">
+          This field cannot be empty or contain only spaces
+        </span>
+      </ng-template>
+      
+      <nz-form-item>
+        <nz-form-label 
+          [nzSm]="8"
+          [nzXs]="24"
+          nzFor="last_name"
+          style="text-align: center;"
+        >
+          Last Name:
+        </nz-form-label>
+        <nz-form-control
+          [nzSm]="16"
+          [nzXs]="24"
+          [nzErrorTip]="lastNameError"
+        >
+          <input
+            nz-input
+            required
+            formControlName="last_name"
+            name="last_name"
+          />
+        </nz-form-control>
+      </nz-form-item>
+      
+      <ng-template #lastNameError>
+        <span *ngIf="formm.get('last_name')?.hasError('required')">
+          This field is required
+        </span>
+        <span *ngIf="formm.get('last_name')?.hasError('pattern')">
+          This field cannot be empty or contain only spaces
+        </span>
+      </ng-template>
+      
+
+      <nz-form-item>
+        <nz-form-label 
+          [nzSm]="8"
+          [nzXs]="24"
+          nzFor="email"
+          style="text-align: center;"
+        >
+          Email:
+        </nz-form-label>
+        <nz-form-control
+          [nzSm]="16"
+          [nzXs]="24"
+          [nzErrorTip]="emailError"
+        >
+          <input
+            nz-input
+            required
+            formControlName="email"
+          />
+        </nz-form-control>
+      </nz-form-item>
+      
+      <ng-template #emailError>
+        <span *ngIf="formm.get('email')?.hasError('required')">
+          This field is required
+        </span>
+        <span *ngIf="formm.get('email')?.hasError('email')">
+          Please enter a valid email address
+        </span>
+      </ng-template>
+      
+      <nz-form-item>
+        <nz-form-label 
+          [nzSm]="8"
+          [nzXs]="24"
+          nzFor="phone"
+          style="text-align: center;"
+        >
+          Phone:
+        </nz-form-label>
+        <nz-form-control
+          [nzSm]="16"
+          [nzXs]="24"
+          [nzErrorTip]="phoneError"
+        >
+          <input
+            nz-input
+            type="tel"
+            formControlName="phone"
+          />
+        </nz-form-control>
+      </nz-form-item>
+      
+      <ng-template #phoneError>
+        <span *ngIf="formm.get('phone')?.hasError('required')">
+          This field is required
+        </span>
+        <span *ngIf="formm.get('phone')?.hasError('pattern')">
+          This field cannot be empty or contain only spaces
+        </span>
+      </ng-template>
+      
+
+      <nz-form-item>
+        <nz-form-label 
+          [nzSm]="8"
+          [nzXs]="24"
+          nzFor="username"
+          style="text-align: center;"
+        >
+          Username:
+        </nz-form-label>
+        <nz-form-control
+          [nzSm]="16"
+          [nzXs]="24"
+          [nzErrorTip]="usernameError"
+        >
+          <input
+            nz-input
+            required
+            formControlName="username"
+            name="username"
+          />
+        </nz-form-control>
+      </nz-form-item>
+      
+      <ng-template #usernameError>
+        <span *ngIf="formm.get('username')?.hasError('required')">
+          This field is required
+        </span>
+        <span *ngIf="formm.get('username')?.hasError('pattern')">
+          This field cannot be empty or contain only spaces
+        </span>
+      </ng-template>
+      
+      <nz-form-item>
+        <nz-form-label 
+          [nzSm]="8"
+          [nzXs]="24"
+          nzFor="password"
+          style="text-align: center;"
+        >
+          Password:
+        </nz-form-label>
+        <nz-form-control
+          [nzSm]="16"
+          [nzXs]="24"
+          [nzErrorTip]="passwordError"
+        >
+          <input
+            nz-input
+            type="password"
+            required
+            formControlName="password"
+            name="password"
+          />
+        </nz-form-control>
+      </nz-form-item>
+      
+      <ng-template #passwordError>
+        <span *ngIf="formm.get('password')?.hasError('required')">
+          This field is required
+        </span>
+        <span *ngIf="formm.get('password')?.hasError('pattern')">
+          This field cannot be empty or contain only spaces
+        </span>
+      </ng-template>
+      
+
+      <nz-form-item>
+        <nz-form-label 
+          [nzSm]="8"
+          [nzXs]="24"
+          nzFor="type_user"
+          style="text-align: center;"
+        >
+          User Type:
+        </nz-form-label>
+        <nz-form-control
+          [nzSm]="16"
+          [nzXs]="24"
+          [nzErrorTip]="typeUserError"
+        >
+          <nz-select
+            formControlName="type_user"
+            name="userType"
+            [nzOptions]="userTypeOptions"
+            nzPlaceHolder="Select a user type"
+            (ngModelChange)="userTypeChange($event)"
+          ></nz-select>
+        </nz-form-control>
+      </nz-form-item>
+      
+      <ng-template #typeUserError>
+        <span *ngIf="formm.get('type_user')?.hasError('required')">
+          This field is required
+        </span>
+      </ng-template>
+      
+      <div nz-col nzSpan="24" *ngIf="extraForm === 'Doctor'">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="speciality_id"
+            style="text-align: center;"
+          >
+            Speciality:
+          </nz-form-label>
+          <nz-form-control
+            [nzSm]="16"
+            [nzXs]="24"
+          >
+            <nz-select
+              formControlName="speciality_id"
+              name="speciality_id"
+              nzPlaceHolder="Select speciality"
+            >
+              <nz-option
+                *ngFor="let o of specialities"
+                [nzLabel]="o.description"
+                [nzValue]="o.id"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      
+      <div nz-col nzSpan="24" *ngIf="extraForm === 'Doctor'">
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="number_license"
+            style="text-align: center;"
+          >
+            Number License:
+          </nz-form-label>
+          <nz-form-control
+            [nzSm]="16"
+            [nzXs]="24"
+          >
+            <input
+              nz-input
+              name="number_license"
+              formControlName="number_license"
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      
+      <div nz-col nzSpan="24" *ngIf="extraForm === 'Doctor' || extraForm === 'Seller'">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="store_id"
+            style="text-align: center;"
+          >
+            Store:
+          </nz-form-label>
+          <nz-form-control
+            [nzSm]="16"
+            [nzXs]="24"
+          >
+            <nz-select
+              (ngModelChange)="storeChange($event)"
+              formControlName="store_id"
+              name="store_id"
+              nzPlaceHolder="Select store"
+            >
+              <nz-option
+                *ngFor="let o of stores"
+                [nzLabel]="o.name"
+                [nzValue]="o.id"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      
+      <div nz-col nzSpan="24" *ngIf="extraForm === 'Doctor'">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="office_id"
+            style="text-align: center;"
+          >
+            Office:
+          </nz-form-label>
+          <nz-form-control
+            [nzSm]="16"
+            [nzXs]="24"
+          >
+            <nz-select
+              formControlName="office_id"
+              name="office_id"
+              nzPlaceHolder="Select office"
+            >
+              <nz-option
+                *ngFor="let o of officesToDisplay"
+                [nzLabel]="o.name"
+                [nzValue]="o.id"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>    
+    </nz-spin> 
+  </form>
+
+  <ng-template #footerTpl>
+    <div style="display: flex; float: right;">
+      <button
+        nz-button
+        style="margin-right: 8px;"
+        (click)="close()"
+      >
+        Close
+      </button>
+      <button
+        nz-button
+        nzType="primary"
+        (click)="submit()"
+      >
+        Save
+      </button>
+    </div>
+  </ng-template>
+  
+</nz-drawer>

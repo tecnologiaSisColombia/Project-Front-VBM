@@ -9,7 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LoginService } from '../../services/login/login.service';
 import { PasswordResetButtonComponent } from '../../reusable-components';
 import { CommonModule } from '@angular/common';
-import { passwordRegex } from '../../utils/password_regex';
+import { passwordRegex } from '../../utils/regex/password_regex';
 import { AuthService } from '../../services/auth/auth.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 
@@ -32,7 +32,6 @@ export class ChangePasswordComponent implements OnInit {
   btnActive: boolean = false;
   passwordRight: boolean = false;
   passwordConfirm: boolean = false;
-
   regex = passwordRegex;
 
   constructor(
@@ -44,8 +43,20 @@ export class ChangePasswordComponent implements OnInit {
     private msg: NzMessageService
   ) {
     this.changePasswordForm = this.fb.group({
-      new_password: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', [Validators.required, Validators.minLength(8)]],
+      new_password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(8)
+        ]
+      ],
+      confirmPassword: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(8)
+        ]
+      ],
     });
   }
 
@@ -99,8 +110,7 @@ export class ChangePasswordComponent implements OnInit {
         },
         error: (error) => {
           this.isLoading = false;
-          const errorMessage = error.error?.error?.message || 'Change Password failed';
-          this.msg.error(errorMessage);
+          this.msg.error(error.error?.error?.message || 'Change Password failed');
         },
       });
     }

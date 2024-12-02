@@ -9,9 +9,7 @@ import { environment } from '../../../environments/environment';
 export class LoginService {
     private baseUrl = environment.apiUrl
 
-    constructor(
-        private http: HttpClient
-      ) {}
+    constructor(private http: HttpClient) { }
 
     signIn(username: string, password: string): Observable<any> {
         return this.http.post(`${this.baseUrl}UserAccessControl/AuthUsers`, {

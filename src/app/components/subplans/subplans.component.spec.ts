@@ -8,8 +8,7 @@ describe('SubplansComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SubplansComponent]
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SubplansComponent);
     component = fixture.componentInstance;

@@ -1,30 +1,19 @@
 <div class="title-page">
   <div class="breadcrumb-container">
     <nz-breadcrumb>
-      <nz-breadcrumb-item>
-        Mar Chiquita
-      </nz-breadcrumb-item>
-      <nz-breadcrumb-item>
-        Insurers
-      </nz-breadcrumb-item>
-      <nz-breadcrumb-item>
-        Coverages
-      </nz-breadcrumb-item>
-      <nz-breadcrumb-item>
-        Subplans
-      </nz-breadcrumb-item>
+      <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Insurers</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Coverages</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Subplans</nz-breadcrumb-item>
     </nz-breadcrumb>
   </div>
   <div class="btn-container">
-    <button nz-button nzType="primary" (click)="openDrawer()">
-      New Subplan
-    </button>
+    <button nz-button nzType="primary" (click)="openDrawer()">New Subplan</button>
   </div>
 </div>
 
 <div class="main-table">
   <div class="table-filters">
-    <!-- name -->
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -34,10 +23,7 @@
         (ngModelChange)="search($event, 'name')"
       />
     </nz-input-group>
-    <ng-template #suffixIconSearch>
-      <span nz-icon nzType="search"></span>
-    </ng-template>
-    <!-- payer id -->
+  
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -47,10 +33,7 @@
         (ngModelChange)="search($event, 'group')"
       />
     </nz-input-group>
-    <ng-template #suffixIconSearch>
-      <span nz-icon nzType="search"></span>
-    </ng-template>
-    <!-- address -->
+  
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -60,10 +43,7 @@
         (ngModelChange)="search($event, 'plan')"
       />
     </nz-input-group>
-    <ng-template #suffixIconSearch>
-      <span nz-icon nzType="search"></span>
-    </ng-template>
-    <!-- Phone -->
+  
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -73,16 +53,18 @@
         (ngModelChange)="search($event, 'planContract')"
       />
     </nz-input-group>
+  
     <ng-template #suffixIconSearch>
       <span nz-icon nzType="search"></span>
     </ng-template>
   </div>
-  <nz-table
-    #basicTable
-    [nzData]="dataToDisplay"
-    [nzFrontPagination]="false"
-    [nzLoading]="isDataLoading"
-  >
+  
+<nz-table
+  #basicTable
+  [nzData]="dataToDisplay"
+  [nzFrontPagination]="false"
+  [nzLoading]="isDataLoading"
+>
     <thead>
       <tr>
         <th>Plan</th>
@@ -140,7 +122,7 @@
         </td>
       </tr>
     </tbody>
-  </nz-table>
+</nz-table>
   <nz-pagination
     [nzPageIndex]="page"
     [nzResponsive]="true"
@@ -151,7 +133,6 @@
   ></nz-pagination>
 </div>
 
-<!-- Client drawer -->
 <nz-drawer
   [nzBodyStyle]="{ overflow: 'auto' }"
   [nzMaskClosable]="false"
@@ -166,7 +147,6 @@
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="drawerLoader">
       <form nz-form [formGroup]="form" (ngSubmit)="submit()">
-        <!-- Plan -->
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
@@ -185,7 +165,7 @@
               nzShowSearch
               nzAllowClear
               id="insurer"
-              nzPlaceHolder="Select a Insurer"
+              nzPlaceHolder="Select an Insurer"
               formControlName="plan"
             >
               <nz-option
@@ -196,7 +176,7 @@
             </nz-select>
           </nz-form-control>
         </nz-form-item>
-        <!-- Name -->
+
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
@@ -209,12 +189,20 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
+            [nzErrorTip]="nameError"
           >
             <input nz-input formControlName="name" id="name" />
           </nz-form-control>
         </nz-form-item>
-        <!-- Group -->
+        <ng-template #nameError>
+          <span *ngIf="form.get('name')?.hasError('required')">
+            This field is required
+          </span>
+          <span *ngIf="form.get('name')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
+        </ng-template>
+
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
@@ -227,12 +215,20 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
+            [nzErrorTip]="groupError"
           >
             <input nz-input formControlName="group" id="group" />
           </nz-form-control>
         </nz-form-item>
-        <!-- Plan contract -->
+        <ng-template #groupError>
+          <span *ngIf="form.get('group')?.hasError('required')">
+            This field is required
+          </span>
+          <span *ngIf="form.get('group')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
+        </ng-template>
+
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
@@ -240,12 +236,12 @@
             nzFor="plan_contract"
             style="text-align: center;"
           >
-            Plan contract
+            Plan Contract
           </nz-form-label>
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
+            [nzErrorTip]="contractError"
           >
             <input
               nz-input
@@ -254,7 +250,15 @@
             />
           </nz-form-control>
         </nz-form-item>
-        <!-- visual_test_medicare -->
+        <ng-template #contractError>
+          <span *ngIf="form.get('plan_contract')?.hasError('required')">
+            This field is required
+          </span>
+          <span *ngIf="form.get('plan_contract')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
+        </ng-template>
+
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
@@ -262,7 +266,7 @@
             nzFor="visual_test_medicare"
             style="text-align: center;"
           >
-            Visual test medicare $
+            Visual Test Medicare $
           </nz-form-label>
           <nz-form-control
             [nzSm]="16"
@@ -277,7 +281,7 @@
             />
           </nz-form-control>
         </nz-form-item>
-        <!-- visual_surgery_medicare -->
+
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
@@ -285,7 +289,7 @@
             nzFor="visual_surgery_medicare"
             style="text-align: center;"
           >
-            Visual surgery medicare $
+            Visual Surgery Medicare $
           </nz-form-label>
           <nz-form-control
             [nzSm]="16"
@@ -300,7 +304,7 @@
             />
           </nz-form-control>
         </nz-form-item>
-        <!-- routine_visual_test -->
+
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
@@ -308,7 +312,7 @@
             nzFor="routine_visual_test"
             style="text-align: center;"
           >
-            Routine visual test $
+            Routine Visual Test $
           </nz-form-label>
           <nz-form-control
             [nzSm]="16"
@@ -323,7 +327,7 @@
             />
           </nz-form-control>
         </nz-form-item>
-        <!-- vision_elements -->
+
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
@@ -331,7 +335,7 @@
             nzFor="vision_elements"
             style="text-align: center;"
           >
-            Vision element $
+            Vision Elements $
           </nz-form-label>
           <nz-form-control
             [nzSm]="16"
@@ -349,6 +353,7 @@
       </form>
     </nz-spin>
   </ng-container>
+
   <ng-template #footerTpl>
     <div style="display: flex; float: right;">
       <button

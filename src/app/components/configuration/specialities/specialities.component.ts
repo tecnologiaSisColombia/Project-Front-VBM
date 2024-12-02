@@ -43,7 +43,7 @@ import Swal from 'sweetalert2';
     NzSwitchModule,
   ],
   templateUrl: './specialities.component.html',
-  styleUrl: './specialities.component.css',
+  styleUrls: ['./specialities.component.css', '../../../../animations/styles.css'],
 })
 export class SpecialitiesComponent {
   descriptionSearch: any = null;
@@ -58,7 +58,6 @@ export class SpecialitiesComponent {
   count_records = 0;
   page_size = 10;
   page = 1;
-
   form: UntypedFormGroup;
   private searchNameSubject: Subject<{ type: string; value: string }> =
     new Subject();
@@ -69,7 +68,13 @@ export class SpecialitiesComponent {
     private msgService: NzMessageService
   ) {
     this.form = this.fb.group({
-      description: [null, [Validators.required]],
+      description: [
+        null, 
+        [
+          Validators.required, 
+          Validators.pattern(/^(?!\s*$).+/)
+        ]
+      ],
     });
 
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
@@ -89,8 +94,11 @@ export class SpecialitiesComponent {
     this.isDataLoading = true;
     this.specialitiesService
       .get(
-        { name: this.descriptionSearch, description: this.descriptionSearch },
-        this.page,
+        { 
+          name: this.descriptionSearch, 
+          description: this.descriptionSearch
+        }, 
+        this.page, 
         this.page_size
       )
       .subscribe({
@@ -156,7 +164,7 @@ export class SpecialitiesComponent {
   update(id: number, data: any) {
     this.isDataLoading = true;
     this.specialitiesService.update(id, data).subscribe({
-      next: (res: any) => {
+      next: () => {
         this.msgService.success('Specialty updated successfully');
         this.isDataLoading = false;
         this.closeDrawer();
@@ -176,9 +184,8 @@ export class SpecialitiesComponent {
       if (this.isUpdating) {
         return this.update(this.dataDrawerCahe.id, this.form.value);
       }
-
       this.specialitiesService.create(this.form.value).subscribe({
-        next: (res: any) => {
+        next: () => {
           this.msgService.success('New Speciality created');
           this.isDataLoading = false;
           this.getInitData();
@@ -206,16 +213,14 @@ export class SpecialitiesComponent {
 
   search(value: string, type: string) {
     this.isDataLoading = true;
-
     this.searchNameSubject.next({ type, value });
-
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
       next: () => {
         this.isDataLoading = false;
       },
       error: (err) => {
-        this.isDataLoading = false;
-        this.msgService.error('Error during search');
+        this.isDataLoading = false; 
+        this.msgService.error(JSON.stringify(err.error));
       },
     });
   }

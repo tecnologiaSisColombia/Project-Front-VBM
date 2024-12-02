@@ -9,7 +9,8 @@
         class="header-menu"
         style="text-align: right;"
       >
-        <nz-avatar
+        <nz-avatar  
+          style="cursor: pointer;"
           nzIcon="user"
           nz-dropdown
           nzTrigger="click"
@@ -25,7 +26,7 @@
     <nz-layout>
       <nz-sider nzCollapsible nzWidth="280px">
         <ul nz-menu nzTheme="dark" nzMode="inline">
-          <li nz-submenu nzTitle="Configuration" nzIcon="lock">
+          <li nz-submenu nzTitle="Resource Management" nzIcon="check-circle">
             <ul>
               <li nz-menu-item>
                 <a routerLink="/config/specialities">Specialities</a>
@@ -47,7 +48,7 @@
           </li>
           <li
             nz-submenu
-            nzTitle="Parameterize Insurers and Coverages"
+            nzTitle="Configure Insurers / Coverages"
             nzIcon="profile"
           >
             <ul>
@@ -59,7 +60,7 @@
               </li>
             </ul>
           </li>
-          <li nz-submenu nzTitle="Manage Product Catalogs" nzIcon="shopping">
+          <!-- <li nz-submenu nzTitle="Manage Product Catalogs" nzIcon="shopping">
             <ul>
               <li nz-menu-item>Create Sub-catalogs by Covers and Insurers</li>
               <li nz-menu-item>Modify Sub-catalogs by Covers and Insurers</li>
@@ -107,7 +108,7 @@
               <li nz-menu-item>Generate General Operation Report</li>
               <li nz-menu-item>Generate General Billing Report</li>
             </ul>
-          </li>
+          </li> -->
         </ul>
       </nz-sider>
       <nz-layout class="inner-layout">

@@ -2,6 +2,7 @@
   <div class="breadcrumb-container">
     <nz-breadcrumb>
       <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Control Access</nz-breadcrumb-item>
       <nz-breadcrumb-item>User management</nz-breadcrumb-item>
     </nz-breadcrumb>
   </div>
@@ -13,45 +14,33 @@
   </div>
 </div>
 
-<div class="header-actions">
-  <nz-input-group [nzSuffix]="suffixIconSearch">
-    <input
-      nz-input
-      placeholder="Username"
-      [(ngModel)]="usernameSearch"
-      (ngModelChange)="search($event, 'username')"
-    />
-  </nz-input-group>
-  <ng-template #suffixIconSearch>
-    <span nz-icon nzType="search"></span>
-  </ng-template>
-
-  <nz-input-group [nzSuffix]="suffixIconSearch">
-    <input
-      nz-input
-      placeholder="First Name"
-      [(ngModel)]="nameSearch"
-      (ngModelChange)="search($event, 'name')"
-    />
-  </nz-input-group>
-  <ng-template #suffixIconSearch>
-    <span nz-icon nzType="search"></span>
-  </ng-template>
-
-  <nz-input-group [nzSuffix]="suffixIconSearch">
-    <input
-      nz-input
-      placeholder="Last Name"
-      [(ngModel)]="lastnameSearch"
-      (ngModelChange)="search($event, 'lastname')"
-    />
-  </nz-input-group>
-  <ng-template #suffixIconSearch>
-    <span nz-icon nzType="search"></span>
-  </ng-template>
-</div>
-
-<div class="table-container">
+<div class="main-table">
+  <div class="header-actions">
+    <nz-input-group [nzSuffix]="suffixIconSearch">
+      <input
+        nz-input
+        placeholder="Username"
+        [(ngModel)]="searchQuery.username"
+        (ngModelChange)="onSearch('username')"
+      />
+    </nz-input-group>
+    <ng-template #suffixIconSearch>
+      <span nz-icon nzType="search"></span>
+    </ng-template>
+  
+    <nz-input-group [nzSuffix]="suffixIconSearch">
+      <input
+        nz-input
+        placeholder="Full Name"
+        [(ngModel)]="searchQuery.fullName"
+        (ngModelChange)="onSearch('fullName')"
+      />
+    </nz-input-group>
+    <ng-template #suffixIconSearch>
+      <span nz-icon nzType="search"></span>
+    </ng-template>
+  </div>  
+  
   <nz-table
     #userTable
     [nzBordered]="false"
@@ -69,7 +58,7 @@
         <th>Last Name</th>
         <th>Email</th>
         <th>Phone</th>
-        <th>Status</th>
+        <th>Created</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -77,9 +66,7 @@
       <tr *ngFor="let user of userTable.data">
         <td>
           {{
-            user.extra_data
-              ? mapUserRole(user.extra_data[0].user_type_id)
-              : "Admin"
+            user.extra_data? mapUserRole(user.extra_data[0].user_type_id): "Admin"
           }}
         </td>
         <td>{{ user.username }}</td>
@@ -87,18 +74,12 @@
         <td>{{ user.last_name }}</td>
         <td>{{ user.email }}</td>
         <td>{{ user.phone }}</td>
-        <td>
-          <nz-tag [nzColor]="user.is_active ? 'green' : 'red'">
-            {{ user.is_active ? "Active" : "Inactive" }}
-          </nz-tag>
-        </td>
+        <td>{{ user.created | date }}</td>
         <td>
           <nz-switch
             [(ngModel)]="user.is_active"
             (ngModelChange)="toggleUserStatus(user)"
             [nzSize]="'small'"
-            [nzCheckedChildren]="''"
-            [nzUnCheckedChildren]="''"
           ></nz-switch>
           <nz-demo-modal-locale
             [user]="user"
@@ -117,3 +98,4 @@
     </tbody>
   </nz-table>
 </div>
+

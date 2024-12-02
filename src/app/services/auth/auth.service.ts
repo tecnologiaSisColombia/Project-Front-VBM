@@ -71,7 +71,7 @@ export class AuthService {
       return of({ token: null });
     }
     return this.http
-      .post<any>(this.hostname + 'UserAccessControl/RefreshTokenCognito', {
+      .post<any>(`${this.hostname}UserAccessControl/RefreshTokenCognito`, {
         refresh_token: this.getRefreshToken(),
       })
       .pipe(

@@ -44,7 +44,7 @@ import { S3Service } from '../../services/upload-s3/upload-s3.service';
     NzSwitchModule,
   ],
   templateUrl: './insurers.component.html',
-  styleUrl: './insurers.component.css',
+  styleUrls: ['./insurers.component.css', '../../../animations/styles.css'],
 })
 export class InsurersComponent implements OnInit {
   form: UntypedFormGroup;
@@ -63,9 +63,7 @@ export class InsurersComponent implements OnInit {
   count_records = 0;
   page_size = 10;
   page = 1;
-
-  private searchNameSubject: Subject<{ type: string; value: string }> =
-    new Subject();
+  private searchNameSubject: Subject<{ type: string; value: string }> = new Subject();
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -74,12 +72,12 @@ export class InsurersComponent implements OnInit {
     private s3Service: S3Service
   ) {
     this.form = this.fb.group({
-      logo: [null, [Validators.required]],
-      logo_description: [null, [Validators.required]],
-      payer_id: [null, [Validators.required]],
-      phone: [null, [Validators.required]],
-      address: [null, [Validators.required]],
-      name: [null, [Validators.required]],
+      logo: [null],
+      logo_description: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      payer_id: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      phone: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      address: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
     });
 
     this.searchNameSubject
@@ -89,7 +87,6 @@ export class InsurersComponent implements OnInit {
         if (data.type === 'address') this.addresSearch = data.value;
         if (data.type === 'phone') this.phoneSearch = data.value;
         if (data.type === 'payerId') this.payerIdSearch = data.value;
-
         this.page = 1;
         this.getInitData();
       });
@@ -120,7 +117,6 @@ export class InsurersComponent implements OnInit {
         },
         error: (err) => {
           this.isDataLoading = false;
-          console.log(err);
           this.msgService.error(JSON.stringify(err.error));
         },
       });
@@ -146,8 +142,8 @@ export class InsurersComponent implements OnInit {
     this.dataDrawerCahe = null;
     this.drawerTitle = '';
     this.form.reset({
-      logo: 'null',
-      logo_description: 'null',
+      logo: null,
+      logo_description: null,
       payer_id: null,
       phone: null,
       address: null,
@@ -166,7 +162,7 @@ export class InsurersComponent implements OnInit {
       if (result.isConfirmed) {
         this.isDataLoading = true;
         this.insurerService.deleteInsurer(id).subscribe({
-          next: (res: any) => {
+          next: () => {
             this.msgService.success('Insurer deleted successfully');
             this.isDataLoading = false;
             this.getInitData();
@@ -183,7 +179,7 @@ export class InsurersComponent implements OnInit {
   update(id: number, data: any): void {
     this.isDataLoading = true;
     this.insurerService.updateInsurer(id, data).subscribe({
-      next: (res: any) => {
+      next: () => {
         this.msgService.success('Insurer updated successfully');
         this.isDataLoading = false;
         this.closeDrawer();
@@ -199,42 +195,46 @@ export class InsurersComponent implements OnInit {
 
   onFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
+
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
+      const validFileTypes = ['image/jpeg', 'image/png'];
+
+      if (!validFileTypes.includes(file.type)) {
+        this.msgService.error('The image will not be uploaded only JPG and PNG files');
+        this.form.patchValue({ logo: null });
+        return;
+      }
+      
       this.form.patchValue({ logo: file });
       this.form.get('logo')?.updateValueAndValidity();
-    } else {
-      this.form.get('logo')?.setErrors({ required: true });
     }
   }
 
   submit(): void {
     if (this.form.valid) {
+      this.drawerLoader = true;
       const formData = this.form.value;
 
-      if (formData.logo && formData.logo instanceof File) {
-        const allowedTypes = ['image/jpeg', 'image/png'];
-        if (!allowedTypes.includes(formData.logo.type)) {
-          this.msgService.error('Only image files (JPEG, PNG) are allowed.');
-          this.drawerLoader = false;
-          this.form.get('logo')?.setErrors({ invalidType: true });
-          return;
-        }
+      if (!formData.logo) {
+        formData.logo = this.isUpdating ? this.dataDrawerCahe.logo : 'None';
+      }
 
-        this.drawerLoader = true;
+      const logoFile = this.form.get('logo')?.value;
 
+      if (logoFile instanceof File) {
         const uploadData = new FormData();
-        uploadData.append('logo', formData.logo);
         uploadData.append('name', formData.name);
+        uploadData.append('logo', logoFile);
 
         this.s3Service.uploadLogo(uploadData).subscribe({
-          next: (response) => {
+          next: (response: any) => {
             formData.logo = response.url;
             this.saveOrUpdate(formData);
           },
-          error: () => {
+          error: (error: any) => {
             this.drawerLoader = false;
-            this.msgService.error('Error uploading logo');
+            this.msgService.error(JSON.stringify(error.error));
           },
         });
       } else {
@@ -259,10 +259,10 @@ export class InsurersComponent implements OnInit {
           this.getInitData();
           this.closeDrawer();
         },
-        error: (err) => {
+        error: (error) => {
           this.drawerLoader = false;
           this.isDataLoading = false;
-          this.msgService.error(JSON.stringify(err.error));
+          this.msgService.error(JSON.stringify(error.error));
         },
       });
     }
@@ -274,16 +274,14 @@ export class InsurersComponent implements OnInit {
 
   search(value: string, type: string) {
     this.isDataLoading = true;
-
     this.searchNameSubject.next({ type, value });
-
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
       next: () => {
         this.isDataLoading = false;
       },
-      error: (err) => {
+      error: (error) => {
         this.isDataLoading = false;
-        this.msgService.error('Error during search');
+        this.msgService.error(JSON.stringify(error.error));
       },
     });
   }

@@ -49,29 +49,25 @@ import { SubplanService } from '../../services/insurers/subplan.service';
   styleUrl: './subplans.component.css',
 })
 export class SubplansComponent implements OnInit {
-  @Input() planData: any;
-
   form: UntypedFormGroup;
   plans: any[] = [];
-
   isDataLoading = false;
   dataToDisplay: any[] = [];
   num_pages = 1;
   count_records = 0;
   page_size = 10;
   page = 1;
-
   visible = false;
   drawerLoader = false;
   drawerTitle = '';
   dataDrawerCahe: any;
   isUpdating = false;
-
-  private searchNameSubject = new Subject<{ type: string; value: string }>();
   nameSearch: any = null;
   planSearch: any = null;
   groupSearch: any = null;
   planContractSearch: any = null;
+  private searchNameSubject = new Subject<{ type: string; value: string }>();
+  @Input() planData: any;
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -81,9 +77,9 @@ export class SubplansComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       plan: [null, [Validators.required]],
-      name: [null, [Validators.required]],
-      group: [null, [Validators.required]],
-      plan_contract: [null, [Validators.required]],
+      name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      group: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      plan_contract: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       visual_test_medicare: [null, [Validators.required]],
       visual_surgery_medicare: [null, [Validators.required]],
       routine_visual_test: [null, [Validators.required]],
@@ -95,7 +91,6 @@ export class SubplansComponent implements OnInit {
       if (data.type === 'plan') this.planSearch = data.value;
       if (data.type === 'group') this.groupSearch = data.value;
       if (data.type === 'planContract') this.planContractSearch = data.value;
-
       this.page = 1;
       this.getInitData();
     });
@@ -123,7 +118,6 @@ export class SubplansComponent implements OnInit {
         },
         error: (err) => {
           this.isDataLoading = false;
-          console.error(err);
           this.msgService.error(JSON.stringify(err.error));
         },
       });
@@ -210,7 +204,6 @@ export class SubplansComponent implements OnInit {
       if (this.isUpdating) {
         return this.update(this.dataDrawerCahe.id, this.form.value);
       }
-
       this.subplanService.createSubPlan(this.form.value).subscribe({
         next: () => {
           this.msgService.success('New Subplan created');
@@ -241,14 +234,12 @@ export class SubplansComponent implements OnInit {
 
   search(value: string, type: string) {
     this.isDataLoading = true;
-
     this.searchNameSubject.next({ type, value });
-
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
       next: () => {
         this.isDataLoading = false;
       },
-      error: (err) => {
+      error: () => {
         this.isDataLoading = false;
         this.msgService.error('Error during search');
       },

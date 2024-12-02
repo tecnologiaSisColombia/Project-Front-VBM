@@ -43,27 +43,23 @@ import { StoresService } from 'app/services/config/stores.service';
     NzSwitchModule,
   ],
   templateUrl: './stores.component.html',
-  styleUrl: './stores.component.css',
+  styleUrls: ['./stores.component.css', '../../../../animations/styles.css'],
 })
 export class StoresComponent implements OnInit {
   form: UntypedFormGroup;
-
   isDataLoading = false;
   dataToDisplay: any[] = [];
-
   visible = false;
   drawerLoader = false;
   drawerTitle = '';
   dataDrawerCache: any;
   isUpdating = false;
-
   num_pages = 1;
   count_records = 0;
   page_size = 10;
   page = 1;
-
-  private searchNameSubject = new Subject<{ type: string; value: string }>();
   nameSearch: any = null;
+  private searchNameSubject = new Subject<{ type: string; value: string }>();
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -71,7 +67,13 @@ export class StoresComponent implements OnInit {
     private msgService: NzMessageService
   ) {
     this.form = this.fb.group({
-      name: [null, [Validators.required]],
+      name: [
+        null, 
+        [
+          Validators.required,
+          Validators.pattern(/^(?!\s*$).+/)
+        ]
+      ],
     });
 
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
@@ -174,7 +176,6 @@ export class StoresComponent implements OnInit {
       if (this.isUpdating) {
         return this.update(this.dataDrawerCache.id, this.form.value);
       }
-
       this.storesService.create(this.form.value).subscribe({
         next: () => {
           this.msgService.success('New Store created');
@@ -189,7 +190,12 @@ export class StoresComponent implements OnInit {
         },
       });
     } else {
-      this.form.markAllAsTouched();
+      Object.values(this.form.controls).forEach((control) => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
     }
   }
 
@@ -199,16 +205,14 @@ export class StoresComponent implements OnInit {
 
   search(value: string, type: string) {
     this.isDataLoading = true;
-
     this.searchNameSubject.next({ type, value });
-
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
       next: () => {
         this.isDataLoading = false;
       },
       error: (err) => {
         this.isDataLoading = false;
-        this.msgService.error('Error during search');
+        this.msgService.error(JSON.stringify(err.error));
       },
     });
   }
