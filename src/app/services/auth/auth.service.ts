@@ -70,6 +70,7 @@ export class AuthService {
     if (!refreshToken) {
       return of({ token: null });
     }
+    
     return this.http
       .post<any>(`${this.hostname}UserAccessControl/RefreshTokenCognito`, {
         refresh_token: this.getRefreshToken(),

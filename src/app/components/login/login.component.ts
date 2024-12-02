@@ -1,11 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { PasswordToggleComponent, PasswordResetButtonComponent } from '../../reusable-components';
 import { LoginService } from '../../services/login/login.service';
 import { AuthService } from '../../services/auth/auth.service';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzCardModule } from 'ng-zorro-antd/card';
 
 @Component({
   selector: 'app-login',
@@ -13,9 +22,12 @@ import { AuthService } from '../../services/auth/auth.service';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    PasswordToggleComponent,
-    PasswordResetButtonComponent,
     RouterLink,
+    NzButtonModule,
+    NzInputModule,
+    NzFormModule,
+    NzIconModule,
+    NzCardModule
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
@@ -23,6 +35,7 @@ import { AuthService } from '../../services/auth/auth.service';
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   isLoading: boolean = false;
+  showPassword: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -32,59 +45,64 @@ export class LoginComponent implements OnInit {
     private msg: NzMessageService
   ) {
     this.loginForm = this.fb.group({
-      username: ['', [Validators.required]],
-      password: ['', [Validators.required]],
+      username: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      password: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
     });
   }
 
   ngOnInit(): void { }
 
   signIn(): void {
-    if (this.isLoading) return;
+    if (this.loginForm.valid) {
+      this.isLoading = true;
+      const { username, password } = this.loginForm.value;
 
-    const { username, password } = this.loginForm.value;
-    
-    if (!username.trim() || !password.trim()) {
-      this.msg.error(`${!username.trim() ? 'Username' : 'Password'} is required`);
-      return;
-    }
+      this.loginService.signIn(username, password).subscribe({
+        next: (res: any) => {
+          res.properties.user = {
+            id: res.attributes.find((e: any) => e.Name === 'sub').Value,
+            email: res.attributes.find((e: any) => e.Name === 'email').Value,
+            username: res.attributes.find((e: any) => e.Name === 'username').Value,
+          };
 
-    this.isLoading = true;
+          localStorage.removeItem('auth_challenge');
 
-    this.loginService.signIn(username, password).subscribe({
-      next: (res: any) => {
-        res.properties.user = {
-          id: res.attributes.find((e: any) => e.Name === 'sub').Value,
-          email: res.attributes.find((e: any) => e.Name === 'email').Value,
-          username: res.attributes.find((e: any) => e.Name === 'username').Value,
-        };
+          this.authService.doLogin(res.properties);
 
-        localStorage.removeItem('auth_challenge');
-
-        this.authService.doLogin(res.properties);
-
-        this.router.navigate(['/home']).then(() => {
+          this.router.navigate(['/home']).then(() => {
+            this.isLoading = false;
+          });
+        },
+        error: (error) => {
           this.isLoading = false;
-        });
-      },
-      error: (error) => {
-        this.isLoading = false;
-        if (error.error?.error?.code === 'NewPasswordRequired') {
-          localStorage.setItem('auth_challenge', 'NewPasswordRequired');
-          this.router
-            .navigate(['/change_password'], {
-              queryParams: {
-                session: error.error.error.session,
-                username,
-              },
-            })
-            .then(() => {
-              this.isLoading = false;
-            });
-        } else {
-          this.msg.error(error.error?.error?.message || 'Login failed');
+          if (error.error?.error?.code === 'NewPasswordRequired') {
+            localStorage.setItem('auth_challenge', 'NewPasswordRequired');
+            this.router
+              .navigate(['/change_password'], {
+                queryParams: {
+                  session: error.error.error.session,
+                  username,
+                },
+              })
+              .then(() => {
+                this.isLoading = false;
+              });
+          } else {
+            this.msg.error(JSON.stringify(error?.error?.error?.message || 'Login failed'));
+          }
+        },
+      });
+    } else {
+      Object.values(this.loginForm.controls).forEach((control) => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
         }
-      },
-    });
+      });
+    }
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 }

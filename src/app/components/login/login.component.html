@@ -1,44 +1,90 @@
 <div class="layout-container">
-  <div class="container">
-    <form [formGroup]="loginForm" class="box" [class.disabled]="isLoading">
+  <nz-card class="container" [nzBordered]="false" [nzBodyStyle]="{ padding: '24px' }">
+    <form [formGroup]="loginForm" [class.disabled]="isLoading">
       <h4>Login</h4>
       <h5>Sign in to your account</h5>
 
-      <div class="input-container">
-        <i class="fas fa-user icon"></i>
-        <input
-          type="text"
-          formControlName="username"
-          placeholder="Username"
-          autocomplete="off"
-        />
+      <nz-form-item>
+        <nz-form-control 
+          [nzErrorTip]="usernameErrorTpl">
+          <nz-input-group 
+            [nzPrefix]="prefixUserIcon">
+            <input 
+              nz-input 
+              type="text" 
+              formControlName="username" 
+              placeholder="Username" 
+              autocomplete="off" 
+            />
+          </nz-input-group>
+          <ng-template #prefixUserIcon>
+            <i nz-icon nzType="user" nzTheme="outline"></i>
+          </ng-template>
+          <ng-template #usernameErrorTpl>
+            <span *ngIf="loginForm.get('username')?.hasError('required')">
+              Username is required
+            </span>
+            <span *ngIf="loginForm.get('username')?.hasError('pattern')">
+              This field cannot be empty or contain only spaces
+            </span>
+          </ng-template>          
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control 
+          [nzErrorTip]="passwordErrorTpl">
+          <nz-input-group 
+            [nzPrefix]="prefixLockIcon"
+            [nzSuffix]="suffixPasswordIcon">
+            <input 
+              nz-input 
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="Password" 
+              formControlName="password" 
+              autocomplete="off" 
+            />
+          </nz-input-group>
+          <ng-template #prefixLockIcon>
+            <i nz-icon nzType="lock" nzTheme="outline"></i>
+          </ng-template>
+          <ng-template #suffixPasswordIcon>
+            <i
+              *ngIf="loginForm.get('password')?.value"
+              nz-icon
+              [nzType]="showPassword ? 'eye-invisible' : 'eye'"
+              nzTheme="outline"
+              (click)="togglePasswordVisibility()"
+              style="cursor: pointer"
+            ></i>
+          </ng-template>          
+          <ng-template #passwordErrorTpl>
+            <span *ngIf="loginForm.get('password')?.hasError('required')">
+              Password is required
+            </span>
+            <span *ngIf="loginForm.get('password')?.hasError('pattern')">
+              This field cannot be empty or contain only spaces
+            </span>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <div class="text-right">
+        <a routerLink="/reset_password" class="link">Forgot Password?</a>
       </div>
 
-      <div class="input-container">
-        <i class="fas fa-lock icon"></i>
-        <input
-          [type]="passwordToggle.passwordFieldType"
-          placeholder="Password"
-          formControlName="password"
-          autocomplete="off"
-        />
-        <app-password-toggle
-          [showEyeIcon]="!!loginForm.get('password')?.value"
-          #passwordToggle
-        ></app-password-toggle>
-      </div>
-
-      <div class="link-container">
-        <a routerLink="/reset_password" class="forget-pass">Forgot Password?</a>
-      </div>
-
-      <app-button
-        label="Sign in"
-        [isLoading]="isLoading"
-        (buttonClick)="signIn()"
-        [btnActive]="true"
-        [disabled]="isLoading"
-      ></app-button>
+      <nz-form-item>
+        <nz-form-control>
+          <button 
+            nz-button 
+            nzType="primary" 
+            [nzLoading]="isLoading" 
+            [disabled]="loginForm.invalid || isLoading"
+            (click)="signIn()">
+            Sign in
+          </button>
+        </nz-form-control>
+      </nz-form-item>
     </form>
-  </div>
+  </nz-card>
 </div>

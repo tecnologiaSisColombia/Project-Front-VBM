@@ -7,19 +7,26 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoginService } from '../../services/login/login.service';
-import { PasswordResetButtonComponent } from '../../reusable-components';
 import { CommonModule } from '@angular/common';
-import { passwordRegex } from '../../utils/regex/password_regex';
 import { AuthService } from '../../services/auth/auth.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzCardModule } from 'ng-zorro-antd/card';
 
 @Component({
   selector: 'app-change-password',
   standalone: true,
   imports: [
-    PasswordResetButtonComponent,
     ReactiveFormsModule,
     CommonModule,
+    NzButtonModule,
+    NzInputModule,
+    NzFormModule,
+    NzIconModule,
+    NzCardModule,
   ],
   templateUrl: './change-password.component.html',
   styleUrls: ['./change-password.component.css'],
@@ -29,10 +36,7 @@ export class ChangePasswordComponent implements OnInit {
   session: string | null = null;
   username: string | null = null;
   isLoading: boolean = false;
-  btnActive: boolean = false;
-  passwordRight: boolean = false;
-  passwordConfirm: boolean = false;
-  regex = passwordRegex;
+  passwordVisible: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -43,20 +47,8 @@ export class ChangePasswordComponent implements OnInit {
     private msg: NzMessageService
   ) {
     this.changePasswordForm = this.fb.group({
-      new_password: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(8)
-        ]
-      ],
-      confirmPassword: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(8)
-        ]
-      ],
+      new_password: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', [Validators.required, Validators.minLength(8)]],
     });
   }
 
@@ -65,34 +57,27 @@ export class ChangePasswordComponent implements OnInit {
     this.username = this.route.snapshot.queryParamMap.get('username');
   }
 
-  passwordChange(value: string): void {
-    this.passwordRight = this.regex.test(value);
-    this.btnActive =
-      this.passwordRight &&
-      this.passwordConfirm &&
-      !!this.session &&
-      !!this.username;
+  togglePasswordVisibility(): void {
+    this.passwordVisible = !this.passwordVisible;
   }
 
-  confirmPasswordChange(value: string): void {
-    const newPassword = this.changePasswordForm.value.new_password;
-    this.passwordConfirm = value === newPassword;
-    this.btnActive =
-      this.passwordRight &&
-      this.passwordConfirm &&
-      !!this.session &&
-      !!this.username;
+  confirmPasswordChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const value = input.value;
+    const newPassword = this.changePasswordForm.get('new_password')?.value;
+    const passwordsMatch = value === newPassword;
+
+    if (!passwordsMatch) {
+      this.changePasswordForm.get('confirmPassword')?.setErrors({ mismatch: true });
+    } else {
+      this.changePasswordForm.get('confirmPassword')?.setErrors(null);
+    }
   }
 
   changePassword(): void {
-    const { new_password, confirmPassword } = this.changePasswordForm.value;
-
-    if (!this.regex.test(new_password) || new_password !== confirmPassword) {
-      return;
-    }
-
     if (this.username && this.session) {
       this.isLoading = true;
+      const new_password = this.changePasswordForm.get('new_password')?.value;
 
       this.loginService.changeTemporaryPassword(this.username, new_password, this.session).subscribe({
         next: (res: any) => {
@@ -110,7 +95,7 @@ export class ChangePasswordComponent implements OnInit {
         },
         error: (error) => {
           this.isLoading = false;
-          this.msg.error(error.error?.error?.message || 'Change Password failed');
+          this.msg.error(JSON.stringify(error?.error?.error?.message || 'Change password failed'));
         },
       });
     }
