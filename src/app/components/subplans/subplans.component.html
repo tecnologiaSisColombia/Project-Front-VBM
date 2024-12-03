@@ -8,7 +8,9 @@
     </nz-breadcrumb>
   </div>
   <div class="btn-container">
-    <button nz-button nzType="primary" (click)="openDrawer()">New Subplan</button>
+    <button nz-button nzType="primary" (click)="openDrawer()">
+      New Subplan
+    </button>
   </div>
 </div>
 
@@ -23,7 +25,7 @@
         (ngModelChange)="search($event, 'name')"
       />
     </nz-input-group>
-  
+
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -33,7 +35,7 @@
         (ngModelChange)="search($event, 'group')"
       />
     </nz-input-group>
-  
+
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -43,7 +45,7 @@
         (ngModelChange)="search($event, 'plan')"
       />
     </nz-input-group>
-  
+
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -53,22 +55,23 @@
         (ngModelChange)="search($event, 'planContract')"
       />
     </nz-input-group>
-  
+
     <ng-template #suffixIconSearch>
       <span nz-icon nzType="search"></span>
     </ng-template>
   </div>
-  
-<nz-table
-  #basicTable
-  [nzData]="dataToDisplay"
-  [nzFrontPagination]="false"
-  [nzLoading]="isDataLoading"
->
+
+  <nz-table
+    #basicTable
+    [nzData]="dataToDisplay"
+    [nzFrontPagination]="false"
+    [nzLoading]="isDataLoading"
+  >
     <thead>
       <tr>
         <th>Plan</th>
         <th>Name</th>
+        <th>PDS</th>
         <th>Group</th>
         <th>Plan contract</th>
         <th>Visual test medicare</th>
@@ -83,6 +86,7 @@
       <tr *ngFor="let data of basicTable.data">
         <td>{{ data.plan_data.name }}</td>
         <td>{{ data.name }}</td>
+        <td>{{ data.pds == 1 ? "Yes" : "No" }}</td>
         <td>{{ data.group }}</td>
         <td>{{ data.plan_contract }}</td>
         <td>{{ data.visual_test_medicare }}</td>
@@ -122,7 +126,7 @@
         </td>
       </tr>
     </tbody>
-</nz-table>
+  </nz-table>
   <nz-pagination
     [nzPageIndex]="page"
     [nzResponsive]="true"
@@ -152,9 +156,9 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="plan"
-            style="text-align: center;"
+            style="text-align: center"
           >
-            Plan
+            PDS
           </nz-form-label>
           <nz-form-control
             [nzSm]="16"
@@ -164,15 +168,12 @@
             <nz-select
               nzShowSearch
               nzAllowClear
-              id="insurer"
-              nzPlaceHolder="Select an Insurer"
-              formControlName="plan"
+              id="pds"
+              nzPlaceHolder="Select an PDS"
+              formControlName="pds"
             >
-              <nz-option
-                *ngFor="let o of plans"
-                [nzLabel]="o.name"
-                [nzValue]="o.id"
-              ></nz-option>
+              <nz-option nzLabel="Si" nzValue="1"></nz-option>
+              <nz-option nzLabel="No" nzValue="2"></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -182,15 +183,11 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="name"
-            style="text-align: center;"
+            style="text-align: center"
           >
             Name
           </nz-form-label>
-          <nz-form-control
-            [nzSm]="16"
-            [nzXs]="24"
-            [nzErrorTip]="nameError"
-          >
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="nameError">
             <input nz-input formControlName="name" id="name" />
           </nz-form-control>
         </nz-form-item>
@@ -208,15 +205,11 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="group"
-            style="text-align: center;"
+            style="text-align: center"
           >
             Group
           </nz-form-label>
-          <nz-form-control
-            [nzSm]="16"
-            [nzXs]="24"
-            [nzErrorTip]="groupError"
-          >
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="groupError">
             <input nz-input formControlName="group" id="group" />
           </nz-form-control>
         </nz-form-item>
@@ -234,15 +227,11 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="plan_contract"
-            style="text-align: center;"
+            style="text-align: center"
           >
             Plan Contract
           </nz-form-label>
-          <nz-form-control
-            [nzSm]="16"
-            [nzXs]="24"
-            [nzErrorTip]="contractError"
-          >
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="contractError">
             <input
               nz-input
               formControlName="plan_contract"
@@ -264,7 +253,7 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="visual_test_medicare"
-            style="text-align: center;"
+            style="text-align: center"
           >
             Visual Test Medicare $
           </nz-form-label>
@@ -287,7 +276,7 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="visual_surgery_medicare"
-            style="text-align: center;"
+            style="text-align: center"
           >
             Visual Surgery Medicare $
           </nz-form-label>
@@ -310,7 +299,7 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="routine_visual_test"
-            style="text-align: center;"
+            style="text-align: center"
           >
             Routine Visual Test $
           </nz-form-label>
@@ -333,7 +322,7 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="vision_elements"
-            style="text-align: center;"
+            style="text-align: center"
           >
             Vision Elements $
           </nz-form-label>
@@ -355,10 +344,10 @@
   </ng-container>
 
   <ng-template #footerTpl>
-    <div style="display: flex; float: right;">
+    <div style="display: flex; float: right">
       <button
         nz-button
-        style="display: flex; margin-right: 8px;"
+        style="display: flex; margin-right: 8px"
         (click)="closeDrawer()"
       >
         close

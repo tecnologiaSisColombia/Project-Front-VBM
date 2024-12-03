@@ -77,9 +77,13 @@ export class SubplansComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       plan: [null, [Validators.required]],
+      pds: [null, [Validators.required]],
       name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       group: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
-      plan_contract: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      plan_contract: [
+        null,
+        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
+      ],
       visual_test_medicare: [null, [Validators.required]],
       visual_surgery_medicare: [null, [Validators.required]],
       routine_visual_test: [null, [Validators.required]],
@@ -135,6 +139,7 @@ export class SubplansComponent implements OnInit {
   }
 
   openDrawer(): void {
+    this.form.patchValue({ plan: this.planData.id });
     this.visible = true;
     this.drawerTitle = 'New Subplan';
   }
