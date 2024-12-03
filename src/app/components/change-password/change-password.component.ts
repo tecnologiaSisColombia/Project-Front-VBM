@@ -77,9 +77,14 @@ export class ChangePasswordComponent implements OnInit {
   changePassword(): void {
     if (this.username && this.session) {
       this.isLoading = true;
-      const new_password = this.changePasswordForm.get('new_password')?.value;
 
-      this.loginService.changeTemporaryPassword(this.username, new_password, this.session).subscribe({
+      const data = {
+        username: this.username,
+        new_password: this.changePasswordForm.get('new_password')?.value,
+        session: this.session,
+      };
+
+      this.loginService.changeTemporaryPassword(data).subscribe({
         next: (res: any) => {
           res.properties.user = {
             id: res.attributes.find((e: any) => e.Name === 'sub')?.Value,
@@ -100,4 +105,5 @@ export class ChangePasswordComponent implements OnInit {
       });
     }
   }
+
 }
