@@ -46,7 +46,8 @@ export class LoginComponent implements OnInit {
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
-      password: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      password: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/), Validators.minLength(8),
+      ]],
     });
   }
 
@@ -55,9 +56,13 @@ export class LoginComponent implements OnInit {
   signIn(): void {
     if (this.loginForm.valid) {
       this.isLoading = true;
-      const { username, password } = this.loginForm.value;
 
-      this.loginService.signIn(username, password).subscribe({
+      const data = {
+        username: this.loginForm.get('username')?.value,
+        password: this.loginForm.get('password')?.value,
+      };
+
+      this.loginService.signIn(data).subscribe({
         next: (res: any) => {
           res.properties.user = {
             id: res.attributes.find((e: any) => e.Name === 'sub').Value,
@@ -81,7 +86,7 @@ export class LoginComponent implements OnInit {
               .navigate(['/change_password'], {
                 queryParams: {
                   session: error.error.error.session,
-                  username,
+                  username: data.username,
                 },
               })
               .then(() => {

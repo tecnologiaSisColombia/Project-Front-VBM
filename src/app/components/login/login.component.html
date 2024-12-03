@@ -65,6 +65,9 @@
             <span *ngIf="loginForm.get('password')?.hasError('pattern')">
               This field cannot be empty or contain only spaces
             </span>
+            <span *ngIf="loginForm.get('password')?.hasError('minlength')">
+              Password must be at least 8 characters long
+            </span>
           </ng-template>
         </nz-form-control>
       </nz-form-item>

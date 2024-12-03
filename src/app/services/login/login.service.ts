@@ -11,18 +11,11 @@ export class LoginService {
 
     constructor(private http: HttpClient) { }
 
-    signIn(username: string, password: string): Observable<any> {
-        return this.http.post(`${this.baseUrl}UserAccessControl/AuthUsers`, {
-            username,
-            password
-        });
+    signIn(data: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}UserAccessControl/AuthUsers`, data);
     }
 
-    changeTemporaryPassword(username: string, new_password: string, session: string): Observable<any> {
-        return this.http.post(`${this.baseUrl}UserAccessControl/ChangeTemporaryPassword`, {
-            username,
-            new_password,
-            session
-        });
+    changeTemporaryPassword(data: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}UserAccessControl/ChangeTemporaryPassword`, data);
     }
 }

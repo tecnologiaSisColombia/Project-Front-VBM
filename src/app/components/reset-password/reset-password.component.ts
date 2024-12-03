@@ -61,13 +61,13 @@ export class ResetPasswordComponent {
 
           this.resetForm.get('verificationCode')?.setValidators([
             Validators.required,
-            Validators.pattern(/^(?!\s*$).+/)
+            Validators.pattern(/^\d+$/)
           ]);
 
           this.resetForm.get('verificationCode')?.updateValueAndValidity();
 
           this.resetForm.get('newPassword')?.setValidators([
-            Validators.required, Validators.minLength(6)
+            Validators.required, Validators.minLength(8)
           ]);
 
           this.resetForm.get('newPassword')?.updateValueAndValidity();
@@ -111,13 +111,17 @@ export class ResetPasswordComponent {
   }
 
   onConfirmResetPassword(): void {
-    const { verificationCode, newPassword } = this.resetForm.value;
+    const { email, verificationCode, newPassword } = this.resetForm.value;
 
-    const email = this.resetForm.get('email')?.value;
+    const data = {
+      email,
+      confirmation_code: verificationCode,
+      new_password: newPassword,
+    };
 
     this.isLoading = true;
 
-    this.resetPasswordService.confirmResetPassword(email, verificationCode, newPassword).subscribe({
+    this.resetPasswordService.confirmResetPassword(data).subscribe({
       next: () => {
         this.msg.success('Password reset successfully');
         this.resetForm.reset();

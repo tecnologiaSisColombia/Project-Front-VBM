@@ -70,3 +70,8 @@ button {
 input[nz-input] {
   padding: 8px 0px;
 }
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}

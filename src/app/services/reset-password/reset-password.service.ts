@@ -23,11 +23,7 @@ export class ResetPasswordService {
         });
     }
 
-    confirmResetPassword(email: string, confirmationCode: string, newPassword: string): Observable<any> {
-        return this.http.post(`${this.baseUrl}UserAccessControl/ConfirmResetPassword`, {
-            email,
-            confirmation_code: confirmationCode,
-            new_password: newPassword,
-        });
+    confirmResetPassword(data: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}UserAccessControl/ConfirmResetPassword`, data);
     }
 }
