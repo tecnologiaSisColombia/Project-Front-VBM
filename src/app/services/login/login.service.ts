@@ -18,4 +18,8 @@ export class LoginService {
     changeTemporaryPassword(data: any): Observable<any> {
         return this.http.post(`${this.baseUrl}UserAccessControl/ChangeTemporaryPassword`, data);
     }
+
+    ChangePasswordDays(data: any): Observable<any> {
+        return this.http.post(`${this.baseUrl}UserAccessControl/ChangePasswordDays`, data);
+    }
 }

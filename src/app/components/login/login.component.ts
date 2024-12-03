@@ -80,14 +80,30 @@ export class LoginComponent implements OnInit {
         },
         error: (error) => {
           this.isLoading = false;
-          if (error.error?.error?.code === 'NewPasswordRequired') {
-            localStorage.setItem('auth_challenge', 'NewPasswordRequired');
+
+          const errorMapping: Record<string, { route: string; queryParams: Record<string, any> }> = {
+            NewPasswordRequired: {
+              route: '/change_password',
+              queryParams: {
+                session: error.error.error.session,
+                username: data.username,
+              },
+            },
+            NewPasswordDays: {
+              route: '/change_password',
+              queryParams: {
+                username: data.username,
+              },
+            },
+          };
+
+          const errorCode = error?.error?.error?.code;
+
+          if (errorMapping[errorCode]) {
+            localStorage.setItem('auth_challenge', errorCode);
             this.router
-              .navigate(['/change_password'], {
-                queryParams: {
-                  session: error.error.error.session,
-                  username: data.username,
-                },
+              .navigate([errorMapping[errorCode].route], {
+                queryParams: errorMapping[errorCode].queryParams,
               })
               .then(() => {
                 this.isLoading = false;

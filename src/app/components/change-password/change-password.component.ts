@@ -75,35 +75,39 @@ export class ChangePasswordComponent implements OnInit {
   }
 
   changePassword(): void {
-    if (this.username && this.session) {
-      this.isLoading = true;
+    const challenge = localStorage.getItem('auth_challenge');
+    this.isLoading = true;
 
-      const data = {
-        username: this.username,
-        new_password: this.changePasswordForm.get('new_password')?.value,
-        session: this.session,
-      };
+    const data = {
+      username: this.username,
+      new_password: this.changePasswordForm.get('new_password')?.value,
+      session: this.session,
+    };
 
-      this.loginService.changeTemporaryPassword(data).subscribe({
-        next: (res: any) => {
-          res.properties.user = {
-            id: res.attributes.find((e: any) => e.Name === 'sub')?.Value,
-            email: res.attributes.find((e: any) => e.Name === 'email')?.Value,
-            username: res.attributes.find((e: any) => e.Name === 'username')?.Value,
-          };
+    const serviceCall =
+      challenge === 'NewPasswordRequired' ?
+        this.loginService.changeTemporaryPassword(data) :
+        this.loginService.ChangePasswordDays(data);
 
-          this.authService.doLogin(res.properties);
+    serviceCall.subscribe({
+      next: (res: any) => {
+        res.properties.user = {
+          id: res.attributes.find((e: any) => e.Name === 'sub')?.Value,
+          email: res.attributes.find((e: any) => e.Name === 'email')?.Value,
+          username: res.attributes.find((e: any) => e.Name === 'username')?.Value,
+        };
 
-          this.router.navigate(['/home']).then(() => {
-            this.isLoading = false;
-          });
-        },
-        error: (error) => {
+        this.authService.doLogin(res.properties);
+
+        this.router.navigate(['/home']).then(() => {
           this.isLoading = false;
-          this.msg.error(JSON.stringify(error?.error?.error?.message || 'Change password failed'));
-        },
-      });
-    }
+        });
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.msg.error(JSON.stringify(error?.error?.error?.message || 'Change password failed'));
+      },
+    });
   }
 
 }

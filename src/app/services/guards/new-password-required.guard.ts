@@ -9,12 +9,14 @@ export class NewPasswordRequiredGuard implements CanActivate {
   constructor(
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  ) { }
 
   canActivate(): boolean {
     if (isPlatformBrowser(this.platformId)) {
       const challenge = localStorage.getItem('auth_challenge');
       if (challenge === 'NewPasswordRequired') {
+        return true;
+      } else if (challenge === 'NewPasswordDays') {
         return true;
       }
     }
