@@ -41,7 +41,7 @@ export class SubplanService {
     if (plan_id != null) {
       params = params.set('plan_id', plan_id)
     }
-    
+
     return this.http.get(`${this.hostname}insurers/subplan/`, { params })
   }
 

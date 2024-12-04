@@ -24,7 +24,7 @@ export class PlanService {
     if (name != null) {
       params = params.set('name', name)
     }
-    
+
     if (insurer != null) {
       params = params.set('insurer', insurer)
     }

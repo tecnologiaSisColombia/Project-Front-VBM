@@ -29,7 +29,7 @@ import { NzCardModule } from 'ng-zorro-antd/card';
     NzCardModule,
   ],
   templateUrl: './change-password.component.html',
-  styleUrls: ['./change-password.component.css'],
+  styleUrls: ['./change-password.component.css', '../../../animations/styles.css'],
 })
 export class ChangePasswordComponent implements OnInit {
   changePasswordForm: FormGroup;
@@ -78,11 +78,14 @@ export class ChangePasswordComponent implements OnInit {
     const challenge = localStorage.getItem('auth_challenge');
     this.isLoading = true;
 
-    const data = {
+    const baseData = {
       username: this.username,
       new_password: this.changePasswordForm.get('new_password')?.value,
-      session: this.session,
     };
+
+    const data = challenge === 'NewPasswordRequired'
+      ? { ...baseData, session: this.session }
+      : baseData;
 
     const serviceCall =
       challenge === 'NewPasswordRequired' ?
@@ -98,6 +101,8 @@ export class ChangePasswordComponent implements OnInit {
         };
 
         this.authService.doLogin(res.properties);
+
+        localStorage.removeItem('auth_challenge');
 
         this.router.navigate(['/home']).then(() => {
           this.isLoading = false;

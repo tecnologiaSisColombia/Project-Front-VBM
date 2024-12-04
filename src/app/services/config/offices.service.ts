@@ -8,7 +8,7 @@ import { environment } from 'environments/environment';
 export class OfficesService {
   hostname = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   get(
     { name, status }: any,
@@ -20,7 +20,7 @@ export class OfficesService {
       .set('page', page!.toString())
       .set('page_size', pageSize!.toString())
       .set('init', init);
-      
+
     if (name != null) {
       params = params.set('name', name);
     }

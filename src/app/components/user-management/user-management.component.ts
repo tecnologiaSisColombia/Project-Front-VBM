@@ -83,7 +83,7 @@ export class UserManagementComponent implements OnInit {
         this.user_types = response;
       },
       error: (error) => {
-        this.msgService.error(`Error getUserTypes ${error}`);
+        this.msgService.error(JSON.stringify(error || 'Error getUserTypes'));
       },
     });
   }
@@ -103,7 +103,7 @@ export class UserManagementComponent implements OnInit {
           this.loading = false;
         },
         error: (error) => {
-          this.msgService.error(`Error fetchUsers ${error}`);
+          this.msgService.error(JSON.stringify(error || 'Error fetchUsers'));
           this.loading = false;
         },
       });
@@ -159,7 +159,7 @@ export class UserManagementComponent implements OnInit {
           next: () => {
             this.msgService.success('User deleted successfully');
             this.loading = false;
-            
+
             this.data = this.data.filter((u) => u.username !== user.username);
 
             const userAttributes = localStorage.getItem('user_attributes');
