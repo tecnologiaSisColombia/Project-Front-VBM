@@ -79,19 +79,8 @@ export class PlansComponent implements OnInit {
     private insurerService: InsurersService
   ) {
     this.form = this.fb.group({
-      insurer: [
-        null, 
-        [
-          Validators.required
-        ]
-      ],
-      name: [
-        null, 
-        [
-          Validators.required,
-          Validators.pattern(/^(?!\s*$).+/)
-        ]
-      ],
+      insurer: [null, [Validators.required]],
+      name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
     });
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
       if (data.type === 'name') this.nameSearch = data.value;

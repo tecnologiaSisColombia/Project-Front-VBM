@@ -108,12 +108,17 @@ export class SubplansComponent implements OnInit {
   getInitData(): void {
     this.isDataLoading = true;
     this.subplanService
-      .getSubPlans(this.planData.id, {
-        name: this.nameSearch,
-        plan: this.planSearch,
-        group: this.groupSearch,
-        plan_contract: this.planContractSearch,
-      })
+      .getSubPlans(
+        this.planData.id,
+        {
+          name: this.nameSearch,
+          plan: this.planSearch,
+          group: this.groupSearch,
+          plan_contract: this.planContractSearch,
+        },
+        this.page,
+        this.page_size
+      )
       .subscribe({
         next: (res: any) => {
           this.isDataLoading = false;
