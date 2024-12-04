@@ -12,15 +12,11 @@ export class ResetPasswordService {
     constructor(private http: HttpClient) { }
 
     requestReset(email: string): Observable<any> {
-        return this.http.post(`${this.baseUrl}UserAccessControl/ResetPassword`, {
-            email
-        });
+        return this.http.post(`${this.baseUrl}UserAccessControl/ResetPassword`, { email });
     }
 
     resendConfirmationCode(email: string): Observable<any> {
-        return this.http.post(`${this.baseUrl}UserAccessControl/ResendConfirmationCode`, {
-            email
-        });
+        return this.http.post(`${this.baseUrl}UserAccessControl/ResendConfirmationCode`, { email });
     }
 
     confirmResetPassword(data: any): Observable<any> {

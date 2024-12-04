@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment'
 export class InsurersService {
   hostname = environment.apiUrl
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getInsurers(
     { name, address, phone, payer_id, status }: any,
@@ -40,7 +40,7 @@ export class InsurersService {
     if (status != null) {
       params = params.set('status', status)
     }
-    
+
     return this.http.get(`${this.hostname}insurers/`, { params })
   }
 
@@ -51,11 +51,11 @@ export class InsurersService {
   createInsurer(data: any) {
     return this.http.post(`${this.hostname}insurers/`, data)
   }
-  
+
   updateInsurer(id: number, data: any) {
     return this.http.put(`${this.hostname}insurers/${id}`, data)
   }
-  
+
   deleteInsurer(id: number) {
     return this.http.delete(`${this.hostname}insurers/${id}`)
   }

@@ -12,12 +12,9 @@ export class UserService {
   constructor(private http: HttpClient) { }
 
   createUser(userData: any): Observable<any> {
-    return this.http.post(
-      `${this.baseUrl}UserAccessControl/CreateUser`,
-      userData
-    );
+    return this.http.post(`${this.baseUrl}UserAccessControl/CreateUser`, userData);
   }
-  
+
   getUsers(
     { name, lastname, username }: any,
     page: number = 1,
@@ -36,7 +33,7 @@ export class UserService {
     if (lastname != null) {
       params = params.set('lastname', lastname);
     }
-    
+
     if (username != null) {
       params = params.set('username', username);
     }
@@ -45,28 +42,19 @@ export class UserService {
   }
 
   disableUser(username: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}UserAccessControl/DisableUser`, {
-      username,
-    });
+    return this.http.post(`${this.baseUrl}UserAccessControl/DisableUser`, { username });
   }
 
   enableUser(username: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}UserAccessControl/EnableUser`, {
-      username,
-    });
+    return this.http.post(`${this.baseUrl}UserAccessControl/EnableUser`, { username });
   }
 
   deleteUser(username: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}UserAccessControl/DeleteUser`, {
-      username,
-    });
+    return this.http.post(`${this.baseUrl}UserAccessControl/DeleteUser`, { username });
   }
 
   updateAttributes(userData: any): Observable<any> {
-    return this.http.post(
-      `${this.baseUrl}UserAccessControl/UpdateAttributes`,
-      userData
-    );
+    return this.http.post(`${this.baseUrl}UserAccessControl/UpdateAttributes`, userData);
   }
 
   getUserTypes(): Observable<any[]> {

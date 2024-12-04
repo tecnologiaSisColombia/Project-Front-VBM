@@ -30,12 +30,12 @@ export class AuthInterceptor implements HttpInterceptor {
             return this.handle401Error(request, next);
           } else {
             this.router.navigate(['/login']);
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('user_attributes');
             return throwError(() => error);
           }
         } else {
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
-          localStorage.removeItem('user_attributes');
           return throwError(() => error);
         }
       })

@@ -8,7 +8,7 @@ import { environment } from 'environments/environment';
 export class StoresService {
   hostname = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   get(
     { name, status }: any,
@@ -20,7 +20,7 @@ export class StoresService {
       .set('page', page!.toString())
       .set('page_size', pageSize!.toString())
       .set('init', init);
-      
+
     if (name != null) {
       params = params.set('name', name);
     }
@@ -35,7 +35,7 @@ export class StoresService {
   create(data: any) {
     return this.http.post(`${this.hostname}core/stores`, data);
   }
-  
+
   delete(id: number) {
     return this.http.delete(`${this.hostname}core/stores/${id}`);
   }

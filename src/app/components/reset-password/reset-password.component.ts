@@ -26,7 +26,7 @@ import { RouterLink } from '@angular/router';
     RouterLink
   ],
   templateUrl: './reset-password.component.html',
-  styleUrls: ['./reset-password.component.css']
+  styleUrls: ['./reset-password.component.css', '../../../animations/styles.css']
 })
 export class ResetPasswordComponent {
   resetForm: FormGroup;
@@ -128,6 +128,7 @@ export class ResetPasswordComponent {
         this.resetForm.get('verificationCode')?.clearValidators();
         this.resetForm.get('newPassword')?.clearValidators();
         this.resetForm.updateValueAndValidity();
+        
         setTimeout(() => {
           this.router.navigate(['./login']);
         }, 900);
