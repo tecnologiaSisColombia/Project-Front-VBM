@@ -104,21 +104,18 @@ export class NzDemoModalLocaleComponent implements OnInit {
   showModal(): void {
     this.getWorkingHours();
     this.isVisible = true;
-  
+
     this.tempUser = {
       ...this.user,
       extra_data: this.user?.extra_data || [{}],
     };
-  
-    if (
-      this.tempUser.extra_data.length > 0 &&
-      this.tempUser.extra_data[0].user_type_id
-    ) {
+
+    if (this.tempUser.extra_data?.length > 0 && this.tempUser.extra_data[0].user_type_id) {
       this.user_type = this.userTypeOptions.find(
         (e) => e.id == this.tempUser.extra_data[0].user_type_id
       )?.value || '';
     } else {
-      this.user_type = '';
+      this.user_type = 'Admin';
     }
   }
 
@@ -160,7 +157,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
       }
     );
   }
-  
+
   getSpecialities() {
     this.specialityService.get({ status: 1 }, 1, 1, true).subscribe({
       next: (res: any) => (this.specialities = res),
