@@ -111,27 +111,27 @@ export class ResetPasswordComponent {
   }
 
   onConfirmResetPassword(): void {
-    const { email, verificationCode, newPassword } = this.resetForm.value;
-
     const data = {
-      email,
-      confirmation_code: verificationCode,
-      new_password: newPassword,
+      email: this.resetForm.get('email')?.value,
+      confirmation_code: this.resetForm.get('verificationCode')?.value,
+      new_password: this.resetForm.get('newPassword')?.value,
     };
 
     this.isLoading = true;
 
     this.resetPasswordService.confirmResetPassword(data).subscribe({
       next: () => {
-        this.msg.success('Password reset successfully');
         this.resetForm.reset();
         this.resetForm.get('verificationCode')?.clearValidators();
         this.resetForm.get('newPassword')?.clearValidators();
         this.resetForm.updateValueAndValidity();
         
+        this.msg.success('Password reset successfully');
+
         setTimeout(() => {
           this.router.navigate(['./login']);
         }, 900);
+
         this.isLoading = false;
       },
       error: (error) => {
