@@ -10,7 +10,7 @@ import {
   Validators,
   UntypedFormGroup,
   UntypedFormBuilder,
-  ReactiveFormsModule
+  ReactiveFormsModule,
 } from '@angular/forms';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { UserService } from '../../../services/user-management/user-management.service';
@@ -20,6 +20,7 @@ import { EspecialitiesService } from 'app/services/config/especialities.service'
 import { StoresService } from 'app/services/config/stores.service';
 import { OfficesService } from 'app/services/config/offices.service';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { InsurersService } from 'app/services/insurers/insurers.service';
 
 @Component({
   selector: 'nz-demo-drawer-from-drawer',
@@ -35,7 +36,7 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
     FormsModule,
     CommonModule,
     NzIconModule,
-    NzSpinModule
+    NzSpinModule,
   ],
   templateUrl: './drawer-create-users.component.html',
 })
@@ -47,6 +48,7 @@ export class NzDemoDrawerFromDrawerComponent {
   specialities: any[] = [];
   stores: any[] = [];
   offices: any[] = [];
+  insurers: any[] = [];
   officesToDisplay: any[] = [];
   drawerLoader = false;
   @Output() userCreated = new EventEmitter<any>();
@@ -57,18 +59,23 @@ export class NzDemoDrawerFromDrawerComponent {
     private msgService: NzMessageService,
     private specialityService: EspecialitiesService,
     private storeService: StoresService,
-    private officeService: OfficesService
+    private officeService: OfficesService,
+    private insurerService: InsurersService
   ) {
     this.formm = this.fb.group({
-      first_name: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      first_name: [
+        '',
+        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
+      ],
       last_name: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       username: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       password: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       type_user: ['', [Validators.required]],
-      speciality_id: [null],
-      store_id: [null],
+      specialities: [null],
+      stores: [null],
+      insurers: [null],
       office_id: [null],
       number_license: [''],
     });
@@ -76,6 +83,18 @@ export class NzDemoDrawerFromDrawerComponent {
     this.getSpecialities();
     this.getStores();
     this.getOffices();
+    this.getInsurers();
+  }
+
+  getInsurers(): void {
+    this.insurerService.getInsurers({ status: 1 }, 1, 10, true).subscribe({
+      next: (res: any) => {
+        this.insurers = res;
+      },
+      error: (err) => {
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
   }
 
   getSpecialities(): void {
@@ -132,18 +151,19 @@ export class NzDemoDrawerFromDrawerComponent {
 
       if (
         this.extraForm === 'Doctor' &&
-        (
-          !userData.speciality_id ||
-          !userData.store_id ||
+        (!userData.specialities ||
+          !userData.stores ||
+          !userData.insurers ||
           !userData.office_id ||
-          !userData.number_license
-        )
+          !userData.number_license)
       ) {
-        this.msgService.error('Please fill all the required fields for a Doctor');
+        this.msgService.error(
+          'Please fill all the required fields for a Doctor'
+        );
         return;
       }
 
-      if (this.extraForm === 'Seller' && !userData.store_id) {
+      if (this.extraForm === 'Seller' && !userData.stores) {
         this.msgService.error('Store is required for a Seller.');
         return;
       }
@@ -177,7 +197,12 @@ export class NzDemoDrawerFromDrawerComponent {
   userTypeChange(event: any): void {
     const userType = typeof event === 'string' ? event : event?.target?.value;
     const type = this.userTypeOptions.find((e) => e.value === userType);
-    this.extraForm = type?.value === 'Doctor' ? 'Doctor' : type?.value === 'Seller' ? 'Seller' : null;
+    this.extraForm =
+      type?.value === 'Doctor'
+        ? 'Doctor'
+        : type?.value === 'Seller'
+        ? 'Seller'
+        : null;
   }
 
   storeChange(event: any): void {

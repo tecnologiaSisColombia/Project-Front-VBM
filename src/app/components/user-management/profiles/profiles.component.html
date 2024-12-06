@@ -1,0 +1,224 @@
+<div class="title-page">
+  <div class="breadcrumb-container">
+    <nz-breadcrumb>
+      <nz-breadcrumb-item>Administración</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Perfiles</nz-breadcrumb-item>
+    </nz-breadcrumb>
+  </div>
+  <div class="btn-container">
+    <button nz-button nzType="primary" (click)="openProfileModal()">
+      Nuevo Perfil
+    </button>
+  </div>
+</div>
+
+<nz-modal
+  [(nzVisible)]="isVisibleModalProfile"
+  nzTitle="Nuevo Perfíl"
+  (nzOnCancel)="handleCancelProfileModal()"
+  (nzOnOk)="handleSaveProfileModal()"
+>
+  <ng-container *nzModalContent>
+    <nz-spin [nzSpinning]="spinningNuevoPerfil">
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="new_group" nzRequired
+          >Perfíl</nz-form-label
+        >
+        <nz-form-control
+          [nzSm]="14"
+          [nzXs]="24"
+          nzErrorTip="Es obligatorio este campo."
+        >
+          <input nz-input id="new_group" [(ngModel)]="new_group_name" />
+        </nz-form-control>
+      </nz-form-item>
+    </nz-spin>
+  </ng-container>
+</nz-modal>
+
+<nz-spin nzTip="Cargando info..." [nzSpinning]="spinning">
+  <nz-table
+    #nzTable
+    nzSize="small"
+    [nzBordered]="true"
+    [nzData]="listOfDisplayData"
+    [nzScroll]="{ x: '200px', y: '1000px' }"
+    nzTableLayout="fixed"
+  >
+    <thead>
+      <tr>
+        <th>Grupo</th>
+        <th>Accion</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of nzTable.data">
+        <ng-container *ngIf="!editCache[data.id].edit; else editTemplate">
+          <td>{{ data.name }}</td>
+          <td>
+            <a
+              (click)="verPermisos(data.id)"
+              nz-tooltip
+              nzTooltipTitle="Permisos"
+            >
+              <!-- <i nz-icon nzType="edit" nzTheme="twotone"></i> -->
+              <button title="Show permisos" nz-button>+</button>
+            </a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a (click)="startEdit(data.id)" nz-tooltip nzTooltipTitle="Editar">
+              <i nz-icon nzType="edit" nzTheme="twotone"></i>
+            </a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a nz-tooltip nzTooltipTitle="Activar / Desactivar">
+              <nz-switch
+                nzSize="small"
+                [(ngModel)]="data.active"
+                [nzControl]="true"
+                (click)="saveEdit(data.id, 'active')"
+                [nzLoading]="loadingSwAdmin"
+              ></nz-switch>
+            </a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a
+              (click)="deleteGroup(data.id)"
+              nz-tooltip
+              nzTooltipTitle="Eliminar"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="red"
+                class="bi bi-trash3-fill"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z"
+                />
+              </svg>
+            </a>
+          </td>
+        </ng-container>
+        <ng-template #editTemplate>
+          <td>
+            <input
+              username_validator
+              (keyup.enter)="saveEdit(data.id)"
+              type="text"
+              nz-input
+              [(ngModel)]="editCache[data.id].data.descripcion"
+            />
+          </td>
+          <td>
+            <a (click)="saveEdit(data.id)" class="save">Guardar</a>
+            <a
+              nz-popconfirm
+              nzPopconfirmTitle="Cancelar edicion?"
+              (nzOnConfirm)="cancelEdit(data.id)"
+              >Cancelar</a
+            >
+          </td>
+        </ng-template>
+      </tr>
+    </tbody>
+  </nz-table>
+</nz-spin>
+
+<nz-spin nzTip="Cargando info..." [nzSpinning]="spinning">
+  <nz-table
+    #permisosTable
+    [nzData]="listOfDisplayPermisos"
+    *ngIf="showPermisos"
+  >
+    <thead>
+      <tr>
+        <th nzCustomFilter>
+          Módulo
+          <nz-filter-trigger
+            [(nzVisible)]="visible"
+            [nzActive]="searchValue.length > 0"
+            [nzDropdownMenu]="menu"
+          >
+            <i nz-icon nzType="search"></i>
+          </nz-filter-trigger>
+        </th>
+        <th>Leer</th>
+        <th>Escribir</th>
+        <th>Actualizar</th>
+        <th>Eliminar</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of permisosTable.data">
+        <td>{{ data.modulo_data.modulo }}</td>
+        <td>
+          <a nz-tooltip nzTooltipTitle="Activar / Desactivar">
+            <nz-switch
+              nzSize="small"
+              [(ngModel)]="data.read"
+              [nzControl]="true"
+              [nzLoading]="loadingSwAdmin"
+              (click)="editPermisos(data, 'read')"
+            ></nz-switch>
+          </a>
+        </td>
+        <td>
+          <a nz-tooltip nzTooltipTitle="Activar / Desactivar">
+            <nz-switch
+              nzSize="small"
+              [(ngModel)]="data.write"
+              [nzControl]="true"
+              [nzLoading]="loadingSwAdmin"
+              (click)="editPermisos(data, 'write')"
+            ></nz-switch>
+          </a>
+        </td>
+        <td>
+          <a nz-tooltip nzTooltipTitle="Activar / Desactivar">
+            <nz-switch
+              nzSize="small"
+              [(ngModel)]="data.update"
+              [nzControl]="true"
+              [nzLoading]="loadingSwAdmin"
+              (click)="editPermisos(data, 'update')"
+            ></nz-switch>
+          </a>
+        </td>
+        <td>
+          <a nz-tooltip nzTooltipTitle="Activar / Desactivar">
+            <nz-switch
+              nzSize="small"
+              [(ngModel)]="data.delete"
+              [nzControl]="true"
+              [nzLoading]="loadingSwAdmin"
+              (click)="editPermisos(data, 'delete')"
+            ></nz-switch>
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</nz-spin>
+
+<nz-dropdown-menu #menu="nzDropdownMenu">
+  <div class="ant-table-filter-dropdown">
+    <div class="search-box">
+      <input
+        type="text"
+        nz-input
+        placeholder="nombre de busqueda"
+        [(ngModel)]="searchValue"
+      />
+      <button
+        nz-button
+        nzSize="small"
+        nzType="primary"
+        (click)="search()"
+        class="search-button"
+      >
+        Buscar
+      </button>
+      <button nz-button nzSize="small" (click)="reset()">Limpiar</button>
+    </div>
+  </div>
+</nz-dropdown-menu>

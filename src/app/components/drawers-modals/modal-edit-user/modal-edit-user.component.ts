@@ -17,6 +17,7 @@ import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { InsurersService } from 'app/services/insurers/insurers.service';
 
 @Component({
   selector: 'nz-demo-modal-locale',
@@ -35,7 +36,7 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
     NzDividerModule,
     NzDrawerModule,
     NzButtonModule,
-    NzSpinModule
+    NzSpinModule,
   ],
   templateUrl: `./modal-edit-user.component.html`,
   styles: [
@@ -63,6 +64,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
   user_type: string = '';
   officesToDisplay: any[] = [];
   working_hours: any[] = [];
+  insurers: any[] = [];
   titleDrawer = '';
   visibleDrawer = false;
   isUpdatingDrawer: boolean = false;
@@ -73,6 +75,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
     hour_start: 0,
     hour_end: 0,
     user: 0,
+    store: 0,
   };
   days = [
     'Monday',
@@ -91,14 +94,27 @@ export class NzDemoModalLocaleComponent implements OnInit {
     private specialityService: EspecialitiesService,
     private createUserService: UserService,
     private storeService: StoresService,
-    private officeService: OfficesService
-  ) { }
+    private officeService: OfficesService,
+    private insurerService: InsurersService
+  ) {}
 
   ngOnInit(): void {
     this.loadUserTypes();
     this.getOffices();
     this.getSpecialities();
     this.getStores();
+    this.getInsurers();
+  }
+
+  getInsurers(): void {
+    this.insurerService.getInsurers({ status: 1 }, 1, 10, true).subscribe({
+      next: (res: any) => {
+        this.insurers = res;
+      },
+      error: (err) => {
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
   }
 
   showModal(): void {
@@ -110,10 +126,14 @@ export class NzDemoModalLocaleComponent implements OnInit {
       extra_data: this.user?.extra_data || [{}],
     };
 
-    if (this.tempUser.extra_data?.length > 0 && this.tempUser.extra_data[0].user_type_id) {
-      this.user_type = this.userTypeOptions.find(
-        (e) => e.id == this.tempUser.extra_data[0].user_type_id
-      )?.value || '';
+    if (
+      this.tempUser.extra_data?.length > 0 &&
+      this.tempUser.extra_data[0].user_type_id
+    ) {
+      this.user_type =
+        this.userTypeOptions.find(
+          (e) => e.id == this.tempUser.extra_data[0].user_type_id
+        )?.value || '';
     } else {
       this.user_type = 'Admin';
     }
@@ -132,7 +152,9 @@ export class NzDemoModalLocaleComponent implements OnInit {
             )
             .subscribe({
               next: (res) => {
-                this.msgService.success('The user has been updated successfully');
+                this.msgService.success(
+                  'The user has been updated successfully'
+                );
                 this.user = { ...this.tempUser };
                 this.isVisible = false;
                 this.userUpdated.emit(res);
@@ -250,6 +272,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
       hour_start: 0,
       hour_end: 0,
       user: 0,
+      store: 0,
     };
   }
 
@@ -268,6 +291,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
   }
 
   updateHour(id: number, data: any) {
+    delete data.store_data;
     this.userService.updateWorkingHour(id, data).subscribe({
       next: () => {
         this.msgService.success('Work time update successfully');

@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core'
-import { RouterLink, RouterOutlet } from '@angular/router'
-import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb'
-import { NzIconModule } from 'ng-zorro-antd/icon'
-import { NzLayoutModule } from 'ng-zorro-antd/layout'
-import { NzMenuModule } from 'ng-zorro-antd/menu'
-import { AuthService } from '../../services/auth/auth.service'
-import { NzButtonModule } from 'ng-zorro-antd/button'
-import { NzDropDownModule } from 'ng-zorro-antd/dropdown'
-import { NzAvatarModule } from 'ng-zorro-antd/avatar'
+import { Component, OnInit } from '@angular/core';
+import { RouterLink, RouterOutlet } from '@angular/router';
+import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzLayoutModule } from 'ng-zorro-antd/layout';
+import { NzMenuModule } from 'ng-zorro-antd/menu';
+import { AuthService } from '../../services/auth/auth.service';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
+import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-full',
@@ -24,18 +26,55 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar'
     NzButtonModule,
     NzDropDownModule,
     NzAvatarModule,
+    CommonModule,
   ],
 })
-
 export class FullComponent implements OnInit {
-  isCollapsed = false
+  isCollapsed = false;
+  permisos = [];
+  adminRead = false;
+  access = {
+    admin: false,
+    insurers: false,
+    users: false,
+    plans: false,
+    subplans: false,
+  };
+  constructor(
+    private authService: AuthService,
+    private message: NzMessageService
+  ) {}
 
-  constructor(private authService: AuthService) { }
+  ngOnInit(): void {
+    this.authService.getProfile().subscribe({
+      next: (res: any) => {
+        console.log(res);
+        res.group_profile.forEach((e: any) => {
+          if (e.modulo__modulo == 'users') {
+            this.access.users = e.write;
+          }
 
-
-  ngOnInit(): void { }
+          if (e.modulo__modulo == 'core') {
+            this.access.admin = e.write;
+          }
+          if (e.modulo__modulo == 'plans') {
+            this.access.plans = e.write;
+          }
+          if (e.modulo__modulo == 'subplans') {
+            this.access.subplans = e.write;
+          }
+          if (e.modulo__modulo == 'insurers') {
+            this.access.insurers = e.write;
+          }
+        });
+      },
+      error: (err) => {
+        this.message.error(JSON.stringify(err.error));
+      },
+    });
+  }
 
   logout() {
-    this.authService.doLogout()
+    this.authService.doLogout();
   }
 }

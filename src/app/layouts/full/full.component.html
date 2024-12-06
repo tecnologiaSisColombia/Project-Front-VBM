@@ -7,10 +7,10 @@
         nzTheme="dark"
         nzMode="horizontal"
         class="header-menu"
-        style="text-align: right;"
+        style="text-align: right"
       >
-        <nz-avatar  
-          style="cursor: pointer;"
+        <nz-avatar
+          style="cursor: pointer"
           nzIcon="user"
           nz-dropdown
           nzTrigger="click"
@@ -26,7 +26,12 @@
     <nz-layout>
       <nz-sider nzCollapsible nzWidth="280px">
         <ul nz-menu nzTheme="dark" nzMode="inline">
-          <li nz-submenu nzTitle="Resource Management" nzIcon="check-circle">
+          <li
+            *ngIf="access.admin"
+            nz-submenu
+            nzTitle="Resource Management"
+            nzIcon="check-circle"
+          >
             <ul>
               <li nz-menu-item>
                 <a routerLink="/config/specialities">Specialities</a>
@@ -39,23 +44,32 @@
               </li>
             </ul>
           </li>
-          <li nz-submenu nzTitle="Control Access" nzIcon="lock">
+          <li
+            *ngIf="access.users"
+            nz-submenu
+            nzTitle="Control Access"
+            nzIcon="lock"
+          >
             <ul>
               <li nz-menu-item>
                 <a routerLink="/users/user_management">User Management</a>
               </li>
+              <li nz-menu-item>
+                <a routerLink="/users/profiles">Profiles</a>
+              </li>
             </ul>
           </li>
           <li
+            *ngIf="access.insurers || access.plans"
             nz-submenu
             nzTitle="Configure Insurers / Coverages"
             nzIcon="profile"
           >
             <ul>
-              <li nz-menu-item>
+              <li *ngIf="access.insurers" nz-menu-item>
                 <a routerLink="/insurers">Insurers</a>
               </li>
-              <li nz-menu-item>
+              <li *ngIf="access.plans" nz-menu-item>
                 <a routerLink="/insurers/coverages">Coverages</a>
               </li>
             </ul>

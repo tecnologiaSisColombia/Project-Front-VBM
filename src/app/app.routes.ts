@@ -1,20 +1,21 @@
-import { Routes } from '@angular/router'
-import { LoginComponent } from './components/login/login.component'
-import { ResetPasswordComponent } from './components/reset-password/reset-password.component'
-import { MainMenuComponent } from './components/main-menu/main-menu.component'
-import { AuthGuardService } from './services/guards/auth-guard.service'
-import { ChangePasswordComponent } from './components/change-password/change-password.component'
-import { LoginGuardService } from './services/guards/login.guard'
-import { NewPasswordRequiredGuard } from './services/guards/new-password-required.guard'
-import { PlansComponent } from './components/plans/plans.component'
-import { InsurersComponent } from './components/insurers/insurers.component'
-import { BlankComponent } from './layouts/blank/blank.component'
-import { FullComponent } from './layouts/full/full.component'
-import { SubplansComponent } from './components/subplans/subplans.component'
-import { UserManagementComponent } from './components/user-management/user-management.component'
-import { SpecialitiesComponent } from './components/configuration/specialities/specialities.component'
-import { StoresComponent } from './components/configuration/stores/stores.component'
-import { OfficesComponent } from './components/configuration/offices/offices.component'
+import { Routes } from '@angular/router';
+import { LoginComponent } from './components/login/login.component';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { MainMenuComponent } from './components/main-menu/main-menu.component';
+import { AuthGuardService } from './services/guards/auth-guard.service';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
+import { LoginGuardService } from './services/guards/login.guard';
+import { NewPasswordRequiredGuard } from './services/guards/new-password-required.guard';
+import { PlansComponent } from './components/plans/plans.component';
+import { InsurersComponent } from './components/insurers/insurers.component';
+import { BlankComponent } from './layouts/blank/blank.component';
+import { FullComponent } from './layouts/full/full.component';
+import { SubplansComponent } from './components/subplans/subplans.component';
+import { UserManagementComponent } from './components/user-management/user-management.component';
+import { SpecialitiesComponent } from './components/configuration/specialities/specialities.component';
+import { StoresComponent } from './components/configuration/stores/stores.component';
+import { OfficesComponent } from './components/configuration/offices/offices.component';
+import { ProfilesComponent } from './components/user-management/profiles/profiles.component';
 
 export const routes: Routes = [
   {
@@ -63,7 +64,7 @@ export const routes: Routes = [
             path: 'offices',
             component: OfficesComponent,
           },
-        ]
+        ],
       },
       {
         path: 'insurers',
@@ -93,6 +94,11 @@ export const routes: Routes = [
             component: UserManagementComponent,
             canActivate: [AuthGuardService],
           },
+          {
+            path: 'profiles',
+            component: ProfilesComponent,
+            canActivate: [AuthGuardService],
+          },
         ],
       },
     ],
@@ -101,4 +107,4 @@ export const routes: Routes = [
     path: '**',
     redirectTo: '/login',
   },
-]
+];

@@ -25,7 +25,9 @@ export class AuthService {
     localStorage.setItem(this.USER_ATTRIBUTES, JSON.stringify(data.user));
   }
 
-  getUserInfo() {}
+  getProfile() {
+    return this.http.get(`${this.hostname}core/user`);
+  }
 
   viewToken() {
     const jwtToken = this.getJwtToken();
@@ -70,7 +72,7 @@ export class AuthService {
     if (!refreshToken) {
       return of({ token: null });
     }
-    
+
     return this.http
       .post<any>(`${this.hostname}UserAccessControl/RefreshTokenCognito`, {
         refresh_token: this.getRefreshToken(),
