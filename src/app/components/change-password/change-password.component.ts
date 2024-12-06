@@ -48,8 +48,10 @@ export class ChangePasswordComponent implements OnInit {
   ) {
     this.changePasswordForm = this.fb.group({
       new_password: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', [Validators.required, Validators.minLength(8)]],
-    });
+      confirmPassword: [''],
+    },
+      { validators: this.passwordsMatchValidator }
+    );
   }
 
   ngOnInit(): void {
@@ -61,17 +63,17 @@ export class ChangePasswordComponent implements OnInit {
     this.passwordVisible = !this.passwordVisible;
   }
 
-  confirmPasswordChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const value = input.value;
-    const newPassword = this.changePasswordForm.get('new_password')?.value;
-    const passwordsMatch = value === newPassword;
+  private passwordsMatchValidator(group: FormGroup): { [key: string]: boolean } | null {
+    const newPassword = group.get('new_password')?.value;
+    const confirmPassword = group.get('confirmPassword');
 
-    if (!passwordsMatch) {
-      this.changePasswordForm.get('confirmPassword')?.setErrors({ mismatch: true });
+    if (newPassword !== confirmPassword?.value) {
+      confirmPassword?.setErrors({ mismatch: true });
+      return { mismatch: true };
     } else {
-      this.changePasswordForm.get('confirmPassword')?.setErrors(null);
+      confirmPassword?.setErrors(null);
     }
+    return null;
   }
 
   changePassword(): void {
