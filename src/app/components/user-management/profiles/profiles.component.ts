@@ -25,6 +25,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { UserService } from 'app/services/user-management/user-management.service';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 
 @Component({
   selector: 'app-profiles',
@@ -47,6 +48,7 @@ import { UserService } from 'app/services/user-management/user-management.servic
     NzSwitchModule,
     NzModalModule,
     NzDropDownModule,
+    NzPopconfirmModule,
   ],
   templateUrl: './profiles.component.html',
   styleUrl: './profiles.component.css',
@@ -165,6 +167,7 @@ export class ProfilesComponent implements OnInit {
     }
 
     // Sen data to API
+    delete this.editCache[id].data.is_edit;
     console.log(this.editCache[id]);
     this.profileService
       .updateGroup(this.editCache[id].data.id, this.editCache[id].data)

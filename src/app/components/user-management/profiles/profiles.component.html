@@ -1,20 +1,21 @@
 <div class="title-page">
   <div class="breadcrumb-container">
     <nz-breadcrumb>
-      <nz-breadcrumb-item>Administración</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Perfiles</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Mar chiquita</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Users</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Profiles</nz-breadcrumb-item>
     </nz-breadcrumb>
   </div>
   <div class="btn-container">
     <button nz-button nzType="primary" (click)="openProfileModal()">
-      Nuevo Perfil
+      New profile
     </button>
   </div>
 </div>
 
 <nz-modal
   [(nzVisible)]="isVisibleModalProfile"
-  nzTitle="Nuevo Perfíl"
+  nzTitle="New profile"
   (nzOnCancel)="handleCancelProfileModal()"
   (nzOnOk)="handleSaveProfileModal()"
 >
@@ -22,12 +23,12 @@
     <nz-spin [nzSpinning]="spinningNuevoPerfil">
       <nz-form-item>
         <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="new_group" nzRequired
-          >Perfíl</nz-form-label
+          >Profile</nz-form-label
         >
         <nz-form-control
           [nzSm]="14"
           [nzXs]="24"
-          nzErrorTip="Es obligatorio este campo."
+          nzErrorTip="This field is required."
         >
           <input nz-input id="new_group" [(ngModel)]="new_group_name" />
         </nz-form-control>
@@ -36,7 +37,7 @@
   </ng-container>
 </nz-modal>
 
-<nz-spin nzTip="Cargando info..." [nzSpinning]="spinning">
+<nz-spin nzTip="Loading info..." [nzSpinning]="spinning">
   <nz-table
     #nzTable
     nzSize="small"
@@ -47,8 +48,8 @@
   >
     <thead>
       <tr>
-        <th>Grupo</th>
-        <th>Accion</th>
+        <th>Group</th>
+        <th>Action</th>
       </tr>
     </thead>
     <tbody>
@@ -106,17 +107,33 @@
               (keyup.enter)="saveEdit(data.id)"
               type="text"
               nz-input
-              [(ngModel)]="editCache[data.id].data.descripcion"
+              [(ngModel)]="editCache[data.id].data.name"
             />
           </td>
           <td>
-            <a (click)="saveEdit(data.id)" class="save">Guardar</a>
+            <!-- <a (click)="saveEdit(data.id)" class="save">Guardar</a>
             <a
               nz-popconfirm
               nzPopconfirmTitle="Cancelar edicion?"
               (nzOnConfirm)="cancelEdit(data.id)"
               >Cancelar</a
+            > -->
+            <button
+              nz-button
+              nzType="primary"
+              nzSize="small"
+              (click)="saveEdit(data.id)"
             >
+              Save
+            </button>
+            <button
+              nz-button
+              nzType="default"
+              nzSize="small"
+              (click)="cancelEdit(data.id)"
+            >
+              Cancel
+            </button>
           </td>
         </ng-template>
       </tr>
