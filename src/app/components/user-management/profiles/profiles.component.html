@@ -2,7 +2,7 @@
   <div class="breadcrumb-container">
     <nz-breadcrumb>
       <nz-breadcrumb-item>Mar chiquita</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Users</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Control Access</nz-breadcrumb-item>
       <nz-breadcrumb-item>Profiles</nz-breadcrumb-item>
     </nz-breadcrumb>
   </div>
@@ -62,9 +62,8 @@
               nz-tooltip
               nzTooltipTitle="Permisos"
             >
-              <!-- <i nz-icon nzType="edit" nzTheme="twotone"></i> -->
-              <button title="Show permisos" nz-button>+</button>
-            </a>
+            <i nz-icon nzType="setting" nzTheme="outline"></i>
+          </a>
             <nz-divider nzType="vertical"></nz-divider>
             <a (click)="startEdit(data.id)" nz-tooltip nzTooltipTitle="Editar">
               <i nz-icon nzType="edit" nzTheme="twotone"></i>
@@ -85,18 +84,7 @@
               nz-tooltip
               nzTooltipTitle="Eliminar"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="red"
-                class="bi bi-trash3-fill"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z"
-                />
-              </svg>
+            <i nz-icon nzType="delete"></i>
             </a>
           </td>
         </ng-container>
@@ -111,13 +99,6 @@
             />
           </td>
           <td>
-            <!-- <a (click)="saveEdit(data.id)" class="save">Guardar</a>
-            <a
-              nz-popconfirm
-              nzPopconfirmTitle="Cancelar edicion?"
-              (nzOnConfirm)="cancelEdit(data.id)"
-              >Cancelar</a
-            > -->
             <button
               nz-button
               nzType="primary"
@@ -141,7 +122,7 @@
   </nz-table>
 </nz-spin>
 
-<nz-spin nzTip="Cargando info..." [nzSpinning]="spinning">
+<nz-spin nzTip="Loading info..." [nzSpinning]="spinning">
   <nz-table
     #permisosTable
     [nzData]="listOfDisplayPermisos"
@@ -150,7 +131,7 @@
     <thead>
       <tr>
         <th nzCustomFilter>
-          Módulo
+          Module
           <nz-filter-trigger
             [(nzVisible)]="visible"
             [nzActive]="searchValue.length > 0"
@@ -159,10 +140,10 @@
             <i nz-icon nzType="search"></i>
           </nz-filter-trigger>
         </th>
-        <th>Leer</th>
-        <th>Escribir</th>
-        <th>Actualizar</th>
-        <th>Eliminar</th>
+        <th>Read</th>
+        <th>Write</th>
+        <th>Update</th>
+        <th>Delete</th>
       </tr>
     </thead>
     <tbody>
@@ -223,7 +204,7 @@
       <input
         type="text"
         nz-input
-        placeholder="nombre de busqueda"
+        placeholder="Search name"
         [(ngModel)]="searchValue"
       />
       <button
@@ -233,9 +214,9 @@
         (click)="search()"
         class="search-button"
       >
-        Buscar
+        Search
       </button>
-      <button nz-button nzSize="small" (click)="reset()">Limpiar</button>
+      <button nz-button nzSize="small" (click)="reset()">Clean</button>
     </div>
   </div>
 </nz-dropdown-menu>

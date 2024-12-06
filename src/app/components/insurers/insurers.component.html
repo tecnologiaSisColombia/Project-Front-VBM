@@ -12,6 +12,17 @@
       (click)="openDrawer()">
       New Insurer
     </button>
+
+    <button
+      nz-button
+      [style.background-color]="'#00a651'"
+      [style.color]="'white'"
+      [nzLoading]="isDataLoading"
+      (click)="exportInsures()"
+    >
+    <i nz-icon nzType="download" nzTheme="outline"></i>
+      Export Insurers
+    </button>
   </div>
 </div>
 

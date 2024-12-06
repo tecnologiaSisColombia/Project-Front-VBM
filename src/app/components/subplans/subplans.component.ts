@@ -24,6 +24,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { debounceTime, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 import { SubplanService } from '../../services/insurers/subplan.service';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-subplans',
@@ -264,5 +265,80 @@ export class SubplansComponent implements OnInit {
   setPagination(count: number): void {
     this.count_records = count;
     this.num_pages = Math.ceil(this.count_records / this.page_size);
+  }
+
+  exportSubplans(): void {
+    if (this.dataToDisplay.length === 0) {
+      this.msgService.warning('No data available to export');
+      return;
+    }
+
+    this.isDataLoading = true;
+
+    const headers: Record<
+      'plan_data' |
+      'name' |
+      'group' |
+      'plan_contract' |
+      'visual_test_medicare' |
+      'visual_surgery_medicare' |
+      'routine_visual_test' |
+      'vision_elements' |
+      'created' |
+      'active',
+      string> = {
+      plan_data: 'Insurer',
+      name: 'Subplan',
+      group: 'Group',
+      plan_contract: 'Plan Contract',
+      visual_test_medicare: 'Visual Test Medicare',
+      visual_surgery_medicare: 'Visual Surgery Medicare',
+      routine_visual_test: 'Routine Visual Test',
+      vision_elements: 'Vision Elements',
+      created: 'Created',
+      active: 'Status',
+    };
+
+    const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+
+    const filteredData = this.dataToDisplay.map(subplan =>
+      selectedColumns.reduce((obj: Record<string, any>, key) => {
+        if (key === 'active') {
+          obj[headers[key]] = subplan[key] ? 'Active' : 'Inactive';
+        } else if (key === 'created') {
+          const date = new Date(subplan[key]);
+          obj[headers[key]] = date.toISOString().split('T')[0];
+        } else if (key === 'plan_data') {
+          obj[headers[key]] = subplan.plan_data.name;
+        } else {
+          obj[headers[key]] = subplan[key];
+        }
+        return obj;
+      }, {})
+    );
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Subplans');
+
+    const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'Subplans.xlsx');
+    link.style.visibility = 'hidden';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    this.isDataLoading = false;
   }
 }

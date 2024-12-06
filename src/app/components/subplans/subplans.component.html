@@ -8,8 +8,21 @@
     </nz-breadcrumb>
   </div>
   <div class="btn-container">
-    <button nz-button nzType="primary" (click)="openDrawer()">
-      New Subplan
+    <button 
+      nz-button 
+      nzType="primary" 
+      (click)="openDrawer()">New Subplan
+    </button>
+
+    <button
+      nz-button
+      [style.background-color]="'#00a651'"
+      [style.color]="'white'"
+      [nzLoading]="isDataLoading"
+      (click)="exportSubplans()"
+    >
+    <i nz-icon nzType="download" nzTheme="outline"></i>
+      Export Subplans
     </button>
   </div>
 </div>

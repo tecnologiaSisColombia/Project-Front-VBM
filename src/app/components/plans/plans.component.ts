@@ -26,6 +26,7 @@ import { InsurersService } from '../../services/insurers/insurers.service';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { SubplansComponent } from '../subplans/subplans.component';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-plans',
@@ -262,4 +263,68 @@ export class PlansComponent implements OnInit {
   handleOkModal(): void {
     this.handleCancelModal();
   }
+
+  exportCoverages(): void {
+    if (this.dataToDisplay.length === 0) {
+      this.msgService.warning('No data available to export');
+      return;
+    }
+
+    this.isDataLoading = true;
+
+    const headers: Record<
+      'insurer_name' |
+      'name' |
+      'created' |
+      'active',
+      string> = {
+      insurer_name: 'Insurer',
+      name: 'Coverage',
+      created: 'Created',
+      active: 'Status',
+    };
+
+    const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+
+    const filteredData = this.dataToDisplay.map(coverage =>
+      selectedColumns.reduce((obj: Record<string, any>, key) => {
+        if (key === 'active') {
+          obj[headers[key]] = coverage[key] ? 'Active' : 'Inactive';
+        } else if (key === 'created') {
+          const date = new Date(coverage[key]);
+          obj[headers[key]] = date.toISOString().split('T')[0];
+        } else if (key === 'insurer_name') {
+          obj[headers[key]] = coverage.insurer_data.name;
+        } else {
+          obj[headers[key]] = coverage[key];
+        }
+        return obj;
+      }, {})
+    );
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Coverages');
+
+    const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'Coverages.xlsx');
+    link.style.visibility = 'hidden';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    this.isDataLoading = false;
+  }
+
 }
