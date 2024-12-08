@@ -305,21 +305,14 @@ export class InsurersComponent implements OnInit {
 
     this.isDataLoading = true;
 
-    const headers: Record<
-      'name' |
-      'payer_id' |
-      'phone' |
-      'address' |
-      'created' |
-      'active',
-      string> = {
+    const headers = {
       name: 'Insurer',
       payer_id: 'Payer Id',
       phone: 'Phone',
       address: 'Address',
       created: 'Created',
       active: 'Status',
-    };
+    } as const;
 
     const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
@@ -329,7 +322,11 @@ export class InsurersComponent implements OnInit {
           obj[headers[key]] = insurer[key] ? 'Active' : 'Inactive';
         } else if (key === 'created') {
           const date = new Date(insurer[key]);
-          obj[headers[key]] = date.toISOString().split('T')[0];
+          obj[headers[key]] = date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          });
         } else {
           obj[headers[key]] = insurer[key];
         }

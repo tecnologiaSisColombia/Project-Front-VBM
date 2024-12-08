@@ -6,11 +6,15 @@
       <nz-breadcrumb-item>Coverages</nz-breadcrumb-item>
     </nz-breadcrumb>
   </div>
+
   <div class="btn-container">
     <button 
       nz-button 
       nzType="primary" 
-      (click)="openDrawer()">New Coverage
+      (click)="openDrawer()"
+    >
+      <i nz-icon nzType="appstore-add" nzTheme="outline"></i>
+      New Coverage
     </button>
 
     <button
@@ -20,7 +24,7 @@
       [nzLoading]="isDataLoading"
       (click)="exportCoverages()"
     >
-    <i nz-icon nzType="download" nzTheme="outline"></i>
+      <i nz-icon nzType="download" nzTheme="outline"></i>
       Export Coverages
     </button>
   </div>

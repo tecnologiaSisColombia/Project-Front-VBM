@@ -5,11 +5,14 @@
       <nz-breadcrumb-item>Insurers</nz-breadcrumb-item>
     </nz-breadcrumb>
   </div>
+
   <div class="btn-container">
     <button 
       nz-button 
       nzType="primary" 
-      (click)="openDrawer()">
+      (click)="openDrawer()"
+    >
+      <i nz-icon nzType="insurance" nzTheme="outline"></i>
       New Insurer
     </button>
 
@@ -20,7 +23,7 @@
       [nzLoading]="isDataLoading"
       (click)="exportInsures()"
     >
-    <i nz-icon nzType="download" nzTheme="outline"></i>
+      <i nz-icon nzType="download" nzTheme="outline"></i>
       Export Insurers
     </button>
   </div>
@@ -326,11 +329,22 @@
   </ng-container>
 
   <ng-template #footerTpl>
-    <div style="display: flex; justify-content: flex-end">
-      <button nz-button style="margin-right: 8px" (click)="closeDrawer()">
+    <div class="footer-actions" style="display: flex; justify-content: flex-end;">
+      <button 
+        nz-button 
+        style="margin-right: 8px;" 
+        (click)="closeDrawer()"
+      >
         Close
       </button>
-      <button nz-button nzType="primary" (click)="submit()">Save</button>
+  
+      <button 
+        nz-button 
+        nzType="primary" 
+        (click)="submit()"
+      >
+        Save
+      </button>
     </div>
-  </ng-template>
+  </ng-template>  
 </nz-drawer>

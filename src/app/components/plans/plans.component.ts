@@ -233,9 +233,9 @@ export class PlansComponent implements OnInit {
       next: () => {
         this.isDataLoading = false;
       },
-      error: () => {
+      error: (error) => {
         this.isDataLoading = false;
-        this.msgService.error('Error during search');
+        this.msgService.error(JSON.stringify(error.error));
       },
     });
   }
@@ -272,18 +272,13 @@ export class PlansComponent implements OnInit {
 
     this.isDataLoading = true;
 
-    const headers: Record<
-      'insurer_name' |
-      'name' |
-      'created' |
-      'active',
-      string> = {
+    const headers = {
       insurer_name: 'Insurer',
       name: 'Coverage',
       created: 'Created',
       active: 'Status',
-    };
-
+    } as const;
+    
     const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
     const filteredData = this.dataToDisplay.map(coverage =>
@@ -292,7 +287,11 @@ export class PlansComponent implements OnInit {
           obj[headers[key]] = coverage[key] ? 'Active' : 'Inactive';
         } else if (key === 'created') {
           const date = new Date(coverage[key]);
-          obj[headers[key]] = date.toISOString().split('T')[0];
+          obj[headers[key]] = date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          });
         } else if (key === 'insurer_name') {
           obj[headers[key]] = coverage.insurer_data.name;
         } else {

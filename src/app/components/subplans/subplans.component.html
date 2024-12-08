@@ -7,11 +7,15 @@
       <nz-breadcrumb-item>Subplans</nz-breadcrumb-item>
     </nz-breadcrumb>
   </div>
+
   <div class="btn-container">
     <button 
       nz-button 
       nzType="primary" 
-      (click)="openDrawer()">New Subplan
+      (click)="openDrawer()"
+    >
+      <i nz-icon nzType="folder-add" nzTheme="outline"></i>
+      New Subplan
     </button>
 
     <button
@@ -21,7 +25,7 @@
       [nzLoading]="isDataLoading"
       (click)="exportSubplans()"
     >
-    <i nz-icon nzType="download" nzTheme="outline"></i>
+      <i nz-icon nzType="download" nzTheme="outline"></i>
       Export Subplans
     </button>
   </div>
@@ -168,33 +172,6 @@
           <nz-form-label
             [nzSm]="8"
             [nzXs]="24"
-            nzFor="plan"
-            style="text-align: center"
-          >
-            PDS
-          </nz-form-label>
-          <nz-form-control
-            [nzSm]="16"
-            [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
-            <nz-select
-              nzShowSearch
-              nzAllowClear
-              id="pds"
-              nzPlaceHolder="Select an PDS"
-              formControlName="pds"
-            >
-              <nz-option nzLabel="Si" [nzValue]="1"></nz-option>
-              <nz-option nzLabel="No" [nzValue]="2"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-
-        <nz-form-item>
-          <nz-form-label
-            [nzSm]="8"
-            [nzXs]="24"
             nzFor="name"
             style="text-align: center"
           >
@@ -260,6 +237,33 @@
             This field cannot be empty or contain only spaces
           </span>
         </ng-template>
+        
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="plan"
+            style="text-align: center"
+          >
+            PDS
+          </nz-form-label>
+          <nz-form-control
+            [nzSm]="16"
+            [nzXs]="24"
+            nzErrorTip="This field is required"
+          >
+            <nz-select
+              nzShowSearch
+              nzAllowClear
+              id="pds"
+              nzPlaceHolder="Select an PDS"
+              formControlName="pds"
+            >
+              <nz-option nzLabel="Si" [nzValue]="1"></nz-option>
+              <nz-option nzLabel="No" [nzValue]="2"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
 
         <nz-form-item>
           <nz-form-label

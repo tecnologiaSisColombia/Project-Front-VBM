@@ -256,15 +256,11 @@ export class OfficesComponent implements OnInit {
 
     this.isDataLoading = true;
 
-    const headers: Record<
-      'name' |
-      'created' |
-      'active',
-      string> = {
+    const headers = {
       name: 'Office',
       created: 'Created',
       active: 'Status',
-    };
+    } as const;    
 
     const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
@@ -274,7 +270,11 @@ export class OfficesComponent implements OnInit {
           obj[headers[key]] = office[key] ? 'Active' : 'Inactive';
         } else if (key === 'created') {
           const date = new Date(office[key]);
-          obj[headers[key]] = date.toISOString().split('T')[0];
+          obj[headers[key]] = date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          });
         } else {
           obj[headers[key]] = office[key];
         }

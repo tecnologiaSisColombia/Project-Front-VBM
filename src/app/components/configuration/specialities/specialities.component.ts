@@ -60,8 +60,7 @@ export class SpecialitiesComponent {
   page_size = 10;
   page = 1;
   form: UntypedFormGroup;
-  private searchNameSubject: Subject<{ type: string; value: string }> =
-    new Subject();
+  private searchNameSubject: Subject<{ type: string; value: string }> = new Subject();
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -148,7 +147,7 @@ export class SpecialitiesComponent {
       if (result.isConfirmed) {
         this.isDataLoading = true;
         this.specialitiesService.delete(id).subscribe({
-          next: (res: any) => {
+          next: () => {
             this.msgService.success('Speciality deleted successfully');
             this.isDataLoading = false;
             this.getInitData();
@@ -244,15 +243,11 @@ export class SpecialitiesComponent {
 
     this.isDataLoading = true;
 
-    const headers: Record<
-      'description' |
-      'created' |
-      'active',
-      string> = {
-      description: 'Specialty',
+    const headers = {
+      description: 'Name Specialty',
       created: 'Created',
       active: 'Status',
-    };
+    } as const;
 
     const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
@@ -262,7 +257,11 @@ export class SpecialitiesComponent {
           obj[headers[key]] = speciality[key] ? 'Active' : 'Inactive';
         } else if (key === 'created') {
           const date = new Date(speciality[key]);
-          obj[headers[key]] = date.toISOString().split('T')[0];
+          obj[headers[key]] = date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          });
         } else {
           obj[headers[key]] = speciality[key];
         }

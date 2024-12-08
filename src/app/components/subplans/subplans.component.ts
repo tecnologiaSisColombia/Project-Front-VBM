@@ -250,9 +250,9 @@ export class SubplansComponent implements OnInit {
       next: () => {
         this.isDataLoading = false;
       },
-      error: () => {
+      error: (error) => {
         this.isDataLoading = false;
-        this.msgService.error('Error during search');
+        this.msgService.error(JSON.stringify(error.error));
       },
     });
   }
@@ -275,18 +275,7 @@ export class SubplansComponent implements OnInit {
 
     this.isDataLoading = true;
 
-    const headers: Record<
-      'plan_data' |
-      'name' |
-      'group' |
-      'plan_contract' |
-      'visual_test_medicare' |
-      'visual_surgery_medicare' |
-      'routine_visual_test' |
-      'vision_elements' |
-      'created' |
-      'active',
-      string> = {
+    const headers = {
       plan_data: 'Insurer',
       name: 'Subplan',
       group: 'Group',
@@ -297,7 +286,7 @@ export class SubplansComponent implements OnInit {
       vision_elements: 'Vision Elements',
       created: 'Created',
       active: 'Status',
-    };
+    } as const;
 
     const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
@@ -307,7 +296,11 @@ export class SubplansComponent implements OnInit {
           obj[headers[key]] = subplan[key] ? 'Active' : 'Inactive';
         } else if (key === 'created') {
           const date = new Date(subplan[key]);
-          obj[headers[key]] = date.toISOString().split('T')[0];
+          obj[headers[key]] = date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          });
         } else if (key === 'plan_data') {
           obj[headers[key]] = subplan.plan_data.name;
         } else {

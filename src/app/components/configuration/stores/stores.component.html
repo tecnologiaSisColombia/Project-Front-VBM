@@ -1,106 +1,110 @@
 <div class="title-page layout-container">
-    <div class="breadcrumb-container">
-        <nz-breadcrumb>
-            <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
-            <nz-breadcrumb-item>Resource Management</nz-breadcrumb-item>
-            <nz-breadcrumb-item>Stores</nz-breadcrumb-item>
-        </nz-breadcrumb>
-    </div>
-    <div class="btn-container">
-        <button 
-          nz-button 
-          nzType="primary" 
-          (click)="openDrawer()">New Store
-        </button>
+  <div class="breadcrumb-container">
+    <nz-breadcrumb>
+      <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Resource Management</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Stores</nz-breadcrumb-item>
+    </nz-breadcrumb>
+  </div>
 
-        <button
-          nz-button
-          [style.background-color]="'#00a651'"
-          [style.color]="'white'"
-          [nzLoading]="isDataLoading"
-          (click)="exportStores()"
-        >
-        <i nz-icon nzType="download" nzTheme="outline"></i>
-          Export Stores
-      </button>
-    </div>
+  <div class="btn-container">
+    <button 
+      nz-button 
+      nzType="primary" 
+      (click)="openDrawer()"
+    >
+      <i nz-icon nzType="shop" nzTheme="outline"></i>
+      New Store
+    </button>
+
+    <button
+      nz-button
+      [style.background-color]="'#00a651'"
+      [style.color]="'white'"
+      [nzLoading]="isDataLoading"
+      (click)="exportStores()"
+    >
+      <i nz-icon nzType="download" nzTheme="outline"></i>
+      Export Stores
+    </button>
+  </div>
 </div>
 
 <div class="main-table layout-container">
-    <div class="table-filters">
-        <nz-input-group [nzSuffix]="suffixIconSearch">
-            <input 
-                type="text" 
-                nz-input 
-                placeholder="Name..." 
-                [(ngModel)]="nameSearch" 
-                (ngModelChange)="search($event, 'name')" 
-            />
-        </nz-input-group>
-        <ng-template #suffixIconSearch>
-            <span nz-icon nzType="search"></span>
-        </ng-template>
-    </div>
+  <div class="table-filters">
+    <nz-input-group [nzSuffix]="suffixIconSearch">
+      <input 
+        type="text" 
+        nz-input 
+        placeholder="Name..." 
+        [(ngModel)]="nameSearch" 
+        (ngModelChange)="search($event, 'name')" 
+      />
+    </nz-input-group>
+    <ng-template #suffixIconSearch>
+      <span nz-icon nzType="search"></span>
+    </ng-template>
+  </div>  
 
-    <nz-table 
-        #basicTable 
-        [nzData]="dataToDisplay" 
-        [nzLoading]="isDataLoading" 
-        [nzFrontPagination]="false"
-    >
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Created</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let data of basicTable.data">
-                <td>{{ data.name }}</td>
-                <td>{{ data.created | date }}</td>
-                <td>
-                    <a>
-                        <nz-switch 
-                            title="Status" 
-                            [(ngModel)]="data.active" 
-                            nzSize="small" 
-                            (ngModelChange)="changeStatus(data.id, data)"
-                        ></nz-switch>
-                    </a>
-                    <nz-divider nzType="vertical"></nz-divider>
-                    <a>
-                        <span 
-                            nz-icon 
-                            title="Edit" 
-                            nzType="edit" 
-                            nzTheme="outline" 
-                            (click)="openEditDrawer(data)"
-                        ></span>
-                    </a>
-                    <nz-divider nzType="vertical"></nz-divider>
-                    <a>
-                        <span 
-                            nz-icon 
-                            title="Delete" 
-                            nzType="delete" 
-                            nzTheme="outline" 
-                            (click)="delete(data.id)"
-                        ></span>
-                    </a>
-                </td>
-            </tr>
-        </tbody>
-    </nz-table>
+  <nz-table 
+    #basicTable 
+    [nzData]="dataToDisplay" 
+    [nzLoading]="isDataLoading" 
+    [nzFrontPagination]="false"
+  >
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Created</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of basicTable.data">
+        <td>{{ data.name }}</td>
+        <td>{{ data.created | date }}</td>
+        <td>
+          <a>
+            <nz-switch 
+              title="Status" 
+              [(ngModel)]="data.active" 
+              nzSize="small" 
+              (ngModelChange)="changeStatus(data.id, data)"
+            ></nz-switch>
+          </a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <a>
+            <span 
+              nz-icon 
+              title="Edit" 
+              nzType="edit" 
+              nzTheme="outline" 
+              (click)="openEditDrawer(data)"
+            ></span>
+          </a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <a>
+            <span 
+              nz-icon 
+              title="Delete" 
+              nzType="delete" 
+              nzTheme="outline" 
+              (click)="delete(data.id)"
+            ></span>
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
 
-    <nz-pagination 
-        [nzPageIndex]="page" 
-        [nzResponsive]="true" 
-        [nzTotal]="count_records" 
-        [nzPageSize]="page_size" 
-        (nzPageIndexChange)="pageChange($event)" 
-        nzShowQuickJumper
-    ></nz-pagination>
+  <nz-pagination 
+    [nzPageIndex]="page" 
+    [nzResponsive]="true" 
+    [nzTotal]="count_records" 
+    [nzPageSize]="page_size" 
+    (nzPageIndexChange)="pageChange($event)" 
+    nzShowQuickJumper
+  ></nz-pagination>
 </div>
 
 <nz-drawer
