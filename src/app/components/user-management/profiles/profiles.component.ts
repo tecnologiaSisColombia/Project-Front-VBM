@@ -112,6 +112,7 @@ export class ProfilesComponent implements OnInit {
       next: () => {
         this.message.success(`Permissions updated successfully`)
         this.seePermissions(group);
+        this.isDataLoading = false;
       },
       error: (err) => {
         this.isDataLoading = false;
@@ -121,17 +122,14 @@ export class ProfilesComponent implements OnInit {
   }
 
   seePermissions(id_grupo: number): void {
-    this.isDataLoading = true;
     this.profileService.getGroupPerfil(id_grupo).subscribe({
       next: (res: any) => {
         this.permisosList = res;
         this.listOfDisplayPermisos = this.permisosList;
-        this.isDataLoading = false;
         this.isVisiblePermisosModal = true;
       },
       error: (err) => {
         this.message.error(JSON.stringify(err.error));
-        this.isDataLoading = false;
       },
     });
   }

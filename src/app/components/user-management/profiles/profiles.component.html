@@ -245,12 +245,12 @@
   [(nzVisible)]="isVisiblePermisosModal"
   nzTitle="Permissions"
   (nzOnOk)="OkPermissionsModal()"
-  (nzOnCancel)="false"
+  (nzOnCancel)="OkPermissionsModal()"
   [nzOkLoading]="isDataLoading"
   [nzCentered]="true"
-  [nzCancelText]="null" 
   [nzWidth]="'60%'"
   [nzClosable]="false"
+  [nzMaskClosable]="false"
 >
   <ng-container *nzModalContent>
     <nz-table
@@ -258,6 +258,8 @@
       [nzData]="listOfDisplayPermisos"
       [nzBordered]="false"
       [nzSize]="'small'"
+      [nzShowPagination]="true"
+      [nzPageSize]="6"
     >
       <thead>
         <tr>
