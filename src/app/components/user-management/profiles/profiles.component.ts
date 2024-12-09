@@ -18,6 +18,7 @@ import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { UserService } from 'app/services/user-management/user-management.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as XLSX from 'xlsx';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 
 @Component({
   selector: 'app-profiles',
@@ -37,20 +38,18 @@ import * as XLSX from 'xlsx';
     NzSpinModule,
     CommonModule,
     NzSwitchModule,
-    NzDropDownModule
+    NzDropDownModule,
+    NzModalModule
   ],
 
   templateUrl: './profiles.component.html',
   styleUrls: ['./profiles.component.css', '../../../../animations/styles.css'],
 })
 export class ProfilesComponent implements OnInit {
-  searchValue = '';
-  visible = false;
   groupsList: any[] = [];
   listOfDisplayData: any[] = [];
   permisosList: any[] = [];
   listOfDisplayPermisos: any[] = [];
-  showPermisos: boolean = false;
   isVisibleDrawerNewProfile: boolean = false;
   new_group_name: string = '';
   editCache: { [key: number]: { edit: boolean; data: any } } = {};
@@ -59,6 +58,7 @@ export class ProfilesComponent implements OnInit {
   editForm!: FormGroup;
   selectedGroupId!: number;
   addForm!: FormGroup;
+  isVisiblePermisosModal = false;
 
   constructor(
     private fb: FormBuilder,
@@ -76,6 +76,10 @@ export class ProfilesComponent implements OnInit {
     return this.fb.group({
       [fieldName]: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
     });
+  }
+
+  OkPermissionsModal(): void {
+    this.isVisiblePermisosModal = false;
   }
 
   editPermisos(data: any, paramToChange: string) {
@@ -116,35 +120,22 @@ export class ProfilesComponent implements OnInit {
     });
   }
 
-  search(): void {
-    this.visible = false;
-    this.listOfDisplayPermisos = this.permisosList.filter(
-      (item: any) => item.modulo_data.modulo.indexOf(this.searchValue) !== -1
-    );
-  }
-
-  reset(): void {
-    this.searchValue = '';
-    this.search();
-  }
-
-  seePermissions(id_grupo: number) {
+  seePermissions(id_grupo: number): void {
     this.isDataLoading = true;
     this.profileService.getGroupPerfil(id_grupo).subscribe({
       next: (res: any) => {
-        this.message.success('Show permissions');
         this.permisosList = res;
         this.listOfDisplayPermisos = this.permisosList;
         this.isDataLoading = false;
-        this.showPermisos = true;
+        this.isVisiblePermisosModal = true;
       },
       error: (err) => {
         this.message.error(JSON.stringify(err.error));
         this.isDataLoading = false;
-        this.showPermisos = true;
       },
     });
   }
+
 
   submitEdit(): void {
     if (this.editForm.valid) {

@@ -109,7 +109,6 @@
   ></nz-pagination>
 </div>
 
-<!-- New Profile Drawer -->
 <nz-drawer
   [nzBodyStyle]="{ overflow: 'auto' }"
   [nzMaskClosable]="false"
@@ -176,9 +175,7 @@
     </div>
   </ng-template>
 </nz-drawer>
-<!-- New Profile Drawer -->
 
-<!-- Edit Profile Drawer -->
 <nz-drawer
   [nzBodyStyle]="{ overflow: 'auto' }"
   [nzMaskClosable]="false"
@@ -243,37 +240,38 @@
     </div>
   </ng-template>
 </nz-drawer>
-<!-- Edit Profile Drawer -->
 
-
-  <nz-table
-    #permisosTable
-    [nzData]="listOfDisplayPermisos"
-    *ngIf="showPermisos"
-  >
-    <thead>
-      <tr>
-        <th nzCustomFilter>
-          Module
-          <nz-filter-trigger
-            [(nzVisible)]="visible"
-            [nzActive]="searchValue.length > 0"
-            [nzDropdownMenu]="menu"
-          >
-            <i nz-icon nzType="search"></i>
-          </nz-filter-trigger>
-        </th>
-        <th>Read</th>
-        <th>Write</th>
-        <th>Update</th>
-        <th>Delete</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let data of permisosTable.data">
-        <td>{{ data.modulo_data.modulo }}</td>
-        <td>
-          <a nz-tooltip nzTooltipTitle="Activar / Desactivar">
+<nz-modal
+  [(nzVisible)]="isVisiblePermisosModal"
+  nzTitle="Permissions"
+  (nzOnOk)="OkPermissionsModal()"
+  (nzOnCancel)="false"
+  [nzOkLoading]="isDataLoading"
+  [nzCentered]="true"
+  [nzCancelText]="null" 
+  [nzWidth]="'60%'"
+  [nzClosable]="false"
+>
+  <ng-container *nzModalContent>
+    <nz-table
+      #permisosTable
+      [nzData]="listOfDisplayPermisos"
+      [nzBordered]="false"
+      [nzSize]="'small'"
+    >
+      <thead>
+        <tr>
+          <th>Module</th>
+          <th>Read</th>
+          <th>Write</th>
+          <th>Update</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of permisosTable.data">
+          <td>{{ data.modulo_data.modulo }}</td>
+          <td>
             <nz-switch
               nzSize="small"
               [(ngModel)]="data.read"
@@ -281,10 +279,8 @@
               [nzLoading]="isDataLoading"
               (click)="editPermisos(data, 'read')"
             ></nz-switch>
-          </a>
-        </td>
-        <td>
-          <a nz-tooltip nzTooltipTitle="Activar / Desactivar">
+          </td>
+          <td>
             <nz-switch
               nzSize="small"
               [(ngModel)]="data.write"
@@ -292,10 +288,8 @@
               [nzLoading]="isDataLoading"
               (click)="editPermisos(data, 'write')"
             ></nz-switch>
-          </a>
-        </td>
-        <td>
-          <a nz-tooltip nzTooltipTitle="Activar / Desactivar">
+          </td>
+          <td>
             <nz-switch
               nzSize="small"
               [(ngModel)]="data.update"
@@ -303,10 +297,8 @@
               [nzLoading]="isDataLoading"
               (click)="editPermisos(data, 'update')"
             ></nz-switch>
-          </a>
-        </td>
-        <td>
-          <a nz-tooltip nzTooltipTitle="Activar / Desactivar">
+          </td>
+          <td>
             <nz-switch
               nzSize="small"
               [(ngModel)]="data.delete"
@@ -314,32 +306,9 @@
               [nzLoading]="isDataLoading"
               (click)="editPermisos(data, 'delete')"
             ></nz-switch>
-          </a>
-        </td>
-      </tr>
-    </tbody>
-  </nz-table>
-
-
-<nz-dropdown-menu #menu="nzDropdownMenu">
-  <div class="ant-table-filter-dropdown">
-    <div class="search-box">
-      <input
-        type="text"
-        nz-input
-        placeholder="Search name"
-        [(ngModel)]="searchValue"
-      />
-      <button
-        nz-button
-        nzSize="small"
-        nzType="primary"
-        (click)="search()"
-        class="search-button"
-      >
-        Search
-      </button>
-      <button nz-button nzSize="small" (click)="reset()">Clean</button>
-    </div>
-  </div>
-</nz-dropdown-menu>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </ng-container>
+</nz-modal>

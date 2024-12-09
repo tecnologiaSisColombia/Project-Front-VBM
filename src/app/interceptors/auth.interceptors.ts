@@ -27,9 +27,6 @@ export class AuthInterceptor implements HttpInterceptor {
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401 || error.status === 403) {
           if (this.authService.getJwtToken()) {
-            if (error.error && error.error.detail) {
-              return next.handle(request);
-            }
             return this.handle401Error(request, next);
           } else {
             this.router.navigate(['/login']);
@@ -66,6 +63,11 @@ export class AuthInterceptor implements HttpInterceptor {
         }),
         catchError((error) => {
           this.isRefreshing = false;
+
+          if (error.error && error.error.detail) {
+            return throwError(() => error);
+          }
+
           this.router.navigate(['/']);
           return throwError(() => error);
         })
