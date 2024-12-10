@@ -36,15 +36,24 @@ import { debounceTime } from 'rxjs/operators';
     NzSwitchModule,
   ],
   templateUrl: './user-management.component.html',
-  styleUrls: ['./user-management.component.css', '../../../animations/styles.css'],
+  styleUrls: [
+    './user-management.component.css',
+    '../../../animations/styles.css',
+  ],
 })
 export class UserManagementComponent implements OnInit {
   loading = false;
   data: any[] = [];
   originalData: any[] = [];
   user_types: any[] = [];
-  searchQuery: { username: string; fullName: string } = { username: '', fullName: '' };
-  searchQuerySubject: Subject<{ field: 'username' | 'fullName'; query: string }> = new Subject();
+  searchQuery: { username: string; fullName: string } = {
+    username: '',
+    fullName: '',
+  };
+  searchQuerySubject: Subject<{
+    field: 'username' | 'fullName';
+    query: string;
+  }> = new Subject();
   num_pages = 1;
   count_records = 0;
   page_size = 10;
@@ -131,7 +140,9 @@ export class UserManagementComponent implements OnInit {
 
         if (!user.is_active) {
           const userAttributes = localStorage.getItem('user_attributes');
-          const currentUser = userAttributes ? JSON.parse(userAttributes) : null;
+          const currentUser = userAttributes
+            ? JSON.parse(userAttributes)
+            : null;
 
           if (currentUser?.username === user.username) {
             this.authService.doLogout();
@@ -163,7 +174,9 @@ export class UserManagementComponent implements OnInit {
             this.data = this.data.filter((u) => u.username !== user.username);
 
             const userAttributes = localStorage.getItem('user_attributes');
-            const currentUser = userAttributes ? JSON.parse(userAttributes) : null;
+            const currentUser = userAttributes
+              ? JSON.parse(userAttributes)
+              : null;
 
             if (currentUser && currentUser.username === user.username) {
               this.authService.doLogout();
