@@ -11,9 +11,12 @@
     <button 
       nz-button 
       nzType="primary" 
-      (click)="openDrawer()"
-    >
-      <i nz-icon nzType="appstore-add" nzTheme="outline"></i>
+      (click)="openDrawer()">
+      <i 
+        nz-icon 
+        nzType="appstore-add" 
+        nzTheme="outline">
+      </i>
       New Coverage
     </button>
 
@@ -21,10 +24,12 @@
       nz-button
       [style.background-color]="'#00a651'"
       [style.color]="'white'"
-      [nzLoading]="isDataLoading"
-      (click)="exportCoverages()"
-    >
-      <i nz-icon nzType="download" nzTheme="outline"></i>
+      (click)="exportCoverages()">
+      <i 
+        nz-icon 
+        nzType="download" 
+        nzTheme="outline">
+      </i>
       Export Coverages
     </button>
   </div>
@@ -41,9 +46,6 @@
         (ngModelChange)="search($event, 'name')"
       />
     </nz-input-group>
-    <ng-template #suffixIconSearch>
-      <span nz-icon nzType="search"></span>
-    </ng-template>
 
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
@@ -54,14 +56,17 @@
         (ngModelChange)="search($event, 'insurer')"
       />
     </nz-input-group>
+
+    <ng-template #suffixIconSearch>
+      <span nz-icon nzType="search"></span>
+    </ng-template>
   </div>
 
   <nz-table
     #basicTable
     [nzData]="dataToDisplay"
     [nzLoading]="isDataLoading"
-    [nzFrontPagination]="false"
-  >
+    [nzFrontPagination]="false">
     <thead>
       <tr>
         <th>Insurer</th>
@@ -82,8 +87,8 @@
               nzType="plus-circle"
               nzTheme="outline"
               title="Show Subplans"
-              (click)="openModal(data)"
-            ></span>
+              (click)="openModal(data)">
+            </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
@@ -91,8 +96,8 @@
               title="Status"
               [(ngModel)]="data.active"
               nzSize="small"
-              (ngModelChange)="changeStatus(data.id, data)"
-            ></nz-switch>
+              (ngModelChange)="changeStatus(data.id, data)">
+            </nz-switch>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
@@ -101,8 +106,8 @@
               nz-icon
               nzType="edit"
               nzTheme="outline"
-              (click)="openEditDrawer(data)"
-            ></span>
+              (click)="openEditDrawer(data)">
+            </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
@@ -111,8 +116,8 @@
               nz-icon
               nzType="delete"
               nzTheme="outline"
-              (click)="delete(data.id)"
-            ></span>
+              (click)="delete(data.id)">
+            </span>
           </a>
         </td>
       </tr>
@@ -124,9 +129,11 @@
     [nzResponsive]="true"
     [nzTotal]="count_records"
     [nzPageSize]="page_size"
+    [nzShowSizeChanger]="true"
     (nzPageIndexChange)="pageChange($event)"
-    nzShowQuickJumper
-  ></nz-pagination>
+    (nzPageSizeChange)="pageSizeChange($event)"
+    [nzShowQuickJumper]="true">
+  </nz-pagination>
 </div>
 
 <nz-drawer
@@ -138,8 +145,8 @@
   [nzTitle]="drawerTitle"
   (nzOnClose)="closeDrawer()"
   [nzWidth]="720"
-  [nzFooter]="footerTpl"
->
+  [nzFooter]="footerTpl">
+
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="drawerLoader">
       <form nz-form [formGroup]="form" (ngSubmit)="submit()">
@@ -148,15 +155,14 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="name"
-            style="text-align: center;"
-          >
+            style="text-align: center;">
             Name
           </nz-form-label>
+
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="nameError"
-          >
+            [nzErrorTip]="nameError">
             <input
               nz-input
               formControlName="name"
@@ -164,6 +170,7 @@
             />
           </nz-form-control>
         </nz-form-item>
+
         <ng-template #nameError>
           <span *ngIf="form.get('name')?.hasError('required')">
             This field is required
@@ -178,27 +185,24 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="insurer"
-            style="text-align: center;"
-          >
+            style="text-align: center;">
             Insurer
           </nz-form-label>
+
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
+            nzErrorTip="This field is required">
             <nz-select
               nzShowSearch
               nzAllowClear
               id="insurer"
               nzPlaceHolder="Select an Insurer"
-              formControlName="insurer"
-            >
+              formControlName="insurer">
               <nz-option
                 *ngFor="let o of insurers"
                 [nzLabel]="o.name"
-                [nzValue]="o.id"
-              >
+                [nzValue]="o.id">
               </nz-option>
             </nz-select>
           </nz-form-control>
@@ -212,15 +216,14 @@
       <button
         nz-button
         style="margin-right: 8px;"
-        (click)="closeDrawer()"
-      >
+        (click)="closeDrawer()">
         Close
       </button>
+
       <button
         nz-button
         nzType="primary"
-        (click)="submit()"
-      >
+        (click)="submit()">
         Save
       </button>
     </div>
@@ -233,9 +236,11 @@
   (nzOnCancel)="handleCancelModal()"
   (nzOnOk)="handleOkModal()"
   nzWidth="1000"
-  nzMaskClosable="false"
->
+  nzMaskClosable="false">
+
   <ng-container *nzModalContent>
-    <app-subplans [planData]="dataCacheModal"></app-subplans>
+    <app-subplans 
+      [planData]="dataCacheModal">
+    </app-subplans>
   </ng-container>
 </nz-modal>

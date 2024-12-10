@@ -12,9 +12,12 @@
     <button 
       nz-button 
       nzType="primary" 
-      (click)="openDrawer()"
-    >
-      <i nz-icon nzType="folder-add" nzTheme="outline"></i>
+      (click)="openDrawer()">
+      <i 
+        nz-icon 
+        nzType="folder-add" 
+        nzTheme="outline">
+      </i>
       New Subplan
     </button>
 
@@ -22,10 +25,12 @@
       nz-button
       [style.background-color]="'#00a651'"
       [style.color]="'white'"
-      [nzLoading]="isDataLoading"
-      (click)="exportSubplans()"
-    >
-      <i nz-icon nzType="download" nzTheme="outline"></i>
+      (click)="exportSubplans()">
+      <i 
+        nz-icon 
+        nzType="download" 
+        nzTheme="outline">
+      </i>
       Export Subplans
     </button>
   </div>
@@ -82,8 +87,7 @@
     #basicTable
     [nzData]="dataToDisplay"
     [nzFrontPagination]="false"
-    [nzLoading]="isDataLoading"
-  >
+    [nzLoading]="isDataLoading">
     <thead>
       <tr>
         <th>Plan</th>
@@ -117,8 +121,8 @@
               title="Status"
               [(ngModel)]="data.active"
               nzSize="small"
-              (ngModelChange)="changeStatus(data.id, data)"
-            ></nz-switch>
+              (ngModelChange)="changeStatus(data.id, data)">
+            </nz-switch>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
@@ -127,8 +131,8 @@
               nz-icon
               nzType="edit"
               nzTheme="outline"
-              (click)="openEditDrawer(data)"
-            ></span>
+              (click)="openEditDrawer(data)">
+            </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
@@ -137,21 +141,24 @@
               nz-icon
               nzType="delete"
               nzTheme="outline"
-              (click)="delete(data.id)"
-            ></span>
+              (click)="delete(data.id)">
+            </span>
           </a>
         </td>
       </tr>
     </tbody>
   </nz-table>
+
   <nz-pagination
     [nzPageIndex]="page"
     [nzResponsive]="true"
     [nzTotal]="count_records"
     [nzPageSize]="page_size"
+    [nzShowSizeChanger]="true"
     (nzPageIndexChange)="pageChange($event)"
-    nzShowQuickJumper
-  ></nz-pagination>
+    (nzPageSizeChange)="pageSizeChange($event)"
+    [nzShowQuickJumper]="true">
+  </nz-pagination>
 </div>
 
 <nz-drawer
@@ -163,8 +170,8 @@
   [nzTitle]="drawerTitle"
   (nzOnClose)="closeDrawer()"
   [nzWidth]="720"
-  [nzFooter]="footerTpl"
->
+  [nzFooter]="footerTpl">
+  
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="drawerLoader">
       <form nz-form [formGroup]="form" (ngSubmit)="submit()">
@@ -173,14 +180,22 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="name"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Name
           </nz-form-label>
-          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="nameError">
-            <input nz-input formControlName="name" id="name" />
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="nameError">
+            <input 
+              nz-input 
+              formControlName="name" 
+              id="name" 
+            />
           </nz-form-control>
         </nz-form-item>
+
         <ng-template #nameError>
           <span *ngIf="form.get('name')?.hasError('required')">
             This field is required
@@ -195,14 +210,22 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="group"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Group
           </nz-form-label>
-          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="groupError">
-            <input nz-input formControlName="group" id="group" />
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="groupError">
+            <input 
+              nz-input 
+              formControlName="group" 
+              id="group" 
+            />
           </nz-form-control>
         </nz-form-item>
+
         <ng-template #groupError>
           <span *ngIf="form.get('group')?.hasError('required')">
             This field is required
@@ -217,11 +240,14 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="plan_contract"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Plan Contract
           </nz-form-label>
-          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="contractError">
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="contractError">
             <input
               nz-input
               formControlName="plan_contract"
@@ -229,6 +255,7 @@
             />
           </nz-form-control>
         </nz-form-item>
+
         <ng-template #contractError>
           <span *ngIf="form.get('plan_contract')?.hasError('required')">
             This field is required
@@ -243,22 +270,20 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="plan"
-            style="text-align: center"
-          >
+            style="text-align: center">
             PDS
           </nz-form-label>
+
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
+            nzErrorTip="This field is required">
             <nz-select
               nzShowSearch
               nzAllowClear
               id="pds"
               nzPlaceHolder="Select an PDS"
-              formControlName="pds"
-            >
+              formControlName="pds">
               <nz-option nzLabel="Si" [nzValue]="1"></nz-option>
               <nz-option nzLabel="No" [nzValue]="2"></nz-option>
             </nz-select>
@@ -270,15 +295,14 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="visual_test_medicare"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Visual Test Medicare $
           </nz-form-label>
+
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
+            nzErrorTip="This field is required">
             <input
               nz-input
               type="number"
@@ -293,15 +317,14 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="visual_surgery_medicare"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Visual Surgery Medicare $
           </nz-form-label>
+
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
+            nzErrorTip="This field is required">
             <input
               nz-input
               type="number"
@@ -316,15 +339,14 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="routine_visual_test"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Routine Visual Test $
           </nz-form-label>
+
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
+            nzErrorTip="This field is required">
             <input
               nz-input
               type="number"
@@ -339,15 +361,14 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="vision_elements"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Vision Elements $
           </nz-form-label>
+
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
+            nzErrorTip="This field is required">
             <input
               nz-input
               type="number"
@@ -365,11 +386,16 @@
       <button
         nz-button
         style="display: flex; margin-right: 8px"
-        (click)="closeDrawer()"
-      >
+        (click)="closeDrawer()">
         close
       </button>
-      <button nz-button nzType="primary" (click)="submit()">Save</button>
+
+      <button 
+        nz-button 
+        nzType="primary" 
+        (click)="submit()">
+        Save
+      </button>
     </div>
   </ng-template>
 </nz-drawer>

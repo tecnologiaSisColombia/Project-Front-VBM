@@ -68,13 +68,7 @@ export class StoresComponent implements OnInit {
     private msgService: NzMessageService
   ) {
     this.form = this.fb.group({
-      name: [
-        null,
-        [
-          Validators.required,
-          Validators.pattern(/^(?!\s*$).+/)
-        ]
-      ],
+      name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
     });
 
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
@@ -141,7 +135,7 @@ export class StoresComponent implements OnInit {
         this.isDataLoading = true;
         this.storesService.delete(id).subscribe({
           next: () => {
-            this.msgService.success('Store deleted successfully');
+            this.msgService.success(JSON.stringify('Store deleted successfully'));
             this.isDataLoading = false;
             this.getInitData();
           },
@@ -158,7 +152,7 @@ export class StoresComponent implements OnInit {
     this.isDataLoading = true;
     this.storesService.update(id, data).subscribe({
       next: () => {
-        this.msgService.success('Store updated successfully');
+        this.msgService.success(JSON.stringify('Store updated successfully'));
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -179,7 +173,7 @@ export class StoresComponent implements OnInit {
       }
       this.storesService.create(this.form.value).subscribe({
         next: () => {
-          this.msgService.success('New Store created');
+          this.msgService.success(JSON.stringify('New Store created'));
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -218,6 +212,12 @@ export class StoresComponent implements OnInit {
     });
   }
 
+  pageSizeChange(pageSize: number): void {
+    this.page_size = pageSize;
+    this.page = 1;
+    this.getInitData();
+  }
+
   pageChange(event: number) {
     this.page = event;
     this.getInitData();
@@ -230,7 +230,7 @@ export class StoresComponent implements OnInit {
 
   exportStores(): void {
     if (this.dataToDisplay.length === 0) {
-      this.msgService.warning('No data available to export');
+      this.msgService.warning(JSON.stringify('No data available to export'));
       return;
     }
 
@@ -285,5 +285,7 @@ export class StoresComponent implements OnInit {
     document.body.removeChild(link);
 
     this.isDataLoading = false;
+
+    this.msgService.success(JSON.stringify('Export completed successfully'));
   }
 }

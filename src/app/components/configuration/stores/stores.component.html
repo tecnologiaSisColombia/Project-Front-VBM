@@ -11,9 +11,12 @@
     <button 
       nz-button 
       nzType="primary" 
-      (click)="openDrawer()"
-    >
-      <i nz-icon nzType="shop" nzTheme="outline"></i>
+      (click)="openDrawer()">
+      <i 
+        nz-icon 
+        nzType="shop" 
+        nzTheme="outline">
+      </i>
       New Store
     </button>
 
@@ -21,10 +24,12 @@
       nz-button
       [style.background-color]="'#00a651'"
       [style.color]="'white'"
-      [nzLoading]="isDataLoading"
-      (click)="exportStores()"
-    >
-      <i nz-icon nzType="download" nzTheme="outline"></i>
+      (click)="exportStores()">
+      <i 
+        nz-icon 
+        nzType="download" 
+        nzTheme="outline">
+      </i>
       Export Stores
     </button>
   </div>
@@ -41,8 +46,12 @@
         (ngModelChange)="search($event, 'name')" 
       />
     </nz-input-group>
+
     <ng-template #suffixIconSearch>
-      <span nz-icon nzType="search"></span>
+      <span 
+        nz-icon 
+        nzType="search">
+      </span>
     </ng-template>
   </div>  
 
@@ -50,8 +59,7 @@
     #basicTable 
     [nzData]="dataToDisplay" 
     [nzLoading]="isDataLoading" 
-    [nzFrontPagination]="false"
-  >
+    [nzFrontPagination]="false">
     <thead>
       <tr>
         <th>Name</th>
@@ -69,8 +77,8 @@
               title="Status" 
               [(ngModel)]="data.active" 
               nzSize="small" 
-              (ngModelChange)="changeStatus(data.id, data)"
-            ></nz-switch>
+              (ngModelChange)="changeStatus(data.id, data)">
+            </nz-switch>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
@@ -79,8 +87,8 @@
               title="Edit" 
               nzType="edit" 
               nzTheme="outline" 
-              (click)="openEditDrawer(data)"
-            ></span>
+              (click)="openEditDrawer(data)">
+            </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
@@ -89,8 +97,8 @@
               title="Delete" 
               nzType="delete" 
               nzTheme="outline" 
-              (click)="delete(data.id)"
-            ></span>
+              (click)="delete(data.id)">
+            </span>
           </a>
         </td>
       </tr>
@@ -101,10 +109,12 @@
     [nzPageIndex]="page" 
     [nzResponsive]="true" 
     [nzTotal]="count_records" 
-    [nzPageSize]="page_size" 
-    (nzPageIndexChange)="pageChange($event)" 
-    nzShowQuickJumper
-  ></nz-pagination>
+    [nzPageSize]="page_size"
+    [nzShowSizeChanger]="true"
+    (nzPageIndexChange)="pageChange($event)"
+    (nzPageSizeChange)="pageSizeChange($event)"
+    [nzShowQuickJumper]="true">
+  </nz-pagination>
 </div>
 
 <nz-drawer
@@ -116,8 +126,8 @@
   [nzTitle]="drawerTitle"
   (nzOnClose)="closeDrawer()"
   [nzWidth]="720"
-  [nzFooter]="footerTpl"
->
+  [nzFooter]="footerTpl">
+
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="drawerLoader">
       <form nz-form [formGroup]="form" (ngSubmit)="submit()">
@@ -126,15 +136,14 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="name"
-            style="text-align: center;"
-          >
+            style="text-align: center;">
             Name
           </nz-form-label>
+          
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="nameError"
-          >
+            [nzErrorTip]="nameError">
             <input
               nz-input
               formControlName="name"
@@ -142,6 +151,7 @@
             />
           </nz-form-control>
         </nz-form-item>
+
         <ng-template #nameError>
             <span *ngIf="form.get('name')?.hasError('required')">
               This field is required
@@ -159,15 +169,14 @@
       <button
         nz-button
         style="display: flex; margin-right: 8px;"
-        (click)="closeDrawer()"
-      >
+        (click)="closeDrawer()">
         Close
       </button>
+
       <button
         nz-button
         nzType="primary"
-        (click)="submit()"
-      >
+        (click)="submit()">
         Save
       </button>
     </div>

@@ -3,7 +3,7 @@
     <nz-breadcrumb>
       <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
       <nz-breadcrumb-item>Resource Management</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Specialities</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Products</nz-breadcrumb-item>
     </nz-breadcrumb>
   </div>
 
@@ -14,23 +14,23 @@
       (click)="openDrawer()">
       <i 
         nz-icon 
-        nzType="solution" 
+        nzType="shopping" 
         nzTheme="outline">
       </i>
-      New Speciality
+      New Product
     </button>
 
     <button
       nz-button
       [style.background-color]="'#00a651'"
       [style.color]="'white'"
-      (click)="exportSpecialities()">
+      (click)="exportProducts()">
       <i 
         nz-icon 
         nzType="download" 
         nzTheme="outline">
       </i>
-      Export Specialities
+      Export Products
     </button>
   </div>
 </div>
@@ -46,12 +46,23 @@
         (ngModelChange)="search($event, 'description')"
       />
     </nz-input-group>
-    
+
     <ng-template #suffixIconSearch>
-      <span 
-        nz-icon 
-        nzType="search">
-      </span>
+      <span nz-icon nzType="search"></span>
+    </ng-template>
+
+    <nz-input-group [nzSuffix]="suffixIconSearch">
+      <input
+        type="text"
+        nz-input
+        placeholder="Code..."
+        [(ngModel)]="codeSearch"
+        (ngModelChange)="search($event, 'code')"
+      />
+    </nz-input-group>
+
+    <ng-template #suffixIconSearch>
+      <span nz-icon nzType="search"></span>
     </ng-template>
   </div>
 
@@ -62,6 +73,7 @@
     [nzFrontPagination]="false">
     <thead>
       <tr>
+        <th>Code</th>
         <th>Description</th>
         <th>Created</th>
         <th>Action</th>
@@ -69,6 +81,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let data of basicTable.data">
+        <td>{{ data.code }}</td>
         <td>{{ data.description }}</td>
         <td>{{ data.created | date }}</td>
         <td>
@@ -127,7 +140,7 @@
   (nzOnClose)="closeDrawer()"
   [nzWidth]="720"
   [nzFooter]="footerTpl">
-  
+
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="drawerLoader">
       <form nz-form [formGroup]="form" (ngSubmit)="submit()">
@@ -135,8 +148,38 @@
           <nz-form-label
             [nzSm]="8"
             [nzXs]="24"
+            nzFor="code"
+            style="text-align: center">
+            Code
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="codeError">
+            <input 
+              nz-input 
+              formControlName="code" 
+              id="code" 
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <ng-template #codeError>
+          <span *ngIf="form.get('code')?.hasError('required')">
+            This field is required
+          </span>
+          <span *ngIf="form.get('code')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
+        </ng-template>
+
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
             nzFor="description"
-            style="text-align: center;">
+            style="text-align: center">
             Description
           </nz-form-label>
 
@@ -144,11 +187,10 @@
             [nzSm]="16"
             [nzXs]="24"
             [nzErrorTip]="descriptionError">
-            <input
-              nz-input
-              formControlName="description"
-              id="description"
-              placeholder="Enter a description"
+            <input 
+              nz-input 
+              formControlName="description" 
+              id="description" 
             />
           </nz-form-control>
         </nz-form-item>
@@ -166,17 +208,17 @@
   </ng-container>
 
   <ng-template #footerTpl>
-    <div style="display: flex; float: right;">
-      <button
-        nz-button
-        style="margin-right: 8px;"
+    <div style="display: flex; float: right">
+      <button 
+        nz-button 
+        style="margin-right: 8px" 
         (click)="closeDrawer()">
         Close
       </button>
 
-      <button
-        nz-button
-        nzType="primary"
+      <button 
+        nz-button 
+        nzType="primary" 
         (click)="submit()">
         Save
       </button>
