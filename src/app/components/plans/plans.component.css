@@ -13,3 +13,7 @@
 nz-input-group {
   margin: 20px;
 }
+
+.btn-container button {
+  margin-right: 5px;
+}

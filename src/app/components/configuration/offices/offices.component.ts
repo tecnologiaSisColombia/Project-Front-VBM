@@ -24,6 +24,7 @@ import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { OfficesService } from 'app/services/config/offices.service';
 import { StoresService } from 'app/services/config/stores.service';
 import { NzSelectModule } from 'ng-zorro-antd/select';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-offices',
@@ -73,13 +74,13 @@ export class OfficesComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       store: [
-        null, 
+        null,
         [
           Validators.required
         ]
       ],
       name: [
-        null, 
+        null,
         [
           Validators.required,
           Validators.pattern(/^(?!\s*$).+/)
@@ -245,5 +246,64 @@ export class OfficesComponent implements OnInit {
   setPagination(count: number) {
     this.count_records = count;
     this.num_pages = Math.ceil(count / this.page_size);
+  }
+
+  exportOffices(): void {
+    if (this.dataToDisplay.length === 0) {
+      this.msgService.warning('No data available to export');
+      return;
+    }
+
+    this.isDataLoading = true;
+
+    const headers = {
+      name: 'Office',
+      created: 'Created',
+      active: 'Status',
+    } as const;    
+
+    const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+
+    const filteredData = this.dataToDisplay.map(office =>
+      selectedColumns.reduce((obj: Record<string, any>, key) => {
+        if (key === 'active') {
+          obj[headers[key]] = office[key] ? 'Active' : 'Inactive';
+        } else if (key === 'created') {
+          const date = new Date(office[key]);
+          obj[headers[key]] = date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          });
+        } else {
+          obj[headers[key]] = office[key];
+        }
+        return obj;
+      }, {})
+    );
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Offices');
+
+    const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'Offices.xlsx');
+    link.style.visibility = 'hidden';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    this.isDataLoading = false;
   }
 }

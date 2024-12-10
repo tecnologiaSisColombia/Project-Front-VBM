@@ -17,6 +17,7 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { AuthService } from '../../services/auth/auth.service';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-user-management',
@@ -89,10 +90,11 @@ export class UserManagementComponent implements OnInit {
   getUserTypes(): void {
     this.userService.getUserTypes().subscribe({
       next: (response: any) => {
-        this.user_types = response;
+        this.user_types = response || [];
       },
       error: (error) => {
         this.msgService.error(JSON.stringify(error || 'Error getUserTypes'));
+        this.user_types = [];
       },
     });
   }
@@ -193,7 +195,7 @@ export class UserManagementComponent implements OnInit {
 
   mapUserRole(user_type_id: number): string {
     const type = this.user_types.find((t) => t.id == user_type_id);
-    return type.name;
+    return type ? type.name : 'Unknown Role';
   }
 
   onSearch(field: 'username' | 'fullName'): void {
@@ -219,4 +221,67 @@ export class UserManagementComponent implements OnInit {
     }
     this.loading = false;
   }
+
+  exportUsersToXLS(): void {
+    if (this.data.length === 0) {
+      this.msgService.warning('No data available to export');
+      return;
+    }
+
+    this.loading = true;
+
+    const headers: Record<
+      'first_name' | 'last_name' | 'email' | 'username' | 'phone' | 'is_active' | 'role',
+      string> = {
+      role: 'Role',
+      first_name: 'First Name',
+      last_name: 'Last Name',
+      email: 'Email',
+      username: 'Username',
+      phone: 'Phone',
+      is_active: 'Status',
+    };
+
+    const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+
+    const filteredData = this.data.map(user =>
+      selectedColumns.reduce((obj: Record<string, any>, key) => {
+        if (key === 'is_active') {
+          obj[headers[key]] = user[key] == 1 ? 'Active' : 'Inactive';
+        } else if (key === 'role') {
+          obj[headers[key]] = user.extra_data
+            ? this.mapUserRole(user.extra_data[0].user_type_id)
+            : 'Admin';
+        } else {
+          obj[headers[key]] = user[key];
+        }
+        return obj;
+      }, {})
+    );
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Users');
+
+    const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'users.xlsx');
+    link.style.visibility = 'hidden';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    this.loading = false;
+  }
+
 }

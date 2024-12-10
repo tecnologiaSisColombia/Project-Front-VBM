@@ -63,6 +63,11 @@ export class AuthInterceptor implements HttpInterceptor {
         }),
         catchError((error) => {
           this.isRefreshing = false;
+
+          if (error.error && error.error.detail) {
+            return throwError(() => error);
+          }
+
           this.router.navigate(['/']);
           return throwError(() => error);
         })

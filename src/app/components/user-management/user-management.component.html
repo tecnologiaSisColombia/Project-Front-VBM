@@ -11,6 +11,18 @@
       class="boton-margen"
       (userCreated)="addUserToList($event)"
     ></nz-demo-drawer-from-drawer>
+
+    <button
+      nz-button
+      [style.background-color]="'#00a651'"
+      [style.color]="'white'"
+      [nzLoading]="loading"
+      (click)="exportUsersToXLS()"
+    >
+    <i nz-icon nzType="download" nzTheme="outline"></i>
+    Export Users
+  </button>
+  
   </div>
 </div>
 

@@ -9,18 +9,23 @@
         class="header-menu"
         style="text-align: right"
       >
-        <nz-avatar
-          style="cursor: pointer"
-          nzIcon="user"
-          nz-dropdown
-          nzTrigger="click"
-          [nzDropdownMenu]="menu"
-        ></nz-avatar>
-        <nz-dropdown-menu #menu="nzDropdownMenu">
-          <ul nz-menu nzSelectable>
-            <li nz-menu-item nzDanger (click)="logout()">Logout</li>
-          </ul>
-        </nz-dropdown-menu>
+      <nz-avatar
+      style="cursor: pointer"
+      class="user-avatar"
+      nzIcon="user"
+      nz-dropdown
+      nzTrigger="click"
+      [nzDropdownMenu]="menu"
+    ></nz-avatar>
+    
+    <nz-dropdown-menu #menu="nzDropdownMenu">
+      <ul nz-menu nzSelectable>
+        <li nz-menu-item nzDanger (click)="logout()">
+          <i nz-icon nzType="logout" nzTheme="outline"></i>
+          Logout
+        </li>
+      </ul>
+    </nz-dropdown-menu>
       </ul>
     </nz-header>
     <nz-layout>

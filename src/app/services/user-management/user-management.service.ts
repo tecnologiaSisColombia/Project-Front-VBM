@@ -119,6 +119,7 @@ export class UserService {
   assignGroups(id: number, groups: any) {
     return this.http.put(`${this.baseUrl}core/users-groups/${id}`, groups);
   }
+
   getGroups({}, page = 1, page_size = 10, init = false) {
     let params = new HttpParams()
       .append('page', page.toLocaleString())
@@ -126,19 +127,25 @@ export class UserService {
       .append('init', init);
     return this.http.get(`${this.baseUrl}core/groups`, { params });
   }
+
   addGroup(data: any) {
     return this.http.post(`${this.baseUrl}core/groups`, data);
   }
+
   updateGroup(id: number, data: any) {
     return this.http.put(`${this.baseUrl}core/groups/${id}`, data);
   }
+
   getGroupPerfil(grupo_id: any) {
     return this.http.get(`${this.baseUrl}core/profile-group/` + grupo_id);
   }
+
   updatePerfil(id: number, data: any) {
     return this.http.put(`${this.baseUrl}core/profile-group/` + id, data);
   }
+
   deleteGroup(id: any) {
     return this.http.delete(`${this.baseUrl}core/groups/${id}`);
   }
+  
 }

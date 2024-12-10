@@ -1,12 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  UntypedFormBuilder,
-  UntypedFormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, } from '@angular/forms';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
@@ -17,15 +11,14 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { debounceTime, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import { NzSelectModule } from 'ng-zorro-antd/select';
-import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { UserService } from 'app/services/user-management/user-management.service';
-import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import * as XLSX from 'xlsx';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 
 @Component({
   selector: 'app-profiles',
@@ -40,183 +33,58 @@ import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
     NzPaginationModule,
     NzDividerModule,
     NzInputModule,
-    NzSelectModule,
     NzIconModule,
     NzDrawerModule,
     NzSpinModule,
     CommonModule,
     NzSwitchModule,
-    NzModalModule,
     NzDropDownModule,
-    NzPopconfirmModule,
+    NzModalModule
   ],
+
   templateUrl: './profiles.component.html',
-  styleUrl: './profiles.component.css',
+  styleUrls: ['./profiles.component.css', '../../../../animations/styles.css'],
 })
 export class ProfilesComponent implements OnInit {
-  // TABLE VARS **********************************************************************************************************
-  searchValue = '';
-  visible = false;
   groupsList: any[] = [];
   listOfDisplayData: any[] = [];
-  loadingSwAdmin = false;
-  spinning: boolean = false; // Spinning control
-
   permisosList: any[] = [];
   listOfDisplayPermisos: any[] = [];
-  showPermisos: boolean = false;
-
-  //Perfil modal
-  isVisibleModalProfile: boolean = false;
+  isVisibleDrawerNewProfile: boolean = false;
   new_group_name: string = '';
-  spinningNuevoPerfil: boolean = false;
-
   editCache: { [key: number]: { edit: boolean; data: any } } = {};
+  isDataLoading = false;
+  isVisibleEditDrawer = false;
+  editForm!: FormGroup;
+  selectedGroupId!: number;
+  addForm!: FormGroup;
+  isVisiblePermisosModal = false;
+
   constructor(
+    private fb: FormBuilder,
     private profileService: UserService,
     private message: NzMessageService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.getGroups();
+    this.addForm = this.initializeForm('new_group_name');
+    this.editForm = this.initializeForm('name');
   }
 
-  // Table methods *************************************************************
-
-  reset(): void {
-    // @desc: Method for reset datatable search
-    this.searchValue = '';
-    this.search();
-  }
-
-  search(): void {
-    // @desc: Method for datatable search
-    this.visible = false;
-    this.listOfDisplayPermisos = this.permisosList.filter(
-      (item: any) => item.modulo_data.modulo.indexOf(this.searchValue) !== -1
-    );
-    console.log(this.listOfDisplayPermisos);
-  }
-
-  getGroups(): void {
-    /**
-     * @desc Call service to collect groups info and prepare array
-     */
-    this.spinning = true;
-    this.profileService.getGroups({}, 1, 1, true).subscribe({
-      next: (groups: any) => {
-        this.listOfDisplayData = groups;
-        this.listOfDisplayData.forEach((group: any) => {
-          group.is_edit = false;
-        });
-        // This array must dont be related to the listOfDisplayData, because this array is used for recovery
-        // the data when the group cancel the edit or any error occurs
-        groups.forEach((group: any) => {
-          this.groupsList.push(Object.assign({}, group));
-        });
-        this.updateEditCache();
-        this.spinning = false;
-        console.log(this.listOfDisplayData);
-      },
-      error: (err: any) => {
-        this.message.error(JSON.stringify(err.error));
-        this.spinning = false;
-      },
+  initializeForm(fieldName: string): FormGroup {
+    return this.fb.group({
+      [fieldName]: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
     });
   }
-  updateEditCache(): void {
-    this.listOfDisplayData.forEach((item) => {
-      this.editCache[item.id] = {
-        edit: false,
-        data: { ...item },
-      };
-    });
-    console.log(this.editCache);
-  }
-  startEdit(id: number): void {
-    this.editCache[id].edit = true;
-  }
-  cancelEdit(id: number): void {
-    const index = this.listOfDisplayData.findIndex((item) => item.id === id);
-    this.editCache[id] = {
-      data: { ...this.listOfDisplayData[index] },
-      edit: false,
-    };
-  }
 
-  saveEdit(id: number, paramToChange?: string) {
-    /** 
-    @desc: Method for change super user state
-    @param: id: number, user id
-    @param: paramToChange: string, Opcional, used only for set super admin or activate and deactivate
-            user directly from data table, whe using edit form, is not necessary
-    @return: void, use API for update user state, and update datatable    
-    **/
-
-    const index = this.listOfDisplayData.findIndex((item) => item.id === id);
-
-    // Spining activated
-    this.spinning = true;
-
-    // Set new value
-    // if (paramToChange === 'is_superuser') {
-    //   userUpdate.is_superuser = !userUpdate.is_superuser ;
-    // }
-    if (paramToChange === 'active') {
-      this.editCache[id].data.active = !this.editCache[id].data.active;
-    }
-
-    // Sen data to API
-    delete this.editCache[id].data.is_edit;
-    console.log(this.editCache[id]);
-    this.profileService
-      .updateGroup(this.editCache[id].data.id, this.editCache[id].data)
-      .subscribe({
-        next: (res: any) => {
-          console.log(res);
-
-          // Show success message
-          this.message.success(`Grupo actualizado con exito!!!`, {
-            nzDuration: 5000,
-          });
-          // Spining deactivated
-          this.spinning = false;
-          // Replace original data for new data
-          Object.assign(this.listOfDisplayData[index], this.editCache[id].data);
-          // Finis edit mode
-          this.editCache[id].edit = false;
-        },
-        error: (err: any) => {
-          // Show error message
-          this.message.error(JSON.stringify(err.error));
-
-          // Spining deactivated
-          this.spinning = false;
-        },
-      });
-  }
-  verPermisos(id_grupo: number) {
-    this.spinning = true;
-    this.profileService.getGroupPerfil(id_grupo).subscribe({
-      next: (res: any) => {
-        console.log(res);
-        this.permisosList = res;
-        this.listOfDisplayPermisos = this.permisosList;
-        this.spinning = false;
-        this.showPermisos = true;
-      },
-      error: (err) => {
-        this.message.error(JSON.stringify(err.error));
-        this.spinning = false;
-        this.showPermisos = true;
-      },
-    });
+  OkPermissionsModal(): void {
+    this.isVisiblePermisosModal = false;
   }
 
   editPermisos(data: any, paramToChange: string) {
-    this.spinning = true;
+    this.isDataLoading = true;
 
-    // Set new value
     const id = data.id;
     const group = data.group;
 
@@ -239,82 +107,259 @@ export class ProfilesComponent implements OnInit {
       update: data.update,
       delete: data.delete,
     };
+
     this.profileService.updatePerfil(id, data).subscribe({
-      next: (res: any) => {
-        // Show success message
-        this.message.success(`Permisos actualizados con exito!!!`, {
-          nzDuration: 5000,
-        });
-        this.verPermisos(group);
+      next: () => {
+        this.message.success(`Permissions updated successfully`)
+        this.seePermissions(group);
+        this.isDataLoading = false;
       },
       error: (err) => {
-        this.spinning = false;
+        this.isDataLoading = false;
         this.message.error(JSON.stringify(err.error));
       },
     });
   }
 
-  openProfileModal() {
-    this.isVisibleModalProfile = true;
+  seePermissions(id_grupo: number): void {
+    this.profileService.getGroupPerfil(id_grupo).subscribe({
+      next: (res: any) => {
+        this.permisosList = res;
+        this.listOfDisplayPermisos = this.permisosList;
+        this.isVisiblePermisosModal = true;
+      },
+      error: (err) => {
+        this.message.error(JSON.stringify(err.error));
+      },
+    });
+  }
+
+
+  submitEdit(): void {
+    if (this.editForm.valid) {
+      const updatedData = { id: this.selectedGroupId, ...this.editForm.value };
+
+      this.isDataLoading = true;
+
+      this.profileService.updateGroup(updatedData.id, updatedData).subscribe({
+        next: () => {
+          this.message.success('Profile updated successfully');
+          this.getGroups();
+          this.closeEditDrawer();
+          this.isDataLoading = false;
+
+        },
+        error: (err) => {
+          this.message.error(JSON.stringify(err.error));
+          this.isDataLoading = false;
+        },
+      });
+    } else {
+      Object.values(this.editForm.controls).forEach((control) => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+    }
+  }
+
+  changeStatus(id: number, paramToChange?: string) {
+    const index = this.listOfDisplayData.findIndex((item) => item.id === id);
+
+    this.isDataLoading = true;
+
+    if (paramToChange === 'active') {
+      this.editCache[id].data.active = !this.editCache[id].data.active;
+    }
+
+    delete this.editCache[id].data.is_edit;
+
+    this.profileService
+      .updateGroup(this.editCache[id].data.id, this.editCache[id].data)
+      .subscribe({
+        next: () => {
+          this.message.success(`Group successfully updated`)
+          Object.assign(this.listOfDisplayData[index], this.editCache[id].data);
+          this.editCache[id].edit = false;
+          this.isDataLoading = false;
+        },
+        error: (err: any) => {
+          this.message.error(JSON.stringify(err.error));
+          this.isDataLoading = false;
+        },
+      });
+  }
+
+  openEditDrawer(group: any): void {
+    this.selectedGroupId = group.id;
+    this.editForm.patchValue({
+      name: group.name,
+    });
+    this.isVisibleEditDrawer = true;
+    this.isDataLoading = false;
+  }
+
+  closeEditDrawer(): void {
+    this.isVisibleEditDrawer = false;
+    this.editForm.reset();
+  }
+
+  openDrawerNewProfile() {
+    this.isVisibleDrawerNewProfile = true;
+    this.isDataLoading = false;
     this.new_group_name = '';
   }
 
-  handleCancelProfileModal() {
-    this.isVisibleModalProfile = false;
-    this.spinningNuevoPerfil = false;
+  closeDrawerNewProfile() {
+    this.isVisibleDrawerNewProfile = false;
+    this.isDataLoading = false;
+    this.addForm.reset();
   }
-  handleSaveProfileModal() {
-    if (this.new_group_name.length < 5) {
-      Swal.fire({
-        icon: 'warning',
-        text: 'El nombre del perfíl es invalido, Este debe contener como minímo 5 caracteres.',
+
+  SaveNewProfile() {
+    if (this.addForm.valid) {
+      this.isDataLoading = true;
+
+      const data = {
+        name: this.addForm.get('new_group_name')?.value
+      };
+
+      this.profileService.addGroup(data).subscribe({
+        next: () => {
+          this.message.success(`Group created`)
+          this.getGroups();
+          this.closeDrawerNewProfile();
+        },
+        error: (err) => {
+          this.isDataLoading = false;
+          this.message.error(JSON.stringify(err.error));
+        },
       });
-      return;
+    } else {
+      Object.values(this.addForm.controls).forEach((control) => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
     }
-    this.spinningNuevoPerfil = true;
-    const data = {
-      name: this.new_group_name,
-    };
-    this.profileService.addGroup(data).subscribe({
-      next: (res: any) => {
-        console.log(res);
-        this.getGroups();
-        this.handleCancelProfileModal();
+  }
+
+  updateEditCache(): void {
+    this.listOfDisplayData.forEach((item) => {
+      this.editCache[item.id] = {
+        edit: false,
+        data: { ...item },
+      };
+    });
+  }
+
+  getGroups(): void {
+    this.isDataLoading = true;
+    this.profileService.getGroups({}, 1, 1, true).subscribe({
+      next: (groups: any) => {
+        this.listOfDisplayData = groups;
+        this.listOfDisplayData.forEach((group: any) => {
+          group.is_edit = false;
+        });
+        groups.forEach((group: any) => {
+          this.groupsList.push(Object.assign({}, group));
+        });
+        this.updateEditCache();
+        this.isDataLoading = false;
       },
-      error: (err) => {
-        this.spinningNuevoPerfil = false;
+      error: (err: any) => {
         this.message.error(JSON.stringify(err.error));
+        this.isDataLoading = false;
       },
     });
   }
+
   deleteGroup(id_group: number) {
     Swal.fire({
-      title: '¿Está seguro de borrar este grupo?',
-      text: 'No será posible revertir esta acción',
+      text: 'Are you sure you want to delete this group?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Si, borrar',
+      confirmButtonText: 'Yes, delete',
+      allowOutsideClick: false,
     }).then((result) => {
       if (result.isConfirmed) {
-        this.spinning = true;
+        this.isDataLoading = true;
         this.profileService.deleteGroup(id_group).subscribe({
-          next: (res: any) => {
-            console.log(res);
-            // Show success message
-            this.message.success(`Grupo eliminado!!!`, {
-              nzDuration: 5000,
-            });
-            this.spinning = false;
+          next: () => {
+            this.message.success(`Group deleted`)
+            this.isDataLoading = false;
             this.getGroups();
           },
           error: (err) => {
             this.message.error(JSON.stringify(err.error));
-            this.spinning = false;
+            this.isDataLoading = false;
           },
         });
       }
     });
   }
+
+  exportGroupName(): void {
+    if (this.listOfDisplayData.length === 0) {
+      this.message.warning('No data available to export');
+      return;
+    }
+
+    this.isDataLoading = true;
+
+    const headers = {
+      name: 'Group Name',
+      active: 'Status',
+      created: 'Created',
+    };
+
+    const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+
+    const filteredData = this.listOfDisplayData.map((group) =>
+      selectedColumns.reduce((obj: Record<string, any>, key) => {
+        if (key === 'active') {
+          obj[headers[key]] = group[key] ? 'Active' : 'Inactive';
+        } else if (key === 'created') {
+          const date = new Date(group[key]);
+          obj[headers[key]] = date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          });
+        } else {
+          obj[headers[key]] = group[key];
+        }
+        return obj;
+      }, {})
+    );
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Groups');
+
+    const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'Groups.xlsx');
+    link.style.visibility = 'hidden';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    this.isDataLoading = false;
+  }
+
 }

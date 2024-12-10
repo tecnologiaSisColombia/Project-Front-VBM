@@ -23,6 +23,7 @@ import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { S3Service } from '../../services/upload-s3/upload-s3.service';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-insurers',
@@ -205,7 +206,7 @@ export class InsurersComponent implements OnInit {
         this.form.patchValue({ logo: null });
         return;
       }
-      
+
       this.form.patchValue({ logo: file });
       this.form.get('logo')?.updateValueAndValidity();
     }
@@ -294,5 +295,67 @@ export class InsurersComponent implements OnInit {
   setPagination(count: number): void {
     this.count_records = count;
     this.num_pages = Math.ceil(this.count_records / this.page_size);
+  }
+
+  exportInsures(): void {
+    if (this.dataToDisplay.length === 0) {
+      this.msgService.warning('No data available to export');
+      return;
+    }
+
+    this.isDataLoading = true;
+
+    const headers = {
+      name: 'Insurer',
+      payer_id: 'Payer Id',
+      phone: 'Phone',
+      address: 'Address',
+      created: 'Created',
+      active: 'Status',
+    } as const;
+
+    const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+
+    const filteredData = this.dataToDisplay.map(insurer =>
+      selectedColumns.reduce((obj: Record<string, any>, key) => {
+        if (key === 'active') {
+          obj[headers[key]] = insurer[key] ? 'Active' : 'Inactive';
+        } else if (key === 'created') {
+          const date = new Date(insurer[key]);
+          obj[headers[key]] = date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          });
+        } else {
+          obj[headers[key]] = insurer[key];
+        }
+        return obj;
+      }, {})
+    );
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Insurers');
+
+    const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'Insurers.xlsx');
+    link.style.visibility = 'hidden';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    this.isDataLoading = false;
   }
 }

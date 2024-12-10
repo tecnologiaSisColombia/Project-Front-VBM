@@ -2,12 +2,31 @@
   <div class="breadcrumb-container">
     <nz-breadcrumb>
       <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Configuration</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Resource Management</nz-breadcrumb-item>
       <nz-breadcrumb-item>Specialities</nz-breadcrumb-item>
     </nz-breadcrumb>
   </div>
+
   <div class="btn-container">
-    <button nz-button nzType="primary" (click)="openDrawer()">New Speciality</button>
+    <button 
+      nz-button 
+      nzType="primary" 
+      (click)="openDrawer()"
+    >
+      <i nz-icon nzType="solution" nzTheme="outline"></i>
+      New Speciality
+    </button>
+
+    <button
+      nz-button
+      [style.background-color]="'#00a651'"
+      [style.color]="'white'"
+      [nzLoading]="isDataLoading"
+      (click)="exportSpecialities()"
+    >
+      <i nz-icon nzType="download" nzTheme="outline"></i>
+      Export Specialities
+    </button>
   </div>
 </div>
 
@@ -87,6 +106,7 @@
     nzShowQuickJumper
   ></nz-pagination>
 </div>
+
 <nz-drawer
   [nzBodyStyle]="{ overflow: 'auto' }"
   [nzMaskClosable]="false"
@@ -123,7 +143,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
         <ng-template #descriptionError>
           <span *ngIf="form.get('description')?.hasError('required')">
             This field is required
@@ -145,6 +164,7 @@
       >
         Close
       </button>
+
       <button
         nz-button
         nzType="primary"

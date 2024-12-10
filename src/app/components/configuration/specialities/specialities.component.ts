@@ -22,6 +22,7 @@ import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { EspecialitiesService } from 'app/services/config/especialities.service';
 import { debounceTime, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-specialities',
@@ -59,8 +60,7 @@ export class SpecialitiesComponent {
   page_size = 10;
   page = 1;
   form: UntypedFormGroup;
-  private searchNameSubject: Subject<{ type: string; value: string }> =
-    new Subject();
+  private searchNameSubject: Subject<{ type: string; value: string }> = new Subject();
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -69,9 +69,9 @@ export class SpecialitiesComponent {
   ) {
     this.form = this.fb.group({
       description: [
-        null, 
+        null,
         [
-          Validators.required, 
+          Validators.required,
           Validators.pattern(/^(?!\s*$).+/)
         ]
       ],
@@ -94,11 +94,11 @@ export class SpecialitiesComponent {
     this.isDataLoading = true;
     this.specialitiesService
       .get(
-        { 
-          name: this.descriptionSearch, 
+        {
+          name: this.descriptionSearch,
           description: this.descriptionSearch
-        }, 
-        this.page, 
+        },
+        this.page,
         this.page_size
       )
       .subscribe({
@@ -147,7 +147,7 @@ export class SpecialitiesComponent {
       if (result.isConfirmed) {
         this.isDataLoading = true;
         this.specialitiesService.delete(id).subscribe({
-          next: (res: any) => {
+          next: () => {
             this.msgService.success('Speciality deleted successfully');
             this.isDataLoading = false;
             this.getInitData();
@@ -219,7 +219,7 @@ export class SpecialitiesComponent {
         this.isDataLoading = false;
       },
       error: (err) => {
-        this.isDataLoading = false; 
+        this.isDataLoading = false;
         this.msgService.error(JSON.stringify(err.error));
       },
     });
@@ -234,4 +234,64 @@ export class SpecialitiesComponent {
     this.count_records = count;
     this.num_pages = Math.ceil(this.count_records / this.page_size);
   }
+
+  exportSpecialities(): void {
+    if (this.dataToDisplay.length === 0) {
+      this.msgService.warning('No data available to export');
+      return;
+    }
+
+    this.isDataLoading = true;
+
+    const headers = {
+      description: 'Name Specialty',
+      created: 'Created',
+      active: 'Status',
+    } as const;
+
+    const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+
+    const filteredData = this.dataToDisplay.map(speciality =>
+      selectedColumns.reduce((obj: Record<string, any>, key) => {
+        if (key === 'active') {
+          obj[headers[key]] = speciality[key] ? 'Active' : 'Inactive';
+        } else if (key === 'created') {
+          const date = new Date(speciality[key]);
+          obj[headers[key]] = date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          });
+        } else {
+          obj[headers[key]] = speciality[key];
+        }
+        return obj;
+      }, {})
+    );
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Specialities');
+
+    const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'Specialities.xlsx');
+    link.style.visibility = 'hidden';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    this.isDataLoading = false;
+  }
+
 }
