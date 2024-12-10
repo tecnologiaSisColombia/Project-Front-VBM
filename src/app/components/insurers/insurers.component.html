@@ -427,7 +427,8 @@
   [(nzVisible)]="isVisibleCatalog"
   nzTitle="Products and Services"
   (nzOnCancel)="handleCancelCatalog()"
-  (nzOnOk)="handleOkCatalog()">
+  (nzOnOk)="handleOkCatalog()"
+  [nzMaskClosable]="false">
 
   <ng-container *nzModalContent>
     <h3>Services</h3>

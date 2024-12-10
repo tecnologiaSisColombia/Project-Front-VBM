@@ -114,22 +114,29 @@ export class InsurersComponent implements OnInit {
   }
 
   getServices() {
+    this.isDataLoading = true;
     this.serviceService.get({}, 1, 1, true).subscribe({
       next: (res: any) => {
         this.services = res;
+        this.isDataLoading = false;
       },
       error: (err) => {
         this.msgService.error(JSON.stringify(err.error));
+        this.isDataLoading = false;
       },
     });
   }
+  
   getProducts() {
+    this.isDataLoading = true;
     this.productService.get({}, 1, 1, true).subscribe({
       next: (res: any) => {
         this.products = res;
+        this.isDataLoading = false;
       },
       error: (err) => {
         this.msgService.error(JSON.stringify(err.error));
+        this.isDataLoading = false;
       },
     });
   }
@@ -377,10 +384,10 @@ export class InsurersComponent implements OnInit {
       active: 'Status',
     } as const;
   
-    const formatData = (data: any[], headers: any, type: string) =>
+    const formatData = (data: any[], headers: Record<string, string>) =>
       data.map((item) =>
-        (Object.keys(headers) as Array<keyof typeof headers>).reduce(
-          (obj: Record<string, any>, key) => {
+        (Object.keys(headers) as Array<keyof typeof headers>).reduce<Record<string, any>>(
+          (obj, key) => {
             if (key === 'active') {
               obj[headers[key]] = item[key] ? 'Active' : 'Inactive';
             } else if (key === 'created') {
@@ -395,13 +402,13 @@ export class InsurersComponent implements OnInit {
             }
             return obj;
           },
-          { Type: type }
+          {}
         )
       );
-  
-    const insurersData = formatData(this.dataToDisplay, insurerHeaders, 'Insurer');
-    const servicesData = formatData(this.services, servicesHeaders, 'Service');
-    const productsData = formatData(this.products, productsHeaders, 'Product');
+    
+    const insurersData = formatData(this.dataToDisplay, insurerHeaders);
+    const servicesData = formatData(this.services, servicesHeaders);
+    const productsData = formatData(this.products, productsHeaders);
   
     const relationsData: Record<string, string>[] = [];
     this.dataToDisplay.forEach((insurer) => {
