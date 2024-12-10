@@ -16,6 +16,8 @@ import { SpecialitiesComponent } from './components/configuration/specialities/s
 import { StoresComponent } from './components/configuration/stores/stores.component';
 import { OfficesComponent } from './components/configuration/offices/offices.component';
 import { ProfilesComponent } from './components/user-management/profiles/profiles.component';
+import { ServicesComponent } from './components/configuration/services/services.component';
+import { ProductsComponent } from './components/configuration/products/products.component';
 
 export const routes: Routes = [
   {
@@ -63,6 +65,14 @@ export const routes: Routes = [
           {
             path: 'offices',
             component: OfficesComponent,
+          },
+          {
+            path: 'services',
+            component: ServicesComponent,
+          },
+          {
+            path: 'products',
+            component: ProductsComponent,
           },
         ],
       },

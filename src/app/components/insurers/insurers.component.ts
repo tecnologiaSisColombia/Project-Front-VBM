@@ -24,6 +24,10 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { S3Service } from '../../services/upload-s3/upload-s3.service';
 import * as XLSX from 'xlsx';
+import { ProductsService } from 'app/services/config/Products.service';
+import { ServicesService } from 'app/services/config/Services.service';
+import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 
 @Component({
   selector: 'app-insurers',
@@ -43,6 +47,8 @@ import * as XLSX from 'xlsx';
     NzSpinModule,
     CommonModule,
     NzSwitchModule,
+    NzSelectModule,
+    NzModalModule,
   ],
   templateUrl: './insurers.component.html',
   styleUrls: ['./insurers.component.css', '../../../animations/styles.css'],
@@ -64,18 +70,33 @@ export class InsurersComponent implements OnInit {
   count_records = 0;
   page_size = 10;
   page = 1;
-  private searchNameSubject: Subject<{ type: string; value: string }> = new Subject();
+  private searchNameSubject: Subject<{ type: string; value: string }> =
+    new Subject();
+  services: any[] = [];
+  products: any[] = [];
+  isVisibleCatalog: boolean = false;
+  dataCatalog: any;
 
   constructor(
     private fb: UntypedFormBuilder,
     private insurerService: InsurersService,
     private msgService: NzMessageService,
-    private s3Service: S3Service
+    private s3Service: S3Service,
+    private productService: ProductsService,
+    private serviceService: ServicesService
   ) {
     this.form = this.fb.group({
+      services: [null],
+      products: [null],
       logo: [null],
-      logo_description: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
-      payer_id: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      logo_description: [
+        null,
+        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
+      ],
+      payer_id: [
+        null,
+        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
+      ],
       phone: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       address: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
@@ -95,6 +116,29 @@ export class InsurersComponent implements OnInit {
 
   ngOnInit(): void {
     this.getInitData();
+    this.getServices();
+    this.getProducts();
+  }
+
+  getServices() {
+    this.serviceService.get({}, 1, 1, true).subscribe({
+      next: (res: any) => {
+        this.services = res;
+      },
+      error: (err) => {
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
+  }
+  getProducts() {
+    this.productService.get({}, 1, 1, true).subscribe({
+      next: (res: any) => {
+        this.products = res;
+      },
+      error: (err) => {
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
   }
 
   getInitData(): void {
@@ -133,7 +177,12 @@ export class InsurersComponent implements OnInit {
     this.isUpdating = true;
     this.drawerTitle = 'Edit Insurer';
     this.dataDrawerCahe = data;
+
     this.form.patchValue({ ...data });
+    this.form.patchValue({
+      services: data.services.map((e: any) => e.id),
+      products: data.products.map((e: any) => e.id),
+    });
   }
 
   closeDrawer(): void {
@@ -202,7 +251,9 @@ export class InsurersComponent implements OnInit {
       const validFileTypes = ['image/jpeg', 'image/png'];
 
       if (!validFileTypes.includes(file.type)) {
-        this.msgService.error('The image will not be uploaded only JPG and PNG files');
+        this.msgService.error(
+          'The image will not be uploaded only JPG and PNG files'
+        );
         this.form.patchValue({ logo: null });
         return;
       }
@@ -316,7 +367,7 @@ export class InsurersComponent implements OnInit {
 
     const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
-    const filteredData = this.dataToDisplay.map(insurer =>
+    const filteredData = this.dataToDisplay.map((insurer) =>
       selectedColumns.reduce((obj: Record<string, any>, key) => {
         if (key === 'active') {
           obj[headers[key]] = insurer[key] ? 'Active' : 'Inactive';
@@ -357,5 +408,17 @@ export class InsurersComponent implements OnInit {
     document.body.removeChild(link);
 
     this.isDataLoading = false;
+  }
+  openCatalog(data: any) {
+    this.isVisibleCatalog = true;
+    this.dataCatalog = data;
+  }
+  handleCancelCatalog() {
+    this.isVisibleCatalog = false;
+    this.dataCatalog = null;
+  }
+  handleOkCatalog() {
+    this.isVisibleCatalog = false;
+    this.dataCatalog = null;
   }
 }
