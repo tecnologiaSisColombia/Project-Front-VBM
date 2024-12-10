@@ -29,7 +29,7 @@
       </ul>
     </nz-header>
     <nz-layout>
-      <nz-sider nzCollapsible nzWidth="280px">
+      <nz-sider nzCollapsible nzWidth="260px">
         <ul nz-menu nzTheme="dark" nzMode="inline">
           <li
             *ngIf="access.admin"
@@ -86,19 +86,19 @@
               <li nz-menu-item>Deactivate products in Sub-catalogs</li>
               <li nz-menu-item>Consult Sub-catalogs</li>
             </ul>
-          </li>
-          <li nz-submenu nzTitle="Eligibility" nzIcon="check-circle">
+          </li> -->
+          <li
+             nz-submenu 
+             nzTitle="Eligibility" 
+             nzIcon="solution"
+          >
             <ul>
               <li nz-menu-item>
-                Check information about the insured in 2 insurance companies
+                <a routerLink="/eligibility">Validate rights</a>
               </li>
-              <li nz-menu-item>
-                Validate active rights according to parameterized rules
-              </li>
-              <li nz-menu-item>View dashboard with insured data</li>
             </ul>
           </li>
-          <li
+          <!-- <li
             nz-submenu
             nzTitle="Electronic Download of Orders"
             nzIcon="download"
@@ -106,28 +106,28 @@
             <ul>
               <li nz-menu-item>View Prescription Information</li>
             </ul>
-          </li>
-          <li nz-submenu nzTitle="Billing" nzIcon="file-text">
+          </li> -->
+          <!-- <li nz-submenu nzTitle="Billing" nzIcon="file-text">
             <ul>
               <li nz-menu-item>Generate invoice applying coverage rules</li>
               <li nz-menu-item>Transmit EDI files on demand</li>
               <li nz-menu-item>View results of clearinghouse validations</li>
               <li nz-menu-item>Manage rejected invoices</li>
             </ul>
-          </li>
-          <li nz-submenu nzTitle="Parameterization" nzIcon="control">
+          </li> -->
+          <!-- <li nz-submenu nzTitle="Parameterization" nzIcon="control">
             <ul>
               <li nz-menu-item>Manage Insureds</li>
               <li nz-menu-item>Manage Stores</li>
               <li nz-menu-item>Manage Doctors</li>
             </ul>
-          </li>
-          <li nz-submenu nzTitle="Reports and Reports" nzIcon="file-search">
+          </li> -->
+          <!-- <li nz-submenu nzTitle="Reports and Reports" nzIcon="file-search">
             <ul>
               <li nz-menu-item>Generate General Operation Report</li>
               <li nz-menu-item>Generate General Billing Report</li>
             </ul>
-          </li> -->
+          </li>  -->
         </ul>
       </nz-sider>
       <nz-layout class="inner-layout">

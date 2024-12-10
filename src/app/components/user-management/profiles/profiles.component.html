@@ -104,9 +104,14 @@
   </nz-table>
 
   <nz-pagination
-    [nzResponsive]="true"
-    nzShowQuickJumper
-  ></nz-pagination>
+    [nzPageIndex]="page"
+    [nzPageSize]="page_size"
+    [nzTotal]="count_records"
+    [nzShowSizeChanger]="true"
+    [nzShowQuickJumper]="true"
+    (nzPageIndexChange)="pageChange($event)"
+    (nzPageSizeChange)="pageSizeChange($event)">
+  </nz-pagination>
 </div>
 
 <nz-drawer

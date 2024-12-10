@@ -59,6 +59,9 @@ export class ProfilesComponent implements OnInit {
   selectedGroupId!: number;
   addForm!: FormGroup;
   isVisiblePermisosModal = false;
+  page: number = 1;
+  page_size: number = 10;
+  count_records: number = 0;
 
   constructor(
     private fb: FormBuilder,
@@ -255,25 +258,33 @@ export class ProfilesComponent implements OnInit {
     });
   }
 
-  getGroups(): void {
+  getGroups(init = false): void {
     this.isDataLoading = true;
-    this.profileService.getGroups({}, 1, 1, true).subscribe({
-      next: (groups: any) => {
-        this.listOfDisplayData = groups;
-        this.listOfDisplayData.forEach((group: any) => {
-          group.is_edit = false;
-        });
-        groups.forEach((group: any) => {
-          this.groupsList.push(Object.assign({}, group));
-        });
-        this.updateEditCache();
-        this.isDataLoading = false;
-      },
-      error: (err: any) => {
-        this.message.error(JSON.stringify(err.error));
-        this.isDataLoading = false;
-      },
-    });
+    this.profileService
+      .getGroups({}, this.page, this.page_size, init)
+      .subscribe({
+        next: (groups: any) => {
+          this.listOfDisplayData = groups.results;
+          this.count_records = groups.total;
+          this.updateEditCache();
+          this.isDataLoading = false;
+        },
+        error: (err: any) => {
+          this.message.error(JSON.stringify(err.error));
+          this.isDataLoading = false;
+        },
+      });
+  }
+
+  pageChange(pageIndex: number): void {
+    this.page = pageIndex;
+    this.getGroups();
+  }
+
+  pageSizeChange(pageSize: number): void {
+    this.page_size = pageSize;
+    this.page = 1;
+    this.getGroups();
   }
 
   deleteGroup(id_group: number) {
