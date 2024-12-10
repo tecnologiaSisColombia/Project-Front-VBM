@@ -434,7 +434,7 @@
     <h3>Services</h3>
     <nz-table 
       #basicTable 
-      [nzData]="dataCatalog.services" 
+      [nzData]="dataCatalog.services"
       *ngIf="dataCatalog">
       <thead>
         <tr>
@@ -456,22 +456,37 @@
     <br />
 
     <h3>Products</h3>
-    <nz-table 
-      #basicTable 
-      [nzData]="dataCatalog.products" 
-      *ngIf="dataCatalog">
+    <nz-table
+      #basicTable
+      [nzData]="products"
+      [nzBordered]="false"
+      [nzLoading]="isDataLoading"
+      [nzShowQuickJumper]="true"
+      [nzFrontPagination]="false">
       <thead>
         <tr>
-          <th>Code</th>
-          <th>Description</th>
+          <th nzWidth="20%">ID</th>
+          <th nzWidth="40%">Code</th>
+          <th nzWidth="40%">Description</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let data of basicTable.data">
-          <td>{{ data.code }}</td>
-          <td>{{ data.description }}</td>
+        <tr *ngFor="let product of products">
+          <td>{{ product.id }}</td>
+          <td>{{ product.code }}</td>
+          <td>{{ product.description }}</td>
         </tr>
       </tbody>
     </nz-table>
+  
+    <nz-pagination
+      [nzPageIndex]="productsPage"
+      [nzTotal]="productsCountRecords"
+      [nzPageSize]="productsPageSize"
+      [nzShowSizeChanger]="true"
+      [nzShowQuickJumper]="true"
+      (nzPageIndexChange)="productsPageChange($event)"
+      (nzPageSizeChange)="productsPageSizeChange($event)">
+    </nz-pagination>
   </ng-container>
 </nz-modal>

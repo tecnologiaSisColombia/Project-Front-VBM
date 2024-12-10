@@ -74,6 +74,13 @@ export class InsurersComponent implements OnInit {
   products: any[] = [];
   isVisibleCatalog: boolean = false;
   dataCatalog: any;
+
+  productsPage = 1;
+  productsPageSize = 10;
+  productsCountRecords = 0;
+  productsNumPages = 1;
+  productsSearch: any = {};
+
   private searchNameSubject: Subject<{ type: string; value: string }> = new Subject();
 
   constructor(
@@ -126,19 +133,23 @@ export class InsurersComponent implements OnInit {
       },
     });
   }
-  
+
   getProducts() {
     this.isDataLoading = true;
-    this.productService.get({}, 1, 1, true).subscribe({
-      next: (res: any) => {
-        this.products = res;
-        this.isDataLoading = false;
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-        this.isDataLoading = false;
-      },
-    });
+    this.productService
+      .get(this.productsSearch, this.productsPage, this.productsPageSize)
+      .subscribe({
+        next: (res: any) => {
+          this.products = res.results;
+          this.productsCountRecords = res.total;
+          this.productsNumPages = Math.ceil(this.productsCountRecords / this.productsPageSize);
+          this.isDataLoading = false;
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+          this.isDataLoading = false;
+        },
+      });
   }
 
   getInitData(): void {
@@ -352,14 +363,25 @@ export class InsurersComponent implements OnInit {
     this.getInitData();
   }
 
+  productsPageChange(page: number): void {
+    this.productsPage = page;
+    this.getProducts();
+  }
+  
+  productsPageSizeChange(pageSize: number): void {
+    this.productsPageSize = pageSize;
+    this.productsPage = 1;
+    this.getProducts();
+  }
+  
   exporInformation(): void {
     if (this.dataToDisplay.length === 0 && this.services.length === 0 && this.products.length === 0) {
       this.msgService.warning('No data available to export');
       return;
     }
-  
+
     this.isDataLoading = true;
-  
+
     const insurerHeaders = {
       name: 'Insurer Name',
       payer_id: 'Payer Id',
@@ -368,7 +390,7 @@ export class InsurersComponent implements OnInit {
       created: 'Created',
       active: 'Status',
     } as const;
-  
+
     const servicesHeaders = {
       code: 'Service Code',
       value: 'Service Value',
@@ -376,14 +398,14 @@ export class InsurersComponent implements OnInit {
       created: 'Created',
       active: 'Status',
     } as const;
-  
+
     const productsHeaders = {
       code: 'Product Code',
       description: 'Product Description',
       created: 'Created',
       active: 'Status',
     } as const;
-  
+
     const formatData = (data: any[], headers: Record<string, string>) =>
       data.map((item) =>
         (Object.keys(headers) as Array<keyof typeof headers>).reduce<Record<string, any>>(
@@ -405,11 +427,11 @@ export class InsurersComponent implements OnInit {
           {}
         )
       );
-    
+
     const insurersData = formatData(this.dataToDisplay, insurerHeaders);
     const servicesData = formatData(this.services, servicesHeaders);
     const productsData = formatData(this.products, productsHeaders);
-  
+
     const relationsData: Record<string, string>[] = [];
     this.dataToDisplay.forEach((insurer) => {
       if (insurer.services && insurer.products) {
@@ -424,50 +446,50 @@ export class InsurersComponent implements OnInit {
         });
       }
     });
-  
+
     const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-  
+
     if (insurersData.length > 0) {
       const insurerSheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(insurersData);
       XLSX.utils.book_append_sheet(workbook, insurerSheet, 'Insurers');
     }
-  
+
     if (servicesData.length > 0) {
       const servicesSheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(servicesData);
       XLSX.utils.book_append_sheet(workbook, servicesSheet, 'Services');
     }
-  
+
     if (productsData.length > 0) {
       const productsSheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(productsData);
       XLSX.utils.book_append_sheet(workbook, productsSheet, 'Products');
     }
-  
+
     if (relationsData.length > 0) {
       const relationsSheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(relationsData);
       XLSX.utils.book_append_sheet(workbook, relationsSheet, 'Relations');
     }
-  
+
     const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
       bookType: 'xlsx',
       type: 'array',
     });
-  
+
     const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
     const url = URL.createObjectURL(blob);
-  
+
     const link = document.createElement('a');
     link.setAttribute('href', url);
     link.setAttribute('download', 'ExportedData.xlsx');
     link.style.visibility = 'hidden';
-  
+
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  
+
     this.isDataLoading = false;
 
     this.msgService.success(JSON.stringify('Export completed successfully'));
-  }  
+  }
 
   openCatalog(data: any) {
     this.isVisibleCatalog = true;
