@@ -160,7 +160,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
                 this.userUpdated.emit(res);
               },
               error: (err) => {
-                this.msgService.error(err?.error);
+                this.msgService.error(JSON.stringify(err?.error));
               },
             });
           this.loading = false;
@@ -174,7 +174,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
         this.loading = false;
       },
       (error) => {
-        this.msgService.error(error?.error?.error?.message);
+        this.msgService.error(JSON.stringify(error?.error));
         this.loading = false;
       }
     );
@@ -252,6 +252,10 @@ export class NzDemoModalLocaleComponent implements OnInit {
     this.titleDrawer = 'Add working hour';
     this.visibleDrawer = true;
     this.workingHourForm.user = this.user.id;
+    console.log(this.user);
+    this.stores = this.stores.filter(
+      (s: any) => this.user.stores && this.user.stores.includes(s.id)
+    );
   }
 
   openEdit(data: any) {
