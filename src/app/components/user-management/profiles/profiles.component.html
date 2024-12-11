@@ -271,9 +271,12 @@
       #permisosTable
       [nzData]="listOfDisplayPermisos"
       [nzBordered]="false"
-      [nzSize]="'small'"
+      [nzSize]="'default'"
       [nzShowPagination]="true"
-      [nzPageSize]="6">
+      class="custom-pagination" 
+      [nzShowSizeChanger]="true"
+      [nzShowQuickJumper]="true"
+      [nzPageSize]="10">
       <thead>
         <tr>
           <th>Module</th>

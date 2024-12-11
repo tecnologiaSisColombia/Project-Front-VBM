@@ -47,14 +47,8 @@ export class UserManagementComponent implements OnInit {
   data: any[] = [];
   originalData: any[] = [];
   user_types: any[] = [];
-  searchQuery: { username: string; fullName: string } = {
-    username: '',
-    fullName: '',
-  };
-  searchQuerySubject: Subject<{
-    field: 'username' | 'fullName';
-    query: string;
-  }> = new Subject();
+  searchQuery: { username: string; fullName: string } = { username: '', fullName: '' };
+  searchQuerySubject: Subject<{ field: 'username' | 'fullName'; query: string; }> = new Subject();
   num_pages = 1;
   count_records = 0;
   page_size = 10;
@@ -93,7 +87,7 @@ export class UserManagementComponent implements OnInit {
         this.user_types = response || [];
       },
       error: (error) => {
-        this.msgService.error(JSON.stringify(error || 'Error getUserTypes'));
+        this.msgService.error(JSON.stringify(error));
         this.user_types = [];
       },
     });
@@ -114,7 +108,7 @@ export class UserManagementComponent implements OnInit {
           this.loading = false;
         },
         error: (error) => {
-          this.msgService.error(JSON.stringify(error || 'Error fetchUsers'));
+          this.msgService.error(JSON.stringify(error));
           this.loading = false;
         },
       });
@@ -136,7 +130,7 @@ export class UserManagementComponent implements OnInit {
 
     toggleAction.subscribe(
       () => {
-        this.msgService.success('User updated successfully');
+        this.msgService.success(JSON.stringify('User updated successfully'));
 
         user.is_active = user.is_active;
 

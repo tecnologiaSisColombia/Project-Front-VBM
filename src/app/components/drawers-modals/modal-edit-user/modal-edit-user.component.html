@@ -220,9 +220,13 @@
       <nz-table
         #basicTable
         [nzData]="workingHours"
-        [nzFrontPagination]="false"
-        *ngIf="user_type == 'Doctor' || user_type == 'Seller'"
-      >
+        [nzSize]="'default'"
+        [nzShowPagination]="true"
+        class="custom-pagination" 
+        [nzShowSizeChanger]="true"
+        [nzShowQuickJumper]="true"
+        [nzPageSize]="5"
+        *ngIf="user_type == 'Doctor' || user_type == 'Seller'">
         <thead>
           <tr>
             <th>Store</th>
@@ -338,8 +342,7 @@
               width: 100%;
               border-radius: 6px;
               font-size: 14px;
-              padding: 8px;
-            "
+              padding: 8px;"
           />
         </nz-form-control>
       </nz-form-item>

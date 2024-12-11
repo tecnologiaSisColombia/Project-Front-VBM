@@ -48,6 +48,9 @@ import { InsurersService } from 'app/services/insurers/insurers.service';
       nz-form-item {
         margin-bottom: 16px;
       }
+      .custom-pagination ::ng-deep .ant-pagination {
+        justify-content: flex-start !important;
+      }
     `,
   ],
 })
@@ -96,7 +99,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
     private storeService: StoresService,
     private officeService: OfficesService,
     private insurerService: InsurersService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadUserTypes();
