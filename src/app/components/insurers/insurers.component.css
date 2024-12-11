@@ -17,3 +17,7 @@ nz-input-group {
 .btn-container button {
   margin-right: 5px;
 }
+
+.custom-pagination ::ng-deep .ant-pagination {
+  justify-content: flex-start !important;
+}

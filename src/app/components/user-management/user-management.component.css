@@ -58,3 +58,7 @@ nz-input-group {
   margin: 0 8px;
   vertical-align: middle;
 }
+
+.custom-pagination ::ng-deep .ant-pagination {
+  justify-content: flex-start !important;
+}
