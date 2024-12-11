@@ -101,3 +101,7 @@ nz-header {
 .ant-layout-content::-webkit-scrollbar-thumb:hover {
   background: #a5a5a5;
 }
+
+.current-date {
+  padding: 20px;
+}

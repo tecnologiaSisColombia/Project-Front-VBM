@@ -7,21 +7,30 @@
         nzTheme="dark"
         nzMode="horizontal"
         class="header-menu"
-        style="text-align: right"
-      >
+        style="text-align: right">
+
+        <span 
+          class="current-date">
+          {{ currentDate | date:'MMM d, y HH:mm:ss' }}
+        </span>
+
         <nz-avatar
           style="cursor: pointer"
           class="user-avatar"
           nzIcon="user"
           nz-dropdown
           nzTrigger="click"
-          [nzDropdownMenu]="menu"
-        ></nz-avatar>
+          [nzDropdownMenu]="menu">
+        </nz-avatar>
 
         <nz-dropdown-menu #menu="nzDropdownMenu">
           <ul nz-menu nzSelectable>
             <li nz-menu-item nzDanger (click)="logout()">
-              <i nz-icon nzType="logout" nzTheme="outline"></i>
+              <i 
+                nz-icon 
+                nzType="logout" 
+                nzTheme="outline">
+              </i>
               Logout
             </li>
           </ul>

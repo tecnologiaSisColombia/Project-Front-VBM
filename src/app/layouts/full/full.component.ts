@@ -33,6 +33,7 @@ export class FullComponent implements OnInit {
   isCollapsed = false;
   permisos = [];
   adminRead = false;
+  currentDate: Date = new Date();
   access = {
     admin: false,
     insurers: false,
@@ -40,10 +41,11 @@ export class FullComponent implements OnInit {
     plans: false,
     subplans: false,
   };
+
   constructor(
     private authService: AuthService,
     private message: NzMessageService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.authService.getProfile().subscribe({
@@ -72,6 +74,10 @@ export class FullComponent implements OnInit {
         this.message.error(JSON.stringify(err.error));
       },
     });
+
+    setInterval(() => {
+      this.currentDate = new Date();
+    }, 1000);
   }
 
   logout() {
