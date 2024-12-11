@@ -1,0 +1,93 @@
+<div class="layout-container">
+  <nz-card class="container" [nzBordered]="false" [nzBodyStyle]="{ padding: '24px' }">
+    <form [formGroup]="loginForm" [class.disabled]="isLoading">
+      <h4>Login</h4>
+      <h5>Sign in to your account</h5>
+
+      <nz-form-item>
+        <nz-form-control 
+          [nzErrorTip]="usernameErrorTpl">
+          <nz-input-group 
+            [nzPrefix]="prefixUserIcon">
+            <input 
+              nz-input 
+              type="text" 
+              formControlName="username" 
+              placeholder="Username" 
+              autocomplete="off" 
+            />
+          </nz-input-group>
+          <ng-template #prefixUserIcon>
+            <i nz-icon nzType="user" nzTheme="outline"></i>
+          </ng-template>
+          <ng-template #usernameErrorTpl>
+            <span *ngIf="loginForm.get('username')?.hasError('required')">
+              Username is required
+            </span>
+            <span *ngIf="loginForm.get('username')?.hasError('pattern')">
+              This field cannot be empty or contain only spaces
+            </span>
+          </ng-template>          
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control 
+          [nzErrorTip]="passwordErrorTpl">
+          <nz-input-group 
+            [nzPrefix]="prefixLockIcon"
+            [nzSuffix]="suffixPasswordIcon">
+            <input 
+              nz-input 
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="Password" 
+              formControlName="password" 
+              autocomplete="off" 
+            />
+          </nz-input-group>
+          <ng-template #prefixLockIcon>
+            <i nz-icon nzType="lock" nzTheme="outline"></i>
+          </ng-template>
+          <ng-template #suffixPasswordIcon>
+            <i
+              *ngIf="loginForm.get('password')?.value"
+              nz-icon
+              [nzType]="showPassword ? 'eye-invisible' : 'eye'"
+              nzTheme="outline"
+              (click)="togglePasswordVisibility()"
+              style="cursor: pointer"
+            ></i>
+          </ng-template>          
+          <ng-template #passwordErrorTpl>
+            <span *ngIf="loginForm.get('password')?.hasError('required')">
+              Password is required
+            </span>
+            <span *ngIf="loginForm.get('password')?.hasError('pattern')">
+              This field cannot be empty or contain only spaces
+            </span>
+            <span *ngIf="loginForm.get('password')?.hasError('minlength')">
+              Password must be at least 8 characters long
+            </span>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <div class="text-right">
+        <a routerLink="/reset_password" class="link">Forgot Password?</a>
+      </div>
+
+      <nz-form-item>
+        <nz-form-control>
+          <button 
+            nz-button 
+            nzType="primary" 
+            [nzLoading]="isLoading" 
+            [disabled]="loginForm.invalid || isLoading"
+            (click)="signIn()">
+            Sign in
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </nz-card>
+</div>

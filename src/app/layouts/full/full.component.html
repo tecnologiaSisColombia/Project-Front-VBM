@@ -1,0 +1,156 @@
+<div class="layout-container">
+  <nz-layout class="app-layout">
+    <nz-header>
+      <div class="logo"></div>
+      <ul
+        nz-menu
+        nzTheme="dark"
+        nzMode="horizontal"
+        class="header-menu"
+        style="text-align: right"
+      >
+        <nz-avatar
+          style="cursor: pointer"
+          class="user-avatar"
+          nzIcon="user"
+          nz-dropdown
+          nzTrigger="click"
+          [nzDropdownMenu]="menu"
+        ></nz-avatar>
+
+        <nz-dropdown-menu #menu="nzDropdownMenu">
+          <ul nz-menu nzSelectable>
+            <li nz-menu-item nzDanger (click)="logout()">
+              <i nz-icon nzType="logout" nzTheme="outline"></i>
+              Logout
+            </li>
+          </ul>
+        </nz-dropdown-menu>
+      </ul>
+    </nz-header>
+    <nz-layout>
+      <nz-sider nzCollapsible nzWidth="260px">
+        <ul nz-menu nzTheme="dark" nzMode="inline">
+          <li
+            *ngIf="access.admin"
+            nz-submenu
+            nzTitle="Resource Management"
+            nzIcon="check-circle"
+          >
+            <ul>
+              <li nz-menu-item>
+                <a routerLink="/config/specialities">Specialities</a>
+              </li>
+              <li nz-menu-item>
+                <a routerLink="/config/stores">Stores</a>
+              </li>
+              <li nz-menu-item>
+                <a routerLink="/config/offices">Offices</a>
+              </li>
+
+              <li nz-menu-item>
+                <a routerLink="/config/services">Services</a>
+              </li>
+              <li nz-menu-item>
+                <a routerLink="/config/products">Products</a>
+              </li>
+            </ul>
+          </li>
+          <li
+            *ngIf="access.users"
+            nz-submenu
+            nzTitle="Control Access"
+            nzIcon="lock"
+          >
+            <ul>
+              <li nz-menu-item>
+                <a routerLink="/users/user_management">User Management</a>
+              </li>
+              <li nz-menu-item>
+                <a routerLink="/users/profiles">Profiles</a>
+              </li>
+            </ul>
+          </li>
+          <li
+            *ngIf="access.insurers || access.plans"
+            nz-submenu
+            nzTitle="Configure Insurers / Coverages"
+            nzIcon="profile"
+          >
+            <ul>
+              <li *ngIf="access.insurers" nz-menu-item>
+                <a routerLink="/insurers">Insurers</a>
+              </li>
+              <li *ngIf="access.plans" nz-menu-item>
+                <a routerLink="/insurers/coverages">Coverages</a>
+              </li>
+            </ul>
+          </li>
+          <!-- <li nz-submenu nzTitle="Manage Product Catalogs" nzIcon="shopping">
+            <ul>
+              <li nz-menu-item>Create Sub-catalogs by Covers and Insurers</li>
+              <li nz-menu-item>Modify Sub-catalogs by Covers and Insurers</li>
+              <li nz-menu-item>Deactivate products in Sub-catalogs</li>
+              <li nz-menu-item>Consult Sub-catalogs</li>
+            </ul>
+          </li> -->
+          <li
+             nz-submenu 
+             nzTitle="Eligibility" 
+             nzIcon="solution"
+          >
+            <ul>
+              <li nz-menu-item>
+                <a routerLink="/eligibility">Validate rights</a>
+              </li>
+            </ul>
+          </li>
+          <!-- <li
+            nz-submenu
+            nzTitle="Electronic Download of Orders"
+            nzIcon="download"
+          >
+            <ul>
+              <li nz-menu-item>View Prescription Information</li>
+            </ul>
+          </li> -->
+          <!-- <li nz-submenu nzTitle="Billing" nzIcon="file-text">
+            <ul>
+              <li nz-menu-item>Generate invoice applying coverage rules</li>
+              <li nz-menu-item>Transmit EDI files on demand</li>
+              <li nz-menu-item>View results of clearinghouse validations</li>
+              <li nz-menu-item>Manage rejected invoices</li>
+            </ul>
+          </li> -->
+          <!-- <li nz-submenu nzTitle="Parameterization" nzIcon="control">
+            <ul>
+              <li nz-menu-item>Manage Insureds</li>
+              <li nz-menu-item>Manage Stores</li>
+              <li nz-menu-item>Manage Doctors</li>
+            </ul>
+          </li> -->
+          <!-- <li nz-submenu nzTitle="Reports and Reports" nzIcon="file-search">
+            <ul>
+              <li nz-menu-item>Generate General Operation Report</li>
+              <li nz-menu-item>Generate General Billing Report</li>
+            </ul>
+          </li>  -->
+        </ul>
+      </nz-sider>
+      <nz-layout class="inner-layout">
+        <nz-content>
+          <nz-breadcrumb></nz-breadcrumb>
+          <br />
+          <router-outlet></router-outlet>
+        </nz-content>
+        <nz-footer class="footer">
+          <div class="footer-content">
+            <div class="company-info">
+              <p>© 2016 SIS Colombia - All rights reserved MEDICAR</p>
+            </div>
+          </div>
+        </nz-footer>
+      </nz-layout>
+    </nz-layout>
+  </nz-layout>
+</div>

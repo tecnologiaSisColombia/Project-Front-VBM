@@ -1,0 +1,262 @@
+<div class="title-page layout-container">
+  <div class="breadcrumb-container">
+    <nz-breadcrumb>
+      <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Resource Management</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Services</nz-breadcrumb-item>
+    </nz-breadcrumb>
+  </div>
+
+  <div class="btn-container">
+    <button 
+      nz-button 
+      nzType="primary" 
+      (click)="openDrawer()">
+      <i 
+        nz-icon 
+        nzType="customer-service" 
+        nzTheme="outline">
+      </i>
+      New Service
+    </button>
+
+    <button
+      nz-button
+      [style.background-color]="'#00a651'"
+      [style.color]="'white'"
+      (click)="exportServices()">
+      <i 
+        nz-icon 
+        nzType="download" 
+        nzTheme="outline">
+      </i>
+      Export Services
+    </button>
+  </div>
+</div>
+
+<div class="main-table layout-container">
+  <div class="table-filters">
+    <nz-input-group [nzSuffix]="suffixIconSearch">
+      <input
+        type="text"
+        nz-input
+        placeholder="Code..."
+        [(ngModel)]="codeSearch"
+        (ngModelChange)="search($event, 'code')"
+      />
+    </nz-input-group>
+
+    <ng-template #suffixIconSearch>
+      <span 
+        nz-icon 
+        nzType="search">
+      </span>
+    </ng-template>
+
+    <nz-input-group [nzSuffix]="suffixIconSearch">
+      <input
+        type="text"
+        nz-input
+        placeholder="Description..."
+        [(ngModel)]="descriptionSearch"
+        (ngModelChange)="search($event, 'description')"
+      />
+    </nz-input-group>
+
+    <ng-template #suffixIconSearch>
+      <span nz-icon nzType="search"></span>
+    </ng-template>
+  </div>
+
+  <nz-table
+    #basicTable
+    [nzData]="dataToDisplay"
+    [nzLoading]="isDataLoading"
+    [nzFrontPagination]="false">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Description</th>
+        <th>Value</th>
+        <th>Created</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of basicTable.data">
+        <td>{{ data.code }}</td>
+        <td>{{ data.description }}</td>
+        <td>{{ data.value }}</td>
+        <td>{{ data.created | date }}</td>
+        <td>
+          <a>
+            <nz-switch
+              title="Status"
+              [(ngModel)]="data.active"
+              nzSize="small"
+              (ngModelChange)="changeStatus(data.id, data)">
+            </nz-switch>
+          </a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <a>
+            <span
+              nz-icon
+              title="Edit"
+              nzType="edit"
+              nzTheme="outline"
+              (click)="openEditDrawer(data)">
+            </span>
+          </a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <a>
+            <span
+              nz-icon
+              title="Delete"
+              nzType="delete"
+              nzTheme="outline"
+              (click)="delete(data.id)">
+            </span>
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+
+  <nz-pagination
+    [nzPageIndex]="page"
+    [nzResponsive]="true"
+    [nzTotal]="count_records"
+    [nzPageSize]="page_size"
+    [nzShowSizeChanger]="true"
+    (nzPageIndexChange)="pageChange($event)"
+    (nzPageSizeChange)="pageSizeChange($event)"
+    [nzShowQuickJumper]="true">
+  </nz-pagination>
+</div>
+
+<nz-drawer
+  [nzBodyStyle]="{ overflow: 'auto' }"
+  [nzMaskClosable]="false"
+  [nzClosable]="false"
+  [nzVisible]="visible"
+  nzPlacement="right"
+  [nzTitle]="drawerTitle"
+  (nzOnClose)="closeDrawer()"
+  [nzWidth]="720"
+  [nzFooter]="footerTpl">
+
+  <ng-container *nzDrawerContent>
+    <nz-spin [nzSpinning]="drawerLoader">
+      <form nz-form [formGroup]="form" (ngSubmit)="submit()">
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="code"
+            style="text-align: center">
+            Code
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="codeError">
+            <input 
+              nz-input 
+              formControlName="code" 
+              id="code" 
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <ng-template #codeError>
+          <span *ngIf="form.get('code')?.hasError('required')">
+            This field is required
+          </span>
+          <span *ngIf="form.get('code')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
+        </ng-template>
+
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="description"
+            style="text-align: center">
+            Description
+          </nz-form-label>
+
+          <nz-form-control
+            [nzSm]="16"
+            [nzXs]="24"
+            [nzErrorTip]="descriptionError">
+            <input 
+              nz-input 
+              formControlName="description" 
+              id="description" 
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <ng-template #descriptionError>
+          <span *ngIf="form.get('description')?.hasError('required')">
+            This field is required
+          </span>
+          <span *ngIf="form.get('description')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
+        </ng-template>
+
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="value"
+            style="text-align: center">
+            Value
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="valueError">
+            <input 
+              nz-input 
+              formControlName="value" 
+              id="value" 
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <ng-template #valueError>
+          <span *ngIf="form.get('value')?.hasError('required')">
+            This field is required
+          </span>
+          <span *ngIf="form.get('value')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
+        </ng-template>
+      </form>
+    </nz-spin>
+  </ng-container>
+
+  <ng-template #footerTpl>
+    <div style="display: flex; float: right">
+      <button 
+        nz-button 
+        style="margin-right: 8px" 
+        (click)="closeDrawer()">
+        Close
+      </button>
+
+      <button 
+        nz-button 
+        nzType="primary" 
+        (click)="submit()">
+        Save
+      </button>
+    </div>
+  </ng-template>
+</nz-drawer>

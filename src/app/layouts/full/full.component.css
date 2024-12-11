@@ -1,0 +1,103 @@
+@keyframes fadeInBackground {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.layout-container {
+  font-family: 'Source Sans Pro', sans-serif;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  animation: fadeInBackground 1.2s ease-in-out;
+}
+
+:host {
+  display: flex;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app-layout {
+  height: 100vh;
+  background-color: #111d0c;
+}
+
+nz-footer {
+  height: 60px;
+  text-align: center;
+  flex-shrink: 0;
+  margin-top: auto;
+  background-color: cadetblue;
+}
+
+.company-info p {
+  margin: 0;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.logo {
+  width: 120px;
+  height: 31px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 16px 30px 16px 0;
+  float: left;
+}
+
+.header-menu {
+  line-height: 64px;
+}
+
+.sider-menu {
+  height: 100%;
+  border-right: 0;
+}
+
+.inner-layout {
+  padding: 0 24px 24px;
+}
+
+nz-breadcrumb {
+  margin: 16px 0;
+}
+
+nz-content {
+  background: #fff;
+  padding: 24px;
+  min-height: 280px;
+}
+
+nz-header {
+  padding: 0 1rem;
+}
+
+.ant-layout-content {
+  overflow-y: scroll;
+}
+
+.ant-layout-content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.ant-layout-content::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px rgba(128, 128, 128, 0);
+  border-radius: 10px;
+}
+
+.ant-layout-content::-webkit-scrollbar-thumb {
+  background: #dfdfdf;
+  border-radius: 10px;
+}
+
+.ant-layout-content::-webkit-scrollbar-thumb:hover {
+  background: #a5a5a5;
+}
