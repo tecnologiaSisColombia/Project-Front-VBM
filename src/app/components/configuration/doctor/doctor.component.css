@@ -1,0 +1,19 @@
+.title-page {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.table-filters {
+  display: flex;
+  flex: 1 1 auto;
+}
+
+nz-input-group {
+  margin: 20px;
+}
+
+.btn-container button {
+  margin-right: 5px;
+}

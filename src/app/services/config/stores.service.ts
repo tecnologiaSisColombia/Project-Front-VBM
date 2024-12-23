@@ -8,7 +8,7 @@ import { environment } from 'environments/environment';
 export class StoresService {
   hostname = environment.apiUrl;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   get(
     { name, status }: any,
@@ -29,18 +29,18 @@ export class StoresService {
       params = params.set('status', status);
     }
 
-    return this.http.get(`${this.hostname}core/stores`, { params });
+    return this.http.get(`${this.hostname}core/localities`, { params });
   }
 
   create(data: any) {
-    return this.http.post(`${this.hostname}core/stores`, data);
+    return this.http.post(`${this.hostname}core/localities`, data);
   }
 
   delete(id: number) {
-    return this.http.delete(`${this.hostname}core/stores/${id}`);
+    return this.http.delete(`${this.hostname}core/localities/${id}`);
   }
 
   update(id: number, data: any) {
-    return this.http.put(`${this.hostname}core/stores/${id}`, data);
+    return this.http.put(`${this.hostname}core/localities/${id}`, data);
   }
 }

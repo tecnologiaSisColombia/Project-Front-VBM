@@ -47,8 +47,14 @@ export class UserManagementComponent implements OnInit {
   data: any[] = [];
   originalData: any[] = [];
   user_types: any[] = [];
-  searchQuery: { username: string; fullName: string } = { username: '', fullName: '' };
-  searchQuerySubject: Subject<{ field: 'username' | 'fullName'; query: string; }> = new Subject();
+  searchQuery: { username: string; fullName: string } = {
+    username: '',
+    fullName: '',
+  };
+  searchQuerySubject: Subject<{
+    field: 'username' | 'fullName';
+    query: string;
+  }> = new Subject();
   num_pages = 1;
   count_records = 0;
   page_size = 10;
@@ -87,7 +93,7 @@ export class UserManagementComponent implements OnInit {
         this.user_types = response || [];
       },
       error: (error) => {
-        this.msgService.error(JSON.stringify(error));
+        this.msgService.error(JSON.stringify(error || 'Error getUserTypes'));
         this.user_types = [];
       },
     });
@@ -108,7 +114,7 @@ export class UserManagementComponent implements OnInit {
           this.loading = false;
         },
         error: (error) => {
-          this.msgService.error(JSON.stringify(error));
+          this.msgService.error(JSON.stringify(error || 'Error fetchUsers'));
           this.loading = false;
         },
       });
@@ -130,7 +136,7 @@ export class UserManagementComponent implements OnInit {
 
     toggleAction.subscribe(
       () => {
-        this.msgService.success(JSON.stringify('User updated successfully'));
+        this.msgService.success('User updated successfully');
 
         user.is_active = user.is_active;
 
@@ -180,7 +186,7 @@ export class UserManagementComponent implements OnInit {
           },
           error: (err) => {
             this.loading = false;
-            this.msgService.error(JSON.stringify(err));
+            this.msgService.error(JSON.stringify(err.error));
           },
         });
       }
@@ -245,7 +251,7 @@ export class UserManagementComponent implements OnInit {
         } else if (key === 'role') {
           obj[headers[key]] = user.extra_data
             ? this.mapUserRole(user.extra_data[0].user_type_id)
-            : 'Admin';
+            : 'Root';
         } else {
           obj[headers[key]] = user[key];
         }
@@ -277,5 +283,4 @@ export class UserManagementComponent implements OnInit {
 
     this.loading = false;
   }
-
 }

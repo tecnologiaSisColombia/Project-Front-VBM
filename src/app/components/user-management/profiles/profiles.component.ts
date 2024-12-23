@@ -72,13 +72,12 @@ export class ProfilesComponent implements OnInit {
     private message: NzMessageService
   ) {
 
-    this.searchNameSubject.pipe(debounceTime(1000)).subscribe((data) => {
+    this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
       if (data.type === 'name') {
         this.nameSearch = data.value;
       }
       this.page = 1;
       this.getGroups();
-      this.isDataLoading = false;
     });
   }
 
@@ -297,6 +296,15 @@ export class ProfilesComponent implements OnInit {
   search(value: string, type: string) {
     this.isDataLoading = true;
     this.searchNameSubject.next({ type, value });
+    this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
+      next: () => {
+        this.isDataLoading = false;
+      },
+      error: (err) => {
+        this.isDataLoading = false;
+        this.message.error(JSON.stringify(err.error));
+      },
+    });
   }
 
   deleteGroup(id_group: number) {

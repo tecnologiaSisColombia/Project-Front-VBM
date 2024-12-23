@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
 export class UserService {
   private baseUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   createUser(userData: any): Observable<any> {
     return this.http.post(
@@ -71,6 +71,10 @@ export class UserService {
 
   getUserTypes(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}core/user-types`);
+  }
+
+  getPartnerTypes() {
+    return this.http.get<any[]>(`${this.baseUrl}core/partner-types`);
   }
 
   createUserType(userTypeData: { name: string }): Observable<any> {
@@ -141,7 +145,6 @@ export class UserService {
   getGroupPerfil(grupo_id: any) {
     return this.http.get(`${this.baseUrl}core/profile-group/` + grupo_id);
   }
-  
   addGroup(data: any) {
     return this.http.post(`${this.baseUrl}core/groups`, data);
   }
@@ -157,5 +160,4 @@ export class UserService {
   deleteGroup(id: any) {
     return this.http.delete(`${this.baseUrl}core/groups/${id}`);
   }
-
 }

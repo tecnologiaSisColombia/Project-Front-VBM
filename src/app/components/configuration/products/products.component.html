@@ -8,6 +8,7 @@
   </div>
 
   <div class="btn-container">
+<<<<<<< HEAD
     <button 
       nz-button 
       nzType="primary" 
@@ -17,6 +18,10 @@
         nzType="shopping" 
         nzTheme="outline">
       </i>
+=======
+    <button nz-button nzType="primary" (click)="openDrawer()">
+      <i nz-icon nzType="bank" nzTheme="outline"></i>
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
       New Product
     </button>
 
@@ -24,12 +29,18 @@
       nz-button
       [style.background-color]="'#00a651'"
       [style.color]="'white'"
+<<<<<<< HEAD
       (click)="exportProducts()">
       <i 
         nz-icon 
         nzType="download" 
         nzTheme="outline">
       </i>
+=======
+      (click)="exportProducts()"
+    >
+      <i nz-icon nzType="download" nzTheme="outline"> </i>
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
       Export Products
     </button>
   </div>
@@ -70,7 +81,12 @@
     #basicTable
     [nzData]="dataToDisplay"
     [nzLoading]="isDataLoading"
+<<<<<<< HEAD
     [nzFrontPagination]="false">
+=======
+    [nzFrontPagination]="false"
+  >
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
     <thead>
       <tr>
         <th>Code</th>
@@ -90,7 +106,12 @@
               title="Status"
               [(ngModel)]="data.active"
               nzSize="small"
+<<<<<<< HEAD
               (ngModelChange)="changeStatus(data.id, data)">
+=======
+              (ngModelChange)="changeStatus(data.id, data)"
+            >
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
             </nz-switch>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
@@ -100,7 +121,12 @@
               title="Edit"
               nzType="edit"
               nzTheme="outline"
+<<<<<<< HEAD
               (click)="openEditDrawer(data)">
+=======
+              (click)="openEditDrawer(data)"
+            >
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
             </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
@@ -110,7 +136,12 @@
               title="Delete"
               nzType="delete"
               nzTheme="outline"
+<<<<<<< HEAD
               (click)="delete(data.id)">
+=======
+              (click)="delete(data.id)"
+            >
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
             </span>
           </a>
         </td>
@@ -126,7 +157,12 @@
     [nzShowSizeChanger]="true"
     (nzPageIndexChange)="pageChange($event)"
     (nzPageSizeChange)="pageSizeChange($event)"
+<<<<<<< HEAD
     [nzShowQuickJumper]="true">
+=======
+    [nzShowQuickJumper]="true"
+  >
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
   </nz-pagination>
 </div>
 
@@ -139,8 +175,13 @@
   [nzTitle]="drawerTitle"
   (nzOnClose)="closeDrawer()"
   [nzWidth]="720"
+<<<<<<< HEAD
   [nzFooter]="footerTpl">
 
+=======
+  [nzFooter]="footerTpl"
+>
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="drawerLoader">
       <form nz-form [formGroup]="form" (ngSubmit)="submit()">
@@ -149,6 +190,7 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="code"
+<<<<<<< HEAD
             style="text-align: center">
             Code
           </nz-form-label>
@@ -162,6 +204,15 @@
               formControlName="code" 
               id="code" 
             />
+=======
+            style="text-align: center"
+          >
+            Code
+          </nz-form-label>
+
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="codeError">
+            <input nz-input formControlName="code" id="code" />
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
           </nz-form-control>
         </nz-form-item>
 
@@ -179,19 +230,30 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="description"
+<<<<<<< HEAD
             style="text-align: center">
+=======
+            style="text-align: center"
+          >
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
             Description
           </nz-form-label>
 
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
+<<<<<<< HEAD
             [nzErrorTip]="descriptionError">
             <input 
               nz-input 
               formControlName="description" 
               id="description" 
             />
+=======
+            [nzErrorTip]="descriptionError"
+          >
+            <input nz-input formControlName="description" id="description" />
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
           </nz-form-control>
         </nz-form-item>
 
@@ -209,6 +271,7 @@
 
   <ng-template #footerTpl>
     <div style="display: flex; float: right">
+<<<<<<< HEAD
       <button 
         nz-button 
         style="margin-right: 8px" 
@@ -222,6 +285,13 @@
         (click)="submit()">
         Save
       </button>
+=======
+      <button nz-button style="margin-right: 8px" (click)="closeDrawer()">
+        Close
+      </button>
+
+      <button nz-button nzType="primary" (click)="submit()">Save</button>
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
     </div>
   </ng-template>
 </nz-drawer>

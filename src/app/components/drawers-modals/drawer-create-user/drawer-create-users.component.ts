@@ -21,6 +21,7 @@ import { StoresService } from 'app/services/config/stores.service';
 import { OfficesService } from 'app/services/config/offices.service';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { InsurersService } from 'app/services/insurers/insurers.service';
+import { DoctorService } from 'app/services/config/Doctors.service';
 
 @Component({
   selector: 'nz-demo-drawer-from-drawer',
@@ -48,8 +49,10 @@ export class NzDemoDrawerFromDrawerComponent {
   specialities: any[] = [];
   stores: any[] = [];
   offices: any[] = [];
+  suppliers: any[] = [];
   insurers: any[] = [];
   officesToDisplay: any[] = [];
+  partner_types: any[] = [];
   drawerLoader = false;
   @Output() userCreated = new EventEmitter<any>();
 
@@ -60,7 +63,8 @@ export class NzDemoDrawerFromDrawerComponent {
     private specialityService: EspecialitiesService,
     private storeService: StoresService,
     private officeService: OfficesService,
-    private insurerService: InsurersService
+    private insurerService: InsurersService,
+    private supplierService: DoctorService
   ) {
     this.formm = this.fb.group({
       first_name: [
@@ -71,21 +75,36 @@ export class NzDemoDrawerFromDrawerComponent {
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       username: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      password: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       type_user: ['', [Validators.required]],
-      specialities: [null],
-      stores: [null],
+      // specialities: [null],
+      localities: [null],
+      supplier: [null],
       insurers: [null],
-      office_id: [null],
+      // office_id: [null],
       number_license: [''],
+      partner_type_id: [''],
     });
     this.loadUserTypes();
-    this.getSpecialities();
     this.getStores();
-    this.getOffices();
-    this.getInsurers();
+    this.getSuppliers();
+    this.getInsuerers();
+    this.getPartnerTypes();
+    // this.getOffices();
+    // this.getSpecialities();
   }
 
-  getInsurers(): void {
+  getSuppliers(): void {
+    this.supplierService.getSuppliers({ status: 1 }, 1, 10, true).subscribe({
+      next: (res: any) => {
+        this.suppliers = res;
+      },
+      error: (err) => {
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
+  }
+  getInsuerers(): void {
     this.insurerService.getInsurers({ status: 1 }, 1, 10, true).subscribe({
       next: (res: any) => {
         this.insurers = res;
@@ -95,7 +114,12 @@ export class NzDemoDrawerFromDrawerComponent {
       },
     });
   }
-
+  getPartnerTypes() {
+    this.createUserService.getPartnerTypes().subscribe({
+      next: (res: any) => (this.partner_types = res),
+      error: (err) => this.msgService.error(JSON.stringify(err.error)),
+    });
+  }
   getSpecialities(): void {
     this.specialityService.get({ status: 1 }, 1, 1, true).subscribe({
       next: (res: any) => (this.specialities = res),
@@ -149,21 +173,17 @@ export class NzDemoDrawerFromDrawerComponent {
       const userData = this.formm.value;
 
       if (
-        this.extraForm === 'Doctor' &&
-        (!userData.specialities ||
-          !userData.stores ||
-          !userData.insurers ||
-          !userData.office_id ||
-          !userData.number_license)
+        this.extraForm === 'Supplier' &&
+        (!userData.localities || !userData.insurers || !userData.number_license)
       ) {
         this.msgService.error(
-          'Please fill all the required fields for a Doctor'
+          'Please fill all the required fields for a Supplier'
         );
         return;
       }
 
-      if (this.extraForm === 'Seller' && !userData.stores) {
-        this.msgService.error('Store is required for a Seller.');
+      if (this.extraForm === 'Partner' && !userData.supplier) {
+        this.msgService.error('All fields are required for a Partner.');
         return;
       }
 
@@ -197,10 +217,10 @@ export class NzDemoDrawerFromDrawerComponent {
     const userType = typeof event === 'string' ? event : event?.target?.value;
     const type = this.userTypeOptions.find((e) => e.value === userType);
     this.extraForm =
-      type?.value === 'Doctor'
-        ? 'Doctor'
-        : type?.value === 'Seller'
-        ? 'Seller'
+      type?.value === 'Supplier'
+        ? 'Supplier'
+        : type?.value === 'Partner'
+        ? 'Partner'
         : null;
   }
 

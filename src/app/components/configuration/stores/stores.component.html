@@ -3,11 +3,16 @@
     <nz-breadcrumb>
       <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
       <nz-breadcrumb-item>Resource Management</nz-breadcrumb-item>
+<<<<<<< HEAD
       <nz-breadcrumb-item>Stores</nz-breadcrumb-item>
+=======
+      <nz-breadcrumb-item>Localities</nz-breadcrumb-item>
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
     </nz-breadcrumb>
   </div>
 
   <div class="btn-container">
+<<<<<<< HEAD
     <button 
       nz-button 
       nzType="primary" 
@@ -18,12 +23,18 @@
         nzTheme="outline">
       </i>
       New Store
+=======
+    <button nz-button nzType="primary" (click)="openDrawer()">
+      <i nz-icon nzType="shop" nzTheme="outline"></i>
+      New Locality
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
     </button>
 
     <button
       nz-button
       [style.background-color]="'#00a651'"
       [style.color]="'white'"
+<<<<<<< HEAD
       (click)="exportStores()">
       <i 
         nz-icon 
@@ -31,6 +42,13 @@
         nzTheme="outline">
       </i>
       Export Stores
+=======
+      [nzLoading]="isDataLoading"
+      (click)="exportStores()"
+    >
+      <i nz-icon nzType="download" nzTheme="outline"></i>
+      Export Localities
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
     </button>
   </div>
 </div>
@@ -38,16 +56,26 @@
 <div class="main-table layout-container">
   <div class="table-filters">
     <nz-input-group [nzSuffix]="suffixIconSearch">
+<<<<<<< HEAD
       <input 
         type="text" 
         nz-input 
         placeholder="Name..." 
         [(ngModel)]="nameSearch" 
         (ngModelChange)="search($event, 'name')" 
+=======
+      <input
+        type="text"
+        nz-input
+        placeholder="Name..."
+        [(ngModel)]="nameSearch"
+        (ngModelChange)="search($event, 'name')"
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
       />
     </nz-input-group>
 
     <ng-template #suffixIconSearch>
+<<<<<<< HEAD
       <span 
         nz-icon 
         nzType="search">
@@ -60,6 +88,18 @@
     [nzData]="dataToDisplay" 
     [nzLoading]="isDataLoading" 
     [nzFrontPagination]="false">
+=======
+      <span nz-icon nzType="search"> </span>
+    </ng-template>
+  </div>
+
+  <nz-table
+    #basicTable
+    [nzData]="dataToDisplay"
+    [nzLoading]="isDataLoading"
+    [nzFrontPagination]="false"
+  >
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
     <thead>
       <tr>
         <th>Name</th>
@@ -73,6 +113,7 @@
         <td>{{ data.created | date }}</td>
         <td>
           <a>
+<<<<<<< HEAD
             <nz-switch 
               title="Status" 
               [(ngModel)]="data.active" 
@@ -99,12 +140,41 @@
               nzTheme="outline" 
               (click)="delete(data.id)">
             </span>
+=======
+            <nz-switch
+              title="Status"
+              [(ngModel)]="data.active"
+              nzSize="small"
+              (ngModelChange)="changeStatus(data.id, data)"
+            ></nz-switch>
+          </a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <a>
+            <span
+              nz-icon
+              title="Edit"
+              nzType="edit"
+              nzTheme="outline"
+              (click)="openEditDrawer(data)"
+            ></span>
+          </a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <a>
+            <span
+              nz-icon
+              title="Delete"
+              nzType="delete"
+              nzTheme="outline"
+              (click)="delete(data.id)"
+            ></span>
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
           </a>
         </td>
       </tr>
     </tbody>
   </nz-table>
 
+<<<<<<< HEAD
   <nz-pagination 
     [nzPageIndex]="page" 
     [nzResponsive]="true" 
@@ -115,6 +185,16 @@
     (nzPageSizeChange)="pageSizeChange($event)"
     [nzShowQuickJumper]="true">
   </nz-pagination>
+=======
+  <nz-pagination
+    [nzPageIndex]="page"
+    [nzResponsive]="true"
+    [nzTotal]="count_records"
+    [nzPageSize]="page_size"
+    (nzPageIndexChange)="pageChange($event)"
+    nzShowQuickJumper
+  ></nz-pagination>
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
 </div>
 
 <nz-drawer
@@ -126,8 +206,13 @@
   [nzTitle]="drawerTitle"
   (nzOnClose)="closeDrawer()"
   [nzWidth]="720"
+<<<<<<< HEAD
   [nzFooter]="footerTpl">
 
+=======
+  [nzFooter]="footerTpl"
+>
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="drawerLoader">
       <form nz-form [formGroup]="form" (ngSubmit)="submit()">
@@ -136,6 +221,7 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="name"
+<<<<<<< HEAD
             style="text-align: center;">
             Name
           </nz-form-label>
@@ -149,22 +235,40 @@
               formControlName="name"
               id="name"
             />
+=======
+            style="text-align: center"
+          >
+            Name
+          </nz-form-label>
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="nameError">
+            <input nz-input formControlName="name" id="name" />
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
           </nz-form-control>
         </nz-form-item>
 
         <ng-template #nameError>
+<<<<<<< HEAD
             <span *ngIf="form.get('name')?.hasError('required')">
               This field is required
             </span>
             <span *ngIf="form.get('name')?.hasError('pattern')">
               This field cannot be empty or contain only spaces
             </span>
+=======
+          <span *ngIf="form.get('name')?.hasError('required')">
+            This field is required
+          </span>
+          <span *ngIf="form.get('name')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
         </ng-template>
       </form>
     </nz-spin>
   </ng-container>
 
   <ng-template #footerTpl>
+<<<<<<< HEAD
     <div style="display: flex; float: right;">
       <button
         nz-button
@@ -183,3 +287,17 @@
   </ng-template>
 </nz-drawer>
 
+=======
+    <div style="display: flex; float: right">
+      <button
+        nz-button
+        style="display: flex; margin-right: 8px"
+        (click)="closeDrawer()"
+      >
+        Close
+      </button>
+      <button nz-button nzType="primary" (click)="submit()">Save</button>
+    </div>
+  </ng-template>
+</nz-drawer>
+>>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91

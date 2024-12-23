@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormsModule,
-  ReactiveFormsModule, UntypedFormBuilder,
-  UntypedFormGroup, Validators,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormGroup,
+  Validators,
 } from '@angular/forms';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
@@ -15,15 +17,16 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzSwitchModule } from 'ng-zorro-antd/switch';
-import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import { EspecialitiesService } from 'app/services/config/especialities.service';
 import { debounceTime, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
+import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { NzSelectModule } from 'ng-zorro-antd/select';
 import * as XLSX from 'xlsx';
+import { DoctorService } from 'app/services/config/Doctors.service';
 
 @Component({
-  selector: 'app-specialities',
+  selector: 'app-products',
   standalone: true,
   imports: [
     NzBreadCrumbModule,
@@ -40,64 +43,75 @@ import * as XLSX from 'xlsx';
     NzSpinModule,
     CommonModule,
     NzSwitchModule,
+    NzSelectModule,
   ],
-  templateUrl: './specialities.component.html',
-  styleUrls: ['./specialities.component.css', '../../../../animations/styles.css'],
+  templateUrl: './doctor.component.html',
+  styleUrls: ['./doctor.component.css', '../../../../animations/styles.css'],
 })
-export class SpecialitiesComponent {
-  descriptionSearch: any = null;
+export class DoctorComponent {
+  form: UntypedFormGroup;
   isDataLoading = false;
   dataToDisplay: any[] = [];
   visible = false;
   drawerLoader = false;
   drawerTitle = '';
-  dataDrawerCahe: any;
+  dataDrawerCache: any;
   isUpdating = false;
   num_pages = 1;
   count_records = 0;
   page_size = 10;
   page = 1;
-  form: UntypedFormGroup;
-  private searchNameSubject: Subject<{ type: string; value: string }> = new Subject();
+  stores: any[] = [];
+  suppliers: any[] = [];
+  descriptionSearch: any = null;
+  codeSearch: any = null;
+  private searchNameSubject = new Subject<{ type: string; value: string }>();
 
   constructor(
     private fb: UntypedFormBuilder,
-    private specialitiesService: EspecialitiesService,
+    private doctorService: DoctorService,
     private msgService: NzMessageService
   ) {
     this.form = this.fb.group({
-      description: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      license_number: [null, [Validators.required]],
+      email: [null, [Validators.required]],
+      phone: [null, [Validators.required]],
+      last_name: [null, [Validators.required]],
+      first_name: [null, [Validators.required]],
+      supplier: [null, [Validators.required]],
     });
 
-<<<<<<< HEAD
-    this.searchNameSubject.pipe(debounceTime(1000)).subscribe((data) => {
-=======
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
->>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
       if (data.type === 'description') {
         this.descriptionSearch = data.value;
       }
+      if (data.type === 'code') {
+        this.codeSearch = data.value;
+      }
       this.page = 1;
       this.getInitData();
-<<<<<<< HEAD
-      this.isDataLoading = false;
-=======
->>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
     });
   }
 
   ngOnInit(): void {
     this.getInitData();
+    this.getSuppliers();
   }
-
+  getSuppliers() {
+    this.doctorService.getSuppliers({}, 1, 1, true).subscribe({
+      next: (res: any) => {
+        this.suppliers = res;
+      },
+      error: (err) => {
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
+  }
   getInitData() {
     this.isDataLoading = true;
-    this.specialitiesService
+    this.doctorService
       .get(
-        {
-          name: this.descriptionSearch,
-          description: this.descriptionSearch
-        },
+        { code: this.codeSearch, name: this.descriptionSearch },
         this.page,
         this.page_size
       )
@@ -116,14 +130,14 @@ export class SpecialitiesComponent {
 
   openDrawer(): void {
     this.visible = true;
-    this.drawerTitle = 'New Speciality';
+    this.drawerTitle = 'New Doctor';
   }
 
   openEditDrawer(data: any): void {
     this.visible = true;
     this.isUpdating = true;
-    this.drawerTitle = 'Edit Speciality';
-    this.dataDrawerCahe = data;
+    this.drawerTitle = 'Edit Doctor';
+    this.dataDrawerCache = data;
     this.form.patchValue({ ...data });
   }
 
@@ -131,7 +145,7 @@ export class SpecialitiesComponent {
     this.drawerLoader = false;
     this.isUpdating = false;
     this.visible = false;
-    this.dataDrawerCahe = null;
+    this.dataDrawerCache = null;
     this.drawerTitle = '';
     this.form.reset();
   }
@@ -146,9 +160,9 @@ export class SpecialitiesComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
-        this.specialitiesService.delete(id).subscribe({
+        this.doctorService.delete(id).subscribe({
           next: () => {
-            this.msgService.success(JSON.stringify('Speciality deleted successfully'));
+            this.msgService.success('Doctor deleted successfully');
             this.isDataLoading = false;
             this.getInitData();
           },
@@ -163,9 +177,9 @@ export class SpecialitiesComponent {
 
   update(id: number, data: any) {
     this.isDataLoading = true;
-    this.specialitiesService.update(id, data).subscribe({
+    this.doctorService.update(id, data).subscribe({
       next: () => {
-        this.msgService.success(JSON.stringify('Specialty updated successfully'));
+        this.msgService.success('Doctor updated successfully');
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -182,11 +196,11 @@ export class SpecialitiesComponent {
     if (this.form.valid) {
       this.drawerLoader = true;
       if (this.isUpdating) {
-        return this.update(this.dataDrawerCahe.id, this.form.value);
+        return this.update(this.dataDrawerCache.id, this.form.value);
       }
-      this.specialitiesService.create(this.form.value).subscribe({
+      this.doctorService.create(this.form.value).subscribe({
         next: () => {
-          this.msgService.success(JSON.stringify('New Speciality created'));
+          this.msgService.success('New Doctor created');
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -208,14 +222,13 @@ export class SpecialitiesComponent {
   }
 
   changeStatus(id: number, data: any) {
+    delete data.store_data;
     this.update(id, data);
   }
 
   search(value: string, type: string) {
     this.isDataLoading = true;
     this.searchNameSubject.next({ type, value });
-<<<<<<< HEAD
-=======
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
       next: () => {
         this.isDataLoading = false;
@@ -225,7 +238,6 @@ export class SpecialitiesComponent {
         this.msgService.error(JSON.stringify(err.error));
       },
     });
->>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
   }
 
   pageChange(event: number) {
@@ -235,44 +247,38 @@ export class SpecialitiesComponent {
 
   setPagination(count: number) {
     this.count_records = count;
-    this.num_pages = Math.ceil(this.count_records / this.page_size);
+    this.num_pages = Math.ceil(count / this.page_size);
   }
 
-  pageSizeChange(pageSize: number): void {
-    this.page_size = pageSize;
-    this.page = 1;
-    this.getInitData();
-  }
-
-  exportSpecialities(): void {
+  exportDoctors(): void {
     if (this.dataToDisplay.length === 0) {
-      this.msgService.warning(JSON.stringify('No data available to export'));
+      this.msgService.warning('No data available to export');
       return;
     }
 
     this.isDataLoading = true;
 
     const headers = {
-      description: 'Name Specialty',
+      name: 'Doctor',
       created: 'Created',
       active: 'Status',
     } as const;
 
     const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
-    const filteredData = this.dataToDisplay.map(speciality =>
+    const filteredData = this.dataToDisplay.map((product) =>
       selectedColumns.reduce((obj: Record<string, any>, key) => {
         if (key === 'active') {
-          obj[headers[key]] = speciality[key] ? 'Active' : 'Inactive';
+          obj[headers[key]] = product[key] ? 'Active' : 'Inactive';
         } else if (key === 'created') {
-          const date = new Date(speciality[key]);
+          const date = new Date(product[key]);
           obj[headers[key]] = date.toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
             year: 'numeric',
           });
         } else {
-          obj[headers[key]] = speciality[key];
+          obj[headers[key]] = product[key];
         }
         return obj;
       }, {})
@@ -281,7 +287,7 @@ export class SpecialitiesComponent {
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
 
     const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Specialities');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Doctors');
 
     const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
       bookType: 'xlsx',
@@ -293,7 +299,7 @@ export class SpecialitiesComponent {
     const url = URL.createObjectURL(blob);
 
     link.setAttribute('href', url);
-    link.setAttribute('download', 'Specialities.xlsx');
+    link.setAttribute('download', 'Doctors.xlsx');
     link.style.visibility = 'hidden';
 
     document.body.appendChild(link);
@@ -301,8 +307,5 @@ export class SpecialitiesComponent {
     document.body.removeChild(link);
 
     this.isDataLoading = false;
-
-    this.msgService.success(JSON.stringify('Export completed successfully'));
   }
-
 }
