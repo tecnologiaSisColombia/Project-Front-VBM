@@ -3,14 +3,14 @@
     <nz-breadcrumb>
       <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
       <nz-breadcrumb-item>Resource Management</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Products</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Doctors</nz-breadcrumb-item>
     </nz-breadcrumb>
   </div>
 
   <div class="btn-container">
     <button nz-button nzType="primary" (click)="openDrawer()">
       <i nz-icon nzType="bank" nzTheme="outline"></i>
-      New Product
+      New Doctor
     </button>
 
     <button
@@ -18,10 +18,10 @@
       [style.background-color]="'#00a651'"
       [style.color]="'white'"
       [nzLoading]="isDataLoading"
-      (click)="exportProducts()"
+      (click)="exportDoctors()"
     >
       <i nz-icon nzType="download" nzTheme="outline"></i>
-      Export Products
+      Export Doctors
     </button>
   </div>
 </div>
@@ -33,7 +33,7 @@
       <input
         type="text"
         nz-input
-        placeholder="Description..."
+        placeholder="Name..."
         [(ngModel)]="descriptionSearch"
         (ngModelChange)="search($event, 'description')"
       />
@@ -42,7 +42,7 @@
       <span nz-icon nzType="search"></span>
     </ng-template>
     <!-- Code -->
-    <nz-input-group [nzSuffix]="suffixIconSearch">
+    <!-- <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
         nz-input
@@ -53,7 +53,7 @@
     </nz-input-group>
     <ng-template #suffixIconSearch>
       <span nz-icon nzType="search"></span>
-    </ng-template>
+    </ng-template> -->
   </div>
 
   <nz-table
@@ -64,16 +64,22 @@
   >
     <thead>
       <tr>
-        <th>Code</th>
-        <th>Description</th>
+        <th>Fisrt name</th>
+        <th>Last name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>License number</th>
         <th>Created</th>
         <th>Action</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let data of basicTable.data">
-        <td>{{ data.code }}</td>
-        <td>{{ data.description }}</td>
+        <td>{{ data.first_name }}</td>
+        <td>{{ data.last_name }}</td>
+        <td>{{ data.email }}</td>
+        <td>{{ data.phone }}</td>
+        <td>{{ data.license_number }}</td>
         <td>{{ data.created | date }}</td>
         <td>
           <a>
@@ -140,37 +146,136 @@
             nzFor="code"
             style="text-align: center"
           >
-            Code
-          </nz-form-label>
-          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="codeError">
-            <input nz-input formControlName="code" id="code" />
-          </nz-form-control>
-        </nz-form-item>
-        <ng-template #codeError>
-          <span *ngIf="form.get('code')?.hasError('required')">
-            This field is required
-          </span>
-        </ng-template>
-
-        <nz-form-item>
-          <nz-form-label
-            [nzSm]="8"
-            [nzXs]="24"
-            nzFor="description"
-            style="text-align: center"
-          >
-            Description
+            First name
           </nz-form-label>
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="descriptionError"
+            [nzErrorTip]="first_nameError"
           >
-            <input nz-input formControlName="description" id="description" />
+            <input nz-input formControlName="first_name" id="first_name" />
           </nz-form-control>
         </nz-form-item>
-        <ng-template #descriptionError>
-          <span *ngIf="form.get('description')?.hasError('required')">
+        <ng-template #first_nameError>
+          <span *ngIf="form.get('first_name')?.hasError('required')">
+            This field is required
+          </span>
+        </ng-template>
+        <!--  -->
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="last_name"
+            style="text-align: center"
+          >
+            Last name
+          </nz-form-label>
+          <nz-form-control
+            [nzSm]="16"
+            [nzXs]="24"
+            [nzErrorTip]="last_nameError"
+          >
+            <input nz-input formControlName="last_name" id="last_name" />
+          </nz-form-control>
+        </nz-form-item>
+        <ng-template #last_nameError>
+          <span *ngIf="form.get('last_name')?.hasError('required')">
+            This field is required
+          </span>
+        </ng-template>
+        <!--  -->
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="license_number"
+            style="text-align: center"
+          >
+            License number
+          </nz-form-label>
+          <nz-form-control
+            [nzSm]="16"
+            [nzXs]="24"
+            [nzErrorTip]="license_numberError"
+          >
+            <input
+              nz-input
+              formControlName="license_number"
+              id="license_number"
+            />
+          </nz-form-control>
+        </nz-form-item>
+        <ng-template #license_numberError>
+          <span *ngIf="form.get('license_number')?.hasError('required')">
+            This field is required
+          </span>
+        </ng-template>
+        <!--  -->
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="email"
+            style="text-align: center"
+          >
+            Email
+          </nz-form-label>
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="emailError">
+            <input nz-input type="email" formControlName="email" id="email" />
+          </nz-form-control>
+        </nz-form-item>
+        <ng-template #emailError>
+          <span *ngIf="form.get('email')?.hasError('required')">
+            This field is required
+          </span>
+        </ng-template>
+        <!--  -->
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="phone"
+            style="text-align: center"
+          >
+            Phone
+          </nz-form-label>
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="phoneError">
+            <input nz-input formControlName="phone" id="phone" />
+          </nz-form-control>
+        </nz-form-item>
+        <ng-template #phoneError>
+          <span *ngIf="form.get('phone')?.hasError('required')">
+            This field is required
+          </span>
+        </ng-template>
+        <!--  -->
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="phone"
+            style="text-align: center"
+          >
+            Supplier
+          </nz-form-label>
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="phoneError">
+            <nz-select
+              formControlName="supplier"
+              nzPlaceHolder="Select Supplier"
+              style="width: 100%; border-radius: 6px"
+              nzAllowClear
+            >
+              <nz-option
+                *ngFor="let o of suppliers"
+                [nzLabel]="o.user.first_name"
+                [nzValue]="o.id"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+        <ng-template #phoneError>
+          <span *ngIf="form.get('phone')?.hasError('required')">
             This field is required
           </span>
         </ng-template>

@@ -83,8 +83,57 @@
         <div
           nz-row
           [nzGutter]="16"
-          *ngIf="user.extra_data && user_type == 'Doctor'"
+          *ngIf="user.extra_data && user_type == 'Supplier'"
         >
+          <div nz-col [nzSpan]="12">
+            <nz-form-item>
+              <nz-form-label [nzSpan]="24">Localities</nz-form-label>
+              <nz-form-control [nzSpan]="24">
+                <nz-select
+                  *ngIf="tempUser?.extra_data?.length > 0"
+                  (ngModelChange)="storeChange($event)"
+                  [(ngModel)]="tempUser.localities"
+                  nzPlaceHolder="Select localities"
+                  style="width: 100%; border-radius: 6px"
+                  name="localities"
+                  nzMode="multiple"
+                >
+                  <nz-option
+                    *ngFor="let o of localities"
+                    [nzLabel]="o.name"
+                    [nzValue]="o.id"
+                  ></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div
+            nz-col
+            [nzSpan]="12"
+            *ngIf="user.extra_data && user_type == 'Supplier'"
+          >
+            <nz-form-item>
+              <nz-form-label [nzSpan]="24">License Number</nz-form-label>
+              <nz-form-control [nzSpan]="24">
+                <input
+                  *ngIf="tempUser?.extra_data?.length > 0"
+                  name="license_number"
+                  nz-input
+                  [(ngModel)]="tempUser.extra_data[0].license_number"
+                  placeholder="Enter license number"
+                />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+
+        <!-- <div
+          nz-row
+          [nzGutter]="16"
+          *ngIf="user.extra_data && user_type == 'Supplier'"
+        >
+          
           <div nz-col [nzSpan]="12">
             <nz-form-item>
               <nz-form-label [nzSpan]="24">Specialies</nz-form-label>
@@ -106,54 +155,7 @@
               </nz-form-control>
             </nz-form-item>
           </div>
-
-          <div nz-col [nzSpan]="12">
-            <nz-form-item>
-              <nz-form-label [nzSpan]="24">License Number</nz-form-label>
-              <nz-form-control [nzSpan]="24">
-                <input
-                  *ngIf="tempUser?.extra_data?.length > 0"
-                  name="license_number"
-                  nz-input
-                  [(ngModel)]="tempUser.extra_data[0].license_number"
-                  placeholder="Enter license number"
-                />
-              </nz-form-control>
-            </nz-form-item>
-          </div>
-        </div>
-
-        <div
-          nz-row
-          [nzGutter]="16"
-          *ngIf="
-            user.extra_data && (user_type == 'Doctor' || user_type == 'Seller')
-          "
-        >
-          <div nz-col [nzSpan]="12">
-            <nz-form-item>
-              <nz-form-label [nzSpan]="24">Stores</nz-form-label>
-              <nz-form-control [nzSpan]="24">
-                <nz-select
-                  *ngIf="tempUser?.extra_data?.length > 0"
-                  (ngModelChange)="storeChange($event)"
-                  [(ngModel)]="tempUser.stores"
-                  nzPlaceHolder="Select stores"
-                  style="width: 100%; border-radius: 6px"
-                  name="stores"
-                  nzMode="multiple"
-                >
-                  <nz-option
-                    *ngFor="let o of stores"
-                    [nzLabel]="o.name"
-                    [nzValue]="o.id"
-                  ></nz-option>
-                </nz-select>
-              </nz-form-control>
-            </nz-form-item>
-          </div>
-
-          <div nz-col [nzSpan]="12" *ngIf="user_type == 'Doctor'">
+          <div nz-col [nzSpan]="12" *ngIf="user_type == 'Supplier'">
             <nz-form-item>
               <nz-form-label [nzSpan]="24">Office</nz-form-label>
               <nz-form-control [nzSpan]="24">
@@ -173,11 +175,11 @@
               </nz-form-control>
             </nz-form-item>
           </div>
-        </div>
+        </div> -->
         <div
           nz-row
           [nzGutter]="16"
-          *ngIf="user.extra_data && user_type == 'Doctor'"
+          *ngIf="user.extra_data && user_type == 'Supplier'"
         >
           <div nz-col [nzSpan]="12">
             <nz-form-item>
@@ -201,15 +203,63 @@
             </nz-form-item>
           </div>
         </div>
+        <!--  -->
+        <div
+          nz-row
+          [nzGutter]="16"
+          *ngIf="user.extra_data && user_type == 'Partner'"
+        >
+          <div nz-col [nzSpan]="12">
+            <nz-form-item>
+              <nz-form-label [nzSpan]="24">Supplier</nz-form-label>
+              <nz-form-control [nzSpan]="24">
+                <nz-select
+                  *ngIf="tempUser?.extra_data?.length > 0"
+                  name="supplier"
+                  [(ngModel)]="tempUser.extra_data[0].supplier_id"
+                  nzPlaceHolder="Select supplier"
+                  style="width: 100%; border-radius: 6px"
+                >
+                  <nz-option
+                    *ngFor="let o of suppliers"
+                    [nzLabel]="o.user.first_name + ' ' + o.user.last_name"
+                    [nzValue]="o.id"
+                  ></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col [nzSpan]="12">
+            <nz-form-item>
+              <nz-form-label [nzSpan]="24">Partner type</nz-form-label>
+              <nz-form-control [nzSpan]="24">
+                <nz-select
+                  *ngIf="tempUser?.extra_data?.length > 0"
+                  name="partner_type_id"
+                  [(ngModel)]="tempUser.extra_data[0].partner_type_id"
+                  nzPlaceHolder="Select partner type"
+                  style="width: 100%; border-radius: 6px"
+                >
+                  <nz-option
+                    *ngFor="let o of partner_types"
+                    [nzLabel]="o.description"
+                    [nzValue]="o.id"
+                  ></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+        <!--  -->
       </form>
 
-      <div
+      <!-- <div
         style="
           display: flex;
           justify-content: space-between;
           align-items: center;
         "
-        *ngIf="user_type == 'Doctor' || user_type == 'Seller'"
+        *ngIf="user_type == 'Supplier' || user_type == 'Seller'"
       >
         <h3>Working Hours</h3>
         <button nz-button nzType="primary" [nzSize]="'small'" (click)="open()">
@@ -221,7 +271,7 @@
         #basicTable
         [nzData]="workingHours"
         [nzFrontPagination]="false"
-        *ngIf="user_type == 'Doctor' || user_type == 'Seller'"
+        *ngIf="user_type == 'Supplier' || user_type == 'Seller'"
       >
         <thead>
           <tr>
@@ -254,12 +304,12 @@
             </td>
           </tr>
         </tbody>
-      </nz-table>
+      </nz-table> -->
     </nz-spin>
   </ng-container>
 </nz-modal>
 
-<nz-modal
+<!-- <nz-modal
   [(nzVisible)]="visibleDrawer"
   [nzTitle]="titleDrawer"
   (nzOnCancel)="closeDrawer()"
@@ -296,7 +346,7 @@
             style="width: 100%; border-radius: 6px"
           >
             <nz-option
-              *ngFor="let o of stores"
+              *ngFor="let o of localities"
               [nzLabel]="o.name"
               [nzValue]="o.id"
             ></nz-option>
@@ -345,4 +395,4 @@
       </nz-form-item>
     </div>
   </ng-container>
-</nz-modal>
+</nz-modal> -->

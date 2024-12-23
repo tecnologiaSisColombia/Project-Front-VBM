@@ -196,34 +196,7 @@
         </span>
       </ng-template>
 
-      <div nz-col nzSpan="24" *ngIf="extraForm === 'Doctor'">
-        <nz-form-item>
-          <nz-form-label
-            [nzSm]="8"
-            [nzXs]="24"
-            nzFor="specialities"
-            style="text-align: center"
-          >
-            Specialities:
-          </nz-form-label>
-          <nz-form-control [nzSm]="16" [nzXs]="24">
-            <nz-select
-              formControlName="specialities"
-              name="specialities"
-              nzPlaceHolder="Select specialities"
-              nzMode="multiple"
-            >
-              <nz-option
-                *ngFor="let o of specialities"
-                [nzLabel]="o.description"
-                [nzValue]="o.id"
-              ></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-
-      <div nz-col nzSpan="24" *ngIf="extraForm === 'Doctor'">
+      <div nz-col nzSpan="24" *ngIf="extraForm === 'Supplier'">
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
@@ -242,12 +215,34 @@
           </nz-form-control>
         </nz-form-item>
       </div>
+      <!--  -->
+      <div nz-col nzSpan="24" *ngIf="extraForm === 'Partner'">
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="number_license"
+            style="text-align: center"
+          >
+            Partner type:
+          </nz-form-label>
+          <nz-form-control [nzSm]="16" [nzXs]="24">
+            <nz-select
+              formControlName="partner_type_id"
+              name="partner_type_id"
+              nzPlaceHolder="Select type"
+            >
+              <nz-option
+                *ngFor="let o of partner_types"
+                [nzLabel]="o.description"
+                [nzValue]="o.id"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
 
-      <div
-        nz-col
-        nzSpan="24"
-        *ngIf="extraForm === 'Doctor' || extraForm === 'Seller'"
-      >
+      <div nz-col nzSpan="24" *ngIf="extraForm === 'Supplier'">
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
@@ -255,14 +250,14 @@
             nzFor="stores"
             style="text-align: center"
           >
-            Stores:
+            Localities:
           </nz-form-label>
           <nz-form-control [nzSm]="16" [nzXs]="24">
             <nz-select
               (ngModelChange)="storeChange($event)"
-              formControlName="stores"
-              name="stores"
-              nzPlaceHolder="Select store"
+              formControlName="localities"
+              name="localities"
+              nzPlaceHolder="Select Locaity"
               nzMode="multiple"
             >
               <nz-option
@@ -275,7 +270,7 @@
         </nz-form-item>
       </div>
 
-      <div nz-col nzSpan="24" *ngIf="extraForm === 'Doctor'">
+      <div nz-col nzSpan="24" *ngIf="extraForm === 'Supplier'">
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
@@ -289,7 +284,7 @@
             <nz-select
               formControlName="insurers"
               name="insurers"
-              nzPlaceHolder="Select Insurers"
+              nzPlaceHolder="Select Insurer"
               nzMode="multiple"
             >
               <nz-option
@@ -301,32 +296,33 @@
           </nz-form-control>
         </nz-form-item>
       </div>
-
-      <div nz-col nzSpan="24" *ngIf="extraForm === 'Doctor'">
+      <!--  -->
+      <div nz-col nzSpan="24" *ngIf="extraForm === 'Partner'">
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
             [nzXs]="24"
-            nzFor="office_id"
+            nzFor="supplier"
             style="text-align: center"
           >
-            Office:
+            Supplier:
           </nz-form-label>
           <nz-form-control [nzSm]="16" [nzXs]="24">
             <nz-select
-              formControlName="office_id"
-              name="office_id"
-              nzPlaceHolder="Select office"
+              formControlName="supplier"
+              name="supplier"
+              nzPlaceHolder="Select Insurer"
             >
               <nz-option
-                *ngFor="let o of officesToDisplay"
-                [nzLabel]="o.name"
+                *ngFor="let o of suppliers"
+                [nzLabel]="o.user.first_name + ' ' + o.user.last_name"
                 [nzValue]="o.id"
               ></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
       </div>
+      <!--  -->
     </nz-spin>
   </form>
 

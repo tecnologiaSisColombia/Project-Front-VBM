@@ -21,11 +21,12 @@ import { debounceTime, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import { StoresService } from 'app/services/config/stores.service';
+import { NzSelectModule } from 'ng-zorro-antd/select';
 import * as XLSX from 'xlsx';
+import { DoctorService } from 'app/services/config/Doctors.service';
 
 @Component({
-  selector: 'app-stores',
+  selector: 'app-products',
   standalone: true,
   imports: [
     NzBreadCrumbModule,
@@ -42,11 +43,12 @@ import * as XLSX from 'xlsx';
     NzSpinModule,
     CommonModule,
     NzSwitchModule,
+    NzSelectModule,
   ],
-  templateUrl: './stores.component.html',
-  styleUrls: ['./stores.component.css', '../../../../animations/styles.css'],
+  templateUrl: './doctor.component.html',
+  styleUrls: ['./doctor.component.css', '../../../../animations/styles.css'],
 })
-export class StoresComponent implements OnInit {
+export class DoctorComponent {
   form: UntypedFormGroup;
   isDataLoading = false;
   dataToDisplay: any[] = [];
@@ -59,21 +61,32 @@ export class StoresComponent implements OnInit {
   count_records = 0;
   page_size = 10;
   page = 1;
-  nameSearch: any = null;
+  stores: any[] = [];
+  suppliers: any[] = [];
+  descriptionSearch: any = null;
+  codeSearch: any = null;
   private searchNameSubject = new Subject<{ type: string; value: string }>();
 
   constructor(
     private fb: UntypedFormBuilder,
-    private storesService: StoresService,
+    private doctorService: DoctorService,
     private msgService: NzMessageService
   ) {
     this.form = this.fb.group({
-      name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      license_number: [null, [Validators.required]],
+      email: [null, [Validators.required]],
+      phone: [null, [Validators.required]],
+      last_name: [null, [Validators.required]],
+      first_name: [null, [Validators.required]],
+      supplier: [null, [Validators.required]],
     });
 
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
       if (data.type === 'description') {
-        this.nameSearch = data.value;
+        this.descriptionSearch = data.value;
+      }
+      if (data.type === 'code') {
+        this.codeSearch = data.value;
       }
       this.page = 1;
       this.getInitData();
@@ -82,12 +95,26 @@ export class StoresComponent implements OnInit {
 
   ngOnInit(): void {
     this.getInitData();
+    this.getSuppliers();
   }
-
+  getSuppliers() {
+    this.doctorService.getSuppliers({}, 1, 1, true).subscribe({
+      next: (res: any) => {
+        this.suppliers = res;
+      },
+      error: (err) => {
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
+  }
   getInitData() {
     this.isDataLoading = true;
-    this.storesService
-      .get({ name: this.nameSearch }, this.page, this.page_size)
+    this.doctorService
+      .get(
+        { code: this.codeSearch, name: this.descriptionSearch },
+        this.page,
+        this.page_size
+      )
       .subscribe({
         next: (res: any) => {
           this.isDataLoading = false;
@@ -103,13 +130,13 @@ export class StoresComponent implements OnInit {
 
   openDrawer(): void {
     this.visible = true;
-    this.drawerTitle = 'New Locality';
+    this.drawerTitle = 'New Doctor';
   }
 
   openEditDrawer(data: any): void {
     this.visible = true;
     this.isUpdating = true;
-    this.drawerTitle = 'Edit Locality';
+    this.drawerTitle = 'Edit Doctor';
     this.dataDrawerCache = data;
     this.form.patchValue({ ...data });
   }
@@ -133,9 +160,9 @@ export class StoresComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
-        this.storesService.delete(id).subscribe({
+        this.doctorService.delete(id).subscribe({
           next: () => {
-            this.msgService.success('Locality deleted successfully');
+            this.msgService.success('Doctor deleted successfully');
             this.isDataLoading = false;
             this.getInitData();
           },
@@ -150,9 +177,9 @@ export class StoresComponent implements OnInit {
 
   update(id: number, data: any) {
     this.isDataLoading = true;
-    this.storesService.update(id, data).subscribe({
+    this.doctorService.update(id, data).subscribe({
       next: () => {
-        this.msgService.success('Locality updated successfully');
+        this.msgService.success('Doctor updated successfully');
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -171,9 +198,9 @@ export class StoresComponent implements OnInit {
       if (this.isUpdating) {
         return this.update(this.dataDrawerCache.id, this.form.value);
       }
-      this.storesService.create(this.form.value).subscribe({
+      this.doctorService.create(this.form.value).subscribe({
         next: () => {
-          this.msgService.success('New Locality created');
+          this.msgService.success('New Doctor created');
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -195,6 +222,7 @@ export class StoresComponent implements OnInit {
   }
 
   changeStatus(id: number, data: any) {
+    delete data.store_data;
     this.update(id, data);
   }
 
@@ -222,7 +250,7 @@ export class StoresComponent implements OnInit {
     this.num_pages = Math.ceil(count / this.page_size);
   }
 
-  exportStores(): void {
+  exportDoctors(): void {
     if (this.dataToDisplay.length === 0) {
       this.msgService.warning('No data available to export');
       return;
@@ -231,26 +259,26 @@ export class StoresComponent implements OnInit {
     this.isDataLoading = true;
 
     const headers = {
-      name: 'Store',
+      name: 'Doctor',
       created: 'Created',
       active: 'Status',
     } as const;
 
     const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
-    const filteredData = this.dataToDisplay.map((store) =>
+    const filteredData = this.dataToDisplay.map((product) =>
       selectedColumns.reduce((obj: Record<string, any>, key) => {
         if (key === 'active') {
-          obj[headers[key]] = store[key] ? 'Active' : 'Inactive';
+          obj[headers[key]] = product[key] ? 'Active' : 'Inactive';
         } else if (key === 'created') {
-          const date = new Date(store[key]);
+          const date = new Date(product[key]);
           obj[headers[key]] = date.toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
             year: 'numeric',
           });
         } else {
-          obj[headers[key]] = store[key];
+          obj[headers[key]] = product[key];
         }
         return obj;
       }, {})
@@ -259,7 +287,7 @@ export class StoresComponent implements OnInit {
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
 
     const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Stores');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Doctors');
 
     const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
       bookType: 'xlsx',
@@ -271,7 +299,7 @@ export class StoresComponent implements OnInit {
     const url = URL.createObjectURL(blob);
 
     link.setAttribute('href', url);
-    link.setAttribute('download', 'Localities.xlsx');
+    link.setAttribute('download', 'Doctors.xlsx');
     link.style.visibility = 'hidden';
 
     document.body.appendChild(link);

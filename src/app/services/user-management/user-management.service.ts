@@ -73,6 +73,10 @@ export class UserService {
     return this.http.get<any[]>(`${this.baseUrl}core/user-types`);
   }
 
+  getPartnerTypes() {
+    return this.http.get<any[]>(`${this.baseUrl}core/partner-types`);
+  }
+
   createUserType(userTypeData: { name: string }): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}core/user-types`, userTypeData);
   }
@@ -147,5 +151,4 @@ export class UserService {
   deleteGroup(id: any) {
     return this.http.delete(`${this.baseUrl}core/groups/${id}`);
   }
-  
 }

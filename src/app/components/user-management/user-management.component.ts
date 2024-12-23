@@ -186,7 +186,7 @@ export class UserManagementComponent implements OnInit {
           },
           error: (err) => {
             this.loading = false;
-            this.msgService.error(JSON.stringify(err));
+            this.msgService.error(JSON.stringify(err.error));
           },
         });
       }
@@ -231,8 +231,15 @@ export class UserManagementComponent implements OnInit {
     this.loading = true;
 
     const headers: Record<
-      'first_name' | 'last_name' | 'email' | 'username' | 'phone' | 'is_active' | 'role',
-      string> = {
+      | 'first_name'
+      | 'last_name'
+      | 'email'
+      | 'username'
+      | 'phone'
+      | 'is_active'
+      | 'role',
+      string
+    > = {
       role: 'Role',
       first_name: 'First Name',
       last_name: 'Last Name',
@@ -244,7 +251,7 @@ export class UserManagementComponent implements OnInit {
 
     const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
-    const filteredData = this.data.map(user =>
+    const filteredData = this.data.map((user) =>
       selectedColumns.reduce((obj: Record<string, any>, key) => {
         if (key === 'is_active') {
           obj[headers[key]] = user[key] == 1 ? 'Active' : 'Inactive';
@@ -283,5 +290,4 @@ export class UserManagementComponent implements OnInit {
 
     this.loading = false;
   }
-
 }

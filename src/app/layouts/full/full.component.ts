@@ -48,7 +48,6 @@ export class FullComponent implements OnInit {
   ngOnInit(): void {
     this.authService.getProfile().subscribe({
       next: (res: any) => {
-        console.log(res);
         res.group_profile.forEach((e: any) => {
           if (e.modulo__modulo == 'users') {
             this.access.users = e.write;

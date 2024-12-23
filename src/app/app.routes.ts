@@ -18,6 +18,7 @@ import { OfficesComponent } from './components/configuration/offices/offices.com
 import { ProfilesComponent } from './components/user-management/profiles/profiles.component';
 import { ServicesComponent } from './components/configuration/services/services.component';
 import { ProductsComponent } from './components/configuration/products/products.component';
+import { DoctorComponent } from './components/configuration/doctor/doctor.component';
 
 export const routes: Routes = [
   {
@@ -54,21 +55,25 @@ export const routes: Routes = [
         path: 'config',
         canActivate: [AuthGuardService],
         children: [
+          // {
+          //   path: 'specialities',
+          //   component: SpecialitiesComponent,
+          // },
           {
-            path: 'specialities',
-            component: SpecialitiesComponent,
-          },
-          {
-            path: 'stores',
+            path: 'localities',
             component: StoresComponent,
           },
-          {
-            path: 'offices',
-            component: OfficesComponent,
-          },
+          // {
+          //   path: 'offices',
+          //   component: OfficesComponent,
+          // },
           {
             path: 'services',
             component: ServicesComponent,
+          },
+          {
+            path: 'doctors',
+            component: DoctorComponent,
           },
           {
             path: 'products',

@@ -18,6 +18,7 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { InsurersService } from 'app/services/insurers/insurers.service';
+import { DoctorService } from 'app/services/config/Doctors.service';
 
 @Component({
   selector: 'nz-demo-modal-locale',
@@ -56,15 +57,17 @@ export class NzDemoModalLocaleComponent implements OnInit {
   @Output() userUpdated = new EventEmitter<any>();
   isVisible = false;
   specialities: any[] = [];
-  stores: any[] = [];
+  localities: any[] = [];
   userTypeOptions: { id: number; label: string; value: string }[] = [];
   offices: any[] = [];
   loading = false;
   tempUser: any = null;
   user_type: string = '';
+  partner_types: any[] = [];
   officesToDisplay: any[] = [];
   working_hours: any[] = [];
   insurers: any[] = [];
+  suppliers: any[] = [];
   titleDrawer = '';
   visibleDrawer = false;
   isUpdatingDrawer: boolean = false;
@@ -95,17 +98,25 @@ export class NzDemoModalLocaleComponent implements OnInit {
     private createUserService: UserService,
     private storeService: StoresService,
     private officeService: OfficesService,
-    private insurerService: InsurersService
+    private insurerService: InsurersService,
+    private supplierService: DoctorService
   ) {}
 
   ngOnInit(): void {
     this.loadUserTypes();
-    this.getOffices();
-    this.getSpecialities();
+    // this.getOffices();
+    // this.getSpecialities();
     this.getStores();
     this.getInsurers();
+    this.getSuppliers();
+    this.getPartnerTypes();
   }
-
+  getPartnerTypes() {
+    this.createUserService.getPartnerTypes().subscribe({
+      next: (res: any) => (this.partner_types = res),
+      error: (err) => this.msgService.error(JSON.stringify(err.error)),
+    });
+  }
   getInsurers(): void {
     this.insurerService.getInsurers({ status: 1 }, 1, 10, true).subscribe({
       next: (res: any) => {
@@ -116,9 +127,18 @@ export class NzDemoModalLocaleComponent implements OnInit {
       },
     });
   }
-
+  getSuppliers(): void {
+    this.supplierService.getSuppliers({ status: 1 }, 1, 10, true).subscribe({
+      next: (res: any) => {
+        this.suppliers = res;
+      },
+      error: (err) => {
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
+  }
   showModal(): void {
-    this.getWorkingHours();
+    // this.getWorkingHours();
     this.isVisible = true;
 
     this.tempUser = {
@@ -135,7 +155,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
           (e) => e.id == this.tempUser.extra_data[0].user_type_id
         )?.value || '';
     } else {
-      this.user_type = 'Admin';
+      this.user_type = 'Root';
     }
   }
 
@@ -191,7 +211,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
 
   getStores() {
     this.storeService.get({ status: 1 }, 1, 1, true).subscribe({
-      next: (res: any) => (this.stores = res),
+      next: (res: any) => (this.localities = res),
       error: (err) => {
         this.msgService.error(JSON.stringify(err.error));
       },
@@ -253,8 +273,8 @@ export class NzDemoModalLocaleComponent implements OnInit {
     this.visibleDrawer = true;
     this.workingHourForm.user = this.user.id;
     console.log(this.user);
-    this.stores = this.stores.filter(
-      (s: any) => this.user.stores && this.user.stores.includes(s.id)
+    this.localities = this.localities.filter(
+      (s: any) => this.user.localities && this.user.localities.includes(s.id)
     );
   }
 
