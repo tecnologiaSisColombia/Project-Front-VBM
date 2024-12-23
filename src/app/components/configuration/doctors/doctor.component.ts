@@ -74,7 +74,7 @@ export class DoctorComponent {
   ) {
     this.form = this.fb.group({
       license_number: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
-      email: [null, [Validators.required]],
+      email: [null, [Validators.required, Validators.email]],
       phone: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       last_name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       first_name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
@@ -98,6 +98,7 @@ export class DoctorComponent {
     this.getInitData();
     this.getSuppliers();
   }
+
   getSuppliers() {
     this.doctorService.getSuppliers({}, 1, 1, true).subscribe({
       next: (res: any) => {
@@ -108,6 +109,7 @@ export class DoctorComponent {
       },
     });
   }
+  
   getInitData() {
     this.isDataLoading = true;
     this.doctorService
@@ -163,7 +165,7 @@ export class DoctorComponent {
         this.isDataLoading = true;
         this.doctorService.delete(id).subscribe({
           next: () => {
-            this.msgService.success('Doctor deleted successfully');
+            this.msgService.success(JSON.stringify('Doctor deleted successfully'));
             this.isDataLoading = false;
             this.getInitData();
           },
@@ -180,7 +182,7 @@ export class DoctorComponent {
     this.isDataLoading = true;
     this.doctorService.update(id, data).subscribe({
       next: () => {
-        this.msgService.success('Doctor updated successfully');
+        this.msgService.success(JSON.stringify('Doctor updated successfully'));
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -201,7 +203,7 @@ export class DoctorComponent {
       }
       this.doctorService.create(this.form.value).subscribe({
         next: () => {
-          this.msgService.success('New Doctor created');
+          this.msgService.success(JSON.stringify('New Doctor created'));
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -244,7 +246,7 @@ export class DoctorComponent {
 
   exportDoctors(): void {
     if (this.dataToDisplay.length === 0) {
-      this.msgService.warning('No data available to export');
+      this.msgService.warning(JSON.stringify('No data available to export'));
       return;
     }
 
@@ -299,5 +301,7 @@ export class DoctorComponent {
     document.body.removeChild(link);
 
     this.isDataLoading = false;
+
+    this.msgService.success(JSON.stringify('Export completed successfully'));
   }
 }

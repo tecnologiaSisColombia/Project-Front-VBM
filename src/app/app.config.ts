@@ -16,8 +16,7 @@ import en from '@angular/common/locales/en'
 import { FormsModule } from '@angular/forms'
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async'
 import { AuthInterceptor } from './interceptors/auth.interceptors'
-import { AuthGuardService } from './services/guards/auth-guard.service'
-import { LoginGuardService } from './services/guards/login.guard'
+import { AuthGuardService, LoginGuardService } from './services'
 
 registerLocaleData(en)
 

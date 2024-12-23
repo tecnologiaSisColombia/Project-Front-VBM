@@ -1,16 +1,5 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './components/login/login.component';
-import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
-import { MainMenuComponent } from './components/main-menu/main-menu.component';
-import { ChangePasswordComponent } from './components/change-password/change-password.component';
-import { PlansComponent } from './components/plans/plans.component';
-import { InsurersComponent } from './components/insurers/insurers.component';
-import { BlankComponent } from './layouts/blank/blank.component';
-import { FullComponent } from './layouts/full/full.component';
-import { SubplansComponent } from './components/subplans/subplans.component';
-import { UserManagementComponent } from './components/user-management/user-management.component';
-import { ProfilesComponent } from './components/user-management/profiles/profiles.component';
-import { EligibilityComponent } from './components/eligibility/eligibility.component';
+import { BlankComponent, FullComponent } from './layouts';
 import { AuthGuardService, LoginGuardService, NewPasswordRequiredGuard } from './services'
 import {
   ServicesComponent,
@@ -19,7 +8,17 @@ import {
   LocalitiesComponent,
   // SpecialitiesComponent,
   // OfficesComponent
-} from './components/configuration';
+  LoginComponent,
+  ResetPasswordComponent,
+  PlansComponent,
+  InsurersComponent,
+  UserManagementComponent,
+  SubplansComponent,
+  ProfilesComponent,
+  EligibilityComponent,
+  MainMenuComponent,
+  ChangePasswordComponent
+} from './components';
 
 export const routes: Routes = [
   {

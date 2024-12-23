@@ -8,8 +8,15 @@
   </div>
 
   <div class="btn-container">
-    <button nz-button nzType="primary" (click)="openDrawer()">
-      <i nz-icon nzType="bank" nzTheme="outline"></i>
+    <button 
+      nz-button 
+      nzType="primary" 
+      (click)="openDrawer()">
+      <i 
+        nz-icon 
+        nzType="bank" 
+        nzTheme="outline">
+      </i>
       New Doctor
     </button>
 
@@ -17,10 +24,12 @@
       nz-button
       [style.background-color]="'#00a651'"
       [style.color]="'white'"
-      [nzLoading]="isDataLoading"
-      (click)="exportDoctors()"
-    >
-      <i nz-icon nzType="download" nzTheme="outline"></i>
+      (click)="exportDoctors()">
+      <i 
+        nz-icon 
+        nzType="download" 
+        nzTheme="outline">
+      </i>
       Export Doctors
     </button>
   </div>
@@ -28,7 +37,8 @@
 
 <div class="main-table layout-container">
   <div class="table-filters">
-    <nz-input-group [nzSuffix]="suffixIconSearch">
+    <nz-input-group 
+      [nzSuffix]="suffixIconSearch">
       <input
         type="text"
         nz-input
@@ -37,9 +47,11 @@
         (ngModelChange)="search($event, 'description')"
       />
     </nz-input-group>
+
     <ng-template #suffixIconSearch>
       <span nz-icon nzType="search"></span>
     </ng-template>
+
     <!-- Code -->
     <!-- <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
@@ -59,8 +71,7 @@
     #basicTable
     [nzData]="dataToDisplay"
     [nzLoading]="isDataLoading"
-    [nzFrontPagination]="false"
-  >
+    [nzFrontPagination]="false">
     <thead>
       <tr>
         <th>Fisrt name</th>
@@ -86,8 +97,8 @@
               title="Status"
               [(ngModel)]="data.active"
               nzSize="small"
-              (ngModelChange)="changeStatus(data.id, data)"
-            ></nz-switch>
+              (ngModelChange)="changeStatus(data.id, data)">
+            </nz-switch>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
@@ -96,8 +107,8 @@
               title="Edit"
               nzType="edit"
               nzTheme="outline"
-              (click)="openEditDrawer(data)"
-            ></span>
+              (click)="openEditDrawer(data)">
+            </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
@@ -106,8 +117,8 @@
               title="Delete"
               nzType="delete"
               nzTheme="outline"
-              (click)="delete(data.id)"
-            ></span>
+              (click)="delete(data.id)">
+            </span>
           </a>
         </td>
       </tr>
@@ -120,8 +131,8 @@
     [nzTotal]="count_records"
     [nzPageSize]="page_size"
     (nzPageIndexChange)="pageChange($event)"
-    nzShowQuickJumper
-  ></nz-pagination>
+    nzShowQuickJumper>
+  </nz-pagination>
 </div>
 
 <nz-drawer
@@ -133,8 +144,7 @@
   [nzTitle]="drawerTitle"
   (nzOnClose)="closeDrawer()"
   [nzWidth]="720"
-  [nzFooter]="footerTpl"
->
+  [nzFooter]="footerTpl">
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="drawerLoader">
       <form nz-form [formGroup]="form" (ngSubmit)="submit()">
@@ -143,18 +153,22 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="code"
-            style="text-align: center"
-          >
+            style="text-align: center">
             First name
           </nz-form-label>
+
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="first_nameError"
-          >
-            <input nz-input formControlName="first_name" id="first_name" />
+            [nzErrorTip]="first_nameError">
+            <input 
+              nz-input 
+              formControlName="first_name" 
+              id="first_name" 
+            />
           </nz-form-control>
         </nz-form-item>
+
         <ng-template #first_nameError>
           <span *ngIf="form.get('first_name')?.hasError('required')">
             This field is required
@@ -169,18 +183,22 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="last_name"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Last name
           </nz-form-label>
+
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="last_nameError"
-          >
-            <input nz-input formControlName="last_name" id="last_name" />
+            [nzErrorTip]="last_nameError">
+            <input 
+              nz-input 
+              formControlName="last_name" 
+              id="last_name" 
+            />
           </nz-form-control>
         </nz-form-item>
+
         <ng-template #last_nameError>
           <span *ngIf="form.get('last_name')?.hasError('required')">
             This field is required
@@ -195,15 +213,14 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="license_number"
-            style="text-align: center"
-          >
+            style="text-align: center">
             License number
           </nz-form-label>
+
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="license_numberError"
-          >
+            [nzErrorTip]="license_numberError">
             <input
               nz-input
               formControlName="license_number"
@@ -211,6 +228,7 @@
             />
           </nz-form-control>
         </nz-form-item>
+
         <ng-template #license_numberError>
           <span *ngIf="form.get('license_number')?.hasError('required')">
             This field is required
@@ -225,17 +243,29 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="email"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Email
           </nz-form-label>
-          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="emailError">
-            <input nz-input type="email" formControlName="email" id="email" />
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="emailError">
+            <input 
+              nz-input 
+              type="email" 
+              formControlName="email" 
+              id="email" 
+            />
           </nz-form-control>
         </nz-form-item>
+
         <ng-template #emailError>
           <span *ngIf="form.get('email')?.hasError('required')">
             This field is required
+          </span>
+          <span *ngIf="form.get('email')?.hasError('email')">
+            Please enter a valid email address
           </span>
         </ng-template>
 
@@ -244,14 +274,22 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="phone"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Phone
           </nz-form-label>
-          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="phoneError">
-            <input nz-input formControlName="phone" id="phone" />
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="phoneError">
+            <input 
+              nz-input 
+              formControlName="phone" 
+              id="phone" 
+            />
           </nz-form-control>
         </nz-form-item>
+
         <ng-template #phoneError>
           <span *ngIf="form.get('phone')?.hasError('required')">
             This field is required
@@ -266,17 +304,19 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="phone"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Supplier
           </nz-form-label>
-          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="phoneError">
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="supplierError">
             <nz-select
               formControlName="supplier"
               nzPlaceHolder="Select Supplier"
               style="width: 100%; border-radius: 6px"
-              nzAllowClear
-            >
+              nzAllowClear>
               <nz-option
                 *ngFor="let o of suppliers"
                 [nzLabel]="o.user.first_name"
@@ -285,7 +325,8 @@
             </nz-select>
           </nz-form-control>
         </nz-form-item>
-        <ng-template #phoneError>
+        
+        <ng-template #supplierError>
           <span *ngIf="form.get('phone')?.hasError('required')">
             This field is required
           </span>
@@ -296,10 +337,19 @@
 
   <ng-template #footerTpl>
     <div style="display: flex; float: right">
-      <button nz-button style="margin-right: 8px" (click)="closeDrawer()">
+      <button 
+        nz-button 
+        style="margin-right: 8px" 
+        (click)="closeDrawer()">
         Close
       </button>
-      <button nz-button nzType="primary" (click)="submit()">Save</button>
+      
+      <button 
+        nz-button 
+        nzType="primary" 
+        (click)="submit()">
+        Save
+      </button>
     </div>
   </ng-template>
 </nz-drawer>

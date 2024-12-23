@@ -87,9 +87,7 @@ export class UserService {
     // }
 
     return this.http.put(
-      `${this.baseUrl}UserAccessControl/update-type-user/${user_id}?type_user=${type_user.id}`,
-      user
-    );
+      `${this.baseUrl}UserAccessControl/update-type-user/${user_id}?type_user=${type_user.id}`, user);
   }
 
   // createWorkingHour(data: any): Observable<any> {
@@ -133,6 +131,7 @@ export class UserService {
   getGroupPerfil(grupo_id: any) {
     return this.http.get(`${this.baseUrl}core/profile-group/` + grupo_id);
   }
+
   addGroup(data: any) {
     return this.http.post(`${this.baseUrl}core/groups`, data);
   }

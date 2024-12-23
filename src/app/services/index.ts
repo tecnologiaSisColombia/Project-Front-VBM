@@ -1,3 +1,12 @@
 export * from './guards/auth-guard.service';
 export * from './guards/login.guard';
 export * from './guards/new-password-required.guard';
+export * from './insurers/insurers.service';
+export * from './insurers/plan.service';
+export * from './insurers/subplan.service';
+export * from './config/doctors.service';
+// export * from './config/especialities.service';
+// export * from './config/offices.service';
+export * from './config/localities.service';
+export * from './config/products.service';
+export * from './config/services.service';

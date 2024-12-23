@@ -136,7 +136,7 @@ export class LocalitiesComponent implements OnInit {
         this.isDataLoading = true;
         this.storesService.delete(id).subscribe({
           next: () => {
-            this.msgService.success('Locality deleted successfully');
+            this.msgService.success(JSON.stringify('Locality deleted successfully'));
             this.isDataLoading = false;
             this.getInitData();
           },
@@ -153,7 +153,7 @@ export class LocalitiesComponent implements OnInit {
     this.isDataLoading = true;
     this.storesService.update(id, data).subscribe({
       next: () => {
-        this.msgService.success('Locality updated successfully');
+        this.msgService.success(JSON.stringify('Locality updated successfully'));
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -174,7 +174,7 @@ export class LocalitiesComponent implements OnInit {
       }
       this.storesService.create(this.form.value).subscribe({
         next: () => {
-          this.msgService.success('New Locality created');
+          this.msgService.success(JSON.stringify('New Locality created'));
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();

@@ -1,0 +1,16 @@
+export * from './configuration/services/services.component';
+export * from './configuration/products/products.component';
+export * from './configuration/doctors/doctor.component';
+export * from './configuration/localities/localities.component';
+// export * from './configuration/specialities/specialities.component';
+// export * from './configuration/offices/offices.component';
+export * from './login/login.component';
+export * from './reset-password/reset-password.component';
+export * from './plans/plans.component';
+export * from './insurers/insurers.component';
+export * from './user-management/user-management.component';
+export * from './subplans/subplans.component';
+export * from './user-management/profiles/profiles.component';
+export * from './eligibility/eligibility.component';
+export * from './main-menu/main-menu.component';
+export * from './change-password/change-password.component';
