@@ -69,20 +69,13 @@ export class SpecialitiesComponent {
       description: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
     });
 
-<<<<<<< HEAD
     this.searchNameSubject.pipe(debounceTime(1000)).subscribe((data) => {
-=======
-    this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
->>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
       if (data.type === 'description') {
         this.descriptionSearch = data.value;
       }
       this.page = 1;
       this.getInitData();
-<<<<<<< HEAD
       this.isDataLoading = false;
-=======
->>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
     });
   }
 
@@ -214,18 +207,6 @@ export class SpecialitiesComponent {
   search(value: string, type: string) {
     this.isDataLoading = true;
     this.searchNameSubject.next({ type, value });
-<<<<<<< HEAD
-=======
-    this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
-      next: () => {
-        this.isDataLoading = false;
-      },
-      error: (err) => {
-        this.isDataLoading = false;
-        this.msgService.error(JSON.stringify(err.error));
-      },
-    });
->>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
   }
 
   pageChange(event: number) {

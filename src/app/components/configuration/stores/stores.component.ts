@@ -71,20 +71,12 @@ export class StoresComponent implements OnInit {
       name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
     });
 
-<<<<<<< HEAD
-    this.searchNameSubject.pipe(debounceTime(1000)).subscribe((data) => {
-=======
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
->>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
       if (data.type === 'description') {
         this.nameSearch = data.value;
       }
       this.page = 1;
       this.getInitData();
-<<<<<<< HEAD
-      this.isDataLoading = false;
-=======
->>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
     });
   }
 
@@ -111,21 +103,13 @@ export class StoresComponent implements OnInit {
 
   openDrawer(): void {
     this.visible = true;
-<<<<<<< HEAD
-    this.drawerTitle = 'New Store';
-=======
     this.drawerTitle = 'New Locality';
->>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
   }
 
   openEditDrawer(data: any): void {
     this.visible = true;
     this.isUpdating = true;
-<<<<<<< HEAD
-    this.drawerTitle = 'Edit Store';
-=======
     this.drawerTitle = 'Edit Locality';
->>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
     this.dataDrawerCache = data;
     this.form.patchValue({ ...data });
   }
@@ -151,11 +135,7 @@ export class StoresComponent implements OnInit {
         this.isDataLoading = true;
         this.storesService.delete(id).subscribe({
           next: () => {
-<<<<<<< HEAD
-            this.msgService.success(JSON.stringify('Store deleted successfully'));
-=======
             this.msgService.success('Locality deleted successfully');
->>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
             this.isDataLoading = false;
             this.getInitData();
           },
@@ -172,11 +152,7 @@ export class StoresComponent implements OnInit {
     this.isDataLoading = true;
     this.storesService.update(id, data).subscribe({
       next: () => {
-<<<<<<< HEAD
-        this.msgService.success(JSON.stringify('Store updated successfully'));
-=======
         this.msgService.success('Locality updated successfully');
->>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -197,11 +173,7 @@ export class StoresComponent implements OnInit {
       }
       this.storesService.create(this.form.value).subscribe({
         next: () => {
-<<<<<<< HEAD
-          this.msgService.success(JSON.stringify('New Store created'));
-=======
           this.msgService.success('New Locality created');
->>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -229,8 +201,6 @@ export class StoresComponent implements OnInit {
   search(value: string, type: string) {
     this.isDataLoading = true;
     this.searchNameSubject.next({ type, value });
-<<<<<<< HEAD
-=======
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
       next: () => {
         this.isDataLoading = false;
@@ -240,7 +210,6 @@ export class StoresComponent implements OnInit {
         this.msgService.error(JSON.stringify(err.error));
       },
     });
->>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
   }
 
   pageSizeChange(pageSize: number): void {
@@ -275,11 +244,7 @@ export class StoresComponent implements OnInit {
 
     const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
-<<<<<<< HEAD
-    const filteredData = this.dataToDisplay.map(store =>
-=======
     const filteredData = this.dataToDisplay.map((store) =>
->>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
       selectedColumns.reduce((obj: Record<string, any>, key) => {
         if (key === 'active') {
           obj[headers[key]] = store[key] ? 'Active' : 'Inactive';
@@ -312,11 +277,7 @@ export class StoresComponent implements OnInit {
     const url = URL.createObjectURL(blob);
 
     link.setAttribute('href', url);
-<<<<<<< HEAD
-    link.setAttribute('download', 'Stores.xlsx');
-=======
     link.setAttribute('download', 'Localities.xlsx');
->>>>>>> 1976f3141f4c055ce9e3693483ee1ae5a8ec0c91
     link.style.visibility = 'hidden';
 
     document.body.appendChild(link);
