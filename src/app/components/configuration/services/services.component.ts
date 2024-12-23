@@ -72,9 +72,9 @@ export class ServicesComponent implements OnInit {
     private msgService: NzMessageService
   ) {
     this.form = this.fb.group({
-      description: [null, [Validators.required]],
-      value: [null, [Validators.required]],
-      code: [null, [Validators.required]],
+      description: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      value: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      code: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
     });
 
     this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
@@ -151,7 +151,7 @@ export class ServicesComponent implements OnInit {
         this.isDataLoading = true;
         this.serviceService.delete(id).subscribe({
           next: () => {
-            this.msgService.success('Service deleted successfully');
+            this.msgService.success(JSON.stringify('Service deleted successfully'));
             this.isDataLoading = false;
             this.getInitData();
           },
@@ -168,7 +168,7 @@ export class ServicesComponent implements OnInit {
     this.isDataLoading = true;
     this.serviceService.update(id, data).subscribe({
       next: () => {
-        this.msgService.success('Service updated successfully');
+        this.msgService.success(JSON.stringify('Service updated successfully'));
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -189,7 +189,7 @@ export class ServicesComponent implements OnInit {
       }
       this.serviceService.create(this.form.value).subscribe({
         next: () => {
-          this.msgService.success('New Service created');
+          this.msgService.success(JSON.stringify('New service created'));
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -239,16 +239,24 @@ export class ServicesComponent implements OnInit {
     this.num_pages = Math.ceil(count / this.page_size);
   }
 
+  pageSizeChange(pageSize: number): void {
+    this.page_size = pageSize;
+    this.page = 1;
+    this.getInitData();
+  }
+
   exportServices(): void {
     if (this.dataToDisplay.length === 0) {
-      this.msgService.warning('No data available to export');
+      this.msgService.warning(JSON.stringify('No data available to export'));
       return;
     }
 
     this.isDataLoading = true;
 
     const headers = {
-      name: 'Service',
+      code: 'Code Service',
+      description: 'Description Service',
+      value: 'Value Service',
       created: 'Created',
       active: 'Status',
     } as const;
@@ -296,5 +304,7 @@ export class ServicesComponent implements OnInit {
     document.body.removeChild(link);
 
     this.isDataLoading = false;
+
+    this.msgService.success(JSON.stringify('Export completed successfully'));
   }
 }

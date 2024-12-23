@@ -8,8 +8,15 @@
   </div>
 
   <div class="btn-container">
-    <button nz-button nzType="primary" (click)="openDrawer()">
-      <i nz-icon nzType="bank" nzTheme="outline"></i>
+    <button 
+      nz-button 
+      nzType="primary" 
+      (click)="openDrawer()">
+      <i 
+        nz-icon 
+        nzType="customer-service" 
+        nzTheme="outline">
+      </i>
       New Service
     </button>
 
@@ -17,10 +24,12 @@
       nz-button
       [style.background-color]="'#00a651'"
       [style.color]="'white'"
-      [nzLoading]="isDataLoading"
-      (click)="exportServices()"
-    >
-      <i nz-icon nzType="download" nzTheme="outline"></i>
+      (click)="exportServices()">
+      <i 
+        nz-icon 
+        nzType="download" 
+        nzTheme="outline">
+      </i>
       Export Services
     </button>
   </div>
@@ -28,7 +37,6 @@
 
 <div class="main-table layout-container">
   <div class="table-filters">
-    <!-- code -->
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -38,10 +46,14 @@
         (ngModelChange)="search($event, 'code')"
       />
     </nz-input-group>
+
     <ng-template #suffixIconSearch>
-      <span nz-icon nzType="search"></span>
+      <span 
+        nz-icon 
+        nzType="search">
+      </span>
     </ng-template>
-    <!-- desc -->
+
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -51,6 +63,7 @@
         (ngModelChange)="search($event, 'description')"
       />
     </nz-input-group>
+
     <ng-template #suffixIconSearch>
       <span nz-icon nzType="search"></span>
     </ng-template>
@@ -60,8 +73,7 @@
     #basicTable
     [nzData]="dataToDisplay"
     [nzLoading]="isDataLoading"
-    [nzFrontPagination]="false"
-  >
+    [nzFrontPagination]="false">
     <thead>
       <tr>
         <th>Code</th>
@@ -83,8 +95,8 @@
               title="Status"
               [(ngModel)]="data.active"
               nzSize="small"
-              (ngModelChange)="changeStatus(data.id, data)"
-            ></nz-switch>
+              (ngModelChange)="changeStatus(data.id, data)">
+            </nz-switch>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
@@ -93,8 +105,8 @@
               title="Edit"
               nzType="edit"
               nzTheme="outline"
-              (click)="openEditDrawer(data)"
-            ></span>
+              (click)="openEditDrawer(data)">
+            </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
@@ -103,8 +115,8 @@
               title="Delete"
               nzType="delete"
               nzTheme="outline"
-              (click)="delete(data.id)"
-            ></span>
+              (click)="delete(data.id)">
+            </span>
           </a>
         </td>
       </tr>
@@ -116,9 +128,11 @@
     [nzResponsive]="true"
     [nzTotal]="count_records"
     [nzPageSize]="page_size"
+    [nzShowSizeChanger]="true"
     (nzPageIndexChange)="pageChange($event)"
-    nzShowQuickJumper
-  ></nz-pagination>
+    (nzPageSizeChange)="pageSizeChange($event)"
+    [nzShowQuickJumper]="true">
+  </nz-pagination>
 </div>
 
 <nz-drawer
@@ -130,8 +144,8 @@
   [nzTitle]="drawerTitle"
   (nzOnClose)="closeDrawer()"
   [nzWidth]="720"
-  [nzFooter]="footerTpl"
->
+  [nzFooter]="footerTpl">
+
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="drawerLoader">
       <form nz-form [formGroup]="form" (ngSubmit)="submit()">
@@ -140,17 +154,28 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="code"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Code
           </nz-form-label>
-          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="codeError">
-            <input nz-input formControlName="code" id="code" />
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="codeError">
+            <input 
+              nz-input 
+              formControlName="code" 
+              id="code" 
+            />
           </nz-form-control>
         </nz-form-item>
+
         <ng-template #codeError>
           <span *ngIf="form.get('code')?.hasError('required')">
             This field is required
+          </span>
+          <span *ngIf="form.get('code')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
           </span>
         </ng-template>
 
@@ -159,21 +184,28 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="description"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Description
           </nz-form-label>
+
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="descriptionError"
-          >
-            <input nz-input formControlName="description" id="description" />
+            [nzErrorTip]="descriptionError">
+            <input 
+              nz-input 
+              formControlName="description" 
+              id="description" 
+            />
           </nz-form-control>
         </nz-form-item>
+
         <ng-template #descriptionError>
           <span *ngIf="form.get('description')?.hasError('required')">
             This field is required
+          </span>
+          <span *ngIf="form.get('description')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
           </span>
         </ng-template>
 
@@ -182,17 +214,28 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="value"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Value
           </nz-form-label>
-          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="valueError">
-            <input nz-input formControlName="value" id="value" />
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="valueError">
+            <input 
+              nz-input 
+              formControlName="value" 
+              id="value" 
+            />
           </nz-form-control>
         </nz-form-item>
+
         <ng-template #valueError>
           <span *ngIf="form.get('value')?.hasError('required')">
             This field is required
+          </span>
+          <span *ngIf="form.get('value')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
           </span>
         </ng-template>
       </form>
@@ -201,10 +244,19 @@
 
   <ng-template #footerTpl>
     <div style="display: flex; float: right">
-      <button nz-button style="margin-right: 8px" (click)="closeDrawer()">
+      <button 
+        nz-button 
+        style="margin-right: 8px" 
+        (click)="closeDrawer()">
         Close
       </button>
-      <button nz-button nzType="primary" (click)="submit()">Save</button>
+
+      <button 
+        nz-button 
+        nzType="primary" 
+        (click)="submit()">
+        Save
+      </button>
     </div>
   </ng-template>
 </nz-drawer>

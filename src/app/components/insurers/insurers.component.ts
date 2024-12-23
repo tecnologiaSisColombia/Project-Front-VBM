@@ -70,12 +70,18 @@ export class InsurersComponent implements OnInit {
   count_records = 0;
   page_size = 10;
   page = 1;
-  private searchNameSubject: Subject<{ type: string; value: string }> =
-    new Subject();
   services: any[] = [];
   products: any[] = [];
   isVisibleCatalog: boolean = false;
   dataCatalog: any;
+
+  productsPage = 1;
+  productsPageSize = 10;
+  productsCountRecords = 0;
+  productsNumPages = 1;
+  productsSearch: any = {};
+
+  private searchNameSubject: Subject<{ type: string; value: string }> = new Subject();
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -86,17 +92,11 @@ export class InsurersComponent implements OnInit {
     private serviceService: ServicesService
   ) {
     this.form = this.fb.group({
-      services: [null],
-      products: [null],
+      services: [null, [Validators.required]],
+      products: [null, [Validators.required]],
       logo: [null],
-      logo_description: [
-        null,
-        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
-      ],
-      payer_id: [
-        null,
-        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
-      ],
+      logo_description: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      payer_id: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       phone: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       address: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
@@ -121,24 +121,35 @@ export class InsurersComponent implements OnInit {
   }
 
   getServices() {
+    this.isDataLoading = true;
     this.serviceService.get({}, 1, 1, true).subscribe({
       next: (res: any) => {
         this.services = res;
+        this.isDataLoading = false;
       },
       error: (err) => {
         this.msgService.error(JSON.stringify(err.error));
+        this.isDataLoading = false;
       },
     });
   }
+
   getProducts() {
-    this.productService.get({}, 1, 1, true).subscribe({
-      next: (res: any) => {
-        this.products = res;
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-    });
+    this.isDataLoading = true;
+    this.productService
+      .get(this.productsSearch, this.productsPage, this.productsPageSize)
+      .subscribe({
+        next: (res: any) => {
+          this.products = res.results;
+          this.productsCountRecords = res.total;
+          this.productsNumPages = Math.ceil(this.productsCountRecords / this.productsPageSize);
+          this.isDataLoading = false;
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+          this.isDataLoading = false;
+        },
+      });
   }
 
   getInitData(): void {
@@ -213,7 +224,7 @@ export class InsurersComponent implements OnInit {
         this.isDataLoading = true;
         this.insurerService.deleteInsurer(id).subscribe({
           next: () => {
-            this.msgService.success('Insurer deleted successfully');
+            this.msgService.success(JSON.stringify('Insurer deleted successfully'));
             this.isDataLoading = false;
             this.getInitData();
           },
@@ -230,7 +241,7 @@ export class InsurersComponent implements OnInit {
     this.isDataLoading = true;
     this.insurerService.updateInsurer(id, data).subscribe({
       next: () => {
-        this.msgService.success('Insurer updated successfully');
+        this.msgService.success(JSON.stringify('Insurer updated successfully'));
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -251,9 +262,7 @@ export class InsurersComponent implements OnInit {
       const validFileTypes = ['image/jpeg', 'image/png'];
 
       if (!validFileTypes.includes(file.type)) {
-        this.msgService.error(
-          'The image will not be uploaded only JPG and PNG files'
-        );
+        this.msgService.warning(JSON.stringify('Only JPG and PNG files'));
         this.form.patchValue({ logo: null });
         return;
       }
@@ -306,7 +315,7 @@ export class InsurersComponent implements OnInit {
     } else {
       this.insurerService.createInsurer(formData).subscribe({
         next: () => {
-          this.msgService.success('New Insurer created');
+          this.msgService.success(JSON.stringify('New Insurer created'));
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -348,16 +357,33 @@ export class InsurersComponent implements OnInit {
     this.num_pages = Math.ceil(this.count_records / this.page_size);
   }
 
-  exportInsures(): void {
-    if (this.dataToDisplay.length === 0) {
+  pageSizeChange(pageSize: number): void {
+    this.page_size = pageSize;
+    this.page = 1;
+    this.getInitData();
+  }
+
+  productsPageChange(page: number): void {
+    this.productsPage = page;
+    this.getProducts();
+  }
+  
+  productsPageSizeChange(pageSize: number): void {
+    this.productsPageSize = pageSize;
+    this.productsPage = 1;
+    this.getProducts();
+  }
+  
+  exporInformation(): void {
+    if (this.dataToDisplay.length === 0 && this.services.length === 0 && this.products.length === 0) {
       this.msgService.warning('No data available to export');
       return;
     }
 
     this.isDataLoading = true;
 
-    const headers = {
-      name: 'Insurer',
+    const insurerHeaders = {
+      name: 'Insurer Name',
       payer_id: 'Payer Id',
       phone: 'Phone',
       address: 'Address',
@@ -365,30 +391,83 @@ export class InsurersComponent implements OnInit {
       active: 'Status',
     } as const;
 
-    const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+    const servicesHeaders = {
+      code: 'Service Code',
+      value: 'Service Value',
+      description: 'Service Description',
+      created: 'Created',
+      active: 'Status',
+    } as const;
 
-    const filteredData = this.dataToDisplay.map((insurer) =>
-      selectedColumns.reduce((obj: Record<string, any>, key) => {
-        if (key === 'active') {
-          obj[headers[key]] = insurer[key] ? 'Active' : 'Inactive';
-        } else if (key === 'created') {
-          const date = new Date(insurer[key]);
-          obj[headers[key]] = date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
+    const productsHeaders = {
+      code: 'Product Code',
+      description: 'Product Description',
+      created: 'Created',
+      active: 'Status',
+    } as const;
+
+    const formatData = (data: any[], headers: Record<string, string>) =>
+      data.map((item) =>
+        (Object.keys(headers) as Array<keyof typeof headers>).reduce<Record<string, any>>(
+          (obj, key) => {
+            if (key === 'active') {
+              obj[headers[key]] = item[key] ? 'Active' : 'Inactive';
+            } else if (key === 'created') {
+              const date = new Date(item[key]);
+              obj[headers[key]] = date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              });
+            } else {
+              obj[headers[key]] = item[key];
+            }
+            return obj;
+          },
+          {}
+        )
+      );
+
+    const insurersData = formatData(this.dataToDisplay, insurerHeaders);
+    const servicesData = formatData(this.services, servicesHeaders);
+    const productsData = formatData(this.products, productsHeaders);
+
+    const relationsData: Record<string, string>[] = [];
+    this.dataToDisplay.forEach((insurer) => {
+      if (insurer.services && insurer.products) {
+        insurer.services.forEach((service: any) => {
+          insurer.products.forEach((product: any) => {
+            relationsData.push({
+              'Insurer Name': insurer.name,
+              'Service Name': service.value,
+              'Product Name': product.description,
+            });
           });
-        } else {
-          obj[headers[key]] = insurer[key];
-        }
-        return obj;
-      }, {})
-    );
-
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+        });
+      }
+    });
 
     const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Insurers');
+
+    if (insurersData.length > 0) {
+      const insurerSheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(insurersData);
+      XLSX.utils.book_append_sheet(workbook, insurerSheet, 'Insurers');
+    }
+
+    if (servicesData.length > 0) {
+      const servicesSheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(servicesData);
+      XLSX.utils.book_append_sheet(workbook, servicesSheet, 'Services');
+    }
+
+    if (productsData.length > 0) {
+      const productsSheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(productsData);
+      XLSX.utils.book_append_sheet(workbook, productsSheet, 'Products');
+    }
+
+    if (relationsData.length > 0) {
+      const relationsSheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(relationsData);
+      XLSX.utils.book_append_sheet(workbook, relationsSheet, 'Relations');
+    }
 
     const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
       bookType: 'xlsx',
@@ -396,11 +475,11 @@ export class InsurersComponent implements OnInit {
     });
 
     const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
 
+    const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', 'Insurers.xlsx');
+    link.setAttribute('download', 'ExportedData.xlsx');
     link.style.visibility = 'hidden';
 
     document.body.appendChild(link);
@@ -408,15 +487,20 @@ export class InsurersComponent implements OnInit {
     document.body.removeChild(link);
 
     this.isDataLoading = false;
+
+    this.msgService.success(JSON.stringify('Export completed successfully'));
   }
+
   openCatalog(data: any) {
     this.isVisibleCatalog = true;
     this.dataCatalog = data;
   }
+
   handleCancelCatalog() {
     this.isVisibleCatalog = false;
     this.dataCatalog = null;
   }
+
   handleOkCatalog() {
     this.isVisibleCatalog = false;
     this.dataCatalog = null;

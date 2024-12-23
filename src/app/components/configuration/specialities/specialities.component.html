@@ -11,9 +11,12 @@
     <button 
       nz-button 
       nzType="primary" 
-      (click)="openDrawer()"
-    >
-      <i nz-icon nzType="solution" nzTheme="outline"></i>
+      (click)="openDrawer()">
+      <i 
+        nz-icon 
+        nzType="solution" 
+        nzTheme="outline">
+      </i>
       New Speciality
     </button>
 
@@ -21,10 +24,12 @@
       nz-button
       [style.background-color]="'#00a651'"
       [style.color]="'white'"
-      [nzLoading]="isDataLoading"
-      (click)="exportSpecialities()"
-    >
-      <i nz-icon nzType="download" nzTheme="outline"></i>
+      (click)="exportSpecialities()">
+      <i 
+        nz-icon 
+        nzType="download" 
+        nzTheme="outline">
+      </i>
       Export Specialities
     </button>
   </div>
@@ -41,8 +46,12 @@
         (ngModelChange)="search($event, 'description')"
       />
     </nz-input-group>
+    
     <ng-template #suffixIconSearch>
-      <span nz-icon nzType="search"></span>
+      <span 
+        nz-icon 
+        nzType="search">
+      </span>
     </ng-template>
   </div>
 
@@ -50,8 +59,7 @@
     #basicTable
     [nzData]="dataToDisplay"
     [nzLoading]="isDataLoading"
-    [nzFrontPagination]="false"
-  >
+    [nzFrontPagination]="false">
     <thead>
       <tr>
         <th>Description</th>
@@ -69,8 +77,8 @@
               title="Status"
               [(ngModel)]="data.active"
               nzSize="small"
-              (ngModelChange)="changeStatus(data.id, data)"
-            ></nz-switch>
+              (ngModelChange)="changeStatus(data.id, data)">
+            </nz-switch>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
@@ -79,8 +87,8 @@
               title="Edit"
               nzType="edit"
               nzTheme="outline"
-              (click)="openEditDrawer(data)"
-            ></span>
+              (click)="openEditDrawer(data)">
+            </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
@@ -89,8 +97,8 @@
               title="Delete"
               nzType="delete"
               nzTheme="outline"
-              (click)="delete(data.id)"
-            ></span>
+              (click)="delete(data.id)">
+            </span>
           </a>
         </td>
       </tr>
@@ -102,9 +110,11 @@
     [nzResponsive]="true"
     [nzTotal]="count_records"
     [nzPageSize]="page_size"
+    [nzShowSizeChanger]="true"
     (nzPageIndexChange)="pageChange($event)"
-    nzShowQuickJumper
-  ></nz-pagination>
+    (nzPageSizeChange)="pageSizeChange($event)"
+    [nzShowQuickJumper]="true">
+  </nz-pagination>
 </div>
 
 <nz-drawer
@@ -116,8 +126,8 @@
   [nzTitle]="drawerTitle"
   (nzOnClose)="closeDrawer()"
   [nzWidth]="720"
-  [nzFooter]="footerTpl"
->
+  [nzFooter]="footerTpl">
+  
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="drawerLoader">
       <form nz-form [formGroup]="form" (ngSubmit)="submit()">
@@ -126,15 +136,14 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="description"
-            style="text-align: center;"
-          >
+            style="text-align: center;">
             Description
           </nz-form-label>
+
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="descriptionError"
-          >
+            [nzErrorTip]="descriptionError">
             <input
               nz-input
               formControlName="description"
@@ -143,6 +152,7 @@
             />
           </nz-form-control>
         </nz-form-item>
+
         <ng-template #descriptionError>
           <span *ngIf="form.get('description')?.hasError('required')">
             This field is required
@@ -160,16 +170,14 @@
       <button
         nz-button
         style="margin-right: 8px;"
-        (click)="closeDrawer()"
-      >
+        (click)="closeDrawer()">
         Close
       </button>
 
       <button
         nz-button
         nzType="primary"
-        (click)="submit()"
-      >
+        (click)="submit()">
         Save
       </button>
     </div>

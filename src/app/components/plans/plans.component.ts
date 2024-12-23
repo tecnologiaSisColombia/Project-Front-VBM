@@ -162,7 +162,7 @@ export class PlansComponent implements OnInit {
         this.isDataLoading = true;
         this.planService.deletePlan(id).subscribe({
           next: () => {
-            this.msgService.success('Coverage deleted successfully');
+            this.msgService.success(JSON.stringify('Coverage deleted successfully'));
             this.isDataLoading = false;
             this.getInitData();
           },
@@ -179,7 +179,7 @@ export class PlansComponent implements OnInit {
     this.isDataLoading = true;
     this.planService.updatePlan(id, data).subscribe({
       next: () => {
-        this.msgService.success('Coverage updated successfully');
+        this.msgService.success(JSON.stringify('Coverage updated successfully'));
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -200,7 +200,7 @@ export class PlansComponent implements OnInit {
       }
       this.planService.createPlan(this.form.value).subscribe({
         next: () => {
-          this.msgService.success('New Coverage created');
+          this.msgService.success(JSON.stringify('New Coverage created'));
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -264,9 +264,15 @@ export class PlansComponent implements OnInit {
     this.handleCancelModal();
   }
 
+  pageSizeChange(pageSize: number): void {
+    this.page_size = pageSize;
+    this.page = 1;
+    this.getInitData();
+  }
+
   exportCoverages(): void {
     if (this.dataToDisplay.length === 0) {
-      this.msgService.warning('No data available to export');
+      this.msgService.warning(JSON.stringify('No data available to export'));
       return;
     }
 
@@ -278,7 +284,7 @@ export class PlansComponent implements OnInit {
       created: 'Created',
       active: 'Status',
     } as const;
-    
+
     const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
     const filteredData = this.dataToDisplay.map(coverage =>
@@ -324,6 +330,8 @@ export class PlansComponent implements OnInit {
     document.body.removeChild(link);
 
     this.isDataLoading = false;
+
+    this.msgService.success(JSON.stringify('Export completed successfully'));
   }
 
 }

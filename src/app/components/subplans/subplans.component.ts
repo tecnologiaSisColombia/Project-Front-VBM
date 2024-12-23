@@ -81,10 +81,7 @@ export class SubplansComponent implements OnInit {
       pds: [null, [Validators.required]],
       name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       group: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
-      plan_contract: [
-        null,
-        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
-      ],
+      plan_contract: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       visual_test_medicare: [null, [Validators.required]],
       visual_surgery_medicare: [null, [Validators.required]],
       routine_visual_test: [null, [Validators.required]],
@@ -178,8 +175,8 @@ export class SubplansComponent implements OnInit {
       if (result.isConfirmed) {
         this.isDataLoading = true;
         this.subplanService.deleteSubPlan(id).subscribe({
-          next: (res: any) => {
-            this.msgService.success(res);
+          next: () => {
+            this.msgService.success(JSON.stringify('Subplan deleted successfully'));
             this.isDataLoading = false;
             this.getInitData();
           },
@@ -195,8 +192,8 @@ export class SubplansComponent implements OnInit {
   update(id: number, data: any): void {
     this.isDataLoading = true;
     this.subplanService.updateSubPlan(id, data).subscribe({
-      next: (res: any) => {
-        this.msgService.success(res);
+      next: () => {
+        this.msgService.success(JSON.stringify('Subplan updated successfully'));
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -217,7 +214,7 @@ export class SubplansComponent implements OnInit {
       }
       this.subplanService.createSubPlan(this.form.value).subscribe({
         next: () => {
-          this.msgService.success('New Subplan created');
+          this.msgService.success(JSON.stringify('New Subplan created'));
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -267,9 +264,15 @@ export class SubplansComponent implements OnInit {
     this.num_pages = Math.ceil(this.count_records / this.page_size);
   }
 
+  pageSizeChange(pageSize: number): void {
+    this.page_size = pageSize;
+    this.page = 1;
+    this.getInitData();
+  }
+
   exportSubplans(): void {
     if (this.dataToDisplay.length === 0) {
-      this.msgService.warning('No data available to export');
+      this.msgService.warning(JSON.stringify('No data available to export'));
       return;
     }
 
@@ -333,5 +336,7 @@ export class SubplansComponent implements OnInit {
     document.body.removeChild(link);
 
     this.isDataLoading = false;
+
+    this.msgService.success(JSON.stringify('Export completed successfully'));
   }
 }

@@ -19,6 +19,7 @@ import { UserService } from 'app/services/user-management/user-management.servic
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as XLSX from 'xlsx';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { debounceTime, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-profiles',
@@ -59,12 +60,26 @@ export class ProfilesComponent implements OnInit {
   selectedGroupId!: number;
   addForm!: FormGroup;
   isVisiblePermisosModal = false;
+  page: number = 1;
+  page_size: number = 10;
+  count_records: number = 0;
+  nameSearch: any = null;
+  private searchNameSubject: Subject<{ type: string; value: string }> = new Subject();
 
   constructor(
     private fb: FormBuilder,
     private profileService: UserService,
     private message: NzMessageService
-  ) { }
+  ) {
+
+    this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
+      if (data.type === 'name') {
+        this.nameSearch = data.value;
+      }
+      this.page = 1;
+      this.getGroups();
+    });
+  }
 
   ngOnInit(): void {
     this.getGroups();
@@ -82,35 +97,25 @@ export class ProfilesComponent implements OnInit {
     this.isVisiblePermisosModal = false;
   }
 
-  editPermisos(data: any, paramToChange: string) {
+  editPermissions(data: any, paramToChange: string) {
     this.isDataLoading = true;
+    const updatedData = { ...data };
 
-    const id = data.id;
-    const group = data.group;
+    updatedData[paramToChange] = !data[paramToChange];
 
-    if (paramToChange === 'read') {
-      data.read = !data.read;
-    }
-    if (paramToChange === 'write') {
-      data.write = !data.write;
-    }
-    if (paramToChange === 'update') {
-      data.update = !data.update;
-    }
-    if (paramToChange === 'delete') {
-      data.delete = !data.delete;
-    }
+    const id = updatedData.id;
+    const group = updatedData.group;
 
-    data = {
-      write: data.write,
-      read: data.read,
-      update: data.update,
-      delete: data.delete,
+    const permissions = {
+      write: updatedData.write,
+      read: updatedData.read,
+      update: updatedData.update,
+      delete: updatedData.delete,
     };
 
-    this.profileService.updatePerfil(id, data).subscribe({
+    this.profileService.updatePerfil(id, permissions).subscribe({
       next: () => {
-        this.message.success(`Permissions updated successfully`)
+        this.message.success(JSON.stringify('Permissions updated successfully'));
         this.seePermissions(group);
         this.isDataLoading = false;
       },
@@ -134,7 +139,6 @@ export class ProfilesComponent implements OnInit {
     });
   }
 
-
   submitEdit(): void {
     if (this.editForm.valid) {
       const updatedData = { id: this.selectedGroupId, ...this.editForm.value };
@@ -143,7 +147,7 @@ export class ProfilesComponent implements OnInit {
 
       this.profileService.updateGroup(updatedData.id, updatedData).subscribe({
         next: () => {
-          this.message.success('Profile updated successfully');
+          this.message.success(JSON.stringify('Profile updated successfully'));
           this.getGroups();
           this.closeEditDrawer();
           this.isDataLoading = false;
@@ -179,7 +183,7 @@ export class ProfilesComponent implements OnInit {
       .updateGroup(this.editCache[id].data.id, this.editCache[id].data)
       .subscribe({
         next: () => {
-          this.message.success(`Group successfully updated`)
+          this.message.success(JSON.stringify('Group successfully updated'));
           Object.assign(this.listOfDisplayData[index], this.editCache[id].data);
           this.editCache[id].edit = false;
           this.isDataLoading = false;
@@ -227,7 +231,7 @@ export class ProfilesComponent implements OnInit {
 
       this.profileService.addGroup(data).subscribe({
         next: () => {
-          this.message.success(`Group created`)
+          this.message.success(JSON.stringify('Group created'));
           this.getGroups();
           this.closeDrawerNewProfile();
         },
@@ -255,23 +259,50 @@ export class ProfilesComponent implements OnInit {
     });
   }
 
-  getGroups(): void {
+  getGroups(init: boolean = false): void {
     this.isDataLoading = true;
-    this.profileService.getGroups({}, 1, 1, true).subscribe({
-      next: (groups: any) => {
-        this.listOfDisplayData = groups;
-        this.listOfDisplayData.forEach((group: any) => {
-          group.is_edit = false;
-        });
-        groups.forEach((group: any) => {
-          this.groupsList.push(Object.assign({}, group));
-        });
-        this.updateEditCache();
+    this.profileService
+      .getGroups(
+        { name: this.nameSearch },
+        this.page,
+        this.page_size,
+        init
+      )
+      .subscribe({
+        next: (res: any) => {
+          this.listOfDisplayData = res.results;
+          this.count_records = res.total;
+          this.updateEditCache();
+          this.isDataLoading = false;
+        },
+        error: (err: any) => {
+          this.message.error(JSON.stringify(err.error));
+          this.isDataLoading = false;
+        },
+      });
+  }
+
+  pageChange(pageIndex: number): void {
+    this.page = pageIndex;
+    this.getGroups();
+  }
+
+  pageSizeChange(pageSize: number): void {
+    this.page_size = pageSize;
+    this.page = 1;
+    this.getGroups();
+  }
+
+  search(value: string, type: string) {
+    this.isDataLoading = true;
+    this.searchNameSubject.next({ type, value });
+    this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
+      next: () => {
         this.isDataLoading = false;
       },
-      error: (err: any) => {
-        this.message.error(JSON.stringify(err.error));
+      error: (err) => {
         this.isDataLoading = false;
+        this.message.error(JSON.stringify(err.error));
       },
     });
   }
@@ -290,7 +321,7 @@ export class ProfilesComponent implements OnInit {
         this.isDataLoading = true;
         this.profileService.deleteGroup(id_group).subscribe({
           next: () => {
-            this.message.success(`Group deleted`)
+            this.message.success(JSON.stringify('Group deleted'));
             this.isDataLoading = false;
             this.getGroups();
           },
@@ -305,7 +336,7 @@ export class ProfilesComponent implements OnInit {
 
   exportGroupName(): void {
     if (this.listOfDisplayData.length === 0) {
-      this.message.warning('No data available to export');
+      this.message.warning(JSON.stringify('No data available to export'));
       return;
     }
 
@@ -360,6 +391,8 @@ export class ProfilesComponent implements OnInit {
     document.body.removeChild(link);
 
     this.isDataLoading = false;
+
+    this.message.success(JSON.stringify('Export completed successfully'));
   }
 
 }

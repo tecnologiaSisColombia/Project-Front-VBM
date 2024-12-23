@@ -17,10 +17,9 @@
       nz-button
       [style.background-color]="'#00a651'"
       [style.color]="'white'"
-      [nzLoading]="isDataLoading"
       (click)="exportProducts()"
     >
-      <i nz-icon nzType="download" nzTheme="outline"></i>
+      <i nz-icon nzType="download" nzTheme="outline"> </i>
       Export Products
     </button>
   </div>
@@ -28,7 +27,6 @@
 
 <div class="main-table layout-container">
   <div class="table-filters">
-    <!-- desc -->
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -38,10 +36,11 @@
         (ngModelChange)="search($event, 'description')"
       />
     </nz-input-group>
+
     <ng-template #suffixIconSearch>
       <span nz-icon nzType="search"></span>
     </ng-template>
-    <!-- Code -->
+
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -51,6 +50,7 @@
         (ngModelChange)="search($event, 'code')"
       />
     </nz-input-group>
+
     <ng-template #suffixIconSearch>
       <span nz-icon nzType="search"></span>
     </ng-template>
@@ -82,7 +82,8 @@
               [(ngModel)]="data.active"
               nzSize="small"
               (ngModelChange)="changeStatus(data.id, data)"
-            ></nz-switch>
+            >
+            </nz-switch>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
@@ -92,7 +93,8 @@
               nzType="edit"
               nzTheme="outline"
               (click)="openEditDrawer(data)"
-            ></span>
+            >
+            </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
@@ -102,7 +104,8 @@
               nzType="delete"
               nzTheme="outline"
               (click)="delete(data.id)"
-            ></span>
+            >
+            </span>
           </a>
         </td>
       </tr>
@@ -114,9 +117,12 @@
     [nzResponsive]="true"
     [nzTotal]="count_records"
     [nzPageSize]="page_size"
+    [nzShowSizeChanger]="true"
     (nzPageIndexChange)="pageChange($event)"
-    nzShowQuickJumper
-  ></nz-pagination>
+    (nzPageSizeChange)="pageSizeChange($event)"
+    [nzShowQuickJumper]="true"
+  >
+  </nz-pagination>
 </div>
 
 <nz-drawer
@@ -142,13 +148,18 @@
           >
             Code
           </nz-form-label>
+
           <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="codeError">
             <input nz-input formControlName="code" id="code" />
           </nz-form-control>
         </nz-form-item>
+
         <ng-template #codeError>
           <span *ngIf="form.get('code')?.hasError('required')">
             This field is required
+          </span>
+          <span *ngIf="form.get('code')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
           </span>
         </ng-template>
 
@@ -161,6 +172,7 @@
           >
             Description
           </nz-form-label>
+
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
@@ -169,9 +181,13 @@
             <input nz-input formControlName="description" id="description" />
           </nz-form-control>
         </nz-form-item>
+
         <ng-template #descriptionError>
           <span *ngIf="form.get('description')?.hasError('required')">
             This field is required
+          </span>
+          <span *ngIf="form.get('description')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
           </span>
         </ng-template>
       </form>
@@ -183,6 +199,7 @@
       <button nz-button style="margin-right: 8px" (click)="closeDrawer()">
         Close
       </button>
+
       <button nz-button nzType="primary" (click)="submit()">Save</button>
     </div>
   </ng-template>

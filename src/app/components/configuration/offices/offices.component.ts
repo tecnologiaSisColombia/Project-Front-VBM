@@ -73,18 +73,8 @@ export class OfficesComponent implements OnInit {
     private msgService: NzMessageService
   ) {
     this.form = this.fb.group({
-      store: [
-        null,
-        [
-          Validators.required
-        ]
-      ],
-      name: [
-        null,
-        [
-          Validators.required,
-          Validators.pattern(/^(?!\s*$).+/)
-        ],
+      store: [null, [Validators.required]],
+      name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
       ],
     });
 
@@ -128,13 +118,13 @@ export class OfficesComponent implements OnInit {
 
   openDrawer(): void {
     this.visible = true;
-    this.drawerTitle = 'New Store';
+    this.drawerTitle = 'New Office';
   }
 
   openEditDrawer(data: any): void {
     this.visible = true;
     this.isUpdating = true;
-    this.drawerTitle = 'Edit Store';
+    this.drawerTitle = 'Edit Office';
     this.dataDrawerCache = data;
     this.form.patchValue({ ...data });
   }
@@ -160,7 +150,7 @@ export class OfficesComponent implements OnInit {
         this.isDataLoading = true;
         this.officeService.delete(id).subscribe({
           next: () => {
-            this.msgService.success('Office deleted successfully');
+            this.msgService.success(JSON.stringify('Office deleted successfully'));
             this.isDataLoading = false;
             this.getInitData();
           },
@@ -177,7 +167,7 @@ export class OfficesComponent implements OnInit {
     this.isDataLoading = true;
     this.officeService.update(id, data).subscribe({
       next: () => {
-        this.msgService.success('Office updated successfully');
+        this.msgService.success(JSON.stringify('Office updated successfully'));
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -198,7 +188,7 @@ export class OfficesComponent implements OnInit {
       }
       this.officeService.create(this.form.value).subscribe({
         next: () => {
-          this.msgService.success('New Store created');
+          this.msgService.success(JSON.stringify('New office created'));
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -243,6 +233,12 @@ export class OfficesComponent implements OnInit {
     this.getInitData();
   }
 
+  pageSizeChange(pageSize: number): void {
+    this.page_size = pageSize;
+    this.page = 1;
+    this.getInitData();
+  }
+
   setPagination(count: number) {
     this.count_records = count;
     this.num_pages = Math.ceil(count / this.page_size);
@@ -250,7 +246,7 @@ export class OfficesComponent implements OnInit {
 
   exportOffices(): void {
     if (this.dataToDisplay.length === 0) {
-      this.msgService.warning('No data available to export');
+      this.msgService.warning(JSON.stringify('No data available to export'));
       return;
     }
 
@@ -260,7 +256,7 @@ export class OfficesComponent implements OnInit {
       name: 'Office',
       created: 'Created',
       active: 'Status',
-    } as const;    
+    } as const;
 
     const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
@@ -305,5 +301,7 @@ export class OfficesComponent implements OnInit {
     document.body.removeChild(link);
 
     this.isDataLoading = false;
+
+    this.msgService.success(JSON.stringify('Export completed successfully'));
   }
 }
