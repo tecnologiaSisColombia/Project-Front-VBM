@@ -21,7 +21,7 @@ import { debounceTime, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import { ProductsService } from 'app/services/config/Products.service';
+import { ProductsService } from 'app/services/config/products.service';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import * as XLSX from 'xlsx';
 
@@ -244,8 +244,8 @@ export class ProductsComponent implements OnInit {
     const headers = {
       code: 'Code Product',
       description: 'Description Product',
-      created: 'Created',
-      active: 'Status',
+      created: 'Created Product',
+      active: 'Status Product',
     } as const;
 
     const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];

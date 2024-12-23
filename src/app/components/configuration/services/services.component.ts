@@ -21,7 +21,7 @@ import { debounceTime, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import { ServicesService } from 'app/services/config/Services.service';
+import { ServicesService } from 'app/services/config/services.service';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import * as XLSX from 'xlsx';
 
@@ -249,8 +249,8 @@ export class ServicesComponent implements OnInit {
       code: 'Code Service',
       description: 'Description Service',
       value: 'Value Service',
-      created: 'Created',
-      active: 'Status',
+      created: 'Created Service',
+      active: 'Status Service',
     } as const;
 
     const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];

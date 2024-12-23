@@ -16,12 +16,12 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { UserService } from '../../../services/user-management/user-management.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { CommonModule } from '@angular/common';
-import { EspecialitiesService } from 'app/services/config/especialities.service';
-import { StoresService } from 'app/services/config/stores.service';
-import { OfficesService } from 'app/services/config/offices.service';
+// import { EspecialitiesService } from 'app/services/config/especialities.service';
+import { StoresService } from 'app/services/config/localities.service';
+// import { OfficesService } from 'app/services/config/offices.service';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { InsurersService } from 'app/services/insurers/insurers.service';
-import { DoctorService } from 'app/services/config/Doctors.service';
+import { DoctorService } from 'app/services/config/doctors.service';
 
 @Component({
   selector: 'nz-demo-drawer-from-drawer',
@@ -60,9 +60,9 @@ export class NzDemoDrawerFromDrawerComponent {
     private fb: UntypedFormBuilder,
     private createUserService: UserService,
     private msgService: NzMessageService,
-    private specialityService: EspecialitiesService,
+    // private specialityService: EspecialitiesService,
     private storeService: StoresService,
-    private officeService: OfficesService,
+    // private officeService: OfficesService,
     private insurerService: InsurersService,
     private supplierService: DoctorService
   ) {
@@ -75,7 +75,7 @@ export class NzDemoDrawerFromDrawerComponent {
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       username: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
-      password: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      // password: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       type_user: ['', [Validators.required]],
       // specialities: [null],
       localities: [null],
@@ -120,12 +120,12 @@ export class NzDemoDrawerFromDrawerComponent {
       error: (err) => this.msgService.error(JSON.stringify(err.error)),
     });
   }
-  getSpecialities(): void {
-    this.specialityService.get({ status: 1 }, 1, 1, true).subscribe({
-      next: (res: any) => (this.specialities = res),
-      error: (err) => this.msgService.error(JSON.stringify(err.error)),
-    });
-  }
+  // getSpecialities(): void {
+  //   this.specialityService.get({ status: 1 }, 1, 1, true).subscribe({
+  //     next: (res: any) => (this.specialities = res),
+  //     error: (err) => this.msgService.error(JSON.stringify(err.error)),
+  //   });
+  // }
 
   getStores(): void {
     this.storeService.get({ status: 1 }, 1, 1, true).subscribe({
@@ -134,15 +134,15 @@ export class NzDemoDrawerFromDrawerComponent {
     });
   }
 
-  getOffices(): void {
-    this.officeService.get({ status: 1 }, 1, 1, true).subscribe({
-      next: (res: any) => {
-        this.offices = res;
-        this.officesToDisplay = res;
-      },
-      error: (err) => this.msgService.error(JSON.stringify(err.error)),
-    });
-  }
+  // getOffices(): void {
+  //   this.officeService.get({ status: 1 }, 1, 1, true).subscribe({
+  //     next: (res: any) => {
+  //       this.offices = res;
+  //       this.officesToDisplay = res;
+  //     },
+  //     error: (err) => this.msgService.error(JSON.stringify(err.error)),
+  //   });
+  // }
 
   loadUserTypes(): void {
     this.createUserService.getUserTypes().subscribe({

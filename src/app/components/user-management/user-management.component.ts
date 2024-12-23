@@ -251,7 +251,7 @@ export class UserManagementComponent implements OnInit {
         } else if (key === 'role') {
           obj[headers[key]] = user.extra_data
             ? this.mapUserRole(user.extra_data[0].user_type_id)
-            : 'Root';
+            : 'Master';
         } else {
           obj[headers[key]] = user[key];
         }

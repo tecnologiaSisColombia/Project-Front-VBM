@@ -9,13 +9,10 @@ import { environment } from '../../../environments/environment';
 export class UserService {
   private baseUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   createUser(userData: any): Observable<any> {
-    return this.http.post(
-      `${this.baseUrl}UserAccessControl/CreateUser`,
-      userData
-    );
+    return this.http.post(`${this.baseUrl}UserAccessControl/CreateUser`, userData);
   }
 
   getUsers(
@@ -45,28 +42,19 @@ export class UserService {
   }
 
   disableUser(username: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}UserAccessControl/DisableUser`, {
-      username,
-    });
+    return this.http.post(`${this.baseUrl}UserAccessControl/DisableUser`, { username });
   }
 
   enableUser(username: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}UserAccessControl/EnableUser`, {
-      username,
-    });
+    return this.http.post(`${this.baseUrl}UserAccessControl/EnableUser`, { username });
   }
 
   deleteUser(username: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}UserAccessControl/DeleteUser`, {
-      username,
-    });
+    return this.http.post(`${this.baseUrl}UserAccessControl/DeleteUser`, { username });
   }
 
   updateAttributes(userData: any): Observable<any> {
-    return this.http.post(
-      `${this.baseUrl}UserAccessControl/UpdateAttributes`,
-      userData
-    );
+    return this.http.post(`${this.baseUrl}UserAccessControl/UpdateAttributes`, userData);
   }
 
   getUserTypes(): Observable<any[]> {
@@ -86,17 +74,17 @@ export class UserService {
     user_id: number,
     user: any
   ): Observable<any> {
-    let data = {};
+    // let data = {};
 
-    if (user.extra_data && type_user.value === 'Doctor') {
-      data = {
-        ...user.extra_data[0],
-      };
-    } else if (user.extra_data && type_user.value === 'Seller') {
-      data = {
-        store_id: user.extra_data[0].store_id,
-      };
-    }
+    // if (user.extra_data && type_user.value === 'Doctor') {
+    //   data = {
+    //     ...user.extra_data[0],
+    //   };
+    // } else if (user.extra_data && type_user.value === 'Seller') {
+    //   data = {
+    //     store_id: user.extra_data[0].store_id,
+    //   };
+    // }
 
     return this.http.put(
       `${this.baseUrl}UserAccessControl/update-type-user/${user_id}?type_user=${type_user.id}`,
@@ -104,21 +92,21 @@ export class UserService {
     );
   }
 
-  createWorkingHour(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}core/user-working-hours`, data);
-  }
+  // createWorkingHour(data: any): Observable<any> {
+  //   return this.http.post(`${this.baseUrl}core/user-working-hours`, data);
+  // }
 
-  updateWorkingHour(id: any, data: any): Observable<any> {
-    return this.http.put(`${this.baseUrl}core/user-working-hours/${id}`, data);
-  }
+  // updateWorkingHour(id: any, data: any): Observable<any> {
+  //   return this.http.put(`${this.baseUrl}core/user-working-hours/${id}`, data);
+  // }
 
-  deleteWorkingHour(id: any): Observable<any> {
-    return this.http.delete(`${this.baseUrl}core/user-working-hours/${id}`);
-  }
+  // deleteWorkingHour(id: any): Observable<any> {
+  //   return this.http.delete(`${this.baseUrl}core/user-working-hours/${id}`);
+  // }
 
-  getWorkingHour(user_id: any): Observable<any> {
-    return this.http.get(`${this.baseUrl}core/user-working-hours/${user_id}`);
-  }
+  // getWorkingHour(user_id: any): Observable<any> {
+  //   return this.http.get(`${this.baseUrl}core/user-working-hours/${user_id}`);
+  // }
 
   assignGroups(id: number, groups: any) {
     return this.http.put(`${this.baseUrl}core/users-groups/${id}`, groups);

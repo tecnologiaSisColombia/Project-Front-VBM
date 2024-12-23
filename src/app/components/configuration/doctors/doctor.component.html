@@ -28,7 +28,6 @@
 
 <div class="main-table layout-container">
   <div class="table-filters">
-    <!-- desc -->
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
         type="text"
@@ -160,8 +159,11 @@
           <span *ngIf="form.get('first_name')?.hasError('required')">
             This field is required
           </span>
+          <span *ngIf="form.get('first_name')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
         </ng-template>
-        <!--  -->
+
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
@@ -183,8 +185,11 @@
           <span *ngIf="form.get('last_name')?.hasError('required')">
             This field is required
           </span>
+          <span *ngIf="form.get('last_name')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
         </ng-template>
-        <!--  -->
+
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
@@ -210,8 +215,11 @@
           <span *ngIf="form.get('license_number')?.hasError('required')">
             This field is required
           </span>
+          <span *ngIf="form.get('license_number')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
         </ng-template>
-        <!--  -->
+
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
@@ -230,7 +238,7 @@
             This field is required
           </span>
         </ng-template>
-        <!--  -->
+
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
@@ -248,8 +256,11 @@
           <span *ngIf="form.get('phone')?.hasError('required')">
             This field is required
           </span>
+          <span *ngIf="form.get('phone')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
         </ng-template>
-        <!--  -->
+
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"

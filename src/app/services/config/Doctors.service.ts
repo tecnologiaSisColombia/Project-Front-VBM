@@ -31,6 +31,7 @@ export class DoctorService {
 
     return this.http.get(`${this.hostname}core/suppliers`, { params });
   }
+  
   get(
     { name, status }: any,
     page: number | null = 1,

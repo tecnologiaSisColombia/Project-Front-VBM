@@ -24,8 +24,8 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { S3Service } from '../../services/upload-s3/upload-s3.service';
 import * as XLSX from 'xlsx';
-import { ProductsService } from 'app/services/config/Products.service';
-import { ServicesService } from 'app/services/config/Services.service';
+import { ProductsService } from 'app/services/config/products.service';
+import { ServicesService } from 'app/services/config/services.service';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 

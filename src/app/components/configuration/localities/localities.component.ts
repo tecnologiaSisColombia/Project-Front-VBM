@@ -21,12 +21,11 @@ import { debounceTime, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import { NzSelectModule } from 'ng-zorro-antd/select';
+import { StoresService } from 'app/services/config/localities.service';
 import * as XLSX from 'xlsx';
-import { DoctorService } from 'app/services/config/Doctors.service';
 
 @Component({
-  selector: 'app-products',
+  selector: 'app-stores',
   standalone: true,
   imports: [
     NzBreadCrumbModule,
@@ -43,12 +42,11 @@ import { DoctorService } from 'app/services/config/Doctors.service';
     NzSpinModule,
     CommonModule,
     NzSwitchModule,
-    NzSelectModule,
   ],
-  templateUrl: './doctor.component.html',
-  styleUrls: ['./doctor.component.css', '../../../../animations/styles.css'],
+  templateUrl: './localities.component.html',
+  styleUrls: ['./localities.component.css', '../../../../animations/styles.css'],
 })
-export class DoctorComponent {
+export class LocalitiesComponent implements OnInit {
   form: UntypedFormGroup;
   isDataLoading = false;
   dataToDisplay: any[] = [];
@@ -61,60 +59,36 @@ export class DoctorComponent {
   count_records = 0;
   page_size = 10;
   page = 1;
-  stores: any[] = [];
-  suppliers: any[] = [];
-  descriptionSearch: any = null;
-  codeSearch: any = null;
+  nameSearch: any = null;
   private searchNameSubject = new Subject<{ type: string; value: string }>();
 
   constructor(
     private fb: UntypedFormBuilder,
-    private doctorService: DoctorService,
+    private storesService: StoresService,
     private msgService: NzMessageService
   ) {
     this.form = this.fb.group({
-      license_number: [null, [Validators.required]],
-      email: [null, [Validators.required]],
-      phone: [null, [Validators.required]],
-      last_name: [null, [Validators.required]],
-      first_name: [null, [Validators.required]],
-      supplier: [null, [Validators.required]],
+      name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
     });
 
-    this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
+    this.searchNameSubject.pipe(debounceTime(1000)).subscribe((data) => {
       if (data.type === 'description') {
-        this.descriptionSearch = data.value;
-      }
-      if (data.type === 'code') {
-        this.codeSearch = data.value;
+        this.nameSearch = data.value;
       }
       this.page = 1;
       this.getInitData();
+      this.isDataLoading = false;
     });
   }
 
   ngOnInit(): void {
     this.getInitData();
-    this.getSuppliers();
   }
-  getSuppliers() {
-    this.doctorService.getSuppliers({}, 1, 1, true).subscribe({
-      next: (res: any) => {
-        this.suppliers = res;
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-    });
-  }
+
   getInitData() {
     this.isDataLoading = true;
-    this.doctorService
-      .get(
-        { code: this.codeSearch, name: this.descriptionSearch },
-        this.page,
-        this.page_size
-      )
+    this.storesService
+      .get({ name: this.nameSearch }, this.page, this.page_size)
       .subscribe({
         next: (res: any) => {
           this.isDataLoading = false;
@@ -130,13 +104,13 @@ export class DoctorComponent {
 
   openDrawer(): void {
     this.visible = true;
-    this.drawerTitle = 'New Doctor';
+    this.drawerTitle = 'New Locality';
   }
 
   openEditDrawer(data: any): void {
     this.visible = true;
     this.isUpdating = true;
-    this.drawerTitle = 'Edit Doctor';
+    this.drawerTitle = 'Edit Locality';
     this.dataDrawerCache = data;
     this.form.patchValue({ ...data });
   }
@@ -160,9 +134,9 @@ export class DoctorComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
-        this.doctorService.delete(id).subscribe({
+        this.storesService.delete(id).subscribe({
           next: () => {
-            this.msgService.success('Doctor deleted successfully');
+            this.msgService.success('Locality deleted successfully');
             this.isDataLoading = false;
             this.getInitData();
           },
@@ -177,9 +151,9 @@ export class DoctorComponent {
 
   update(id: number, data: any) {
     this.isDataLoading = true;
-    this.doctorService.update(id, data).subscribe({
+    this.storesService.update(id, data).subscribe({
       next: () => {
-        this.msgService.success('Doctor updated successfully');
+        this.msgService.success('Locality updated successfully');
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -198,9 +172,9 @@ export class DoctorComponent {
       if (this.isUpdating) {
         return this.update(this.dataDrawerCache.id, this.form.value);
       }
-      this.doctorService.create(this.form.value).subscribe({
+      this.storesService.create(this.form.value).subscribe({
         next: () => {
-          this.msgService.success('New Doctor created');
+          this.msgService.success('New Locality created');
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -222,22 +196,18 @@ export class DoctorComponent {
   }
 
   changeStatus(id: number, data: any) {
-    delete data.store_data;
     this.update(id, data);
   }
 
   search(value: string, type: string) {
     this.isDataLoading = true;
     this.searchNameSubject.next({ type, value });
-    this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
-      next: () => {
-        this.isDataLoading = false;
-      },
-      error: (err) => {
-        this.isDataLoading = false;
-        this.msgService.error(JSON.stringify(err.error));
-      },
-    });
+  }
+
+  pageSizeChange(pageSize: number): void {
+    this.page_size = pageSize;
+    this.page = 1;
+    this.getInitData();
   }
 
   pageChange(event: number) {
@@ -250,35 +220,35 @@ export class DoctorComponent {
     this.num_pages = Math.ceil(count / this.page_size);
   }
 
-  exportDoctors(): void {
+  exportStores(): void {
     if (this.dataToDisplay.length === 0) {
-      this.msgService.warning('No data available to export');
+      this.msgService.warning(JSON.stringify('No data available to export'));
       return;
     }
 
     this.isDataLoading = true;
 
     const headers = {
-      name: 'Doctor',
+      name: 'Localities',
       created: 'Created',
       active: 'Status',
     } as const;
 
     const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
-    const filteredData = this.dataToDisplay.map((product) =>
+    const filteredData = this.dataToDisplay.map((store) =>
       selectedColumns.reduce((obj: Record<string, any>, key) => {
         if (key === 'active') {
-          obj[headers[key]] = product[key] ? 'Active' : 'Inactive';
+          obj[headers[key]] = store[key] ? 'Active' : 'Inactive';
         } else if (key === 'created') {
-          const date = new Date(product[key]);
+          const date = new Date(store[key]);
           obj[headers[key]] = date.toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
             year: 'numeric',
           });
         } else {
-          obj[headers[key]] = product[key];
+          obj[headers[key]] = store[key];
         }
         return obj;
       }, {})
@@ -287,7 +257,7 @@ export class DoctorComponent {
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
 
     const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Doctors');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Stores');
 
     const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
       bookType: 'xlsx',
@@ -299,7 +269,7 @@ export class DoctorComponent {
     const url = URL.createObjectURL(blob);
 
     link.setAttribute('href', url);
-    link.setAttribute('download', 'Doctors.xlsx');
+    link.setAttribute('download', 'Localities.xlsx');
     link.style.visibility = 'hidden';
 
     document.body.appendChild(link);
@@ -307,5 +277,7 @@ export class DoctorComponent {
     document.body.removeChild(link);
 
     this.isDataLoading = false;
+
+    this.msgService.success(JSON.stringify('Export completed successfully'));
   }
 }
