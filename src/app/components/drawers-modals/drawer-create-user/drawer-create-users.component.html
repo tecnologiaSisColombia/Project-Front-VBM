@@ -145,35 +145,6 @@
         <nz-form-label
           [nzSm]="8"
           [nzXs]="24"
-          nzFor="password"
-          style="text-align: center"
-        >
-          Password:
-        </nz-form-label>
-        <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="passwordError">
-          <input
-            nz-input
-            type="password"
-            required
-            formControlName="password"
-            name="password"
-          />
-        </nz-form-control>
-      </nz-form-item>
-
-      <ng-template #passwordError>
-        <span *ngIf="formm.get('password')?.hasError('required')">
-          This field is required
-        </span>
-        <span *ngIf="formm.get('password')?.hasError('pattern')">
-          This field cannot be empty or contain only spaces
-        </span>
-      </ng-template>
-
-      <nz-form-item>
-        <nz-form-label
-          [nzSm]="8"
-          [nzXs]="24"
           nzFor="type_user"
           style="text-align: center"
         >

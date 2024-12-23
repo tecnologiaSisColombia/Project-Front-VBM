@@ -71,7 +71,6 @@ export class NzDemoDrawerFromDrawerComponent {
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       username: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
-      password: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       type_user: ['', [Validators.required]],
       specialities: [null],
       stores: [null],

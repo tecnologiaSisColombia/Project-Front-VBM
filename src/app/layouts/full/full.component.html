@@ -9,11 +9,14 @@
         class="header-menu"
         style="text-align: right">
 
-        <span 
-          class="current-date">
-          {{ currentDate | date:'MMM d, y HH:mm:ss' }}
+        <span class="role-display">
+          Rol: {{ role }}
         </span>
-
+        
+        <span class="current-date">
+          {{ currentDate | date:'MMM d, y HH:mm:ss' }}
+        </span>        
+        
         <nz-avatar
           style="cursor: pointer"
           class="user-avatar"

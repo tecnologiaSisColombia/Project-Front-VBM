@@ -77,7 +77,7 @@ export class ServicesComponent implements OnInit {
       code: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
     });
 
-    this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
+    this.searchNameSubject.pipe(debounceTime(1000)).subscribe((data) => {
       if (data.type === 'description') {
         this.descriptionSearch = data.value;
       }
@@ -86,6 +86,7 @@ export class ServicesComponent implements OnInit {
       }
       this.page = 1;
       this.getInitData();
+      this.isDataLoading = false;
     });
   }
 
@@ -218,15 +219,6 @@ export class ServicesComponent implements OnInit {
   search(value: string, type: string) {
     this.isDataLoading = true;
     this.searchNameSubject.next({ type, value });
-    this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
-      next: () => {
-        this.isDataLoading = false;
-      },
-      error: (err) => {
-        this.isDataLoading = false;
-        this.msgService.error(JSON.stringify(err.error));
-      },
-    });
   }
 
   pageChange(event: number) {

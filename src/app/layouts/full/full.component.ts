@@ -41,6 +41,7 @@ export class FullComponent implements OnInit {
     plans: false,
     subplans: false,
   };
+  role: string = '';
 
   constructor(
     private authService: AuthService,
@@ -51,6 +52,8 @@ export class FullComponent implements OnInit {
     this.authService.getProfile().subscribe({
       next: (res: any) => {
         console.log(res);
+        this.role = res.groups[0];
+        
         res.group_profile.forEach((e: any) => {
           if (e.modulo__modulo == 'users') {
             this.access.users = e.write;

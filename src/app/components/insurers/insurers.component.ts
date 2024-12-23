@@ -96,7 +96,7 @@ export class InsurersComponent implements OnInit {
     });
 
     this.searchNameSubject
-      .pipe(debounceTime(2000))
+      .pipe(debounceTime(1000))
       .subscribe((data: { type: string; value: string }) => {
         if (data.type === 'name') this.nameSearch = data.value;
         if (data.type === 'address') this.addresSearch = data.value;
@@ -104,6 +104,7 @@ export class InsurersComponent implements OnInit {
         if (data.type === 'payerId') this.payerIdSearch = data.value;
         this.page = 1;
         this.getInitData();
+        this.isDataLoading = false;
       });
   }
 
@@ -325,15 +326,6 @@ export class InsurersComponent implements OnInit {
   search(value: string, type: string) {
     this.isDataLoading = true;
     this.searchNameSubject.next({ type, value });
-    this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
-      next: () => {
-        this.isDataLoading = false;
-      },
-      error: (error) => {
-        this.isDataLoading = false;
-        this.msgService.error(JSON.stringify(error.error));
-      },
-    });
   }
 
   pageChange(event: number): void {

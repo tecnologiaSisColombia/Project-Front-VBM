@@ -83,11 +83,12 @@ export class PlansComponent implements OnInit {
       insurer: [null, [Validators.required]],
       name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
     });
-    this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
+    this.searchNameSubject.pipe(debounceTime(1000)).subscribe((data) => {
       if (data.type === 'name') this.nameSearch = data.value;
       if (data.type === 'insurer') this.insurerSearch = data.value;
       this.page = 1;
       this.getInitData();
+      this.isDataLoading = false;
     });
   }
 
@@ -229,15 +230,6 @@ export class PlansComponent implements OnInit {
   search(value: string, type: string) {
     this.isDataLoading = true;
     this.searchNameSubject.next({ type, value });
-    this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
-      next: () => {
-        this.isDataLoading = false;
-      },
-      error: (error) => {
-        this.isDataLoading = false;
-        this.msgService.error(JSON.stringify(error.error));
-      },
-    });
   }
 
   pageChange(event: number): void {

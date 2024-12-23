@@ -78,12 +78,13 @@ export class OfficesComponent implements OnInit {
       ],
     });
 
-    this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
+    this.searchNameSubject.pipe(debounceTime(1000)).subscribe((data) => {
       if (data.type === 'description') {
         this.nameSearch = data.value;
       }
       this.page = 1;
       this.getInitData();
+      this.isDataLoading = false;
     });
   }
 
@@ -217,15 +218,6 @@ export class OfficesComponent implements OnInit {
   search(value: string, type: string) {
     this.isDataLoading = true;
     this.searchNameSubject.next({ type, value });
-    this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
-      next: () => {
-        this.isDataLoading = false;
-      },
-      error: (err) => {
-        this.isDataLoading = false;
-        this.msgService.error(JSON.stringify(err.error));
-      },
-    });
   }
 
   pageChange(event: number) {

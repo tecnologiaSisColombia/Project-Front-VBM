@@ -88,13 +88,14 @@ export class SubplansComponent implements OnInit {
       vision_elements: [null, [Validators.required]],
     });
 
-    this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
+    this.searchNameSubject.pipe(debounceTime(1000)).subscribe((data) => {
       if (data.type === 'name') this.nameSearch = data.value;
       if (data.type === 'plan') this.planSearch = data.value;
       if (data.type === 'group') this.groupSearch = data.value;
       if (data.type === 'planContract') this.planContractSearch = data.value;
       this.page = 1;
       this.getInitData();
+      this.isDataLoading = false;
     });
   }
 
@@ -243,15 +244,6 @@ export class SubplansComponent implements OnInit {
   search(value: string, type: string) {
     this.isDataLoading = true;
     this.searchNameSubject.next({ type, value });
-    this.searchNameSubject.pipe(debounceTime(2000)).subscribe({
-      next: () => {
-        this.isDataLoading = false;
-      },
-      error: (error) => {
-        this.isDataLoading = false;
-        this.msgService.error(JSON.stringify(error.error));
-      },
-    });
   }
 
   pageChange(event: number): void {
