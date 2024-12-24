@@ -1,0 +1,58 @@
+<div class="title-page layout-container">
+    <div class="breadcrumb-container">
+      <nz-breadcrumb>
+        <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+        <nz-breadcrumb-item>Eligibility</nz-breadcrumb-item>
+        <nz-breadcrumb-item>Show Member</nz-breadcrumb-item>
+      </nz-breadcrumb>
+    </div>
+  
+    <div class="btn-container">
+      <button
+        nz-button
+        [style.background-color]="'#00a651'"
+        [style.color]="'white'"
+        (click)="exportMember()">
+        <i 
+          nz-icon 
+          nzType="download" 
+          nzTheme="outline">
+        </i>
+        Export Member
+      </button>
+    </div>
+</div>
+  
+<div class="main-table layout-container">
+    <nz-table
+      #basicTable
+      [nzData]="dataToDisplay"
+      [nzLoading]="isDataLoading"
+      [nzFrontPagination]="false">
+      <thead>
+        <tr>
+          <th>DOS</th>
+          <th>Service</th>
+          <th>ICD</th>
+          <th>BMI</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <!-- <td></td>
+          <td></td>
+          <td></td>
+          <td></td>      -->
+        </tr>
+      </tbody>
+    </nz-table>
+  
+    <nz-pagination
+      [nzPageIndex]="page"
+      [nzResponsive]="true"
+      [nzTotal]="count_records"
+      [nzPageSize]="page_size"
+      (nzPageIndexChange)="pageChange($event)"
+      nzShowQuickJumper>
+    </nz-pagination>
+</div>

@@ -1,9 +1,187 @@
-<div class="layout-container">
-    <div class="breadcrumb-container">
-      <nz-breadcrumb>
-        <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
-        <nz-breadcrumb-item>Eligibility</nz-breadcrumb-item>
-        <nz-breadcrumb-item>Validate Rights</nz-breadcrumb-item>
-      </nz-breadcrumb>
-    </div>
+<div class="title-page layout-container">
+  <div class="breadcrumb-container">
+    <nz-breadcrumb>
+      <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Eligibility</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Member Benefits</nz-breadcrumb-item>
+    </nz-breadcrumb>
+  </div>
+
+  <div class="btn-container">
+    <!-- <button 
+      nz-button 
+      nzType="primary" 
+      (click)="openDrawer()">
+      <i 
+        nz-icon 
+        nzType="user" 
+        nzTheme="outline">
+      </i>
+      New Doctor
+    </button> -->
+
+    <button
+      nz-button
+      [style.background-color]="'#00a651'"
+      [style.color]="'white'"
+      (click)="exportBenefits()">
+      <i 
+        nz-icon 
+        nzType="download" 
+        nzTheme="outline">
+      </i>
+      Export Benefits
+    </button>
+  </div>
 </div>
+
+<div class="main-table layout-container">
+  <div class="table-filters">
+    <nz-input-group 
+      *ngFor="let field of searchFields" 
+      [nzSuffix]="suffixIconSearch">
+      <input
+        type="text"
+        nz-input
+        [placeholder]="field.placeholder"
+        [(ngModel)]="this[field.model]"
+        (ngModelChange)="search($event, field.key)"
+      />
+
+      <ng-template #suffixIconSearch>
+        <span nz-icon nzType="search"></span>
+      </ng-template>
+    </nz-input-group>
+  </div>  
+
+  <nz-table
+    #basicTable
+    [nzData]="dataToDisplay"
+    [nzLoading]="isDataLoading"
+    [nzFrontPagination]="false">
+    <thead>
+      <tr>
+        <th>Name - ID #</th>
+        <th>DOB</th>
+        <th>Effective</th>
+        <th>Terminates</th>
+        <th>Benefit</th>
+        <th>Active member</th>
+        <th>Physician can provide services?</th>
+        <th>Member has primary insurance throught other insurance</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>
+          <a>
+            <span
+              nz-icon
+              nzType="plus-circle"
+              nzTheme="outline"
+              (click)="openModalDetails()"
+              title="Show Plan Details">
+          </span>
+          </a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <a>
+            <span
+              nz-icon
+              nzType="folder-open"
+              nzTheme="outline"
+              (click)="openModalMember()"
+              title="Show Member">
+          </span>
+          </a>
+        </td>        
+      </tr>
+    </tbody>
+  </nz-table>
+
+  <nz-pagination
+    [nzPageIndex]="page"
+    [nzResponsive]="true"
+    [nzTotal]="count_records"
+    [nzPageSize]="page_size"
+    (nzPageIndexChange)="pageChange($event)"
+    nzShowQuickJumper>
+  </nz-pagination>
+</div>
+
+<nz-modal
+  [(nzVisible)]="isVisibleModalMember"
+  nzTitle="Electronic Health Record for Member"
+  nzWidth="1100px"
+  [nzClosable]="false"
+  nzMaskClosable="false">
+
+  <ng-container *nzModalContent>
+    <app-member>
+    </app-member>
+  </ng-container>
+
+  <ng-container *nzModalFooter>
+    <button 
+      nz-button 
+      (click)="CancelModalMember()">
+      Cancel
+    </button>
+
+    <button 
+      nz-button nzType="primary" 
+      (click)="OkModalMember()">
+      OK
+    </button>
+
+    <button 
+      nz-button 
+      nzType="primary" 
+      [ngStyle]="{'background-color': '#FF5733', 'border-color': '#FF5733'}" 
+      (click)="printContentMember()">
+      Print Page
+    </button>
+  </ng-container>
+</nz-modal>
+
+<nz-modal
+  [(nzVisible)]="isVisibleModalDetails"
+  nzWidth="1000px"
+  [nzClosable]="false"
+  nzMaskClosable="false">
+
+  <ng-container *nzModalContent>
+    <app-plan-details>
+    </app-plan-details>
+  </ng-container>
+
+  <ng-container *nzModalFooter>
+    <button 
+      nz-button 
+      (click)="CancelModalDetails()">
+      Cancel
+    </button>
+
+    <button 
+      nz-button nzType="primary" 
+      (click)="OkModalDetails()">
+      OK
+    </button>
+
+    <button 
+      nz-button 
+      nzType="primary" 
+      [ngStyle]="{'background-color': '#FF5733', 'border-color': '#FF5733'}" 
+      (click)="printContentDetails()">
+      Print Page
+    </button>
+  </ng-container>
+</nz-modal>

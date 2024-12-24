@@ -16,12 +16,10 @@ import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { FormsModule } from '@angular/forms';
 import { NzModalModule } from 'ng-zorro-antd/modal';
-import { MemberComponent } from './member/member.component';
-import { PlanDetailsComponent } from './plan-details/plan-details.component';
 import * as XLSX from 'xlsx';
 
 @Component({
-  selector: 'app-eligibility',
+  selector: 'app-member',
   standalone: true,
   imports: [
     NzBreadCrumbModule,
@@ -38,50 +36,25 @@ import * as XLSX from 'xlsx';
     NzSwitchModule,
     NzSelectModule,
     FormsModule,
-    NzModalModule,
-    MemberComponent,
-    PlanDetailsComponent
+    NzModalModule
   ],
-  templateUrl: './eligibility.component.html',
-  styleUrls: ['./eligibility.component.css', '../../../animations/styles.css']
+  templateUrl: './member.component.html',
+  styleUrls: ['./member.component.css']
 })
-export class EligibilityComponent {
+export class MemberComponent {
   isDataLoading = false;
   dataToDisplay: any[] = [];
   num_pages = 1;
   count_records = 0;
   page_size = 10;
   page = 1;
-  firstSearch: any = null;
-  lastSearch: any = null;
-  suscriberSearch: any = null;
-  isVisibleModalDetails = false;
-  isVisibleModalMember = false;
+  isVisibleModal = false;
   [key: string]: any;
-  searchFields = [
-    { placeholder: 'First Name...', model: 'firstSearch', key: 'first_name' },
-    { placeholder: 'Last Name...', model: 'lastSearch', key: 'last_name' },
-    { placeholder: 'Suscriber Id...', model: 'suscriberSearch', key: 'suscriber_id' },
-  ];
   private searchNameSubject = new Subject<{ type: string; value: string }>();
-  @ViewChild('memberContent') memberContent!: ElementRef;
 
   constructor(
     private msgService: NzMessageService
   ) {
-
-    this.searchNameSubject.pipe(debounceTime(1000)).subscribe(({ type, value }) => {
-      const fields = {
-        first_name: () => (this.firstSearch = value),
-        last_name: () => (this.lastSearch = value),
-        suscriber_id: () => (this.suscriberSearch = value),
-      };
-
-      (fields as Record<string, () => void>)[type]?.();
-      this.page = 1;
-      // this.getInitData();
-      this.isDataLoading = false;
-    });
   }
 
   ngOnInit(): void {
@@ -94,36 +67,22 @@ export class EligibilityComponent {
     this.searchNameSubject.next({ type, value });
   }
 
-  CancelModalDetails(): void {
-    this.isVisibleModalDetails = false;
+  handleCancelModal(): void {
+    this.isVisibleModal = false;
     // this.dataCacheModal = null;
   }
 
-  CancelModalMember(): void {
-    this.isVisibleModalMember = false;
-    // this.dataCacheModal = null;
-  }
-
-  openModalMember(): void {
-    this.isVisibleModalMember = true;
+  openModal(): void {
+    this.isVisibleModal = true;
     // this.dataCacheModal = data;
   }
 
-  openModalDetails(): void {
-    this.isVisibleModalDetails = true;
-    // this.dataCacheModal = data;
-  }
-
-  OkModalMember(): void {
-    this.CancelModalMember();
-  }
-
-  OkModalDetails(): void {
-    this.CancelModalDetails();
+  handleOkModal(): void {
+    this.handleCancelModal();
   }
 
   openPlanDetails(event: number) {
-    this.page = event;
+    // this.page = event;
     // this.getInitData();
   }
 
@@ -137,16 +96,6 @@ export class EligibilityComponent {
     this.num_pages = Math.ceil(count / this.page_size);
   }
 
-  exportBenefits(): void {
-
+  exportMember(): void {
   }
-
-  printContentMember(): void {
-
-  }
-
-  printContentDetails(): void {
-
-  }
-
 }
