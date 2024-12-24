@@ -18,6 +18,7 @@ import { FormsModule } from '@angular/forms';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { MemberComponent } from './member/member.component';
 import { PlanDetailsComponent } from './plan-details/plan-details.component';
+import { EligibilityService } from 'app/services/eligibility/eligibility.service';
 import * as XLSX from 'xlsx';
 
 @Component({
@@ -55,6 +56,7 @@ export class EligibilityComponent {
   firstSearch: any = null;
   lastSearch: any = null;
   suscriberSearch: any = null;
+  
   isVisibleModalDetails = false;
   isVisibleModalMember = false;
   [key: string]: any;
@@ -67,7 +69,9 @@ export class EligibilityComponent {
   @ViewChild('memberContent') memberContent!: ElementRef;
 
   constructor(
-    private msgService: NzMessageService
+    private msgService: NzMessageService,
+    private eligibilityService: EligibilityService
+
   ) {
 
     this.searchNameSubject.pipe(debounceTime(1000)).subscribe(({ type, value }) => {
@@ -79,14 +83,38 @@ export class EligibilityComponent {
 
       (fields as Record<string, () => void>)[type]?.();
       this.page = 1;
-      // this.getInitData();
+      this.getInitData();
       this.isDataLoading = false;
     });
   }
 
   ngOnInit(): void {
-    // this.getInitData();
-    // this.getSuppliers();
+    this.getInitData();
+  }
+
+  getInitData() {
+    this.isDataLoading = true;
+    this.eligibilityService
+      .getPatients(
+        {
+          first_name: this.firstSearch,
+          last_name: this.lastSearch,
+          subscriber_id: this.suscriberSearch,
+        },
+        this.page,
+        this.page_size
+      )
+      .subscribe({
+        next: (res: any) => {
+          this.isDataLoading = false;
+          this.dataToDisplay = res.results;
+          this.setPagination(res.total);
+        },
+        error: (err) => {
+          this.isDataLoading = false;
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 
   search(value: string, type: string) {

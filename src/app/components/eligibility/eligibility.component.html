@@ -73,15 +73,15 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
+      <tr *ngFor="let data of basicTable.data">
+        <td>{{ data.first_name + ' ' + data.last_name + ' - ' + data.primary_subscriber_id}}</td>
+        <td>{{data.effective}}</td>
+        <td>{{data.effective}}</td>
+        <td>{{data.terminates}}</td>
         <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td>{{ data.active == 1 ? 'Yes' : 'No' }}</td>
+        <td>Yes</td>
+        <td>Yes</td>
         <td>
           <a>
             <span

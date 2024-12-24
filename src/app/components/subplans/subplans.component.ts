@@ -179,6 +179,11 @@ export class SubplansComponent implements OnInit {
           next: () => {
             this.msgService.success(JSON.stringify('Subplan deleted successfully'));
             this.isDataLoading = false;
+
+            if (this.dataToDisplay.length === 1 && this.page > 1) {
+              this.page--;
+            }
+            
             this.getInitData();
           },
           error: (err) => {
