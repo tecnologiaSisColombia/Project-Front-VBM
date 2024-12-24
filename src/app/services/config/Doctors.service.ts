@@ -33,7 +33,7 @@ export class DoctorService {
   }
   
   get(
-    { name, status }: any,
+    { first_name, status, license, last_name }: any,
     page: number | null = 1,
     pageSize: number | null = 10,
     init = false
@@ -43,12 +43,20 @@ export class DoctorService {
       .set('page_size', pageSize!.toString())
       .set('init', init);
 
-    if (name != null) {
-      params = params.set('name', name);
+    if (first_name != null) {
+      params = params.set('first_name', first_name);
+    }
+
+    if (last_name != null) {
+      params = params.set('last_name', last_name);
     }
 
     if (status != null) {
       params = params.set('status', status);
+    }
+
+    if (license != null) {
+      params = params.set('license', license);
     }
 
     return this.http.get(`${this.hostname}core/doctors`, { params });

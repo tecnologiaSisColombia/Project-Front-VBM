@@ -14,7 +14,7 @@
       (click)="openDrawer()">
       <i 
         nz-icon 
-        nzType="bank" 
+        nzType="user" 
         nzTheme="outline">
       </i>
       New Doctor
@@ -38,34 +38,21 @@
 <div class="main-table layout-container">
   <div class="table-filters">
     <nz-input-group 
+      *ngFor="let field of searchFields" 
       [nzSuffix]="suffixIconSearch">
       <input
         type="text"
         nz-input
-        placeholder="Name..."
-        [(ngModel)]="descriptionSearch"
-        (ngModelChange)="search($event, 'description')"
+        [placeholder]="field.placeholder"
+        [(ngModel)]="this[field.model]"
+        (ngModelChange)="search($event, field.key)"
       />
-    </nz-input-group>
 
-    <ng-template #suffixIconSearch>
-      <span nz-icon nzType="search"></span>
-    </ng-template>
-
-    <!-- Code -->
-    <!-- <nz-input-group [nzSuffix]="suffixIconSearch">
-      <input
-        type="text"
-        nz-input
-        placeholder="Code..."
-        [(ngModel)]="codeSearch"
-        (ngModelChange)="search($event, 'code')"
-      />
+      <ng-template #suffixIconSearch>
+        <span nz-icon nzType="search"></span>
+      </ng-template>
     </nz-input-group>
-    <ng-template #suffixIconSearch>
-      <span nz-icon nzType="search"></span>
-    </ng-template> -->
-  </div>
+  </div>  
 
   <nz-table
     #basicTable
@@ -320,14 +307,14 @@
               <nz-option
                 *ngFor="let o of suppliers"
                 [nzLabel]="o.user.first_name"
-                [nzValue]="o.id"
-              ></nz-option>
+                [nzValue]="o.id">
+              </nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
         
         <ng-template #supplierError>
-          <span *ngIf="form.get('phone')?.hasError('required')">
+          <span *ngIf="form.get('supplier')?.hasError('required')">
             This field is required
           </span>
         </ng-template>

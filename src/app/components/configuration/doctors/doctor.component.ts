@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -63,8 +63,15 @@ export class DoctorComponent {
   page = 1;
   stores: any[] = [];
   suppliers: any[] = [];
-  descriptionSearch: any = null;
-  codeSearch: any = null;
+  firstSearch: any = null;
+  lastSearch: any = null;
+  licenseSearch: any = null;
+  [key: string]: any;
+  searchFields = [
+    { placeholder: 'First Name...', model: 'firstSearch', key: 'first_name' },
+    { placeholder: 'Last Name...', model: 'lastSearch', key: 'last_name' },
+    { placeholder: 'License Number...', model: 'licenseSearch', key: 'license' },
+  ];
   private searchNameSubject = new Subject<{ type: string; value: string }>();
 
   constructor(
@@ -81,13 +88,14 @@ export class DoctorComponent {
       supplier: [null, [Validators.required]],
     });
 
-    this.searchNameSubject.pipe(debounceTime(1000)).subscribe((data) => {
-      if (data.type === 'description') {
-        this.descriptionSearch = data.value;
-      }
-      if (data.type === 'code') {
-        this.codeSearch = data.value;
-      }
+    this.searchNameSubject.pipe(debounceTime(1000)).subscribe(({ type, value }) => {
+      const fields = {
+        first_name: () => (this.firstSearch = value),
+        last_name: () => (this.lastSearch = value),
+        license: () => (this.licenseSearch = value),
+      };
+
+      (fields as Record<string, () => void>)[type]?.();
       this.page = 1;
       this.getInitData();
       this.isDataLoading = false;
@@ -109,12 +117,16 @@ export class DoctorComponent {
       },
     });
   }
-  
+
   getInitData() {
     this.isDataLoading = true;
     this.doctorService
       .get(
-        { code: this.codeSearch, name: this.descriptionSearch },
+        {
+          license: this.licenseSearch,
+          first_name: this.firstSearch,
+          last_name: this.lastSearch
+        },
         this.page,
         this.page_size
       )
