@@ -40,36 +40,39 @@ export class FullComponent implements OnInit {
     users: false,
     plans: false,
     subplans: false,
+    eligibility: false,
   };
   role: string = '';
 
   constructor(
     private authService: AuthService,
     private message: NzMessageService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.authService.getProfile().subscribe({
       next: (res: any) => {
         console.log(res);
         this.role = res.groups[0];
-        
+
         res.group_profile.forEach((e: any) => {
           if (e.modulo__modulo == 'users') {
-            this.access.users = e.write;
+            this.access.users = e.admin;
           }
-
           if (e.modulo__modulo == 'core') {
-            this.access.admin = e.write;
+            this.access.admin = e.admin;
           }
           if (e.modulo__modulo == 'plans') {
-            this.access.plans = e.write;
+            this.access.plans = e.admin;
           }
           if (e.modulo__modulo == 'subplans') {
-            this.access.subplans = e.write;
+            this.access.subplans = e.admin;
           }
           if (e.modulo__modulo == 'insurers') {
-            this.access.insurers = e.write;
+            this.access.insurers = e.admin;
+          }
+          if (e.modulo__modulo == 'eligibility') {
+            this.access.eligibility = e.admin;
           }
         });
       },

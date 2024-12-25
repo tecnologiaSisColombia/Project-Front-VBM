@@ -9,10 +9,13 @@ import { environment } from '../../../environments/environment';
 export class UserService {
   private baseUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   createUser(userData: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}UserAccessControl/CreateUser`, userData);
+    return this.http.post(
+      `${this.baseUrl}UserAccessControl/CreateUser`,
+      userData
+    );
   }
 
   getUsers(
@@ -42,19 +45,28 @@ export class UserService {
   }
 
   disableUser(username: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}UserAccessControl/DisableUser`, { username });
+    return this.http.post(`${this.baseUrl}UserAccessControl/DisableUser`, {
+      username,
+    });
   }
 
   enableUser(username: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}UserAccessControl/EnableUser`, { username });
+    return this.http.post(`${this.baseUrl}UserAccessControl/EnableUser`, {
+      username,
+    });
   }
 
   deleteUser(username: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}UserAccessControl/DeleteUser`, { username });
+    return this.http.post(`${this.baseUrl}UserAccessControl/DeleteUser`, {
+      username,
+    });
   }
 
   updateAttributes(userData: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}UserAccessControl/UpdateAttributes`, userData);
+    return this.http.post(
+      `${this.baseUrl}UserAccessControl/UpdateAttributes`,
+      userData
+    );
   }
 
   getUserTypes(): Observable<any[]> {
@@ -87,7 +99,9 @@ export class UserService {
     // }
 
     return this.http.put(
-      `${this.baseUrl}UserAccessControl/update-type-user/${user_id}?type_user=${type_user.id}`, user);
+      `${this.baseUrl}UserAccessControl/update-type-user/${user_id}?type_user=${type_user.id}`,
+      user
+    );
   }
 
   // createWorkingHour(data: any): Observable<any> {
@@ -135,6 +149,9 @@ export class UserService {
   addGroup(data: any) {
     return this.http.post(`${this.baseUrl}core/groups`, data);
   }
+  addPerfilModule(data: any) {
+    return this.http.post(`${this.baseUrl}core/profiles`, data);
+  }
 
   updateGroup(id: number, data: any) {
     return this.http.put(`${this.baseUrl}core/groups/${id}`, data);
@@ -146,5 +163,9 @@ export class UserService {
 
   deleteGroup(id: any) {
     return this.http.delete(`${this.baseUrl}core/groups/${id}`);
+  }
+
+  getModules() {
+    return this.http.get(`${this.baseUrl}core/modules`);
   }
 }

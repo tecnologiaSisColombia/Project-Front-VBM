@@ -82,6 +82,11 @@ export class ProfilesComponent implements OnInit {
   ];
   private searchNameSubject: Subject<{ type: string; value: string }> =
     new Subject();
+  modules_list: any[] = [];
+  modules_list_display: any[] = [];
+  modalAddModule: boolean = false;
+  moduleSelected: any = null;
+  idPermisions: any = null;
 
   constructor(
     private fb: FormBuilder,
@@ -100,6 +105,7 @@ export class ProfilesComponent implements OnInit {
 
   ngOnInit(): void {
     this.getGroups();
+    this.getModules();
     this.addForm = this.fb.group({
       new_group_name: [
         '',
@@ -140,6 +146,7 @@ export class ProfilesComponent implements OnInit {
       read: updatedData.read,
       update: updatedData.update,
       delete: updatedData.delete,
+      admin: updatedData.admin,
     };
 
     this.profileService.updatePerfil(id, permissions).subscribe({
@@ -158,11 +165,56 @@ export class ProfilesComponent implements OnInit {
   }
 
   seePermissions(id_grupo: number): void {
+    this.idPermisions = id_grupo;
     this.profileService.getGroupPerfil(id_grupo).subscribe({
       next: (res: any) => {
         this.permisosList = res;
         this.listOfDisplayPermisos = this.permisosList;
         this.isVisiblePermisosModal = true;
+      },
+      error: (err) => {
+        this.message.error(JSON.stringify(err.error));
+      },
+    });
+  }
+  openAddModule() {
+    this.modalAddModule = true;
+    this.modules_list_display = this.modules_list.filter(
+      (e) => !this.listOfDisplayPermisos.find((p) => p.modulo == e.id)
+    );
+  }
+  openAddModuleOk() {
+    this.modalAddModule = false;
+    console.log(this.listOfDisplayPermisos, this.moduleSelected);
+    const module_exists = this.listOfDisplayPermisos.find(
+      (e) => e.modulo == this.moduleSelected
+    );
+    if (module_exists) {
+      this.message.error('Module selected already exists');
+      return;
+    }
+    const data = {
+      group: this.idPermisions,
+      modulo: this.moduleSelected,
+    };
+    this.profileService.addPerfilModule(data).subscribe({
+      next: (res: any) => {
+        this.message.success('Profile added!');
+        this.openAddModuleCancel();
+        this.seePermissions(this.idPermisions);
+      },
+      error: (err) => {
+        this.message.error(JSON.stringify(err.error));
+      },
+    });
+  }
+  openAddModuleCancel() {
+    this.modalAddModule = false;
+  }
+  getModules() {
+    this.profileService.getModules().subscribe({
+      next: (res: any) => {
+        this.modules_list = res;
       },
       error: (err) => {
         this.message.error(JSON.stringify(err.error));

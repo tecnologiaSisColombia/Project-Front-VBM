@@ -279,6 +279,28 @@
 </nz-drawer>
 
 <nz-modal
+  [(nzVisible)]="modalAddModule"
+  nzTitle="Modules"
+  (nzOnOk)="openAddModuleOk()"
+  (nzOnCancel)="openAddModuleCancel()"
+  [nzOkLoading]="isDataLoading"
+  [nzCentered]="true"
+  [nzWidth]="'40%'"
+  [nzClosable]="false"
+  [nzMaskClosable]="false"
+>
+  <ng-container *nzModalContent>
+    <nz-select [(ngModel)]="moduleSelected" nzPlaceHolder="Select Module">
+      <nz-option
+        *ngFor="let o of modules_list_display"
+        [nzLabel]="o.modulo"
+        [nzValue]="o.id"
+      ></nz-option>
+    </nz-select>
+  </ng-container>
+</nz-modal>
+
+<nz-modal
   [(nzVisible)]="isVisiblePermisosModal"
   nzTitle="Permissions"
   (nzOnOk)="OkPermissionsModal()"
@@ -290,6 +312,9 @@
   [nzMaskClosable]="false"
 >
   <ng-container *nzModalContent>
+    <div style="text-align: right; margin-bottom: 5px">
+      <button nz-button (click)="openAddModule()">Add</button>
+    </div>
     <nz-table
       #permisosTable
       [nzData]="listOfDisplayPermisos"
@@ -301,6 +326,7 @@
       <thead>
         <tr>
           <th>Module</th>
+          <th>Admin</th>
           <th>Read</th>
           <th>Write</th>
           <th>Update</th>
@@ -310,6 +336,16 @@
       <tbody>
         <tr *ngFor="let data of permisosTable.data">
           <td>{{ data.modulo_data.modulo }}</td>
+          <td>
+            <nz-switch
+              nzSize="small"
+              [(ngModel)]="data.admin"
+              [nzControl]="true"
+              [nzLoading]="isDataLoading"
+              (click)="editPermissions(data, 'admin')"
+            >
+            </nz-switch>
+          </td>
           <td>
             <nz-switch
               nzSize="small"
