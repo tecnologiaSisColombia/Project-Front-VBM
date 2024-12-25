@@ -58,11 +58,16 @@ export class NzDemoModalLocaleComponent implements OnInit {
   isVisible = false;
   specialities: any[] = [];
   localities: any[] = [];
-  userTypeOptions: { id: number; label: string; value: string }[] = [];
+  userTypeOptions: {
+    id: number;
+    label: string;
+    value: string;
+    type: string;
+  }[] = [];
   offices: any[] = [];
   loading = false;
   tempUser: any = null;
-  user_type: string = '';
+  user_type: any = '';
   partner_types: any[] = [];
   officesToDisplay: any[] = [];
   working_hours: any[] = [];
@@ -109,14 +114,13 @@ export class NzDemoModalLocaleComponent implements OnInit {
     this.getStores();
     this.getInsurers();
     this.getSuppliers();
-    this.getPartnerTypes();
   }
-  getPartnerTypes() {
-    this.createUserService.getPartnerTypes().subscribe({
-      next: (res: any) => (this.partner_types = res),
-      error: (err) => this.msgService.error(JSON.stringify(err.error)),
-    });
-  }
+  // getPartnerTypes() {
+  //   this.createUserService.getPartnerTypes().subscribe({
+  //     next: (res: any) => (this.partner_types = res),
+  //     error: (err) => this.msgService.error(JSON.stringify(err.error)),
+  //   });
+  // }
   getInsurers(): void {
     this.insurerService.getInsurers({ status: 1 }, 1, 10, true).subscribe({
       next: (res: any) => {
@@ -153,9 +157,9 @@ export class NzDemoModalLocaleComponent implements OnInit {
       this.user_type =
         this.userTypeOptions.find(
           (e) => e.id == this.tempUser.extra_data[0].user_type_id
-        )?.value || '';
+        ) || '';
     } else {
-      this.user_type = 'Master';
+      this.user_type = { id: 1, type: 'MASTER' };
     }
   }
 
@@ -166,7 +170,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
         if (this.tempUser.extra_data) {
           this.userService
             .updateDataByType(
-              this.userTypeOptions.find((e) => e.value == this.user_type)!,
+              this.userTypeOptions.find((e) => e.id === this.user_type.id)!,
               this.tempUser.id,
               this.tempUser
             )
@@ -236,6 +240,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
         this.userTypeOptions = response.map((type) => ({
           label: type.name,
           value: type.name,
+          type: type.type,
           id: type.id,
         }));
       },

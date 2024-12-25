@@ -44,7 +44,7 @@ import { DoctorService } from 'app/services/config/doctors.service';
 export class NzDemoDrawerFromDrawerComponent {
   formm: UntypedFormGroup;
   visible = false;
-  extraForm: string | null = null;
+  extraForm: any = null;
   userTypeOptions: { id: number; label: string; value: string }[] = [];
   specialities: any[] = [];
   stores: any[] = [];
@@ -83,13 +83,12 @@ export class NzDemoDrawerFromDrawerComponent {
       insurers: [null],
       // office_id: [null],
       number_license: [''],
-      partner_type_id: [''],
+      // partner_type_id: [''],
     });
     this.loadUserTypes();
     this.getStores();
     this.getSuppliers();
     this.getInsuerers();
-    this.getPartnerTypes();
     // this.getOffices();
     // this.getSpecialities();
   }
@@ -114,12 +113,12 @@ export class NzDemoDrawerFromDrawerComponent {
       },
     });
   }
-  getPartnerTypes() {
-    this.createUserService.getPartnerTypes().subscribe({
-      next: (res: any) => (this.partner_types = res),
-      error: (err) => this.msgService.error(JSON.stringify(err.error)),
-    });
-  }
+  // getPartnerTypes() {
+  //   this.createUserService.getPartnerTypes().subscribe({
+  //     next: (res: any) => (this.partner_types = res),
+  //     error: (err) => this.msgService.error(JSON.stringify(err.error)),
+  //   });
+  // }
   // getSpecialities(): void {
   //   this.specialityService.get({ status: 1 }, 1, 1, true).subscribe({
   //     next: (res: any) => (this.specialities = res),
@@ -150,6 +149,7 @@ export class NzDemoDrawerFromDrawerComponent {
         this.userTypeOptions = response.map((type) => ({
           label: type.name,
           value: type.name,
+          type: type.type,
           id: type.id,
         }));
       },
@@ -173,7 +173,7 @@ export class NzDemoDrawerFromDrawerComponent {
       const userData = this.formm.value;
 
       if (
-        this.extraForm === 'Supplier' &&
+        this.extraForm.type === 'SUPPLIER' &&
         (!userData.localities || !userData.insurers || !userData.number_license)
       ) {
         this.msgService.error(
@@ -182,7 +182,7 @@ export class NzDemoDrawerFromDrawerComponent {
         return;
       }
 
-      if (this.extraForm === 'Partner' && !userData.supplier) {
+      if (this.extraForm.type === 'PARTNER' && !userData.supplier) {
         this.msgService.error('All fields are required for a Partner.');
         return;
       }
@@ -216,12 +216,12 @@ export class NzDemoDrawerFromDrawerComponent {
   userTypeChange(event: any): void {
     const userType = typeof event === 'string' ? event : event?.target?.value;
     const type = this.userTypeOptions.find((e) => e.value === userType);
-    this.extraForm =
-      type?.value === 'Supplier'
-        ? 'Supplier'
-        : type?.value === 'Partner'
-        ? 'Partner'
-        : null;
+    this.extraForm = type;
+    // type?.value === 'Supplier'
+    //   ? 'Supplier'
+    //   : type?.value === 'Partner'
+    //   ? 'Partner'
+    //   : null;
   }
 
   storeChange(event: any): void {

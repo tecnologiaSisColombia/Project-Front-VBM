@@ -8,15 +8,8 @@
   </div>
 
   <div class="btn-container">
-    <button 
-      nz-button 
-      nzType="primary" 
-      (click)="openDrawerNewProfile()">
-      <i 
-        nz-icon 
-        nzType="user-add" 
-        nzTheme="outline">
-      </i>
+    <button nz-button nzType="primary" (click)="openDrawerNewProfile()">
+      <i nz-icon nzType="user-add" nzTheme="outline"> </i>
       New Group
     </button>
 
@@ -24,12 +17,9 @@
       nz-button
       [style.background-color]="'#00a651'"
       [style.color]="'white'"
-      (click)="exportGroupName()">
-      <i 
-        nz-icon 
-        nzType="download" 
-        nzTheme="outline">
-      </i>
+      (click)="exportGroupName()"
+    >
+      <i nz-icon nzType="download" nzTheme="outline"> </i>
       Export Groups
     </button>
   </div>
@@ -48,10 +38,7 @@
     </nz-input-group>
 
     <ng-template #suffixIconSearch>
-      <span 
-        nz-icon 
-        nzType="search">
-      </span>
+      <span nz-icon nzType="search"> </span>
     </ng-template>
   </div>
 
@@ -59,7 +46,8 @@
     #nzTable
     [nzData]="listOfDisplayData"
     [nzLoading]="isDataLoading"
-    [nzFrontPagination]="false">
+    [nzFrontPagination]="false"
+  >
     <thead>
       <tr>
         <th nzWidth="50%">Group</th>
@@ -76,7 +64,8 @@
               title="Permissions"
               nzType="setting"
               nzTheme="outline"
-              (click)="seePermissions(data.id)">
+              (click)="seePermissions(data.id)"
+            >
             </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
@@ -86,7 +75,8 @@
               nzType="edit"
               nzTheme="outline"
               title="Edit"
-              (click)="openEditDrawer(data)">
+              (click)="openEditDrawer(data)"
+            >
             </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
@@ -95,7 +85,8 @@
               title="Status"
               [(ngModel)]="data.active"
               nzSize="small"
-              (click)="changeStatus(data.id, 'active')">
+              (click)="changeStatus(data.id, 'active')"
+            >
             </nz-switch>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
@@ -105,7 +96,8 @@
               title="Delete"
               nzType="delete"
               nzTheme="outline"
-              (click)="deleteGroup(data.id)">
+              (click)="deleteGroup(data.id)"
+            >
             </span>
           </a>
         </td>
@@ -120,7 +112,8 @@
     [nzShowSizeChanger]="true"
     [nzShowQuickJumper]="true"
     (nzPageIndexChange)="pageChange($event)"
-    (nzPageSizeChange)="pageSizeChange($event)">
+    (nzPageSizeChange)="pageSizeChange($event)"
+  >
   </nz-pagination>
 </div>
 
@@ -133,29 +126,23 @@
   nzTitle="New profile"
   (nzOnClose)="closeDrawerNewProfile()"
   [nzWidth]="720"
-  [nzFooter]="footerTpl">
-
+  [nzFooter]="footerTpl"
+>
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="isDataLoading">
       <form [formGroup]="addForm" nz-form (ngSubmit)="SaveNewProfile()">
         <nz-form-item>
-          <nz-form-label 
+          <nz-form-label
             [nzSm]="8"
             [nzXs]="24"
             nzFor="new_group"
-            style="text-align: center;">
+            style="text-align: center"
+          >
             Profile
           </nz-form-label>
 
-          <nz-form-control
-            [nzSm]="16"
-            [nzXs]="24"
-            [nzErrorTip]="newGroupError">
-            <input 
-              nz-input 
-              id="new_group" 
-              formControlName="new_group_name"
-            />
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="newGroupError">
+            <input nz-input id="new_group" formControlName="new_group_name" />
           </nz-form-control>
         </nz-form-item>
 
@@ -167,23 +154,47 @@
             This field cannot be empty or contain only spaces
           </span>
         </ng-template>
+
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="new_group"
+            style="text-align: center"
+          >
+            Type
+          </nz-form-label>
+
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="typeError">
+            <nz-select formControlName="type" nzPlaceHolder="Select type">
+              <nz-option
+                *ngFor="let o of types_users"
+                [nzLabel]="o.label"
+                [nzValue]="o.id"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+        <ng-template #typeError>
+          <span *ngIf="addForm.get('type')?.hasError('required')">
+            This field is required
+          </span>
+        </ng-template>
       </form>
     </nz-spin>
   </ng-container>
 
   <ng-template #footerTpl>
-    <div style="display: flex; float: right;">
+    <div style="display: flex; float: right">
       <button
         nz-button
-        style="margin-right: 8px;"
-        (click)="closeDrawerNewProfile()">
+        style="margin-right: 8px"
+        (click)="closeDrawerNewProfile()"
+      >
         Close
       </button>
 
-      <button
-        nz-button
-        nzType="primary"
-        (click)="SaveNewProfile()">
+      <button nz-button nzType="primary" (click)="SaveNewProfile()">
         Save
       </button>
     </div>
@@ -198,29 +209,23 @@
   nzPlacement="right"
   nzTitle="Edit Group"
   [nzWidth]="720"
-  [nzFooter]="footerEditTpl">
-
+  [nzFooter]="footerEditTpl"
+>
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="isDataLoading">
       <form nz-form [formGroup]="editForm" (ngSubmit)="submitEdit()">
         <nz-form-item>
-          <nz-form-label 
+          <nz-form-label
             [nzSm]="8"
             [nzXs]="24"
             nzFor="name"
-            style="text-align: center;">
+            style="text-align: center"
+          >
             Group Name
           </nz-form-label>
 
-          <nz-form-control 
-            [nzSm]="16"
-            [nzXs]="24"
-            [nzErrorTip]="nameError">
-            <input
-              id="name"
-              nz-input
-              formControlName="name"
-            />
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="nameError">
+            <input id="name" nz-input formControlName="name" />
           </nz-form-control>
         </nz-form-item>
 
@@ -232,25 +237,43 @@
             This field cannot be empty or contain only spaces
           </span>
         </ng-template>
+
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="new_group"
+            style="text-align: center"
+          >
+            Type
+          </nz-form-label>
+
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="typeError">
+            <nz-select formControlName="type" nzPlaceHolder="Select type">
+              <nz-option
+                *ngFor="let o of types_users"
+                [nzLabel]="o.label"
+                [nzValue]="o.id"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+        <ng-template #typeError>
+          <span *ngIf="addForm.get('type')?.hasError('required')">
+            This field is required
+          </span>
+        </ng-template>
       </form>
     </nz-spin>
   </ng-container>
 
   <ng-template #footerEditTpl>
-    <div style="display: flex; float: right;">
-      <button
-        nz-button
-        style="margin-right: 8px;"
-        (click)="closeEditDrawer()">
+    <div style="display: flex; float: right">
+      <button nz-button style="margin-right: 8px" (click)="closeEditDrawer()">
         Close
       </button>
 
-      <button
-        nz-button
-        nzType="primary"
-        (click)="submitEdit()">
-        Save
-      </button>
+      <button nz-button nzType="primary" (click)="submitEdit()">Save</button>
     </div>
   </ng-template>
 </nz-drawer>
@@ -264,8 +287,8 @@
   [nzCentered]="true"
   [nzWidth]="'60%'"
   [nzClosable]="false"
-  [nzMaskClosable]="false">
-  
+  [nzMaskClosable]="false"
+>
   <ng-container *nzModalContent>
     <nz-table
       #permisosTable
@@ -273,7 +296,8 @@
       [nzBordered]="false"
       [nzSize]="'small'"
       [nzShowPagination]="true"
-      [nzPageSize]="6">
+      [nzPageSize]="6"
+    >
       <thead>
         <tr>
           <th>Module</th>
@@ -292,7 +316,8 @@
               [(ngModel)]="data.read"
               [nzControl]="true"
               [nzLoading]="isDataLoading"
-              (click)="editPermissions(data, 'read')">
+              (click)="editPermissions(data, 'read')"
+            >
             </nz-switch>
           </td>
           <td>
@@ -301,7 +326,8 @@
               [(ngModel)]="data.write"
               [nzControl]="true"
               [nzLoading]="isDataLoading"
-              (click)="editPermissions(data, 'write')">
+              (click)="editPermissions(data, 'write')"
+            >
             </nz-switch>
           </td>
           <td>
@@ -310,7 +336,8 @@
               [(ngModel)]="data.update"
               [nzControl]="true"
               [nzLoading]="isDataLoading"
-              (click)="editPermissions(data, 'update')">
+              (click)="editPermissions(data, 'update')"
+            >
             </nz-switch>
           </td>
           <td>
@@ -319,7 +346,8 @@
               [(ngModel)]="data.delete"
               [nzControl]="true"
               [nzLoading]="isDataLoading"
-              (click)="editPermissions(data, 'delete')">
+              (click)="editPermissions(data, 'delete')"
+            >
             </nz-switch>
           </td>
         </tr>

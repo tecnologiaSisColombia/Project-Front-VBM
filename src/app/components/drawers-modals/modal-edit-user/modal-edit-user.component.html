@@ -83,7 +83,7 @@
         <div
           nz-row
           [nzGutter]="16"
-          *ngIf="user.extra_data && user_type == 'Supplier'"
+          *ngIf="user.extra_data && user_type.type == 'SUPPLIER'"
         >
           <div nz-col [nzSpan]="12">
             <nz-form-item>
@@ -111,7 +111,7 @@
           <div
             nz-col
             [nzSpan]="12"
-            *ngIf="user.extra_data && user_type == 'Supplier'"
+            *ngIf="user.extra_data && user_type.type == 'SUPPLIER'"
           >
             <nz-form-item>
               <nz-form-label [nzSpan]="24">License Number</nz-form-label>
@@ -179,7 +179,7 @@
         <div
           nz-row
           [nzGutter]="16"
-          *ngIf="user.extra_data && user_type == 'Supplier'"
+          *ngIf="user.extra_data && user_type.type == 'SUPPLIER'"
         >
           <div nz-col [nzSpan]="12">
             <nz-form-item>
@@ -207,7 +207,7 @@
         <div
           nz-row
           [nzGutter]="16"
-          *ngIf="user.extra_data && user_type == 'Partner'"
+          *ngIf="user.extra_data && user_type.type == 'PARTNER'"
         >
           <div nz-col [nzSpan]="12">
             <nz-form-item>
@@ -229,7 +229,7 @@
               </nz-form-control>
             </nz-form-item>
           </div>
-          <div nz-col [nzSpan]="12">
+          <!-- <div nz-col [nzSpan]="12">
             <nz-form-item>
               <nz-form-label [nzSpan]="24">Partner type</nz-form-label>
               <nz-form-control [nzSpan]="24">
@@ -248,7 +248,7 @@
                 </nz-select>
               </nz-form-control>
             </nz-form-item>
-          </div>
+          </div> -->
         </div>
         <!--  -->
       </form>
@@ -259,7 +259,7 @@
           justify-content: space-between;
           align-items: center;
         "
-        *ngIf="user_type == 'Supplier' || user_type == 'Seller'"
+        *ngIf="user_type == 'Supplier' || user_type == 'Partner'"
       >
         <h3>Working Hours</h3>
         <button nz-button nzType="primary" [nzSize]="'small'" (click)="open()">
@@ -271,7 +271,7 @@
         #basicTable
         [nzData]="workingHours"
         [nzFrontPagination]="false"
-        *ngIf="user_type == 'Supplier' || user_type == 'Seller'"
+        *ngIf="user_type == 'Supplier' || user_type == 'Partner'"
       >
         <thead>
           <tr>

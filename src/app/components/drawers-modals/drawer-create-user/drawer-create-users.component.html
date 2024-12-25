@@ -196,7 +196,7 @@
         </span>
       </ng-template>
 
-      <div nz-col nzSpan="24" *ngIf="extraForm === 'Supplier'">
+      <div nz-col nzSpan="24" *ngIf="extraForm?.type === 'SUPPLIER'">
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
@@ -216,7 +216,7 @@
         </nz-form-item>
       </div>
       <!--  -->
-      <div nz-col nzSpan="24" *ngIf="extraForm === 'Partner'">
+      <!-- <div nz-col nzSpan="24" *ngIf="extraForm?.type === 'PARTNER'">
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
@@ -240,9 +240,9 @@
             </nz-select>
           </nz-form-control>
         </nz-form-item>
-      </div>
+      </div> -->
 
-      <div nz-col nzSpan="24" *ngIf="extraForm === 'Supplier'">
+      <div nz-col nzSpan="24" *ngIf="extraForm?.type === 'SUPPLIER'">
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
@@ -270,7 +270,7 @@
         </nz-form-item>
       </div>
 
-      <div nz-col nzSpan="24" *ngIf="extraForm === 'Supplier'">
+      <div nz-col nzSpan="24" *ngIf="extraForm?.type === 'SUPPLIER'">
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
@@ -297,7 +297,7 @@
         </nz-form-item>
       </div>
       <!--  -->
-      <div nz-col nzSpan="24" *ngIf="extraForm === 'Partner'">
+      <div nz-col nzSpan="24" *ngIf="extraForm?.type === 'PARTNER'">
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"

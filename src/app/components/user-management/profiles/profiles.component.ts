@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
@@ -20,6 +20,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as XLSX from 'xlsx';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { debounceTime, Subject } from 'rxjs';
+import { NzSelectModule } from 'ng-zorro-antd/select';
 
 @Component({
   selector: 'app-profiles',
@@ -40,7 +41,8 @@ import { debounceTime, Subject } from 'rxjs';
     CommonModule,
     NzSwitchModule,
     NzDropDownModule,
-    NzModalModule
+    NzModalModule,
+    NzSelectModule,
   ],
 
   templateUrl: './profiles.component.html',
@@ -64,14 +66,28 @@ export class ProfilesComponent implements OnInit {
   page_size: number = 10;
   count_records: number = 0;
   nameSearch: any = null;
-  private searchNameSubject: Subject<{ type: string; value: string }> = new Subject();
+  types_users = [
+    {
+      id: 'MASTER',
+      label: 'Master',
+    },
+    {
+      id: 'SUPPLIER',
+      label: 'Supplier',
+    },
+    {
+      id: 'PARTNER',
+      label: 'Partner',
+    },
+  ];
+  private searchNameSubject: Subject<{ type: string; value: string }> =
+    new Subject();
 
   constructor(
     private fb: FormBuilder,
     private profileService: UserService,
     private message: NzMessageService
   ) {
-
     this.searchNameSubject.pipe(debounceTime(1000)).subscribe((data) => {
       if (data.type === 'name') {
         this.nameSearch = data.value;
@@ -84,13 +100,25 @@ export class ProfilesComponent implements OnInit {
 
   ngOnInit(): void {
     this.getGroups();
-    this.addForm = this.initializeForm('new_group_name');
-    this.editForm = this.initializeForm('name');
+    this.addForm = this.fb.group({
+      new_group_name: [
+        '',
+        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
+      ],
+      type: [null, [Validators.required]],
+    });
+    this.editForm = this.fb.group({
+      name: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      type: [null, [Validators.required]],
+    });
   }
 
   initializeForm(fieldName: string): FormGroup {
     return this.fb.group({
-      [fieldName]: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      [fieldName]: [
+        '',
+        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
+      ],
     });
   }
 
@@ -116,7 +144,9 @@ export class ProfilesComponent implements OnInit {
 
     this.profileService.updatePerfil(id, permissions).subscribe({
       next: () => {
-        this.message.success(JSON.stringify('Permissions updated successfully'));
+        this.message.success(
+          JSON.stringify('Permissions updated successfully')
+        );
         this.seePermissions(group);
         this.isDataLoading = false;
       },
@@ -152,7 +182,6 @@ export class ProfilesComponent implements OnInit {
           this.getGroups();
           this.closeEditDrawer();
           this.isDataLoading = false;
-
         },
         error: (err) => {
           this.message.error(JSON.stringify(err.error));
@@ -200,6 +229,7 @@ export class ProfilesComponent implements OnInit {
     this.selectedGroupId = group.id;
     this.editForm.patchValue({
       name: group.name,
+      type: group.type,
     });
     this.isVisibleEditDrawer = true;
     this.isDataLoading = false;
@@ -227,7 +257,8 @@ export class ProfilesComponent implements OnInit {
       this.isDataLoading = true;
 
       const data = {
-        name: this.addForm.get('new_group_name')?.value
+        name: this.addForm.get('new_group_name')?.value,
+        type: this.addForm.get('type')?.value,
       };
 
       this.profileService.addGroup(data).subscribe({
@@ -263,12 +294,7 @@ export class ProfilesComponent implements OnInit {
   getGroups(init: boolean = false): void {
     this.isDataLoading = true;
     this.profileService
-      .getGroups(
-        { name: this.nameSearch },
-        this.page,
-        this.page_size,
-        init
-      )
+      .getGroups({ name: this.nameSearch }, this.page, this.page_size, init)
       .subscribe({
         next: (res: any) => {
           this.listOfDisplayData = res.results;
@@ -386,5 +412,4 @@ export class ProfilesComponent implements OnInit {
 
     this.message.success(JSON.stringify('Export completed successfully'));
   }
-
 }
