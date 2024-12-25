@@ -150,6 +150,11 @@ export class ProductsComponent implements OnInit {
           next: () => {
             this.msgService.success(JSON.stringify('Product deleted successfully'));
             this.isDataLoading = false;
+
+            if (this.dataToDisplay.length === 1 && this.page > 1) {
+              this.page--;
+            }
+            
             this.getInitData();
           },
           error: (err) => {

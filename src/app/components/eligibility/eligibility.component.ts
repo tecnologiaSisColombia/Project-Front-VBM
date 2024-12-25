@@ -1,67 +1,180 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule  } from '@angular/forms';
-import { NzFormModule } from 'ng-zorro-antd/form';
-import { NzInputModule } from 'ng-zorro-antd/input';
-import { NzButtonModule } from 'ng-zorro-antd/button';
-import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
-import { NzUploadModule } from 'ng-zorro-antd/upload';
-import { NzCardModule } from 'ng-zorro-antd/card';
-import { NzSelectModule } from 'ng-zorro-antd/select';
 import { CommonModule } from '@angular/common';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
-import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
+import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
-import { NzCollapseModule } from 'ng-zorro-antd/collapse';
-import { NzLayoutModule } from 'ng-zorro-antd/layout';
+import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { debounceTime, Subject } from 'rxjs';
+import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { NzSelectModule } from 'ng-zorro-antd/select';
+import { FormsModule } from '@angular/forms';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { MemberComponent } from './member/member.component';
+import { PlanDetailsComponent } from './plan-details/plan-details.component';
+import { EligibilityService } from 'app/services/eligibility/eligibility.service';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-eligibility',
   standalone: true,
   imports: [
-    NzFormModule,
-    NzInputModule,
-    NzButtonModule,
-    NzCheckboxModule,
-    NzUploadModule,
-    NzCardModule,
-    NzSelectModule,
-    ReactiveFormsModule,
-    CommonModule,
     NzBreadCrumbModule,
-    NzDatePickerModule,
-    NzCollapseModule,
+    NzFormModule,
+    NzButtonComponent,
+    NzTableModule,
+    NzPaginationModule,
+    NzDividerModule,
+    NzInputModule,
+    NzIconModule,
     NzDrawerModule,
+    NzSpinModule,
+    CommonModule,
+    NzSwitchModule,
+    NzSelectModule,
     FormsModule,
-    NzLayoutModule
+    NzModalModule,
+    MemberComponent,
+    PlanDetailsComponent
   ],
   templateUrl: './eligibility.component.html',
-  styleUrl: './eligibility.component.css'
+  styleUrls: ['./eligibility.component.css', '../../../animations/styles.css']
 })
 export class EligibilityComponent {
-  form: FormGroup;
-  constructor(private fb: FormBuilder) {
-    this.form = this.fb.group({
-      physician: ['', [Validators.required, Validators.minLength(100)]],
-      insurance: ['', Validators.required],
-      healthPlan: ['', Validators.required],
-      dateOfService: ['', Validators.required],
-      validationOptions: [[]],
-      validationNotes: ['', [Validators.maxLength(250)]],
-      files: [null],
-      memberId: ['', [Validators.required, Validators.minLength(20)]],
-      firstName: ['', [Validators.required, Validators.minLength(50)]],
-      lastName: ['', [Validators.required, Validators.minLength(50)]],
-      dateOfBirth: ['', Validators.required],
-      phone: ['', [Validators.required, Validators.minLength(10)]],
-      email: ['', [Validators.required, Validators.email]],
+  isDataLoading = false;
+  dataToDisplay: any[] = [];
+  num_pages = 1;
+  count_records = 0;
+  page_size = 10;
+  page = 1;
+  firstSearch: any = null;
+  lastSearch: any = null;
+  suscriberSearch: any = null;
+  
+  isVisibleModalDetails = false;
+  isVisibleModalMember = false;
+  [key: string]: any;
+  searchFields = [
+    { placeholder: 'First Name...', model: 'firstSearch', key: 'first_name' },
+    { placeholder: 'Last Name...', model: 'lastSearch', key: 'last_name' },
+    { placeholder: 'Suscriber Id...', model: 'suscriberSearch', key: 'suscriber_id' },
+  ];
+  private searchNameSubject = new Subject<{ type: string; value: string }>();
+  @ViewChild('memberContent') memberContent!: ElementRef;
+
+  constructor(
+    private msgService: NzMessageService,
+    private eligibilityService: EligibilityService
+
+  ) {
+
+    this.searchNameSubject.pipe(debounceTime(1000)).subscribe(({ type, value }) => {
+      const fields = {
+        first_name: () => (this.firstSearch = value),
+        last_name: () => (this.lastSearch = value),
+        suscriber_id: () => (this.suscriberSearch = value),
+      };
+
+      (fields as Record<string, () => void>)[type]?.();
+      this.page = 1;
+      this.getInitData();
+      this.isDataLoading = false;
     });
   }
 
-  onSubmit(): void {
-    if (this.form.valid) {
-      console.log(this.form.value);
-    } else {
-      console.log('Formulario inválido');
-    }
+  ngOnInit(): void {
+    this.getInitData();
   }
+
+  getInitData() {
+    this.isDataLoading = true;
+    this.eligibilityService
+      .getPatients(
+        {
+          first_name: this.firstSearch,
+          last_name: this.lastSearch,
+          subscriber_id: this.suscriberSearch,
+        },
+        this.page,
+        this.page_size
+      )
+      .subscribe({
+        next: (res: any) => {
+          this.isDataLoading = false;
+          this.dataToDisplay = res.results;
+          this.setPagination(res.total);
+        },
+        error: (err) => {
+          this.isDataLoading = false;
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
+  }
+
+  search(value: string, type: string) {
+    this.isDataLoading = true;
+    this.searchNameSubject.next({ type, value });
+  }
+
+  CancelModalDetails(): void {
+    this.isVisibleModalDetails = false;
+    // this.dataCacheModal = null;
+  }
+
+  CancelModalMember(): void {
+    this.isVisibleModalMember = false;
+    // this.dataCacheModal = null;
+  }
+
+  openModalMember(): void {
+    this.isVisibleModalMember = true;
+    // this.dataCacheModal = data;
+  }
+
+  openModalDetails(): void {
+    this.isVisibleModalDetails = true;
+    // this.dataCacheModal = data;
+  }
+
+  OkModalMember(): void {
+    this.CancelModalMember();
+  }
+
+  OkModalDetails(): void {
+    this.CancelModalDetails();
+  }
+
+  openPlanDetails(event: number) {
+    this.page = event;
+    // this.getInitData();
+  }
+
+  pageChange(event: number) {
+    this.page = event;
+    // this.getInitData();
+  }
+
+  setPagination(count: number) {
+    this.count_records = count;
+    this.num_pages = Math.ceil(count / this.page_size);
+  }
+
+  exportBenefits(): void {
+
+  }
+
+  printContentMember(): void {
+
+  }
+
+  printContentDetails(): void {
+
+  }
+
 }

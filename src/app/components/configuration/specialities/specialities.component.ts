@@ -143,6 +143,11 @@
 //           next: () => {
 //             this.msgService.success(JSON.stringify('Speciality deleted successfully'));
 //             this.isDataLoading = false;
+
+                // if (this.dataToDisplay.length === 1 && this.page > 1) {
+                //     this.page--;
+                // }
+
 //             this.getInitData();
 //           },
 //           error: (err) => {
