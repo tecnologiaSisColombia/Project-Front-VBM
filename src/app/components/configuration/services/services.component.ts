@@ -253,9 +253,7 @@ export class ServicesComponent implements OnInit {
     this.isDataLoading = true;
 
     this.serviceService
-      .get(
-        { code: null, description: null, status: null }, 1, 10, true
-      )
+      .get({ code: null, description: null }, null, null, true)
       .subscribe({
         next: (res: any) => {
           if (res.length === 0) {
@@ -265,11 +263,11 @@ export class ServicesComponent implements OnInit {
           }
 
           const headers = {
-            code: 'Code Service',
-            description: 'Description Service',
-            value: 'Value Service',
-            created: 'Created Service',
-            active: 'Status Service',
+            code: 'Code',
+            description: 'Description',
+            value: 'Value',
+            created: 'Created',
+            active: 'Status',
           };
 
           const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];

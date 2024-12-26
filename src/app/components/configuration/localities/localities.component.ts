@@ -99,7 +99,7 @@ export class LocalitiesComponent implements OnInit {
           if (isSearching && (!res.results || res.results.length === 0)) {
             this.msgService.warning(JSON.stringify('No results found matching your search criteria'));
           }
-          
+
           this.setPagination(res.total);
         },
         error: (err) => {
@@ -149,7 +149,7 @@ export class LocalitiesComponent implements OnInit {
             if (this.dataToDisplay.length === 1 && this.page > 1) {
               this.page--;
             }
-            
+
             this.getInitData();
           },
           error: (err) => {
@@ -232,64 +232,73 @@ export class LocalitiesComponent implements OnInit {
     this.num_pages = Math.ceil(count / this.page_size);
   }
 
-  exportStores(): void {
-    if (this.dataToDisplay.length === 0) {
-      this.msgService.warning(JSON.stringify('No data available to export'));
-      return;
-    }
-
+  exportLocalities(): void {
     this.isDataLoading = true;
 
-    const headers = {
-      name: 'Localities',
-      created: 'Created',
-      active: 'Status',
-    } as const;
+    this.storesService
+      .get({ name: null, status: null }, null, null, true)
+      .subscribe({
+        next: (res: any) => {
+          if (res.length === 0) {
+            this.msgService.warning(JSON.stringify('No data available to export'));
+            this.isDataLoading = false;
+            return;
+          }
 
-    const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+          const headers = {
+            name: 'Localities',
+            created: 'Created',
+            active: 'Status',
+          };
 
-    const filteredData = this.dataToDisplay.map((store) =>
-      selectedColumns.reduce((obj: Record<string, any>, key) => {
-        if (key === 'active') {
-          obj[headers[key]] = store[key] ? 'Active' : 'Inactive';
-        } else if (key === 'created') {
-          const date = new Date(store[key]);
-          obj[headers[key]] = date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
+          const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+
+          const filteredData = res.map((product: any) =>
+            selectedColumns.reduce((obj: Record<string, any>, key) => {
+              if (key === 'active') {
+                obj[headers[key]] = product[key] ? 'Active' : 'Inactive';
+              } else if (key === 'created') {
+                const date = new Date(product[key]);
+                obj[headers[key]] = date.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                });
+              } else {
+                obj[headers[key]] = product[key];
+              }
+              return obj;
+            }, {})
+          );
+
+          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+          const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'Localities');
+
+          const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+            bookType: 'xlsx',
+            type: 'array',
           });
-        } else {
-          obj[headers[key]] = store[key];
-        }
-        return obj;
-      }, {})
-    );
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+          const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+          const link = document.createElement('a');
+          const url = URL.createObjectURL(blob);
 
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Stores');
+          link.setAttribute('href', url);
+          link.setAttribute('download', 'Localities.xlsx');
+          link.style.visibility = 'hidden';
 
-    const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
 
-    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'Localities.xlsx');
-    link.style.visibility = 'hidden';
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    this.isDataLoading = false;
-
-    this.msgService.success(JSON.stringify('Export completed successfully'));
+          this.isDataLoading = false;
+          this.msgService.success(JSON.stringify('Export completed successfully'));
+        },
+        error: (err) => {
+          this.isDataLoading = false;
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 }

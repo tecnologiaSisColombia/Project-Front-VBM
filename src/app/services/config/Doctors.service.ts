@@ -8,7 +8,7 @@ import { environment } from 'environments/environment';
 export class DoctorService {
   hostname = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getSuppliers(
     { name, status }: any,
@@ -31,7 +31,7 @@ export class DoctorService {
 
     return this.http.get(`${this.hostname}core/suppliers`, { params });
   }
-  
+
   get(
     { first_name, status, license, last_name }: any,
     page: number | null = 1,
@@ -39,8 +39,8 @@ export class DoctorService {
     init = false
   ) {
     let params = new HttpParams()
-      .set('page', page!.toString())
-      .set('page_size', pageSize!.toString())
+      .set('page', (page ?? 1).toString())
+      .set('page_size', (pageSize ?? 10).toString())
       .set('init', init);
 
     if (first_name != null) {

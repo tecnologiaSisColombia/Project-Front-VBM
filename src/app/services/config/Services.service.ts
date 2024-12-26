@@ -8,17 +8,20 @@ import { environment } from 'environments/environment';
 export class ServicesService {
   hostname = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   get(
-    { description, code, status }: any,
+    {
+      description,
+      code
+    }: any,
     page: number | null = 1,
     pageSize: number | null = 10,
     init = false
   ) {
     let params = new HttpParams()
-      .set('page', page!.toString())
-      .set('page_size', pageSize!.toString())
+      .set('page', (page ?? 1).toString())
+      .set('page_size', (pageSize ?? 10).toString())
       .set('init', init);
 
     if (description != null) {
@@ -27,10 +30,6 @@ export class ServicesService {
 
     if (code != null) {
       params = params.set('code', code);
-    }
-
-    if (status != null) {
-      params = params.set('status', status);
     }
 
     return this.http.get(`${this.hostname}core/services`, { params });

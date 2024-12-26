@@ -269,63 +269,87 @@ export class DoctorComponent {
   }
 
   exportDoctors(): void {
-    if (this.dataToDisplay.length === 0) {
-      this.msgService.warning(JSON.stringify('No data available to export'));
-      return;
-    }
-
     this.isDataLoading = true;
 
-    const headers = {
-      name: 'Doctor',
-      created: 'Created',
-      active: 'Status',
-    } as const;
+    this.doctorService
+      .get(
+        {
+          license: null,
+          first_name: null,
+          last_name: null,
+          status: null
+        },
+        null,
+        null,
+        true
+      )
+      .subscribe({
+        next: (res: any) => {
+          if (res.length === 0) {
+            this.msgService.warning(JSON.stringify('No data available to export'));
+            this.isDataLoading = false;
+            return;
+          }
 
-    const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+          const headers = {
+            license_number: 'License Number',
+            first_name: 'First Name',
+            last_name: 'Last Name',
+            email: 'Email',
+            phone: 'Phone',
+            created: 'Created',
+            active: 'Status',
+          };
 
-    const filteredData = this.dataToDisplay.map((product) =>
-      selectedColumns.reduce((obj: Record<string, any>, key) => {
-        if (key === 'active') {
-          obj[headers[key]] = product[key] ? 'Active' : 'Inactive';
-        } else if (key === 'created') {
-          const date = new Date(product[key]);
-          obj[headers[key]] = date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
+          const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+
+          const filteredData = res.map((doctor: any) =>
+            selectedColumns.reduce((obj: Record<string, any>, key) => {
+              if (key === 'active') {
+                obj[headers[key]] = doctor[key] ? 'Active' : 'Inactive';
+              } else if (key === 'created') {
+                const date = new Date(doctor[key]);
+                obj[headers[key]] = date.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                });
+              } else {
+                obj[headers[key]] = doctor[key];
+              }
+              return obj;
+            }, {})
+          );
+
+          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+          const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'Doctors');
+
+          const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+            bookType: 'xlsx',
+            type: 'array',
           });
-        } else {
-          obj[headers[key]] = product[key];
-        }
-        return obj;
-      }, {})
-    );
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+          const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+          const link = document.createElement('a');
+          const url = URL.createObjectURL(blob);
 
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Doctors');
+          link.setAttribute('href', url);
+          link.setAttribute('download', 'Doctors.xlsx');
+          link.style.visibility = 'hidden';
 
-    const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
 
-    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'Doctors.xlsx');
-    link.style.visibility = 'hidden';
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    this.isDataLoading = false;
-
-    this.msgService.success(JSON.stringify('Export completed successfully'));
+          this.isDataLoading = false;
+          this.msgService.success(JSON.stringify('Export completed successfully'));
+        },
+        error: (err) => {
+          this.isDataLoading = false;
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
+
 }

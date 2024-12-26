@@ -8,7 +8,7 @@ import { environment } from 'environments/environment';
 export class ProductsService {
   hostname = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   get(
     { description, code }: any,
@@ -17,8 +17,8 @@ export class ProductsService {
     init = false
   ) {
     let params = new HttpParams()
-      .set('page', page!.toString())
-      .set('page_size', pageSize!.toString())
+      .set('page', (page ?? 1).toString())
+      .set('page_size', (pageSize ?? 10).toString())
       .set('init', init);
 
     if (description != null) {

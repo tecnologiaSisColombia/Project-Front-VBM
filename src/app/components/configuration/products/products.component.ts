@@ -249,7 +249,7 @@ export class ProductsComponent implements OnInit {
     this.isDataLoading = true;
 
     this.productService
-      .get({ code: null, description: null, status: null }, 1, 10, true)
+      .get({ code: null, description: null, status: null }, null, null, true)
       .subscribe({
         next: (res: any) => {
           if (res.length === 0) {
