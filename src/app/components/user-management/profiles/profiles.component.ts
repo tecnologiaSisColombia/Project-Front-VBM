@@ -66,6 +66,11 @@ export class ProfilesComponent implements OnInit {
   page_size: number = 10;
   count_records: number = 0;
   nameSearch: any = null;
+  modules_list: any[] = [];
+  modules_list_display: any[] = [];
+  modalAddModule: boolean = false;
+  moduleSelected: any = null;
+  idPermisions: any = null;
   types_users = [
     {
       id: 'MASTER',
@@ -80,13 +85,7 @@ export class ProfilesComponent implements OnInit {
       label: 'Partner',
     },
   ];
-  private searchNameSubject: Subject<{ type: string; value: string }> =
-    new Subject();
-  modules_list: any[] = [];
-  modules_list_display: any[] = [];
-  modalAddModule: boolean = false;
-  moduleSelected: any = null;
-  idPermisions: any = null;
+  private searchNameSubject: Subject<{ type: string; value: string }> = new Subject();
 
   constructor(
     private fb: FormBuilder,
@@ -107,10 +106,7 @@ export class ProfilesComponent implements OnInit {
     this.getGroups();
     this.getModules();
     this.addForm = this.fb.group({
-      new_group_name: [
-        '',
-        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
-      ],
+      new_group_name: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       type: [null, [Validators.required]],
     });
     this.editForm = this.fb.group({
@@ -121,9 +117,7 @@ export class ProfilesComponent implements OnInit {
 
   initializeForm(fieldName: string): FormGroup {
     return this.fb.group({
-      [fieldName]: [
-        '',
-        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
+      [fieldName]: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
       ],
     });
   }
@@ -151,9 +145,7 @@ export class ProfilesComponent implements OnInit {
 
     this.profileService.updatePerfil(id, permissions).subscribe({
       next: () => {
-        this.message.success(
-          JSON.stringify('Permissions updated successfully')
-        );
+        this.message.success(JSON.stringify('Permissions updated successfully'));
         this.seePermissions(group);
         this.isDataLoading = false;
       },
@@ -177,29 +169,34 @@ export class ProfilesComponent implements OnInit {
       },
     });
   }
+
   openAddModule() {
     this.modalAddModule = true;
     this.modules_list_display = this.modules_list.filter(
       (e) => !this.listOfDisplayPermisos.find((p) => p.modulo == e.id)
     );
   }
+
   openAddModuleOk() {
     this.modalAddModule = false;
     console.log(this.listOfDisplayPermisos, this.moduleSelected);
     const module_exists = this.listOfDisplayPermisos.find(
       (e) => e.modulo == this.moduleSelected
     );
+
     if (module_exists) {
-      this.message.error('Module selected already exists');
+      this.message.error(JSON.stringify('Module selected already exists'));
       return;
     }
+
     const data = {
       group: this.idPermisions,
       modulo: this.moduleSelected,
     };
+
     this.profileService.addPerfilModule(data).subscribe({
-      next: (res: any) => {
-        this.message.success('Profile added!');
+      next: () => {
+        this.message.success(JSON.stringify('Profile added!'));
         this.openAddModuleCancel();
         this.seePermissions(this.idPermisions);
       },
@@ -208,9 +205,11 @@ export class ProfilesComponent implements OnInit {
       },
     });
   }
+
   openAddModuleCancel() {
     this.modalAddModule = false;
   }
+  
   getModules() {
     this.profileService.getModules().subscribe({
       next: (res: any) => {
@@ -352,7 +351,7 @@ export class ProfilesComponent implements OnInit {
           this.listOfDisplayData = res.results;
           this.count_records = res.total;
           this.updateEditCache();
-          
+
           const isSearching = this.nameSearch;
 
           if (isSearching && (!res.results || res.results.length === 0)) {
