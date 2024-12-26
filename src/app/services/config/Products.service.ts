@@ -11,7 +11,7 @@ export class ProductsService {
   constructor(private http: HttpClient) {}
 
   get(
-    { description, code, status }: any,
+    { description, code }: any,
     page: number | null = 1,
     pageSize: number | null = 10,
     init = false
@@ -27,10 +27,6 @@ export class ProductsService {
 
     if (code != null) {
       params = params.set('code', code);
-    }
-
-    if (status != null) {
-      params = params.set('status', status);
     }
 
     return this.http.get(`${this.hostname}core/products`, { params });
