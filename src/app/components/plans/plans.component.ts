@@ -109,6 +109,7 @@ export class PlansComponent implements OnInit {
         next: (res: any) => {
           this.isDataLoading = false;
           this.dataToDisplay = res.results;
+          
           const isSearching = this.nameSearch || this.insurerSearch;
 
           if (isSearching && (!res.results || res.results.length === 0)) {
