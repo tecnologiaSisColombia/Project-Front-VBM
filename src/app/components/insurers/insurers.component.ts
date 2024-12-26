@@ -127,7 +127,7 @@ export class InsurersComponent implements OnInit {
       },
     });
   }
-  
+
   getProducts() {
     this.isDataLoading = true;
     this.productService.get({}, 1, 1, true).subscribe({
@@ -159,6 +159,13 @@ export class InsurersComponent implements OnInit {
         next: (res: any) => {
           this.isDataLoading = false;
           this.dataToDisplay = res.results;
+
+          const isSearching = this.nameSearch || this.payerIdSearch || this.addresSearch || this.phoneSearch;
+
+          if (isSearching && (!res.results || res.results.length === 0)) {
+            this.msgService.warning(JSON.stringify('No results found matching your search criteria'));
+          }
+
           this.setPagination(res.total);
         },
         error: (err) => {
@@ -220,7 +227,7 @@ export class InsurersComponent implements OnInit {
             if (this.dataToDisplay.length === 1 && this.page > 1) {
               this.page--;
             }
-            
+
             this.getInitData();
           },
           error: (err) => {
@@ -354,9 +361,9 @@ export class InsurersComponent implements OnInit {
       this.msgService.warning('No data available to export');
       return;
     }
-  
+
     this.isDataLoading = true;
-  
+
     const insurerHeaders = {
       name: 'Insurer Name',
       payer_id: 'Payer Id',
@@ -365,7 +372,7 @@ export class InsurersComponent implements OnInit {
       created: 'Created',
       active: 'Status',
     } as const;
-  
+
     const servicesHeaders = {
       code: 'Service Code',
       value: 'Service Value',
@@ -373,14 +380,14 @@ export class InsurersComponent implements OnInit {
       created: 'Created',
       active: 'Status',
     } as const;
-  
+
     const productsHeaders = {
       code: 'Product Code',
       description: 'Product Description',
       created: 'Created',
       active: 'Status',
     } as const;
-  
+
     const formatData = (data: any[], headers: Record<string, string>) =>
       data.map((item) =>
         (Object.keys(headers) as Array<keyof typeof headers>).reduce<Record<string, any>>(
@@ -402,11 +409,11 @@ export class InsurersComponent implements OnInit {
           {}
         )
       );
-    
+
     const insurersData = formatData(this.dataToDisplay, insurerHeaders);
     const servicesData = formatData(this.services, servicesHeaders);
     const productsData = formatData(this.products, productsHeaders);
-  
+
     const relationsData: Record<string, string>[] = [];
     this.dataToDisplay.forEach((insurer) => {
       if (insurer.services && insurer.products) {
@@ -421,50 +428,50 @@ export class InsurersComponent implements OnInit {
         });
       }
     });
-  
+
     const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-  
+
     if (insurersData.length > 0) {
       const insurerSheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(insurersData);
       XLSX.utils.book_append_sheet(workbook, insurerSheet, 'Insurers');
     }
-  
+
     if (servicesData.length > 0) {
       const servicesSheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(servicesData);
       XLSX.utils.book_append_sheet(workbook, servicesSheet, 'Services');
     }
-  
+
     if (productsData.length > 0) {
       const productsSheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(productsData);
       XLSX.utils.book_append_sheet(workbook, productsSheet, 'Products');
     }
-  
+
     if (relationsData.length > 0) {
       const relationsSheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(relationsData);
       XLSX.utils.book_append_sheet(workbook, relationsSheet, 'Relations');
     }
-  
+
     const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
       bookType: 'xlsx',
       type: 'array',
     });
-  
+
     const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
     const url = URL.createObjectURL(blob);
-  
+
     const link = document.createElement('a');
     link.setAttribute('href', url);
     link.setAttribute('download', 'ExportedData.xlsx');
     link.style.visibility = 'hidden';
-  
+
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  
+
     this.isDataLoading = false;
 
     this.msgService.success(JSON.stringify('Export completed successfully'));
-  }  
+  }
 
   openCatalog(data: any) {
     this.isVisibleCatalog = true;

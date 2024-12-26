@@ -134,6 +134,13 @@ export class DoctorComponent {
         next: (res: any) => {
           this.isDataLoading = false;
           this.dataToDisplay = res.results;
+
+          const isSearching = this.licenseSearch || this.firstSearch || this.lastSearch;
+
+          if (isSearching && (!res.results || res.results.length === 0)) {
+            this.msgService.warning(JSON.stringify('No results found matching your search criteria'));
+          }
+
           this.setPagination(res.total);
         },
         error: (err) => {

@@ -352,6 +352,13 @@ export class ProfilesComponent implements OnInit {
           this.listOfDisplayData = res.results;
           this.count_records = res.total;
           this.updateEditCache();
+          
+          const isSearching = this.nameSearch;
+
+          if (isSearching && (!res.results || res.results.length === 0)) {
+            this.message.warning(JSON.stringify('No results found matching your search criteria'));
+          }
+
           this.isDataLoading = false;
         },
         error: (err: any) => {

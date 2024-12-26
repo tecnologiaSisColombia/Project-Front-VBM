@@ -109,6 +109,13 @@ export class ServicesComponent implements OnInit {
         next: (res: any) => {
           this.isDataLoading = false;
           this.dataToDisplay = res.results;
+
+          const isSearching = this.codeSearch || this.descriptionSearch;
+
+          if (isSearching && (!res.results || res.results.length === 0)) {
+            this.msgService.warning(JSON.stringify('No results found matching your search criteria'));
+          }
+
           this.setPagination(res.total);
         },
         error: (err) => {
@@ -158,7 +165,7 @@ export class ServicesComponent implements OnInit {
             if (this.dataToDisplay.length === 1 && this.page > 1) {
               this.page--;
             }
-            
+
             this.getInitData();
           },
           error: (err) => {
