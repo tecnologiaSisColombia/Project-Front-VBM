@@ -27,6 +27,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { SubplansComponent } from '../subplans/subplans.component';
 import * as XLSX from 'xlsx';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
   selector: 'app-plans',
@@ -49,6 +50,7 @@ import * as XLSX from 'xlsx';
     NzSelectModule,
     NzModalModule,
     SubplansComponent,
+    NzEmptyModule
   ],
   templateUrl: './plans.component.html',
   styleUrls: ['./plans.component.css', '../../../animations/styles.css'],
@@ -275,8 +277,6 @@ export class PlansComponent implements OnInit {
   }
 
   exportCoverages(): void {
-    this.isDataLoading = true;
-
     this.planService
       .getPlans({}, null, null, true)
       .subscribe({
@@ -287,12 +287,14 @@ export class PlansComponent implements OnInit {
             return;
           }
 
+          this.isDataLoading = true;
+
           const headers = {
             insurer_name: 'Insurer',
             name: 'Coverage',
             created: 'Created',
             active: 'Status',
-          } as const;
+          };
 
           const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 

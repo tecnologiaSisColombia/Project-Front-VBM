@@ -79,7 +79,10 @@
     </nz-input-group>
 
     <ng-template #suffixIconSearch>
-      <span nz-icon nzType="search"></span>
+      <span 
+        nz-icon 
+        nzType="search">
+      </span>
     </ng-template>
   </div>
 
@@ -87,6 +90,7 @@
     #basicTable
     [nzData]="dataToDisplay"
     [nzFrontPagination]="false"
+    [nzNoResult]="noDataTemplate"
     [nzLoading]="isDataLoading">
     <thead>
       <tr>
@@ -148,6 +152,18 @@
       </tr>
     </tbody>
   </nz-table>
+
+  <ng-template #noDataTemplate>
+    <nz-empty
+      nzNotFoundImage="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+      [nzNotFoundContent]="contentTpl">
+      <ng-template #contentTpl>
+        <span>
+          No subplans found
+        </span>
+      </ng-template>
+    </nz-empty>
+  </ng-template>
 
   <nz-pagination
     [nzPageIndex]="page"

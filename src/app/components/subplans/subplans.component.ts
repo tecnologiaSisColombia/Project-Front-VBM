@@ -25,6 +25,7 @@ import { debounceTime, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 import { SubplanService } from '../../services/insurers/subplan.service';
 import * as XLSX from 'xlsx';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
   selector: 'app-subplans',
@@ -45,6 +46,7 @@ import * as XLSX from 'xlsx';
     CommonModule,
     NzSwitchModule,
     NzSelectModule,
+    NzEmptyModule
   ],
   templateUrl: './subplans.component.html',
   styleUrl: './subplans.component.css',
@@ -275,72 +277,84 @@ export class SubplansComponent implements OnInit {
   }
 
   exportSubplans(): void {
-    if (this.dataToDisplay.length === 0) {
-      this.msgService.warning(JSON.stringify('No data available to export'));
-      return;
-    }
+    this.subplanService
+      .getSubPlans(this.planData.id, {}, null, null, true)
+      .subscribe({
+        next: (res: any) => {
+          if (res.length === 0) {
+            this.msgService.warning('No data available to export');
+            this.isDataLoading = false;
+            return;
+          }
 
-    this.isDataLoading = true;
+          this.isDataLoading = true;
 
-    const headers = {
-      plan_data: 'Insurer',
-      name: 'Subplan',
-      group: 'Group',
-      plan_contract: 'Plan Contract',
-      visual_test_medicare: 'Visual Test Medicare',
-      visual_surgery_medicare: 'Visual Surgery Medicare',
-      routine_visual_test: 'Routine Visual Test',
-      vision_elements: 'Vision Elements',
-      created: 'Created',
-      active: 'Status',
-    } as const;
+          const headers = {
+            plan_data: 'Plan',
+            name: 'Subplan',
+            group: 'Group',
+            plan_contract: 'Plan Contract',
+            visual_test_medicare: 'Visual Test Medicare',
+            visual_surgery_medicare: 'Visual Surgery Medicare',
+            routine_visual_test: 'Routine Visual Test',
+            vision_elements: 'Vision Elements',
+            created: 'Created',
+            active: 'Status',
+          };
 
-    const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+          const formatData = (data: any[], headers: Record<string, string>) =>
+            data.map((subplan) =>
+              Object.keys(headers).reduce((obj: Record<string, any>, key) => {
+                if (key === 'active') {
+                  obj[headers[key]] = subplan[key] ? 'Active' : 'Inactive';
+                } else if (key === 'created') {
+                  const date = new Date(subplan[key]);
+                  obj[headers[key]] = date.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  });
+                } else if (key === 'plan_data') {
+                  obj[headers[key]] = subplan.plan_data?.name || 'Unknown';
+                } else {
+                  obj[headers[key]] = subplan[key];
+                }
+                return obj;
+              }, {})
+            );
 
-    const filteredData = this.dataToDisplay.map(subplan =>
-      selectedColumns.reduce((obj: Record<string, any>, key) => {
-        if (key === 'active') {
-          obj[headers[key]] = subplan[key] ? 'Active' : 'Inactive';
-        } else if (key === 'created') {
-          const date = new Date(subplan[key]);
-          obj[headers[key]] = date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
+          const subplansData = formatData(res, headers);
+
+          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(subplansData);
+          const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'Subplans');
+
+          const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+            bookType: 'xlsx',
+            type: 'array',
           });
-        } else if (key === 'plan_data') {
-          obj[headers[key]] = subplan.plan_data.name;
-        } else {
-          obj[headers[key]] = subplan[key];
-        }
-        return obj;
-      }, {})
-    );
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+          const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+          const link = document.createElement('a');
+          const url = URL.createObjectURL(blob);
 
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Subplans');
+          link.setAttribute('href', url);
+          link.setAttribute('download', 'Subplans.xlsx');
+          link.style.visibility = 'hidden';
 
-    const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
 
-    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
+          this.isDataLoading = false;
 
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'Subplans.xlsx');
-    link.style.visibility = 'hidden';
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    this.isDataLoading = false;
-
-    this.msgService.success(JSON.stringify('Export completed successfully'));
+          this.msgService.success('Export completed successfully');
+        },
+        error: (err) => {
+          this.isDataLoading = false;
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
+
 }

@@ -252,8 +252,6 @@ export class ServicesComponent implements OnInit {
   }
 
   exportServices(): void {
-    this.isDataLoading = true;
-
     this.serviceService
       .get({}, null, null, true)
       .subscribe({
@@ -263,6 +261,8 @@ export class ServicesComponent implements OnInit {
             this.isDataLoading = false;
             return;
           }
+          
+          this.isDataLoading = true;
 
           const headers = {
             code: 'Code',

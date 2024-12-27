@@ -28,6 +28,7 @@ import { ProductsService } from 'app/services/config/products.service';
 import { ServicesService } from 'app/services/config/services.service';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
   selector: 'app-insurers',
@@ -49,6 +50,7 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
     NzSwitchModule,
     NzSelectModule,
     NzModalModule,
+    NzEmptyModule
   ],
   templateUrl: './insurers.component.html',
   styleUrls: ['./insurers.component.css', '../../../animations/styles.css'],
@@ -160,6 +162,7 @@ export class InsurersComponent implements OnInit {
           this.isDataLoading = false;
           this.dataToDisplay = res.results;
 
+          console.log(this.dataToDisplay)
           const isSearching = this.nameSearch || this.payerIdSearch || this.addresSearch || this.phoneSearch;
 
           if (isSearching && (!res.results || res.results.length === 0)) {
@@ -356,123 +359,6 @@ export class InsurersComponent implements OnInit {
     this.getInitData();
   }
 
-  exporInformation(): void {
-    if (this.dataToDisplay.length === 0 && this.services.length === 0 && this.products.length === 0) {
-      this.msgService.warning('No data available to export');
-      return;
-    }
-
-    this.isDataLoading = true;
-
-    const insurerHeaders = {
-      name: 'Insurer Name',
-      payer_id: 'Payer Id',
-      phone: 'Phone',
-      address: 'Address',
-      created: 'Created',
-      active: 'Status',
-    } as const;
-
-    const servicesHeaders = {
-      code: 'Service Code',
-      value: 'Service Value',
-      description: 'Service Description',
-      created: 'Created',
-      active: 'Status',
-    } as const;
-
-    const productsHeaders = {
-      code: 'Product Code',
-      description: 'Product Description',
-      created: 'Created',
-      active: 'Status',
-    } as const;
-
-    const formatData = (data: any[], headers: Record<string, string>) =>
-      data.map((item) =>
-        (Object.keys(headers) as Array<keyof typeof headers>).reduce<Record<string, any>>(
-          (obj, key) => {
-            if (key === 'active') {
-              obj[headers[key]] = item[key] ? 'Active' : 'Inactive';
-            } else if (key === 'created') {
-              const date = new Date(item[key]);
-              obj[headers[key]] = date.toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              });
-            } else {
-              obj[headers[key]] = item[key];
-            }
-            return obj;
-          },
-          {}
-        )
-      );
-
-    const insurersData = formatData(this.dataToDisplay, insurerHeaders);
-    const servicesData = formatData(this.services, servicesHeaders);
-    const productsData = formatData(this.products, productsHeaders);
-
-    const relationsData: Record<string, string>[] = [];
-    this.dataToDisplay.forEach((insurer) => {
-      if (insurer.services && insurer.products) {
-        insurer.services.forEach((service: any) => {
-          insurer.products.forEach((product: any) => {
-            relationsData.push({
-              'Insurer Name': insurer.name,
-              'Service Name': service.value,
-              'Product Name': product.description,
-            });
-          });
-        });
-      }
-    });
-
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-
-    if (insurersData.length > 0) {
-      const insurerSheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(insurersData);
-      XLSX.utils.book_append_sheet(workbook, insurerSheet, 'Insurers');
-    }
-
-    if (servicesData.length > 0) {
-      const servicesSheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(servicesData);
-      XLSX.utils.book_append_sheet(workbook, servicesSheet, 'Services');
-    }
-
-    if (productsData.length > 0) {
-      const productsSheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(productsData);
-      XLSX.utils.book_append_sheet(workbook, productsSheet, 'Products');
-    }
-
-    if (relationsData.length > 0) {
-      const relationsSheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(relationsData);
-      XLSX.utils.book_append_sheet(workbook, relationsSheet, 'Relations');
-    }
-
-    const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
-
-    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'ExportedData.xlsx');
-    link.style.visibility = 'hidden';
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    this.isDataLoading = false;
-
-    this.msgService.success(JSON.stringify('Export completed successfully'));
-  }
-
   openCatalog(data: any) {
     this.isVisibleCatalog = true;
     this.dataCatalog = data;
@@ -486,5 +372,76 @@ export class InsurersComponent implements OnInit {
   handleOkCatalog() {
     this.isVisibleCatalog = false;
     this.dataCatalog = null;
+  }
+
+  exporInsurers(): void {
+    this.insurerService.getInsurers({}, null, null, true).subscribe({
+      next: (res: any) => {
+        if (res.length === 0) {
+          this.msgService.warning('No data available to export');
+          this.isDataLoading = false;
+          return;
+        }
+        
+        this.isDataLoading = true;
+
+        const headers = {
+          name: 'Insurer Name',
+          payer_id: 'Payer ID',
+          phone: 'Phone',
+          address: 'Address',
+          created: 'Created',
+          active: 'Status',
+        };
+
+        const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+
+        const filteredData = res.map((insurer: any) =>
+          selectedColumns.reduce((obj: Record<string, any>, key) => {
+            if (key === 'active') {
+              obj[headers[key]] = insurer[key] ? 'Active' : 'Inactive';
+            } else if (key === 'created') {
+              const date = new Date(insurer[key]);
+              obj[headers[key]] = date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              });
+            } else {
+              obj[headers[key]] = insurer[key];
+            }
+            return obj;
+          }, {})
+        );
+
+        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+        const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Insurers');
+
+        const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+          bookType: 'xlsx',
+          type: 'array',
+        });
+
+        const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'Insurers.xlsx');
+        link.style.visibility = 'hidden';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        this.isDataLoading = false;
+        this.msgService.success('Export completed successfully');
+      },
+      error: (err: any) => {
+        this.isDataLoading = false;
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
   }
 }

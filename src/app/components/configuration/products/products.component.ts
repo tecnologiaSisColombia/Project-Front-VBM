@@ -248,8 +248,6 @@ export class ProductsComponent implements OnInit {
   }
 
   exportProducts(): void {
-    this.isDataLoading = true;
-
     this.productService
       .get({}, null, null, true)
       .subscribe({
@@ -259,6 +257,8 @@ export class ProductsComponent implements OnInit {
             this.isDataLoading = false;
             return;
           }
+          
+          this.isDataLoading = true;
 
           const headers = {
             code: 'Code',

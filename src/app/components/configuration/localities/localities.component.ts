@@ -235,8 +235,6 @@ export class LocalitiesComponent implements OnInit {
   }
 
   exportLocalities(): void {
-    this.isDataLoading = true;
-
     this.storesService
       .get({}, null, null, true)
       .subscribe({
@@ -246,6 +244,8 @@ export class LocalitiesComponent implements OnInit {
             this.isDataLoading = false;
             return;
           }
+          
+          this.isDataLoading = true;
 
           const headers = {
             name: 'Localities',

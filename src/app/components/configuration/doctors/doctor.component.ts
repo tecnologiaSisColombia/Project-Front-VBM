@@ -75,7 +75,7 @@ export class DoctorComponent {
     { placeholder: 'License Number...', model: 'licenseSearch', key: 'license' },
   ];
   private searchNameSubject = new Subject<{ type: string; value: string }>();
-  
+
   constructor(
     private fb: UntypedFormBuilder,
     private doctorService: DoctorService,
@@ -271,8 +271,6 @@ export class DoctorComponent {
   }
 
   exportDoctors(): void {
-    this.isDataLoading = true;
-
     this.doctorService
       .get({}, null, null, true)
       .subscribe({
@@ -282,6 +280,8 @@ export class DoctorComponent {
             this.isDataLoading = false;
             return;
           }
+          
+          this.isDataLoading = true;
 
           const headers = {
             first_name: 'First Name',
