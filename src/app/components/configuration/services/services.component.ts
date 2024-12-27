@@ -151,7 +151,8 @@ export class ServicesComponent implements OnInit {
 
   delete(id: number) {
     Swal.fire({
-      title: 'Are you sure to delete?',
+      text: 'Are you sure you want to delete this service?',
+      icon: 'warning',
       showDenyButton: true,
       confirmButtonText: 'Yes',
       denyButtonText: `No`,

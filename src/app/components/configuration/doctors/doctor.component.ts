@@ -176,7 +176,8 @@ export class DoctorComponent {
 
   delete(id: number) {
     Swal.fire({
-      title: 'Are you sure to delete?',
+      text: 'Are you sure you want to delete this doctor?',
+      icon: 'warning',
       showDenyButton: true,
       confirmButtonText: 'Yes',
       denyButtonText: `No`,

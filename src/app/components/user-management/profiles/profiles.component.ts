@@ -15,12 +15,13 @@ import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
-import { UserService } from 'app/services/user-management/user-management.service';
+import { ProfileService } from 'app/services/user-management/profile/profile.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as XLSX from 'xlsx';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { debounceTime, Subject } from 'rxjs';
 import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
   selector: 'app-profiles',
@@ -43,6 +44,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
     NzDropDownModule,
     NzModalModule,
     NzSelectModule,
+    NzEmptyModule
   ],
 
   templateUrl: './profiles.component.html',
@@ -89,7 +91,7 @@ export class ProfilesComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private profileService: UserService,
+    private profileService: ProfileService,
     private message: NzMessageService
   ) {
     this.searchNameSubject.pipe(debounceTime(1000)).subscribe((data) => {
@@ -209,7 +211,7 @@ export class ProfilesComponent implements OnInit {
   openAddModuleCancel() {
     this.modalAddModule = false;
   }
-  
+
   getModules() {
     this.profileService.getModules().subscribe({
       next: (res: any) => {
@@ -410,64 +412,74 @@ export class ProfilesComponent implements OnInit {
     });
   }
 
-  exportGroupName(): void {
-    if (this.listOfDisplayData.length === 0) {
-      this.message.warning(JSON.stringify('No data available to export'));
-      return;
-    }
-
-    this.isDataLoading = true;
-
-    const headers = {
-      name: 'Group Name',
-      active: 'Status',
-      created: 'Created',
-    };
-
-    const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
-
-    const filteredData = this.listOfDisplayData.map((group) =>
-      selectedColumns.reduce((obj: Record<string, any>, key) => {
-        if (key === 'active') {
-          obj[headers[key]] = group[key] ? 'Active' : 'Inactive';
-        } else if (key === 'created') {
-          const date = new Date(group[key]);
-          obj[headers[key]] = date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-          });
-        } else {
-          obj[headers[key]] = group[key];
+  exportGroups(): void {
+    this.profileService.getGroups({}, null, null, true).subscribe({
+      next: (res: any) => {
+        if (res.length === 0) {
+          this.message.warning('No data available to export');
+          this.isDataLoading = false;
+          return;
         }
-        return obj;
-      }, {})
-    );
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+        this.isDataLoading = true;
 
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Groups');
+        const headers = {
+          name: 'Group Name',
+          active: 'Status',
+          created: 'Created',
+        };
 
-    const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
+        const formatData = (data: any[], headers: Record<string, string>) =>
+          data.map((group) =>
+            Object.keys(headers).reduce((obj: Record<string, any>, key) => {
+              if (key === 'active') {
+                obj[headers[key]] = group[key] ? 'Active' : 'Inactive';
+              } else if (key === 'created') {
+                const date = new Date(group[key]);
+                obj[headers[key]] = date.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                });
+              } else {
+                obj[headers[key]] = group[key];
+              }
+              return obj;
+            }, {})
+          );
+
+        const groupsData = formatData(res, headers);
+
+        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(groupsData);
+        const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Groups');
+
+        const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+          bookType: 'xlsx',
+          type: 'array',
+        });
+
+        const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'Groups.xlsx');
+        link.style.visibility = 'hidden';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        this.isDataLoading = false;
+
+        this.message.success('Export completed successfully');
+      },
+      error: (err) => {
+        this.isDataLoading = false;
+        this.message.error(JSON.stringify(err.error));
+      },
     });
-
-    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'Groups.xlsx');
-    link.style.visibility = 'hidden';
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    this.isDataLoading = false;
-
-    this.message.success(JSON.stringify('Export completed successfully'));
   }
+
 }
