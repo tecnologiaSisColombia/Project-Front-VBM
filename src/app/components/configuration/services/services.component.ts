@@ -24,6 +24,7 @@ import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { ServicesService } from 'app/services/config/services.service';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import * as XLSX from 'xlsx';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
   selector: 'app-services',
@@ -44,6 +45,7 @@ import * as XLSX from 'xlsx';
     CommonModule,
     NzSwitchModule,
     NzSelectModule,
+    NzEmptyModule
   ],
   templateUrl: './services.component.html',
   styleUrls: ['./services.component.css', '../../../../animations/styles.css'],
@@ -253,7 +255,7 @@ export class ServicesComponent implements OnInit {
     this.isDataLoading = true;
 
     this.serviceService
-      .get({ code: null, description: null }, null, null, true)
+      .get({}, null, null, true)
       .subscribe({
         next: (res: any) => {
           if (res.length === 0) {

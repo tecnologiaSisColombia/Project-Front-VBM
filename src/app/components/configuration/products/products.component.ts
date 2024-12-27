@@ -24,6 +24,7 @@ import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { ProductsService } from 'app/services/config/products.service';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import * as XLSX from 'xlsx';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
   selector: 'app-products',
@@ -44,6 +45,7 @@ import * as XLSX from 'xlsx';
     CommonModule,
     NzSwitchModule,
     NzSelectModule,
+    NzEmptyModule
   ],
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.css', '../../../../animations/styles.css'],
@@ -249,7 +251,7 @@ export class ProductsComponent implements OnInit {
     this.isDataLoading = true;
 
     this.productService
-      .get({ code: null, description: null, status: null }, null, null, true)
+      .get({}, null, null, true)
       .subscribe({
         next: (res: any) => {
           if (res.length === 0) {
@@ -259,10 +261,10 @@ export class ProductsComponent implements OnInit {
           }
 
           const headers = {
-            code: 'Code Product',
-            description: 'Description Product',
-            created: 'Created Product',
-            active: 'Status Product',
+            code: 'Code',
+            description: 'Description',
+            created: 'Created',
+            active: 'Status',
           };
 
           const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];

@@ -23,6 +23,7 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { StoresService } from 'app/services/config/localities.service';
 import * as XLSX from 'xlsx';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
   selector: 'app-stores',
@@ -42,6 +43,7 @@ import * as XLSX from 'xlsx';
     NzSpinModule,
     CommonModule,
     NzSwitchModule,
+    NzEmptyModule
   ],
   templateUrl: './localities.component.html',
   styleUrls: ['./localities.component.css', '../../../../animations/styles.css'],
@@ -236,7 +238,7 @@ export class LocalitiesComponent implements OnInit {
     this.isDataLoading = true;
 
     this.storesService
-      .get({ name: null, status: null }, null, null, true)
+      .get({}, null, null, true)
       .subscribe({
         next: (res: any) => {
           if (res.length === 0) {

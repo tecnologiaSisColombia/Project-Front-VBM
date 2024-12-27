@@ -109,7 +109,7 @@ export class PlansComponent implements OnInit {
         next: (res: any) => {
           this.isDataLoading = false;
           this.dataToDisplay = res.results;
-          
+
           const isSearching = this.nameSearch || this.insurerSearch;
 
           if (isSearching && (!res.results || res.results.length === 0)) {
@@ -275,67 +275,78 @@ export class PlansComponent implements OnInit {
   }
 
   exportCoverages(): void {
-    if (this.dataToDisplay.length === 0) {
-      this.msgService.warning(JSON.stringify('No data available to export'));
-      return;
-    }
-
     this.isDataLoading = true;
 
-    const headers = {
-      insurer_name: 'Insurer',
-      name: 'Coverage',
-      created: 'Created',
-      active: 'Status',
-    } as const;
+    this.planService
+      .getPlans({}, null, null, true)
+      .subscribe({
+        next: (res: any) => {
+          if (res.length === 0) {
+            this.msgService.warning(JSON.stringify('No data available to export'));
+            this.isDataLoading = false;
+            return;
+          }
 
-    const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+          const headers = {
+            insurer_name: 'Insurer',
+            name: 'Coverage',
+            created: 'Created',
+            active: 'Status',
+          } as const;
 
-    const filteredData = this.dataToDisplay.map(coverage =>
-      selectedColumns.reduce((obj: Record<string, any>, key) => {
-        if (key === 'active') {
-          obj[headers[key]] = coverage[key] ? 'Active' : 'Inactive';
-        } else if (key === 'created') {
-          const date = new Date(coverage[key]);
-          obj[headers[key]] = date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
+          const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+
+          const filteredData = res.map((coverage: any) =>
+            selectedColumns.reduce((obj: Record<string, any>, key) => {
+              if (key === 'active') {
+                obj[headers[key]] = coverage[key] ? 'Active' : 'Inactive';
+              } else if (key === 'created') {
+                const date = new Date(coverage[key]);
+                obj[headers[key]] = date.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                });
+              } else if (key === 'insurer_name') {
+                obj[headers[key]] = coverage.insurer_data?.name || 'Unknown';
+              } else {
+                obj[headers[key]] = coverage[key];
+              }
+              return obj;
+            }, {})
+          );
+
+          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+
+          const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'Coverages');
+
+          const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+            bookType: 'xlsx',
+            type: 'array',
           });
-        } else if (key === 'insurer_name') {
-          obj[headers[key]] = coverage.insurer_data.name;
-        } else {
-          obj[headers[key]] = coverage[key];
-        }
-        return obj;
-      }, {})
-    );
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+          const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+          const link = document.createElement('a');
+          const url = URL.createObjectURL(blob);
 
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Coverages');
+          link.setAttribute('href', url);
+          link.setAttribute('download', 'Coverages.xlsx');
+          link.style.visibility = 'hidden';
 
-    const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
 
-    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
+          this.isDataLoading = false;
 
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'Coverages.xlsx');
-    link.style.visibility = 'hidden';
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    this.isDataLoading = false;
-
-    this.msgService.success(JSON.stringify('Export completed successfully'));
+          this.msgService.success(JSON.stringify('Export completed successfully'));
+        },
+        error: (err) => {
+          this.isDataLoading = false;
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 
 }

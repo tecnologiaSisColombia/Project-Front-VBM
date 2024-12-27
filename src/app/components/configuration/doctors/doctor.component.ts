@@ -24,6 +24,7 @@ import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import * as XLSX from 'xlsx';
 import { DoctorService } from 'app/services/config/doctors.service';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
   selector: 'app-products',
@@ -44,6 +45,7 @@ import { DoctorService } from 'app/services/config/doctors.service';
     CommonModule,
     NzSwitchModule,
     NzSelectModule,
+    NzEmptyModule
   ],
   templateUrl: './doctor.component.html',
   styleUrls: ['./doctor.component.css', '../../../../animations/styles.css'],
@@ -73,7 +75,7 @@ export class DoctorComponent {
     { placeholder: 'License Number...', model: 'licenseSearch', key: 'license' },
   ];
   private searchNameSubject = new Subject<{ type: string; value: string }>();
-
+  
   constructor(
     private fb: UntypedFormBuilder,
     private doctorService: DoctorService,
@@ -272,17 +274,7 @@ export class DoctorComponent {
     this.isDataLoading = true;
 
     this.doctorService
-      .get(
-        {
-          license: null,
-          first_name: null,
-          last_name: null,
-          status: null
-        },
-        null,
-        null,
-        true
-      )
+      .get({}, null, null, true)
       .subscribe({
         next: (res: any) => {
           if (res.length === 0) {
@@ -292,11 +284,11 @@ export class DoctorComponent {
           }
 
           const headers = {
-            license_number: 'License Number',
             first_name: 'First Name',
             last_name: 'Last Name',
             email: 'Email',
             phone: 'Phone',
+            license_number: 'License Number',
             created: 'Created',
             active: 'Status',
           };

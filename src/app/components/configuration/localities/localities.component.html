@@ -56,6 +56,7 @@
     #basicTable
     [nzData]="dataToDisplay"
     [nzLoading]="isDataLoading"
+    [nzNoResult]="noDataTemplate"
     [nzFrontPagination]="false">
     <thead>
       <tr>
@@ -101,6 +102,18 @@
       </tr>
     </tbody>
   </nz-table>
+
+  <ng-template #noDataTemplate>
+    <nz-empty
+      nzNotFoundImage="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+      [nzNotFoundContent]="contentTpl">
+      <ng-template #contentTpl>
+        <span>
+          No localities found
+        </span>
+      </ng-template>
+    </nz-empty>
+  </ng-template>
 
   <nz-pagination
     [nzPageIndex]="page"
