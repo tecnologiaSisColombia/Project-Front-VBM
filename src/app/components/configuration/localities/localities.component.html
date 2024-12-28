@@ -124,6 +124,8 @@
     [nzTotal]="count_records"
     [nzPageSize]="page_size"
     (nzPageIndexChange)="pageChange($event)"
+    (nzPageSizeChange)="pageSizeChange($event)"
+    [nzShowSizeChanger]="true"
     nzShowQuickJumper>
   </nz-pagination>
 </div>

@@ -266,6 +266,12 @@ export class DoctorComponent {
     this.getInitData();
   }
 
+  pageSizeChange(pageSize: number): void {
+    this.page_size = pageSize;
+    this.page = 1;
+    this.getInitData();
+  }
+  
   setPagination(count: number) {
     this.count_records = count;
     this.num_pages = Math.ceil(count / this.page_size);
