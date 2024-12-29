@@ -46,12 +46,10 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
     NzSelectModule,
     NzEmptyModule
   ],
-
   templateUrl: './profiles.component.html',
   styleUrls: ['./profiles.component.css', '../../../../animations/styles.css'],
 })
 export class ProfilesComponent implements OnInit {
-  groupsList: any[] = [];
   listOfDisplayData: any[] = [];
   permisosList: any[] = [];
   listOfDisplayPermisos: any[] = [];
@@ -59,6 +57,7 @@ export class ProfilesComponent implements OnInit {
   new_group_name: string = '';
   editCache: { [key: number]: { edit: boolean; data: any } } = {};
   isDataLoading = false;
+  isDataLoadingP = false;
   isVisibleEditDrawer = false;
   editForm!: FormGroup;
   selectedGroupId!: number;
@@ -68,11 +67,12 @@ export class ProfilesComponent implements OnInit {
   page_size: number = 10;
   count_records: number = 0;
   nameSearch: any = null;
-  modules_list: any[] = [];
-  modules_list_display: any[] = [];
-  modalAddModule: boolean = false;
   moduleSelected: any = null;
   idPermisions: any = null;
+  p_page: number = 1;
+  p_page_size: number = 10;
+  p_count_records: number = 0;
+  moduleSearch: any = null;
   types_users = [
     {
       id: 'MASTER',
@@ -87,40 +87,44 @@ export class ProfilesComponent implements OnInit {
       label: 'Partner',
     },
   ];
-  private searchNameSubject: Subject<{ type: string; value: string }> = new Subject();
+  private searchSubject: Subject<{ type: string; value: string }> = new Subject();
 
   constructor(
     private fb: FormBuilder,
     private profileService: ProfileService,
     private message: NzMessageService
   ) {
-    this.searchNameSubject.pipe(debounceTime(1000)).subscribe((data) => {
-      if (data.type === 'name') {
-        this.nameSearch = data.value;
-      }
+    this.searchSubject.pipe(debounceTime(1000)).subscribe((data) => {
       this.page = 1;
-      this.getGroups();
-      this.isDataLoading = false;
+      this.p_page = 1
+
+      switch (data.type) {
+        case 'name':
+          this.nameSearch = data.value;
+          this.getGroups();
+          this.isDataLoading = false;
+          break;
+
+        case 'modulo':
+          this.moduleSearch = data.value;
+          this.seePermissions(this.idPermisions);
+          this.isDataLoadingP = false;
+          break;
+      }
     });
   }
 
   ngOnInit(): void {
     this.getGroups();
-    this.getModules();
+
     this.addForm = this.fb.group({
       new_group_name: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       type: [null, [Validators.required]],
     });
+
     this.editForm = this.fb.group({
       name: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       type: [null, [Validators.required]],
-    });
-  }
-
-  initializeForm(fieldName: string): FormGroup {
-    return this.fb.group({
-      [fieldName]: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
-      ],
     });
   }
 
@@ -158,70 +162,39 @@ export class ProfilesComponent implements OnInit {
     });
   }
 
-  seePermissions(id_grupo: number): void {
-    this.idPermisions = id_grupo;
-    this.profileService.getGroupPerfil(id_grupo).subscribe({
-      next: (res: any) => {
-        this.permisosList = res;
-        this.listOfDisplayPermisos = this.permisosList;
-        this.isVisiblePermisosModal = true;
-      },
-      error: (err) => {
-        this.message.error(JSON.stringify(err.error));
-      },
-    });
+  openPermissionsModal(id_grupo: number): void {
+    this.seePermissions(id_grupo, true);
   }
 
-  openAddModule() {
-    this.modalAddModule = true;
-    this.modules_list_display = this.modules_list.filter(
-      (e) => !this.listOfDisplayPermisos.find((p) => p.modulo == e.id)
-    );
-  }
-
-  openAddModuleOk() {
-    this.modalAddModule = false;
-    console.log(this.listOfDisplayPermisos, this.moduleSelected);
-    const module_exists = this.listOfDisplayPermisos.find(
-      (e) => e.modulo == this.moduleSelected
-    );
-
-    if (module_exists) {
-      this.message.error(JSON.stringify('Module selected already exists'));
-      return;
+  seePermissions(id_grupo: number, resetSearch: boolean = false): void {
+    if (resetSearch) {
+      this.moduleSearch = null;
+      this.p_page = 1;
     }
 
-    const data = {
-      group: this.idPermisions,
-      modulo: this.moduleSelected,
-    };
+    this.idPermisions = id_grupo;
+    this.isDataLoadingP = true;
+    this.profileService.getGroupPerfil(id_grupo, this.p_page, this.p_page_size, false, this.moduleSearch)
+      .subscribe({
+        next: (res: any) => {
+          this.permisosList = res.results;
+          this.listOfDisplayPermisos = this.permisosList;
+          this.p_count_records = res.total;
 
-    this.profileService.addPerfilModule(data).subscribe({
-      next: () => {
-        this.message.success(JSON.stringify('Profile added!'));
-        this.openAddModuleCancel();
-        this.seePermissions(this.idPermisions);
-      },
-      error: (err) => {
-        this.message.error(JSON.stringify(err.error));
-      },
-    });
+          if ((!res.results || res.results.length === 0) && this.moduleSearch) {
+            this.message.warning('No results found matching your search criteria');
+          }
+
+          this.isVisiblePermisosModal = true;
+          this.isDataLoadingP = false;
+        },
+        error: (err) => {
+          this.isDataLoadingP = false;
+          this.message.error(JSON.stringify(err.error));
+        },
+      });
   }
 
-  openAddModuleCancel() {
-    this.modalAddModule = false;
-  }
-
-  getModules() {
-    this.profileService.getModules().subscribe({
-      next: (res: any) => {
-        this.modules_list = res;
-      },
-      error: (err) => {
-        this.message.error(JSON.stringify(err.error));
-      },
-    });
-  }
 
   submitEdit(): void {
     if (this.editForm.valid) {
@@ -369,20 +342,25 @@ export class ProfilesComponent implements OnInit {
       });
   }
 
-  pageChange(pageIndex: number): void {
-    this.page = pageIndex;
-    this.getGroups();
-  }
-
-  pageSizeChange(pageSize: number): void {
-    this.page_size = pageSize;
-    this.page = 1;
-    this.getGroups();
+  handlePagination(page: number, pageSize: number, isPermissions: boolean = false): void {
+    if (isPermissions) {
+      this.p_page = page;
+      this.p_page_size = pageSize;
+      this.seePermissions(this.idPermisions);
+    } else {
+      this.page = page;
+      this.page_size = pageSize;
+      this.getGroups();
+    }
   }
 
   search(value: string, type: string) {
-    this.isDataLoading = true;
-    this.searchNameSubject.next({ type, value });
+    if (type === 'modulo') {
+      this.isDataLoadingP = true;
+    } else {
+      this.isDataLoading = true;
+    }
+    this.searchSubject.next({ type, value });
   }
 
   deleteGroup(id_group: number) {
@@ -401,6 +379,11 @@ export class ProfilesComponent implements OnInit {
           next: () => {
             this.message.success(JSON.stringify('Group deleted'));
             this.isDataLoading = false;
+
+            if (this.listOfDisplayData.length === 1 && this.page > 1) {
+              this.page--;
+            }
+
             this.getGroups();
           },
           error: (err) => {

@@ -77,7 +77,7 @@
               title="Permissions"
               nzType="setting"
               nzTheme="outline"
-              (click)="seePermissions(data.id)">
+              (click)="openPermissionsModal(data.id)">
             </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
@@ -132,8 +132,8 @@
     [nzTotal]="count_records"
     [nzShowSizeChanger]="true"
     [nzShowQuickJumper]="true"
-    (nzPageIndexChange)="pageChange($event)"
-    (nzPageSizeChange)="pageSizeChange($event)">
+    (nzPageIndexChange)="handlePagination($event, page_size, false)"
+    (nzPageSizeChange)="handlePagination(1, $event, false)">
   </nz-pagination>
 </div>
 
@@ -329,53 +329,40 @@
 </nz-drawer>
 
 <nz-modal
-  [(nzVisible)]="modalAddModule"
-  nzTitle="Modules"
-  (nzOnOk)="openAddModuleOk()"
-  (nzOnCancel)="openAddModuleCancel()"
-  [nzOkLoading]="isDataLoading"
-  [nzCentered]="true"
-  [nzWidth]="'40%'"
-  [nzClosable]="false"
-  [nzMaskClosable]="false">
-  <ng-container *nzModalContent>
-    <nz-select 
-      [(ngModel)]="moduleSelected" 
-      nzPlaceHolder="Select Module">
-      <nz-option
-        *ngFor="let o of modules_list_display"
-        [nzLabel]="o.modulo"
-        [nzValue]="o.id">
-      </nz-option>
-    </nz-select>
-  </ng-container>
-</nz-modal>
-
-<nz-modal
   [(nzVisible)]="isVisiblePermisosModal"
   nzTitle="Permissions"
   (nzOnOk)="OkPermissionsModal()"
   (nzOnCancel)="OkPermissionsModal()"
-  [nzCentered]="true"
-  [nzWidth]="'60%'"
-  [nzClosable]="false"
-  [nzMaskClosable]="false">
+  [nzMaskClosable]="false"
+  [nzFooter]="modalFooter">
   <ng-container *nzModalContent>
-    <div style="text-align: right; margin-bottom: 5px">
-      <button 
-        nz-button (click)="openAddModule()">
-        Add
-      </button>
+    <div class="table-filters">
+      <nz-input-group [nzSuffix]="suffixIconSearch">
+        <input
+          type="text"
+          nz-input
+          placeholder="Module Name..."
+          [(ngModel)]="moduleSearch"
+          (ngModelChange)="search($event, 'modulo')"
+        />
+      </nz-input-group>
+  
+      <ng-template #suffixIconSearch>
+        <span 
+          nz-icon 
+          nzType="search">
+        </span>
+      </ng-template>
     </div>
-    
+
     <nz-table
       #permisosTable
       [nzData]="listOfDisplayPermisos"
       [nzBordered]="false"
-      [nzLoading]="isDataLoading"
+      [nzLoading]="isDataLoadingP"
+      [nzNoResult]="noDataTemplate"
       [nzSize]="'small'"
-      [nzShowPagination]="true"
-      [nzPageSize]="6">
+      [nzFrontPagination]="false">
       <thead>
         <tr>
           <th>Module</th>
@@ -432,5 +419,50 @@
         </tr>
       </tbody>
     </nz-table>
+
+    <ng-template #noDataTemplate>
+      <nz-empty
+        nzNotFoundImage="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+        [nzNotFoundContent]="contentTpl">
+        <ng-template #contentTpl>
+          <span>No modules found</span>
+        </ng-template>
+      </nz-empty>
+    </ng-template>
+
+    <nz-pagination
+      [nzPageIndex]="p_page"
+      [nzPageSize]="p_page_size"
+      [nzTotal]="p_count_records"
+      [nzShowSizeChanger]="true"
+      [nzShowQuickJumper]="true"
+      (nzPageIndexChange)="handlePagination($event, p_page_size, true)"
+      (nzPageSizeChange)="handlePagination(1, $event, true)">
+    </nz-pagination>
   </ng-container>
+
+  <ng-template #modalFooter>
+    <!-- <button
+      nz-button
+      nzType="primary" 
+      [ngStyle]="{'background-color': '#FF5733', 'border-color': '#FF5733'}" 
+      (click)="openAddModule()">
+      <i nz-icon nzType="cluster" nzTheme="outline"></i>
+      Add Module
+    </button> -->
+
+    <button 
+      nz-button 
+      nzType="default" 
+      (click)="OkPermissionsModal()">
+      Cancel
+    </button>
+
+    <button 
+      nz-button 
+      nzType="primary" 
+      (click)="OkPermissionsModal()">
+      OK
+    </button>
+  </ng-template>
 </nz-modal>

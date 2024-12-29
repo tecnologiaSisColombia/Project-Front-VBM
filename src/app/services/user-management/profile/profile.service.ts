@@ -28,13 +28,29 @@ export class ProfileService {
         return this.http.get(`${this.baseUrl}core/groups`, { params });
     }
 
-    getGroupPerfil(grupo_id: any) {
-        return this.http.get(`${this.baseUrl}core/profile-group/` + grupo_id);
+    getGroupPerfil(
+        grupo_id: any,
+        page: number | null = 1,
+        pageSize: number | null = 10,
+        init: boolean = false,
+        modulo: string | boolean | null = null
+    ) {
+        let params = new HttpParams()
+            .set('page', (page ?? 1).toString())
+            .set('page_size', (pageSize ?? 10).toString())
+            .set('init', init.toString());
+
+        if (modulo) {
+            params = params.set('modulo', modulo);
+        }
+
+        return this.http.get(`${this.baseUrl}core/profile-group/${grupo_id}`, { params });
     }
 
     addGroup(data: any) {
         return this.http.post(`${this.baseUrl}core/groups`, data);
     }
+
     addPerfilModule(data: any) {
         return this.http.post(`${this.baseUrl}core/profiles`, data);
     }
