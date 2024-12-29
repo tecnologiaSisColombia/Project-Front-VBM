@@ -361,16 +361,16 @@
       [nzBordered]="false"
       [nzLoading]="isDataLoadingP"
       [nzNoResult]="noDataTemplate"
-      [nzSize]="'small'"
+      [nzSize]="'middle'"
       [nzFrontPagination]="false">
       <thead>
         <tr>
-          <th>Module</th>
-          <th>Admin</th>
-          <th>Read</th>
-          <th>Write</th>
-          <th>Update</th>
-          <th>Delete</th>
+          <th nzWidth="60px">Module</th>
+          <th nzWidth="60px">Admin</th>
+          <th nzWidth="60px">Read</th>
+          <th nzWidth="60px">Write</th>
+          <th nzWidth="60px">Update</th>
+          <th nzWidth="60px">Delete</th>
         </tr>
       </thead>
       <tbody>
@@ -442,15 +442,6 @@
   </ng-container>
 
   <ng-template #modalFooter>
-    <!-- <button
-      nz-button
-      nzType="primary" 
-      [ngStyle]="{'background-color': '#FF5733', 'border-color': '#FF5733'}" 
-      (click)="openAddModule()">
-      <i nz-icon nzType="cluster" nzTheme="outline"></i>
-      Add Module
-    </button> -->
-
     <button 
       nz-button 
       nzType="default" 

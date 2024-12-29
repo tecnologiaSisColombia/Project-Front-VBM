@@ -9,7 +9,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { UserService } from '../../../services/user-management/user-management.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 // import { EspecialitiesService } from 'app/services/config/especialities.service';
-import { StoresService } from 'app/services/config/localities.service';
+import { LocalityService } from 'app/services/config/localities.service';
 // import { OfficesService } from 'app/services/config/offices.service';
 import { CommonModule } from '@angular/common';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -39,7 +39,7 @@ import { DoctorService } from 'app/services/config/doctors.service';
     NzButtonModule,
     NzSpinModule,
   ],
-  templateUrl: `./modal-edit-user.component.html`,
+  templateUrl: `./edit-user.component.html`,
   styles: [
     `
       .form-container {
@@ -101,7 +101,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
     private msgService: NzMessageService,
     // private specialityService: EspecialitiesService,
     private createUserService: UserService,
-    private storeService: StoresService,
+    private localitiesService: LocalityService,
     // private officeService: OfficesService,
     private insurerService: InsurersService,
     private supplierService: DoctorService
@@ -214,7 +214,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
   // }
 
   getStores() {
-    this.storeService.get({ status: 1 }, 1, 1, true).subscribe({
+    this.localitiesService.get({ status: 1 }, 1, 1, true).subscribe({
       next: (res: any) => (this.localities = res),
       error: (err) => {
         this.msgService.error(JSON.stringify(err.error));

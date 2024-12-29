@@ -1,16 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {
+  FormsModule,
+  Validators,
+  UntypedFormGroup,
+  UntypedFormBuilder,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
-import { NzDemoDrawerFromDrawerComponent } from '../drawers-modals/drawer-create-user/drawer-create-users.component';
-import { NzDemoModalLocaleComponent } from '../drawers-modals/modal-edit-user/modal-edit-user.component';
+import { NzDemoModalLocaleComponent } from '../drawers-modals/edit-user/edit-user.component';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
-import { UserService } from '../../services/user-management/user-management.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
@@ -18,6 +22,13 @@ import { AuthService } from '../../services/auth/auth.service';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import * as XLSX from 'xlsx';
+import { InsurersService } from 'app/services/insurers/insurers.service';
+import { DoctorService } from 'app/services/config/doctors.service';
+import { LocalityService } from 'app/services/config/localities.service';
+import { UserService } from 'app/services/user-management/user-management.service';
+import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
 
 @Component({
   selector: 'app-user-management',
@@ -26,31 +37,28 @@ import * as XLSX from 'xlsx';
     CommonModule,
     FormsModule,
     NzButtonModule,
+    NzFormModule,
     NzIconModule,
     NzInputModule,
     NzTableModule,
+    NzSelectModule,
     NzTagModule,
     NzDrawerModule,
-    NzDemoDrawerFromDrawerComponent,
     NzBreadCrumbModule,
     NzDemoModalLocaleComponent,
     NzSwitchModule,
+    ReactiveFormsModule,
+    NzSpinModule
   ],
   templateUrl: './user-management.component.html',
-  styleUrls: [
-    './user-management.component.css',
-    '../../../animations/styles.css',
-  ],
+  styleUrls: ['./user-management.component.css', '../../../animations/styles.css'],
 })
 export class UserManagementComponent implements OnInit {
   loading = false;
   data: any[] = [];
   originalData: any[] = [];
   user_types: any[] = [];
-  searchQuery: { username: string; fullName: string } = {
-    username: '',
-    fullName: '',
-  };
+  searchQuery: { username: string; fullName: string } = { username: '', fullName: '', };
   searchQuerySubject: Subject<{
     field: 'username' | 'fullName';
     query: string;
@@ -62,20 +70,52 @@ export class UserManagementComponent implements OnInit {
   nameSearch: any = null;
   usernameSearch: any = null;
   lastnameSearch: any = null;
-  private searchNameSubject = new Subject<{ type: string; value: string }>();
+
+  form: UntypedFormGroup;
+  visible = false;
+  extraForm: any = null;
+  userTypeOptions: { id: number; label: string; value: string }[] = [];
+  localities: any[] = [];
+  suppliers: any[] = [];
+  insurers: any[] = [];
+  drawerLoader = false;
+
+  // private searchNameSubject = new Subject<{ type: string; value: string }>();
 
   constructor(
     private userService: UserService,
     private msgService: NzMessageService,
-    private authService: AuthService
+    private authService: AuthService,
+    private fb: UntypedFormBuilder,
+    private localitiesService: LocalityService,
+    private insurerService: InsurersService,
+    private supplierService: DoctorService
   ) {
-    this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
-      if (data.type === 'name') this.nameSearch = data.value;
-      if (data.type === 'username') this.usernameSearch = data.value;
-      if (data.type === 'lastname') this.lastnameSearch = data.value;
-      this.page = 1;
-      this.fetchUsers();
+    this.form = this.fb.group({
+      first_name: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)],],
+      last_name: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      username: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      type_user: ['', [Validators.required]],
+      localities: [null],
+      supplier: [null],
+      insurers: [null],
+      number_license: [''],
     });
+
+    // this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
+    //   if (data.type === 'name') this.nameSearch = data.value;
+    //   if (data.type === 'username') this.usernameSearch = data.value;
+    //   if (data.type === 'lastname') this.lastnameSearch = data.value;
+    //   this.page = 1;
+    //   this.fetchUsers();
+    // });
+
+    this.getUserTypes();
+    this.getLocalities();
+    this.getSuppliers();
+    this.getInsurers();
   }
 
   ngOnInit(): void {
@@ -87,14 +127,123 @@ export class UserManagementComponent implements OnInit {
       .subscribe(({ field, query }) => this.filterData(field, query));
   }
 
+  getSuppliers(): void {
+    this.supplierService.getSuppliers({ status: 1 }, 1, 10, true).subscribe({
+      next: (res: any) => {
+        this.suppliers = res;
+      },
+      error: (err) => {
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
+  }
+
+  getInsurers(): void {
+    this.insurerService.getInsurers({ status: 1 }, 1, 10, true).subscribe({
+      next: (res: any) => {
+        this.insurers = res;
+      },
+      error: (err) => {
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
+  }
+
+  getLocalities(): void {
+    this.localitiesService.get({ status: 1 }, 1, 1, true).subscribe({
+      next: (res: any) => (this.localities = res),
+      error: (err) => this.msgService.error(JSON.stringify(err.error)),
+    });
+  }
+
+  openDrawer(): void {
+    this.visible = true;
+  }
+
+  closeDrawer(): void {
+    this.visible = false;
+    this.form.reset();
+    this.extraForm = null;
+    this.drawerLoader = false;
+  }
+
+  submit(): void {
+    if (this.form.valid) {
+      const userData = this.form.value;
+
+      this.drawerLoader = true;
+
+      this.userService.createUser(userData).subscribe({
+        next: () => {
+          this.msgService.success(JSON.stringify('User created successfully'));
+          this.fetchUsers();
+          this.closeDrawer();
+          this.drawerLoader = false;
+        },
+        error: (error) => {
+          this.msgService.error(JSON.stringify(error.error.error.message));
+          this.drawerLoader = false;
+        },
+      });
+    } else {
+      Object.values(this.form.controls).forEach((control) => {
+        control.markAsDirty();
+        control.updateValueAndValidity({ onlySelf: true });
+      });
+    }
+  }
+
+  userTypeChange(event: any): void {
+    const userType = typeof event === 'string' ? event : event?.target?.value;
+    const selectedType = this.userTypeOptions.find((e) => e.value === userType);
+
+    const controls = {
+      SUPPLIER: ['number_license', 'localities', 'insurers'],
+      PARTNER: ['supplier'],
+    };
+
+    const resetControls = () => {
+      Object.values(controls).flat().forEach((control) => {
+        this.form.get(control)?.clearValidators();
+        this.form.get(control)?.updateValueAndValidity();
+      });
+    };
+
+    const applyValidation = (type: string | null) => {
+      Object.entries(controls).forEach(([key, controlNames]) => {
+        const isActive = type === key;
+        controlNames.forEach((control) => {
+          this.form.get(control)?.setValidators(isActive ? [Validators.required] : null);
+          this.form.get(control)?.updateValueAndValidity();
+        });
+      });
+    };
+
+    if (!selectedType) {
+      this.extraForm = null;
+      resetControls();
+      return;
+    }
+
+    this.extraForm = selectedType;
+
+    resetControls();
+    applyValidation(this.extraForm.type);
+  }
+
   getUserTypes(): void {
     this.userService.getUserTypes().subscribe({
-      next: (response: any) => {
+      next: (response: any[]) => {
+        this.userTypeOptions = response.map((type) => ({
+          label: type.name,
+          value: type.name,
+          type: type.type,
+          id: type.id,
+        }));
         this.user_types = response || [];
       },
       error: (error) => {
-        this.msgService.error(JSON.stringify(error || 'Error getUserTypes'));
-        this.user_types = [];
+        this.msgService.error(JSON.stringify(error));
       },
     });
   }
@@ -114,7 +263,7 @@ export class UserManagementComponent implements OnInit {
           this.loading = false;
         },
         error: (error) => {
-          this.msgService.error(JSON.stringify(error || 'Error fetchUsers'));
+          this.msgService.error(JSON.stringify(error));
           this.loading = false;
         },
       });

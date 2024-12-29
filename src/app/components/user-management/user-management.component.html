@@ -6,22 +6,31 @@
       <nz-breadcrumb-item>User management</nz-breadcrumb-item>
     </nz-breadcrumb>
   </div>
-  <div>
-    <nz-demo-drawer-from-drawer
-      class="boton-margen"
-      (userCreated)="addUserToList($event)"
-    ></nz-demo-drawer-from-drawer>
+
+  <div class="btn-container">
+    <button 
+      nz-button 
+      nzType="primary" 
+      (click)="openDrawer()">
+      <i 
+        nz-icon 
+        nzType="user">
+      </i>
+      Create User
+    </button>
 
     <button
       nz-button
       [style.background-color]="'#00a651'"
       [style.color]="'white'"
-      (click)="exportUsersToXLS()"
-    >
-    <i nz-icon nzType="download" nzTheme="outline"></i>
-    Export Users
-  </button>
-  
+      (click)="exportUsersToXLS()">
+      <i 
+        nz-icon 
+        nzType="download" 
+        nzTheme="outline">
+      </i>
+      Export Users
+    </button>
   </div>
 </div>
 
@@ -35,8 +44,12 @@
         (ngModelChange)="onSearch('username')"
       />
     </nz-input-group>
+
     <ng-template #suffixIconSearch>
-      <span nz-icon nzType="search"></span>
+      <span 
+        nz-icon 
+        nzType="search">
+      </span>
     </ng-template>
 
     <nz-input-group [nzSuffix]="suffixIconSearch">
@@ -47,8 +60,12 @@
         (ngModelChange)="onSearch('fullName')"
       />
     </nz-input-group>
+
     <ng-template #suffixIconSearch>
-      <span nz-icon nzType="search"></span>
+      <span 
+        nz-icon 
+        nzType="search">
+      </span>
     </ng-template>
   </div>
 
@@ -62,8 +79,7 @@
     class="custom-pagination" 
     [nzSize]="'default'"
     [nzShowSizeChanger]="true"
-    [nzShowQuickJumper]="true"
-  >
+    [nzShowQuickJumper]="true">
     <thead>
       <tr>
         <th>Rol</th>
@@ -95,22 +111,369 @@
           <nz-switch
             [(ngModel)]="user.is_active"
             (ngModelChange)="toggleUserStatus(user)"
-            [nzSize]="'small'"
-          ></nz-switch>
+            [nzSize]="'small'">
+          </nz-switch>
+
           <nz-demo-modal-locale
             [user]="user"
-            (userUpdated)="updateUser($event)"
-          ></nz-demo-modal-locale>
+            (userUpdated)="updateUser($event)">
+          </nz-demo-modal-locale>
+
           <button
             nz-button
             nzType="link"
             [nzSize]="'small'"
-            (click)="deleteUser(user)"
-          >
-            <i nz-icon nzType="delete"></i>
+            (click)="deleteUser(user)">
+            <i 
+              nz-icon 
+              nzType="delete">
+            </i>
           </button>
         </td>
       </tr>
     </tbody>
   </nz-table>
 </div>
+
+<nz-drawer
+  [nzBodyStyle]="{ overflow: 'auto' }"
+  [nzMaskClosable]="false"
+  [nzVisible]="visible"
+  nzTitle="Create User"
+  [nzFooter]="footerTpl"
+  (nzOnClose)="closeDrawer()"
+  [nzWidth]="720"
+  nzPlacement="right"
+  [nzClosable]="false">
+  <form nz-form nzLayout="vertical" [formGroup]="form" *nzDrawerContent>
+    <nz-spin [nzSpinning]="drawerLoader">
+      <nz-form-item>
+        <nz-form-label
+          [nzSm]="8"
+          [nzXs]="24"
+          nzFor="first_name"
+          style="text-align: center">
+          First name:
+        </nz-form-label>
+
+        <nz-form-control 
+          [nzSm]="16" 
+          [nzXs]="24" 
+          [nzErrorTip]="firstNameError">
+          <input
+            nz-input
+            formControlName="first_name"
+            name="first_name"
+          />
+        </nz-form-control>
+      </nz-form-item>
+
+      <ng-template #firstNameError>
+        <span *ngIf="form.get('first_name')?.hasError('required')">
+          This field is required
+        </span>
+        <span *ngIf="form.get('first_name')?.hasError('pattern')">
+          This field cannot be empty or contain only spaces
+        </span>
+      </ng-template>
+
+      <nz-form-item>
+        <nz-form-label
+          [nzSm]="8"
+          [nzXs]="24"
+          nzFor="last_name"
+          style="text-align: center">
+          Last name:
+        </nz-form-label>
+
+        <nz-form-control 
+          [nzSm]="16" 
+          [nzXs]="24" 
+          [nzErrorTip]="lastNameError">
+          <input
+            nz-input
+            formControlName="last_name"
+            name="last_name"
+          />
+        </nz-form-control>
+      </nz-form-item>
+
+      <ng-template #lastNameError>
+        <span *ngIf="form.get('last_name')?.hasError('required')">
+          This field is required
+        </span>
+        <span *ngIf="form.get('last_name')?.hasError('pattern')">
+          This field cannot be empty or contain only spaces
+        </span>
+      </ng-template>
+
+      <nz-form-item>
+        <nz-form-label
+          [nzSm]="8"
+          [nzXs]="24"
+          nzFor="email"
+          style="text-align: center">
+          Email:
+        </nz-form-label>
+
+        <nz-form-control 
+          [nzSm]="16" 
+          [nzXs]="24" 
+          [nzErrorTip]="emailError">
+          <input 
+          nz-input 
+          formControlName="email" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <ng-template #emailError>
+        <span *ngIf="form.get('email')?.hasError('required')">
+          This field is required
+        </span>
+        <span *ngIf="form.get('email')?.hasError('email')">
+          Please enter a valid email address
+        </span>
+      </ng-template>
+
+      <nz-form-item>
+        <nz-form-label
+          [nzSm]="8"
+          [nzXs]="24"
+          nzFor="phone"
+          style="text-align: center">
+          Phone:
+        </nz-form-label>
+
+        <nz-form-control 
+          [nzSm]="16" 
+          [nzXs]="24" 
+          [nzErrorTip]="phoneError">
+          <input 
+            nz-input 
+            type="tel" 
+            formControlName="phone"
+          />
+        </nz-form-control>
+      </nz-form-item>
+
+      <ng-template #phoneError>
+        <span *ngIf="form.get('phone')?.hasError('required')">
+          This field is required
+        </span>
+        <span *ngIf="form.get('phone')?.hasError('pattern')">
+          This field cannot be empty or contain only spaces
+        </span>
+      </ng-template>
+
+      <nz-form-item>
+        <nz-form-label
+          [nzSm]="8"
+          [nzXs]="24"
+          nzFor="username"
+          style="text-align: center">
+          Username:
+        </nz-form-label>
+
+        <nz-form-control 
+          [nzSm]="16" 
+          [nzXs]="24" 
+          [nzErrorTip]="usernameError">
+          <input 
+            nz-input 
+            formControlName="username" 
+            name="username" 
+          />
+        </nz-form-control>
+      </nz-form-item>
+
+      <ng-template #usernameError>
+        <span *ngIf="form.get('username')?.hasError('required')">
+          This field is required
+        </span>
+        <span *ngIf="form.get('username')?.hasError('pattern')">
+          This field cannot be empty or contain only spaces
+        </span>
+      </ng-template>
+
+      <nz-form-item>
+        <nz-form-label
+          [nzSm]="8"
+          [nzXs]="24"
+          nzFor="type_user"
+          style="text-align: center">
+          User type:
+        </nz-form-label>
+
+        <nz-form-control 
+          [nzSm]="16" 
+          [nzXs]="24" 
+          [nzErrorTip]="typeUserError">
+          <nz-select
+            formControlName="type_user"
+            name="userType"
+            [nzOptions]="userTypeOptions"
+            nzPlaceHolder="Select a user type"
+            (ngModelChange)="userTypeChange($event)">
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <ng-template #typeUserError>
+        <span *ngIf="form.get('type_user')?.hasError('required')">
+          This field is required
+        </span>
+      </ng-template>
+
+      <div nz-col nzSpan="24" *ngIf="extraForm?.type === 'SUPPLIER'">
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="number_license"
+            style="text-align: center">
+            Number license:
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24"
+            [nzErrorTip]="licenceError">
+            <input
+              nz-input
+              name="number_license"
+              formControlName="number_license"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <ng-template #licenceError>
+          <span *ngIf="form.get('number_license')?.hasError('required')">
+            This field is required
+          </span>
+        </ng-template>
+      </div>
+      
+      <div nz-col nzSpan="24" *ngIf="extraForm?.type === 'SUPPLIER'">
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="stores"
+            style="text-align: center">
+            Localities:
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24"
+            [nzErrorTip]="localitiesError">
+            <nz-select
+              formControlName="localities"
+              name="localities"
+              nzPlaceHolder="Select locality"
+              nzMode="multiple">
+              <nz-option
+                *ngFor="let o of localities"
+                [nzLabel]="o.name"
+                [nzValue]="o.id">
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <ng-template #localitiesError>
+          <span *ngIf="form.get('localities')?.hasError('required')">
+            This field is required
+          </span>
+        </ng-template>
+      </div>
+
+      <div nz-col nzSpan="24" *ngIf="extraForm?.type === 'SUPPLIER'">
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="insurers"
+            style="text-align: center">
+            Insurers:
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24"
+            [nzErrorTip]="insurerError">
+            <nz-select
+              formControlName="insurers"
+              name="insurers"
+              nzPlaceHolder="Select Insurer"
+              nzMode="multiple">
+              <nz-option
+                *ngFor="let o of insurers"
+                [nzLabel]="o.name"
+                [nzValue]="o.id">
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <ng-template #insurerError>
+          <span *ngIf="form.get('insurers')?.hasError('required')">
+            This field is required
+          </span>
+        </ng-template>
+      </div>
+
+      <div nz-col nzSpan="24" *ngIf="extraForm?.type === 'PARTNER'">
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="supplier"
+            style="text-align: center">
+            Supplier:
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24"
+            [nzErrorTip]="supplierError">
+            <nz-select
+              formControlName="supplier"
+              name="supplier"
+              nzPlaceHolder="Select insurer">
+              <nz-option
+                *ngFor="let o of suppliers"
+                [nzLabel]="o.user.first_name + ' ' + o.user.last_name"
+                [nzValue]="o.id">
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <ng-template #supplierError>
+          <span *ngIf="form.get('supplier')?.hasError('required')">
+            This field is required
+          </span>
+        </ng-template>
+      </div>
+    </nz-spin>
+  </form>
+
+  <ng-template #footerTpl>
+    <div style="display: flex; float: right">
+      <button 
+        nz-button 
+        style="margin-right: 8px" 
+        (click)="closeDrawer()">
+        Close
+      </button>
+
+      <button 
+        nz-button 
+        nzType="primary" 
+        (click)="submit()">
+        Save
+      </button>
+    </div>
+  </ng-template>
+</nz-drawer>

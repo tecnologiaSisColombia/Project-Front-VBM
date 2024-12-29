@@ -5,7 +5,7 @@ import { environment } from 'environments/environment';
 @Injectable({
   providedIn: 'root',
 })
-export class StoresService {
+export class LocalityService {
   hostname = environment.apiUrl;
 
   constructor(private http: HttpClient) { }

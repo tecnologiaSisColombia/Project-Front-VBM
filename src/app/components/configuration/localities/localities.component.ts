@@ -21,7 +21,7 @@ import { debounceTime, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import { StoresService } from 'app/services/config/localities.service';
+import { LocalityService } from 'app/services/config/localities.service';
 import * as XLSX from 'xlsx';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
@@ -66,7 +66,7 @@ export class LocalitiesComponent implements OnInit {
 
   constructor(
     private fb: UntypedFormBuilder,
-    private storesService: StoresService,
+    private localitiesService: LocalityService,
     private msgService: NzMessageService
   ) {
     this.form = this.fb.group({
@@ -89,7 +89,7 @@ export class LocalitiesComponent implements OnInit {
 
   getInitData() {
     this.isDataLoading = true;
-    this.storesService
+    this.localitiesService
       .get({ name: this.nameSearch }, this.page, this.page_size)
       .subscribe({
         next: (res: any) => {
@@ -144,7 +144,7 @@ export class LocalitiesComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
-        this.storesService.delete(id).subscribe({
+        this.localitiesService.delete(id).subscribe({
           next: () => {
             this.msgService.success(JSON.stringify('Locality deleted successfully'));
             this.isDataLoading = false;
@@ -166,7 +166,7 @@ export class LocalitiesComponent implements OnInit {
 
   update(id: number, data: any) {
     this.isDataLoading = true;
-    this.storesService.update(id, data).subscribe({
+    this.localitiesService.update(id, data).subscribe({
       next: () => {
         this.msgService.success(JSON.stringify('Locality updated successfully'));
         this.isDataLoading = false;
@@ -187,7 +187,7 @@ export class LocalitiesComponent implements OnInit {
       if (this.isUpdating) {
         return this.update(this.dataDrawerCache.id, this.form.value);
       }
-      this.storesService.create(this.form.value).subscribe({
+      this.localitiesService.create(this.form.value).subscribe({
         next: () => {
           this.msgService.success(JSON.stringify('Locality created successfully'));
           this.isDataLoading = false;
@@ -236,7 +236,7 @@ export class LocalitiesComponent implements OnInit {
   }
 
   exportLocalities(): void {
-    this.storesService
+    this.localitiesService
       .get({}, null, null, true)
       .subscribe({
         next: (res: any) => {
