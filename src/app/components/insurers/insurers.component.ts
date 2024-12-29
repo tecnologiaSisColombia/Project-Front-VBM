@@ -321,7 +321,7 @@ export class InsurersComponent implements OnInit {
     } else {
       this.insurerService.createInsurer(formData).subscribe({
         next: () => {
-          this.msgService.success(JSON.stringify('New Insurer created'));
+          this.msgService.success(JSON.stringify('Insurer created successfully'));
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();

@@ -201,7 +201,7 @@ export class ProductsComponent implements OnInit {
       }
       this.productService.create(this.form.value).subscribe({
         next: () => {
-          this.msgService.success(JSON.stringify('New product created'));
+          this.msgService.success(JSON.stringify('Product created successfully'));
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();

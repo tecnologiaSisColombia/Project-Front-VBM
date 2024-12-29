@@ -189,7 +189,7 @@ export class LocalitiesComponent implements OnInit {
       }
       this.storesService.create(this.form.value).subscribe({
         next: () => {
-          this.msgService.success(JSON.stringify('New Locality created'));
+          this.msgService.success(JSON.stringify('Locality created successfully'));
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();

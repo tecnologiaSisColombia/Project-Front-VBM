@@ -239,7 +239,7 @@ export class ProfilesComponent implements OnInit {
       .updateGroup(this.editCache[id].data.id, this.editCache[id].data)
       .subscribe({
         next: () => {
-          this.message.success(JSON.stringify('Group successfully updated'));
+          this.message.success(JSON.stringify('Group updated successfully'));
           Object.assign(this.listOfDisplayData[index], this.editCache[id].data);
           this.editCache[id].edit = false;
           this.isDataLoading = false;
@@ -289,7 +289,7 @@ export class ProfilesComponent implements OnInit {
 
       this.profileService.addGroup(data).subscribe({
         next: () => {
-          this.message.success(JSON.stringify('Group created'));
+          this.message.success(JSON.stringify('Group created successfully'));
           this.getGroups();
           this.closeDrawerNewProfile();
         },
@@ -377,7 +377,7 @@ export class ProfilesComponent implements OnInit {
         this.isDataLoading = true;
         this.profileService.deleteGroup(id_group).subscribe({
           next: () => {
-            this.message.success(JSON.stringify('Group deleted'));
+            this.message.success(JSON.stringify('Group deleted successfully'));
             this.isDataLoading = false;
 
             if (this.listOfDisplayData.length === 1 && this.page > 1) {

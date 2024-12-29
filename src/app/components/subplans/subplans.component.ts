@@ -230,7 +230,7 @@ export class SubplansComponent implements OnInit {
       }
       this.subplanService.createSubPlan(this.form.value).subscribe({
         next: () => {
-          this.msgService.success(JSON.stringify('New Subplan created'));
+          this.msgService.success(JSON.stringify('Subplan created successfully'));
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();

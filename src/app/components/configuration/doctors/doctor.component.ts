@@ -230,7 +230,7 @@ export class DoctorComponent {
       }
       this.doctorService.create(this.form.value).subscribe({
         next: () => {
-          this.msgService.success(JSON.stringify('New Doctor created'));
+          this.msgService.success(JSON.stringify('Doctor created successfully'));
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();

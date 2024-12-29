@@ -216,7 +216,7 @@ export class PlansComponent implements OnInit {
       }
       this.planService.createPlan(this.form.value).subscribe({
         next: () => {
-          this.msgService.success(JSON.stringify('New Coverage created'));
+          this.msgService.success(JSON.stringify('Coverage created successfully'));
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();

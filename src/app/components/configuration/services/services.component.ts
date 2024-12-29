@@ -205,7 +205,7 @@ export class ServicesComponent implements OnInit {
       }
       this.serviceService.create(this.form.value).subscribe({
         next: () => {
-          this.msgService.success(JSON.stringify('New service created'));
+          this.msgService.success(JSON.stringify('Service created successfully'));
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
