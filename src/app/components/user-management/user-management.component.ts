@@ -297,7 +297,6 @@ export class UserManagementComponent implements OnInit {
         this.msgService.success(JSON.stringify('User updated successfully'));
         this.isDataLoading = false;
         this.closeDrawer();
-        this.getInitData();
       },
       error: (err) => {
         this.drawerLoader = false;
