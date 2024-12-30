@@ -19,26 +19,26 @@ export class UserService {
   }
 
   getUsers(
-    { name, lastname, username }: any,
-    page: number = 1,
-    pageSize: number = 10,
+    { username, first_name, last_name }: any,
+    page: number | null = 1,
+    pageSize: number | null = 10,
     init = false
   ): Observable<any[]> {
     let params = new HttpParams()
-      .set('page', page.toString())
-      .set('page_size', pageSize.toString())
+      .set('page', (page ?? 1).toString())
+      .set('page_size', (pageSize ?? 10).toString())
       .set('init', init);
-
-    if (name != null) {
-      params = params.set('name', name);
-    }
-
-    if (lastname != null) {
-      params = params.set('lastname', lastname);
-    }
 
     if (username != null) {
       params = params.set('username', username);
+    }
+
+    if (first_name != null) {
+      params = params.set('first_name', first_name);
+    }
+
+    if (last_name != null) {
+      params = params.set('last_name', last_name);
     }
 
     return this.http.get<any[]>(`${this.baseUrl}core/users`, { params });

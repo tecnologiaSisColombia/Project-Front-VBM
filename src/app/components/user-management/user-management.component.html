@@ -35,51 +35,33 @@
 </div>
 
 <div class="main-table layout-container">
-  <div class="header-actions">
-    <nz-input-group [nzSuffix]="suffixIconSearch">
+  <div class="table-filters">
+    <nz-input-group 
+      *ngFor="let field of searchFields" 
+      [nzSuffix]="suffixIconSearch">
       <input
+        type="text"
         nz-input
-        placeholder="Username"
-        [(ngModel)]="searchQuery.username"
-        (ngModelChange)="onSearch('username')"
+        [placeholder]="field.placeholder"
+        [(ngModel)]="this[field.model]"
+        (ngModelChange)="search($event, field.key)"
       />
+
+      <ng-template #suffixIconSearch>
+        <span 
+          nz-icon 
+          nzType="search">
+        </span>
+      </ng-template>
     </nz-input-group>
-
-    <ng-template #suffixIconSearch>
-      <span 
-        nz-icon 
-        nzType="search">
-      </span>
-    </ng-template>
-
-    <nz-input-group [nzSuffix]="suffixIconSearch">
-      <input
-        nz-input
-        placeholder="Full Name"
-        [(ngModel)]="searchQuery.fullName"
-        (ngModelChange)="onSearch('fullName')"
-      />
-    </nz-input-group>
-
-    <ng-template #suffixIconSearch>
-      <span 
-        nz-icon 
-        nzType="search">
-      </span>
-    </ng-template>
-  </div>
+  </div>  
 
   <nz-table
     #userTable
-    [nzBordered]="false"
-    [nzLoading]="loading"
-    [nzData]="data"
-    [nzShowPagination]="true"
-    [nzPageSize]="10"
-    class="custom-pagination" 
-    [nzSize]="'default'"
-    [nzShowSizeChanger]="true"
-    [nzShowQuickJumper]="true">
+    [nzData]="dataToDisplay"
+    [nzFrontPagination]="false"
+    [nzNoResult]="noDataTemplate"
+    [nzLoading]="isDataLoading">
     <thead>
       <tr>
         <th>Rol</th>
@@ -133,6 +115,29 @@
       </tr>
     </tbody>
   </nz-table>
+
+  <ng-template #noDataTemplate>
+    <nz-empty
+      nzNotFoundImage="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+      [nzNotFoundContent]="contentTpl">
+      <ng-template #contentTpl>
+        <span>
+          No users found
+        </span>
+      </ng-template>
+    </nz-empty>
+  </ng-template>
+
+  <nz-pagination
+    [nzPageIndex]="page"
+    [nzResponsive]="true"
+    [nzTotal]="count_records"
+    [nzPageSize]="page_size"
+    (nzPageIndexChange)="pageChange($event)"
+    (nzPageSizeChange)="pageSizeChange($event)"
+    [nzShowSizeChanger]="true"
+    nzShowQuickJumper>
+  </nz-pagination>
 </div>
 
 <nz-drawer

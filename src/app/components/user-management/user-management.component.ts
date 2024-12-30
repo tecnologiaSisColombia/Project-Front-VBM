@@ -29,6 +29,8 @@ import { UserService } from 'app/services/user-management/user-management.servic
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
   selector: 'app-user-management',
@@ -48,29 +50,18 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
     NzDemoModalLocaleComponent,
     NzSwitchModule,
     ReactiveFormsModule,
-    NzSpinModule
+    NzSpinModule,
+    NzPaginationModule,
+    NzEmptyModule
   ],
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.css', '../../../animations/styles.css'],
 })
 export class UserManagementComponent implements OnInit {
-  loading = false;
-  data: any[] = [];
+  isDataLoading = false;
+  dataToDisplay: any[] = [];
   originalData: any[] = [];
-  user_types: any[] = [];
-  searchQuery: { username: string; fullName: string } = { username: '', fullName: '', };
-  searchQuerySubject: Subject<{
-    field: 'username' | 'fullName';
-    query: string;
-  }> = new Subject();
-  num_pages = 1;
-  count_records = 0;
-  page_size = 10;
-  page = 1;
-  nameSearch: any = null;
-  usernameSearch: any = null;
-  lastnameSearch: any = null;
-
+  userTypes: any[] = [];
   form: UntypedFormGroup;
   visible = false;
   extraForm: any = null;
@@ -79,8 +70,20 @@ export class UserManagementComponent implements OnInit {
   suppliers: any[] = [];
   insurers: any[] = [];
   drawerLoader = false;
-
-  // private searchNameSubject = new Subject<{ type: string; value: string }>();
+  firstSearch: any = null;
+  lastSearch: any = null;
+  usernameSearch: any = null;
+  num_pages = 1;
+  count_records = 0;
+  page_size = 10;
+  page = 1;
+  [key: string]: any;
+  searchFields = [
+    { placeholder: 'Username...', model: 'usernameSearch', key: 'username' },
+    { placeholder: 'First Name...', model: 'firstSearch', key: 'first_name' },
+    { placeholder: 'Last Name...', model: 'lastSearch', key: 'last_name' }
+  ];
+  private searchNameSubject = new Subject<{ type: string; value: string }>();
 
   constructor(
     private userService: UserService,
@@ -103,28 +106,26 @@ export class UserManagementComponent implements OnInit {
       insurers: [null],
       number_license: [''],
     });
+    this.searchNameSubject.pipe(debounceTime(1000)).subscribe(({ type, value }) => {
+      const fields = {
+        first_name: () => (this.firstSearch = value),
+        last_name: () => (this.lastSearch = value),
+        username: () => (this.usernameSearch = value),
+      };
 
-    // this.searchNameSubject.pipe(debounceTime(2000)).subscribe((data) => {
-    //   if (data.type === 'name') this.nameSearch = data.value;
-    //   if (data.type === 'username') this.usernameSearch = data.value;
-    //   if (data.type === 'lastname') this.lastnameSearch = data.value;
-    //   this.page = 1;
-    //   this.fetchUsers();
-    // });
+      (fields as Record<string, () => void>)[type]?.();
+      this.page = 1;
+      this.getInitData();
+      this.isDataLoading = false;
+    });
+  }
 
+  ngOnInit(): void {
+    this.getInitData();
     this.getUserTypes();
     this.getLocalities();
     this.getSuppliers();
     this.getInsurers();
-  }
-
-  ngOnInit(): void {
-    this.fetchUsers();
-    this.getUserTypes();
-
-    this.searchQuerySubject
-      .pipe(debounceTime(300))
-      .subscribe(({ field, query }) => this.filterData(field, query));
   }
 
   getSuppliers(): void {
@@ -176,7 +177,7 @@ export class UserManagementComponent implements OnInit {
       this.userService.createUser(userData).subscribe({
         next: () => {
           this.msgService.success(JSON.stringify('User created successfully'));
-          this.fetchUsers();
+          this.getInitData();
           this.closeDrawer();
           this.drawerLoader = false;
         },
@@ -233,14 +234,14 @@ export class UserManagementComponent implements OnInit {
 
   getUserTypes(): void {
     this.userService.getUserTypes().subscribe({
-      next: (response: any[]) => {
-        this.userTypeOptions = response.map((type) => ({
+      next: (res: any[]) => {
+        this.userTypeOptions = res.map((type) => ({
           label: type.name,
           value: type.name,
           type: type.type,
           id: type.id,
         }));
-        this.user_types = response || [];
+        this.userTypes = res || [];
       },
       error: (error) => {
         this.msgService.error(JSON.stringify(error));
@@ -248,34 +249,56 @@ export class UserManagementComponent implements OnInit {
     });
   }
 
-  fetchUsers(): void {
-    this.loading = true;
+  getInitData(): void {
+    this.isDataLoading = true;
     this.userService
-      .getUsers({
-        name: this.nameSearch,
-        lastname: this.lastnameSearch,
-        username: this.usernameSearch,
-      })
+      .getUsers(
+        {
+          username: this.usernameSearch,
+          first_name: this.firstSearch,
+          last_name: this.lastSearch,
+        },
+        this.page,
+        this.page_size
+      )
       .subscribe({
-        next: (data: any) => {
-          this.data = data.results;
-          this.originalData = [...data.results];
-          this.loading = false;
+        next: (res: any) => {
+          this.dataToDisplay = res.results;
+          this.isDataLoading = false;
+
+          const isSearching = this.usernameSearch || this.firstSearch || this.lastSearch;
+
+          if (isSearching && (!res.results || res.results.length === 0)) {
+            this.msgService.warning(JSON.stringify('No results found matching your search criteria'));
+          }
+
+          this.setPagination(res.total);
         },
         error: (error) => {
           this.msgService.error(JSON.stringify(error));
-          this.loading = false;
+          this.isDataLoading = false;
         },
       });
   }
 
-  addUserToList(newUser: any): void {
-    this.data = [newUser, ...this.data];
-    this.fetchUsers();
+  pageChange(event: number) {
+    this.page = event;
+    this.getInitData();
+  }
+
+  pageSizeChange(pageSize: number): void {
+    this.page_size = pageSize;
+    this.page = 1;
+    this.getInitData();
+  }
+
+  setPagination(count: number) {
+    this.count_records = count;
+    this.num_pages = Math.ceil(count / this.page_size);
   }
 
   updateUser(updatedUser: any): void {
-    this.fetchUsers();
+    this.getInitData();
   }
 
   toggleUserStatus(user: any): void {
@@ -285,7 +308,7 @@ export class UserManagementComponent implements OnInit {
 
     toggleAction.subscribe(
       () => {
-        this.msgService.success('User updated successfully');
+        this.msgService.success(JSON.stringify('User updated successfully'));
 
         user.is_active = user.is_active;
 
@@ -309,20 +332,21 @@ export class UserManagementComponent implements OnInit {
 
   deleteUser(user: any): void {
     Swal.fire({
-      title: 'Are you sure to delete?',
+      text: 'Are you sure you want to delete this user?',
+      icon: 'warning',
       showDenyButton: true,
       confirmButtonText: 'Yes',
       denyButtonText: `No`,
       allowOutsideClick: false,
     }).then((result) => {
       if (result.isConfirmed) {
-        this.loading = true;
+        this.isDataLoading = true;
         this.userService.deleteUser(user.username).subscribe({
           next: () => {
-            this.msgService.success('User deleted successfully');
-            this.loading = false;
+            this.msgService.success(JSON.stringify('User deleted successfully'));
+            this.isDataLoading = false;
 
-            this.data = this.data.filter((u) => u.username !== user.username);
+            this.dataToDisplay = this.dataToDisplay.filter((u) => u.username !== user.username);
 
             const userAttributes = localStorage.getItem('user_attributes');
             const currentUser = userAttributes
@@ -334,7 +358,7 @@ export class UserManagementComponent implements OnInit {
             }
           },
           error: (err) => {
-            this.loading = false;
+            this.isDataLoading = false;
             this.msgService.error(JSON.stringify(err.error));
           },
         });
@@ -343,100 +367,81 @@ export class UserManagementComponent implements OnInit {
   }
 
   mapUserRole(user_type_id: number): string {
-    const type = this.user_types.find((t) => t.id == user_type_id);
+    const type = this.userTypes.find((t) => t.id == user_type_id);
     return type ? type.name : 'Unknown Role';
   }
 
-  onSearch(field: 'username' | 'fullName'): void {
-    this.loading = true;
-    const query = this.searchQuery[field].trim();
-    this.searchQuerySubject.next({ field, query });
-  }
-
-  filterData(field: string, query: string): void {
-    if (query) {
-      this.data = this.originalData.filter((user) => {
-        if (field === 'username') {
-          const username = `${user.username}`;
-          return username.includes(query);
-        } else if (field === 'fullName') {
-          const fullName = `${user.first_name} ${user.last_name}`;
-          return fullName.includes(query);
-        }
-        return true;
-      });
-    } else {
-      this.data = [...this.originalData];
-    }
-    this.loading = false;
+  search(value: string, type: string) {
+    this.isDataLoading = true;
+    this.searchNameSubject.next({ type, value });
   }
 
   exportUsersToXLS(): void {
-    if (this.data.length === 0) {
-      this.msgService.warning('No data available to export');
-      return;
-    }
+    // if (this.data.length === 0) {
+    //   this.msgService.warning(JSON.stringify('No data available to export'));
+    //   return;
+    // }
 
-    this.loading = true;
+    // this.isDataLoading = true;
 
-    const headers: Record<
-      | 'first_name'
-      | 'last_name'
-      | 'email'
-      | 'username'
-      | 'phone'
-      | 'is_active'
-      | 'role',
-      string
-    > = {
-      role: 'Role',
-      first_name: 'First Name',
-      last_name: 'Last Name',
-      email: 'Email',
-      username: 'Username',
-      phone: 'Phone',
-      is_active: 'Status',
-    };
+    // const headers: Record<
+    //   | 'first_name'
+    //   | 'last_name'
+    //   | 'email'
+    //   | 'username'
+    //   | 'phone'
+    //   | 'is_active'
+    //   | 'role',
+    //   string
+    // > = {
+    //   role: 'Role',
+    //   first_name: 'First Name',
+    //   last_name: 'Last Name',
+    //   email: 'Email',
+    //   username: 'Username',
+    //   phone: 'Phone',
+    //   is_active: 'Status',
+    // };
 
-    const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+    // const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
-    const filteredData = this.data.map((user) =>
-      selectedColumns.reduce((obj: Record<string, any>, key) => {
-        if (key === 'is_active') {
-          obj[headers[key]] = user[key] == 1 ? 'Active' : 'Inactive';
-        } else if (key === 'role') {
-          obj[headers[key]] = user.extra_data
-            ? this.mapUserRole(user.extra_data[0].user_type_id)
-            : 'Master';
-        } else {
-          obj[headers[key]] = user[key];
-        }
-        return obj;
-      }, {})
-    );
+    // const filteredData = this.data.map((user) =>
+    //   selectedColumns.reduce((obj: Record<string, any>, key) => {
+    //     if (key === 'is_active') {
+    //       obj[headers[key]] = user[key] == 1 ? 'Active' : 'Inactive';
+    //     } else if (key === 'role') {
+    //       obj[headers[key]] = user.extra_data
+    //         ? this.mapUserRole(user.extra_data[0].user_type_id)
+    //         : 'Master';
+    //     } else {
+    //       obj[headers[key]] = user[key];
+    //     }
+    //     return obj;
+    //   }, {})
+    // );
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+    // const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
 
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Users');
+    // const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+    // XLSX.utils.book_append_sheet(workbook, worksheet, 'Users');
 
-    const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
+    // const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+    //   bookType: 'xlsx',
+    //   type: 'array',
+    // });
 
-    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
+    // const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    // const link = document.createElement('a');
+    // const url = URL.createObjectURL(blob);
 
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'users.xlsx');
-    link.style.visibility = 'hidden';
+    // link.setAttribute('href', url);
+    // link.setAttribute('download', 'users.xlsx');
+    // link.style.visibility = 'hidden';
 
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // document.body.appendChild(link);
+    // link.click();
+    // document.body.removeChild(link);
 
-    this.loading = false;
+    // this.isDataLoading = false;
   }
 }
