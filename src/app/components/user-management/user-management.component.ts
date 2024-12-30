@@ -19,7 +19,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { AuthService } from '../../services/auth/auth.service';
-import { Subject } from 'rxjs';
+import { Subject, forkJoin } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import * as XLSX from 'xlsx';
 import { InsurersService } from 'app/services/insurers/insurers.service';
@@ -282,6 +282,82 @@ export class UserManagementComponent implements OnInit {
       });
   }
 
+  updateUser(updatedUser: any): void {
+    this.getInitData();
+  }
+
+  mapUserRole(user_type_id: number): string {
+    return this.userTypes.find((t) => t.id === user_type_id)?.name;
+  }
+
+  update(id: number, data: any) {
+    this.isDataLoading = true;
+    this.userService.update(id, data).subscribe({
+      next: () => {
+        this.msgService.success(JSON.stringify('User updated successfully'));
+        this.isDataLoading = false;
+        this.closeDrawer();
+        this.getInitData();
+      },
+      error: (err) => {
+        this.drawerLoader = false;
+        this.isDataLoading = false;
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
+  }
+
+  changeStatus(user: any) {
+    const data = { is_active: user.is_active, username: user.username };
+    this.update(user.id, data);
+  }
+
+  delete(username: string, id: number): void {
+    Swal.fire({
+      text: 'Are you sure you want to delete this user?',
+      icon: 'warning',
+      showDenyButton: true,
+      confirmButtonText: 'Yes',
+      denyButtonText: `No`,
+      allowOutsideClick: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.isDataLoading = true;
+        this.userService.delete(username, id).subscribe({
+          next: () => {
+            this.msgService.success(JSON.stringify('User deleted successfully'));
+            this.isDataLoading = false;
+
+            if (this.dataToDisplay.length === 1 && this.page > 1) {
+              this.page--;
+            }
+
+            this.checkAndLogout(username);
+
+            this.getInitData();
+          },
+          error: (err) => {
+            this.msgService.error(JSON.stringify(err.error));
+            this.isDataLoading = false;
+          },
+        });
+      }
+    });
+  }
+
+  checkAndLogout(username: string): void {
+    const storedUser = localStorage.getItem('user_attributes');
+
+    if (storedUser && JSON.parse(storedUser).username === username) {
+      this.authService.doLogout();
+    }
+  }
+
+  search(value: string, type: string) {
+    this.isDataLoading = true;
+    this.searchNameSubject.next({ type, value });
+  }
+
   pageChange(event: number) {
     this.page = event;
     this.getInitData();
@@ -298,151 +374,81 @@ export class UserManagementComponent implements OnInit {
     this.num_pages = Math.ceil(count / this.page_size);
   }
 
-  updateUser(updatedUser: any): void {
-    this.getInitData();
-  }
-
-  toggleUserStatus(user: any): void {
-    const toggleAction = user.is_active
-      ? this.userService.enableUser(user.username)
-      : this.userService.disableUser(user.username);
-
-    toggleAction.subscribe(
-      () => {
-        this.msgService.success(JSON.stringify('User updated successfully'));
-
-        user.is_active = user.is_active;
-
-        if (!user.is_active) {
-          const userAttributes = localStorage.getItem('user_attributes');
-          const currentUser = userAttributes
-            ? JSON.parse(userAttributes)
-            : null;
-
-          if (currentUser?.username === user.username) {
-            this.authService.doLogout();
+  exportUsers(): void {
+    this.userService
+      .getUsers({}, null, null, true)
+      .subscribe({
+        next: (res: any) => {
+          if (res.length === 0) {
+            this.msgService.warning(JSON.stringify('No data available to export'));
+            this.isDataLoading = false;
+            return;
           }
-        }
-      },
-      (error) => {
-        this.msgService.error(JSON.stringify(error.error));
-        user.is_active = !user.is_active;
-      }
-    );
-  }
 
-  deleteUser(user: any): void {
-    Swal.fire({
-      text: 'Are you sure you want to delete this user?',
-      icon: 'warning',
-      showDenyButton: true,
-      confirmButtonText: 'Yes',
-      denyButtonText: `No`,
-      allowOutsideClick: false,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.isDataLoading = true;
-        this.userService.deleteUser(user.username).subscribe({
-          next: () => {
-            this.msgService.success(JSON.stringify('User deleted successfully'));
-            this.isDataLoading = false;
+          this.isDataLoading = true;
 
-            this.dataToDisplay = this.dataToDisplay.filter((u) => u.username !== user.username);
+          const headers = {
+            role: 'Role',
+            first_name: 'First Name',
+            last_name: 'Last Name',
+            email: 'Email',
+            username: 'Username',
+            phone: 'Phone',
+            is_active: 'Status',
+            created: 'Created'
+          };
 
-            const userAttributes = localStorage.getItem('user_attributes');
-            const currentUser = userAttributes
-              ? JSON.parse(userAttributes)
-              : null;
+          const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
-            if (currentUser && currentUser.username === user.username) {
-              this.authService.doLogout();
-            }
-          },
-          error: (err) => {
-            this.isDataLoading = false;
-            this.msgService.error(JSON.stringify(err.error));
-          },
-        });
-      }
-    });
-  }
+          const filteredData = res.map((user: any) =>
+            selectedColumns.reduce((obj: Record<string, any>, key) => {
+              if (key === 'is_active') {
+                obj[headers[key]] = user[key] ? 'Active' : 'Inactive';
+              } else if (key === 'created') {
+                const date = new Date(user[key]);
+                obj[headers[key]] = date.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                });
+              } else if (key === 'role') {
+                obj[headers[key]] = this.mapUserRole(user.user_type)
+              }
+              else {
+                obj[headers[key]] = user[key];
+              }
+              return obj;
+            }, {})
+          );
 
-  mapUserRole(user_type_id: number): string {
-    const type = this.userTypes.find((t) => t.id == user_type_id);
-    return type ? type.name : 'Unknown Role';
-  }
+          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+          const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'Users');
 
-  search(value: string, type: string) {
-    this.isDataLoading = true;
-    this.searchNameSubject.next({ type, value });
-  }
+          const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+            bookType: 'xlsx',
+            type: 'array',
+          });
 
-  exportUsersToXLS(): void {
-    // if (this.data.length === 0) {
-    //   this.msgService.warning(JSON.stringify('No data available to export'));
-    //   return;
-    // }
+          const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+          const link = document.createElement('a');
+          const url = URL.createObjectURL(blob);
 
-    // this.isDataLoading = true;
+          link.setAttribute('href', url);
+          link.setAttribute('download', 'Users.xlsx');
+          link.style.visibility = 'hidden';
 
-    // const headers: Record<
-    //   | 'first_name'
-    //   | 'last_name'
-    //   | 'email'
-    //   | 'username'
-    //   | 'phone'
-    //   | 'is_active'
-    //   | 'role',
-    //   string
-    // > = {
-    //   role: 'Role',
-    //   first_name: 'First Name',
-    //   last_name: 'Last Name',
-    //   email: 'Email',
-    //   username: 'Username',
-    //   phone: 'Phone',
-    //   is_active: 'Status',
-    // };
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
 
-    // const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
-
-    // const filteredData = this.data.map((user) =>
-    //   selectedColumns.reduce((obj: Record<string, any>, key) => {
-    //     if (key === 'is_active') {
-    //       obj[headers[key]] = user[key] == 1 ? 'Active' : 'Inactive';
-    //     } else if (key === 'role') {
-    //       obj[headers[key]] = user.extra_data
-    //         ? this.mapUserRole(user.extra_data[0].user_type_id)
-    //         : 'Master';
-    //     } else {
-    //       obj[headers[key]] = user[key];
-    //     }
-    //     return obj;
-    //   }, {})
-    // );
-
-    // const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
-
-    // const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-    // XLSX.utils.book_append_sheet(workbook, worksheet, 'Users');
-
-    // const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-    //   bookType: 'xlsx',
-    //   type: 'array',
-    // });
-
-    // const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    // const link = document.createElement('a');
-    // const url = URL.createObjectURL(blob);
-
-    // link.setAttribute('href', url);
-    // link.setAttribute('download', 'users.xlsx');
-    // link.style.visibility = 'hidden';
-
-    // document.body.appendChild(link);
-    // link.click();
-    // document.body.removeChild(link);
-
-    // this.isDataLoading = false;
+          this.isDataLoading = false;
+          this.msgService.success(JSON.stringify('Export completed successfully'));
+        },
+        error: (err) => {
+          this.isDataLoading = false;
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 }
