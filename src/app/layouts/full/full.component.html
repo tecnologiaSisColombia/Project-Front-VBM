@@ -38,12 +38,8 @@
     <nz-layout>
       <nz-sider nzCollapsible nzWidth="260px">
         <ul nz-menu nzTheme="dark" nzMode="inline">
-          <li
-            *ngIf="access.admin"
-            nz-submenu
-            nzTitle="Resource Management"
-            nzIcon="check-circle"
-          >
+          <!-- *ngIf="access.admin" -->
+          <li nz-submenu nzTitle="Resource Management" nzIcon="check-circle">
             <ul>
               <!-- <li nz-menu-item>
                 <a routerLink="/config/specialities">Specialities</a>
@@ -51,16 +47,16 @@
               <!-- <li nz-menu-item>
                 <a routerLink="/config/offices">Offices</a>
               </li> -->
-              <li nz-menu-item>
+              <li nz-menu-item *ngIf="access.doctors">
                 <a routerLink="/config/doctors">Doctors</a>
               </li>
-              <li nz-menu-item>
+              <li nz-menu-item *ngIf="access.localities">
                 <a routerLink="/config/localities">Localities</a>
               </li>
-              <li nz-menu-item>
+              <li nz-menu-item *ngIf="access.admin">
                 <a routerLink="/config/services">Services</a>
               </li>
-              <li nz-menu-item>
+              <li nz-menu-item *ngIf="access.admin">
                 <a routerLink="/config/products">Products</a>
               </li>
             </ul>

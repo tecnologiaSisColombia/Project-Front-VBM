@@ -41,6 +41,8 @@ export class FullComponent implements OnInit {
     plans: false,
     subplans: false,
     eligibility: false,
+    doctors: false,
+    localities: false,
   };
   role: string = '';
 
@@ -73,6 +75,12 @@ export class FullComponent implements OnInit {
           }
           if (e.modulo__modulo == 'eligibility') {
             this.access.eligibility = e.admin;
+          }
+          if (e.modulo__modulo == 'localities') {
+            this.access.localities = e.admin;
+          }
+          if (e.modulo__modulo == 'doctors') {
+            this.access.doctors = e.admin;
           }
         });
       },

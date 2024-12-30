@@ -150,14 +150,9 @@ export class NzDemoModalLocaleComponent implements OnInit {
       extra_data: this.user?.extra_data || [{}],
     };
 
-    if (
-      this.tempUser.extra_data?.length > 0 &&
-      this.tempUser.extra_data[0].user_type_id
-    ) {
+    if (this.tempUser.extra_data?.length > 0 && this.tempUser.user_type) {
       this.user_type =
-        this.userTypeOptions.find(
-          (e) => e.id == this.tempUser.extra_data[0].user_type_id
-        ) || '';
+        this.userTypeOptions.find((e) => e.id == this.tempUser.user_type) || '';
     } else {
       this.user_type = { id: 1, type: 'MASTER' };
     }
