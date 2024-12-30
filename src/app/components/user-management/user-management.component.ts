@@ -178,6 +178,7 @@ export class UserManagementComponent implements OnInit {
         next: () => {
           this.msgService.success(JSON.stringify('User created successfully'));
           this.getInitData();
+          this.getSuppliers()
           this.closeDrawer();
           this.drawerLoader = false;
         },
