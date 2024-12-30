@@ -5,10 +5,10 @@ import { environment } from 'environments/environment';
 @Injectable({
   providedIn: 'root',
 })
-export class StoresService {
+export class LocalityService {
   hostname = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   get(
     { name, status }: any,
@@ -17,8 +17,8 @@ export class StoresService {
     init = false
   ) {
     let params = new HttpParams()
-      .set('page', page!.toString())
-      .set('page_size', pageSize!.toString())
+      .set('page', (page ?? 1).toString())
+      .set('page_size', (pageSize ?? 10).toString())
       .set('init', init);
 
     if (name != null) {

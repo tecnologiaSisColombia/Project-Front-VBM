@@ -15,12 +15,13 @@ import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
-import { UserService } from 'app/services/user-management/user-management.service';
+import { ProfileService } from 'app/services/user-management/profile/profile.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as XLSX from 'xlsx';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { debounceTime, Subject } from 'rxjs';
 import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
   selector: 'app-profiles',
@@ -43,13 +44,12 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
     NzDropDownModule,
     NzModalModule,
     NzSelectModule,
+    NzEmptyModule
   ],
-
   templateUrl: './profiles.component.html',
   styleUrls: ['./profiles.component.css', '../../../../animations/styles.css'],
 })
 export class ProfilesComponent implements OnInit {
-  groupsList: any[] = [];
   listOfDisplayData: any[] = [];
   permisosList: any[] = [];
   listOfDisplayPermisos: any[] = [];
@@ -57,6 +57,7 @@ export class ProfilesComponent implements OnInit {
   new_group_name: string = '';
   editCache: { [key: number]: { edit: boolean; data: any } } = {};
   isDataLoading = false;
+  isDataLoadingP = false;
   isVisibleEditDrawer = false;
   editForm!: FormGroup;
   selectedGroupId!: number;
@@ -66,6 +67,12 @@ export class ProfilesComponent implements OnInit {
   page_size: number = 10;
   count_records: number = 0;
   nameSearch: any = null;
+  moduleSelected: any = null;
+  idPermisions: any = null;
+  p_page: number = 1;
+  p_page_size: number = 10;
+  p_count_records: number = 0;
+  moduleSearch: any = null;
   types_users = [
     {
       id: 'MASTER',
@@ -80,51 +87,44 @@ export class ProfilesComponent implements OnInit {
       label: 'Partner',
     },
   ];
-  private searchNameSubject: Subject<{ type: string; value: string }> =
-    new Subject();
-  modules_list: any[] = [];
-  modules_list_display: any[] = [];
-  modalAddModule: boolean = false;
-  moduleSelected: any = null;
-  idPermisions: any = null;
+  private searchSubject: Subject<{ type: string; value: string }> = new Subject();
 
   constructor(
     private fb: FormBuilder,
-    private profileService: UserService,
+    private profileService: ProfileService,
     private message: NzMessageService
   ) {
-    this.searchNameSubject.pipe(debounceTime(1000)).subscribe((data) => {
-      if (data.type === 'name') {
-        this.nameSearch = data.value;
-      }
+    this.searchSubject.pipe(debounceTime(1000)).subscribe((data) => {
       this.page = 1;
-      this.getGroups();
-      this.isDataLoading = false;
+      this.p_page = 1
+
+      switch (data.type) {
+        case 'name':
+          this.nameSearch = data.value;
+          this.getGroups();
+          this.isDataLoading = false;
+          break;
+
+        case 'modulo':
+          this.moduleSearch = data.value;
+          this.seePermissions(this.idPermisions);
+          this.isDataLoadingP = false;
+          break;
+      }
     });
   }
 
   ngOnInit(): void {
     this.getGroups();
-    this.getModules();
+
     this.addForm = this.fb.group({
-      new_group_name: [
-        '',
-        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
-      ],
+      new_group_name: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       type: [null, [Validators.required]],
     });
+
     this.editForm = this.fb.group({
       name: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       type: [null, [Validators.required]],
-    });
-  }
-
-  initializeForm(fieldName: string): FormGroup {
-    return this.fb.group({
-      [fieldName]: [
-        '',
-        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
-      ],
     });
   }
 
@@ -151,9 +151,7 @@ export class ProfilesComponent implements OnInit {
 
     this.profileService.updatePerfil(id, permissions).subscribe({
       next: () => {
-        this.message.success(
-          JSON.stringify('Permissions updated successfully')
-        );
+        this.message.success(JSON.stringify('Permissions updated successfully'));
         this.seePermissions(group);
         this.isDataLoading = false;
       },
@@ -164,63 +162,39 @@ export class ProfilesComponent implements OnInit {
     });
   }
 
-  seePermissions(id_grupo: number): void {
-    this.idPermisions = id_grupo;
-    this.profileService.getGroupPerfil(id_grupo).subscribe({
-      next: (res: any) => {
-        this.permisosList = res;
-        this.listOfDisplayPermisos = this.permisosList;
-        this.isVisiblePermisosModal = true;
-      },
-      error: (err) => {
-        this.message.error(JSON.stringify(err.error));
-      },
-    });
+  openPermissionsModal(id_grupo: number): void {
+    this.seePermissions(id_grupo, true);
   }
-  openAddModule() {
-    this.modalAddModule = true;
-    this.modules_list_display = this.modules_list.filter(
-      (e) => !this.listOfDisplayPermisos.find((p) => p.modulo == e.id)
-    );
-  }
-  openAddModuleOk() {
-    this.modalAddModule = false;
-    console.log(this.listOfDisplayPermisos, this.moduleSelected);
-    const module_exists = this.listOfDisplayPermisos.find(
-      (e) => e.modulo == this.moduleSelected
-    );
-    if (module_exists) {
-      this.message.error('Module selected already exists');
-      return;
+
+  seePermissions(id_grupo: number, resetSearch: boolean = false): void {
+    if (resetSearch) {
+      this.moduleSearch = null;
+      this.p_page = 1;
     }
-    const data = {
-      group: this.idPermisions,
-      modulo: this.moduleSelected,
-    };
-    this.profileService.addPerfilModule(data).subscribe({
-      next: (res: any) => {
-        this.message.success('Profile added!');
-        this.openAddModuleCancel();
-        this.seePermissions(this.idPermisions);
-      },
-      error: (err) => {
-        this.message.error(JSON.stringify(err.error));
-      },
-    });
+
+    this.idPermisions = id_grupo;
+    this.isDataLoadingP = true;
+    this.profileService.getGroupPerfil(id_grupo, this.p_page, this.p_page_size, false, this.moduleSearch)
+      .subscribe({
+        next: (res: any) => {
+          this.permisosList = res.results;
+          this.listOfDisplayPermisos = this.permisosList;
+          this.p_count_records = res.total;
+
+          if ((!res.results || res.results.length === 0) && this.moduleSearch) {
+            this.message.warning('No results found matching your search criteria');
+          }
+
+          this.isVisiblePermisosModal = true;
+          this.isDataLoadingP = false;
+        },
+        error: (err) => {
+          this.isDataLoadingP = false;
+          this.message.error(JSON.stringify(err.error));
+        },
+      });
   }
-  openAddModuleCancel() {
-    this.modalAddModule = false;
-  }
-  getModules() {
-    this.profileService.getModules().subscribe({
-      next: (res: any) => {
-        this.modules_list = res;
-      },
-      error: (err) => {
-        this.message.error(JSON.stringify(err.error));
-      },
-    });
-  }
+
 
   submitEdit(): void {
     if (this.editForm.valid) {
@@ -265,7 +239,7 @@ export class ProfilesComponent implements OnInit {
       .updateGroup(this.editCache[id].data.id, this.editCache[id].data)
       .subscribe({
         next: () => {
-          this.message.success(JSON.stringify('Group successfully updated'));
+          this.message.success(JSON.stringify('Group updated successfully'));
           Object.assign(this.listOfDisplayData[index], this.editCache[id].data);
           this.editCache[id].edit = false;
           this.isDataLoading = false;
@@ -315,7 +289,7 @@ export class ProfilesComponent implements OnInit {
 
       this.profileService.addGroup(data).subscribe({
         next: () => {
-          this.message.success(JSON.stringify('Group created'));
+          this.message.success(JSON.stringify('Group created successfully'));
           this.getGroups();
           this.closeDrawerNewProfile();
         },
@@ -352,6 +326,13 @@ export class ProfilesComponent implements OnInit {
           this.listOfDisplayData = res.results;
           this.count_records = res.total;
           this.updateEditCache();
+
+          const isSearching = this.nameSearch;
+
+          if (isSearching && (!res.results || res.results.length === 0)) {
+            this.message.warning(JSON.stringify('No results found matching your search criteria'));
+          }
+
           this.isDataLoading = false;
         },
         error: (err: any) => {
@@ -361,20 +342,25 @@ export class ProfilesComponent implements OnInit {
       });
   }
 
-  pageChange(pageIndex: number): void {
-    this.page = pageIndex;
-    this.getGroups();
-  }
-
-  pageSizeChange(pageSize: number): void {
-    this.page_size = pageSize;
-    this.page = 1;
-    this.getGroups();
+  handlePagination(page: number, pageSize: number, isPermissions: boolean = false): void {
+    if (isPermissions) {
+      this.p_page = page;
+      this.p_page_size = pageSize;
+      this.seePermissions(this.idPermisions);
+    } else {
+      this.page = page;
+      this.page_size = pageSize;
+      this.getGroups();
+    }
   }
 
   search(value: string, type: string) {
-    this.isDataLoading = true;
-    this.searchNameSubject.next({ type, value });
+    if (type === 'modulo') {
+      this.isDataLoadingP = true;
+    } else {
+      this.isDataLoading = true;
+    }
+    this.searchSubject.next({ type, value });
   }
 
   deleteGroup(id_group: number) {
@@ -391,8 +377,13 @@ export class ProfilesComponent implements OnInit {
         this.isDataLoading = true;
         this.profileService.deleteGroup(id_group).subscribe({
           next: () => {
-            this.message.success(JSON.stringify('Group deleted'));
+            this.message.success(JSON.stringify('Group deleted successfully'));
             this.isDataLoading = false;
+
+            if (this.listOfDisplayData.length === 1 && this.page > 1) {
+              this.page--;
+            }
+
             this.getGroups();
           },
           error: (err) => {
@@ -404,64 +395,74 @@ export class ProfilesComponent implements OnInit {
     });
   }
 
-  exportGroupName(): void {
-    if (this.listOfDisplayData.length === 0) {
-      this.message.warning(JSON.stringify('No data available to export'));
-      return;
-    }
-
-    this.isDataLoading = true;
-
-    const headers = {
-      name: 'Group Name',
-      active: 'Status',
-      created: 'Created',
-    };
-
-    const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
-
-    const filteredData = this.listOfDisplayData.map((group) =>
-      selectedColumns.reduce((obj: Record<string, any>, key) => {
-        if (key === 'active') {
-          obj[headers[key]] = group[key] ? 'Active' : 'Inactive';
-        } else if (key === 'created') {
-          const date = new Date(group[key]);
-          obj[headers[key]] = date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-          });
-        } else {
-          obj[headers[key]] = group[key];
+  exportGroups(): void {
+    this.profileService.getGroups({}, null, null, true).subscribe({
+      next: (res: any) => {
+        if (res.length === 0) {
+          this.message.warning('No data available to export');
+          this.isDataLoading = false;
+          return;
         }
-        return obj;
-      }, {})
-    );
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+        this.isDataLoading = true;
 
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Groups');
+        const headers = {
+          name: 'Group Name',
+          active: 'Status',
+          created: 'Created',
+        };
 
-    const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
+        const formatData = (data: any[], headers: Record<string, string>) =>
+          data.map((group) =>
+            Object.keys(headers).reduce((obj: Record<string, any>, key) => {
+              if (key === 'active') {
+                obj[headers[key]] = group[key] ? 'Active' : 'Inactive';
+              } else if (key === 'created') {
+                const date = new Date(group[key]);
+                obj[headers[key]] = date.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                });
+              } else {
+                obj[headers[key]] = group[key];
+              }
+              return obj;
+            }, {})
+          );
+
+        const groupsData = formatData(res, headers);
+
+        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(groupsData);
+        const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Groups');
+
+        const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+          bookType: 'xlsx',
+          type: 'array',
+        });
+
+        const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'Groups.xlsx');
+        link.style.visibility = 'hidden';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        this.isDataLoading = false;
+
+        this.message.success('Export completed successfully');
+      },
+      error: (err) => {
+        this.isDataLoading = false;
+        this.message.error(JSON.stringify(err.error));
+      },
     });
-
-    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'Groups.xlsx');
-    link.style.visibility = 'hidden';
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    this.isDataLoading = false;
-
-    this.message.success(JSON.stringify('Export completed successfully'));
   }
+
 }

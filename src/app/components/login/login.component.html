@@ -17,9 +17,11 @@
               autocomplete="off" 
             />
           </nz-input-group>
+
           <ng-template #prefixUserIcon>
             <i nz-icon nzType="user" nzTheme="outline"></i>
           </ng-template>
+
           <ng-template #usernameErrorTpl>
             <span *ngIf="loginForm.get('username')?.hasError('required')">
               Username is required
@@ -45,9 +47,11 @@
               autocomplete="off" 
             />
           </nz-input-group>
+
           <ng-template #prefixLockIcon>
             <i nz-icon nzType="lock" nzTheme="outline"></i>
           </ng-template>
+
           <ng-template #suffixPasswordIcon>
             <i
               *ngIf="loginForm.get('password')?.value"
@@ -55,9 +59,10 @@
               [nzType]="showPassword ? 'eye-invisible' : 'eye'"
               nzTheme="outline"
               (click)="togglePasswordVisibility()"
-              style="cursor: pointer"
-            ></i>
-          </ng-template>          
+              style="cursor: pointer">
+            </i>
+          </ng-template>  
+
           <ng-template #passwordErrorTpl>
             <span *ngIf="loginForm.get('password')?.hasError('required')">
               Password is required
@@ -73,7 +78,11 @@
       </nz-form-item>
 
       <div class="text-right">
-        <a routerLink="/reset_password" class="link">Forgot Password?</a>
+        <a 
+          routerLink="/reset_password" 
+          class="link">
+          Forgot Password?
+        </a>
       </div>
 
       <nz-form-item>

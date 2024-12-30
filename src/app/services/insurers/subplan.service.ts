@@ -8,18 +8,18 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 export class SubplanService {
   hostname = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getSubPlans(
     plan_id: number | null = null,
     { name, plan, group, plan_contract }: any,
-    page: number = 1,
-    pageSize: number = 10,
+    page: number | null = 1,
+    pageSize: number | null = 10,
     init = false
   ) {
     let params = new HttpParams()
-      .set('page', page.toString())
-      .set('page_size', pageSize.toString())
+      .set('page', (page ?? 1).toString())
+      .set('page_size', (pageSize ?? 10).toString())
       .set('init', init);
 
     if (name != null) {

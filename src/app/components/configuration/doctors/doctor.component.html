@@ -49,7 +49,10 @@
       />
 
       <ng-template #suffixIconSearch>
-        <span nz-icon nzType="search"></span>
+        <span 
+          nz-icon 
+          nzType="search">
+        </span>
       </ng-template>
     </nz-input-group>
   </div>  
@@ -58,6 +61,7 @@
     #basicTable
     [nzData]="dataToDisplay"
     [nzLoading]="isDataLoading"
+    [nzNoResult]="noDataTemplate"
     [nzFrontPagination]="false">
     <thead>
       <tr>
@@ -111,6 +115,18 @@
       </tr>
     </tbody>
   </nz-table>
+  
+  <ng-template #noDataTemplate>
+    <nz-empty
+      nzNotFoundImage="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+      [nzNotFoundContent]="contentTpl">
+      <ng-template #contentTpl>
+        <span>
+          No doctors found
+        </span>
+      </ng-template>
+    </nz-empty>
+  </ng-template>
 
   <nz-pagination
     [nzPageIndex]="page"
@@ -118,6 +134,8 @@
     [nzTotal]="count_records"
     [nzPageSize]="page_size"
     (nzPageIndexChange)="pageChange($event)"
+    (nzPageSizeChange)="pageSizeChange($event)"
+    [nzShowSizeChanger]="true"
     nzShowQuickJumper>
   </nz-pagination>
 </div>

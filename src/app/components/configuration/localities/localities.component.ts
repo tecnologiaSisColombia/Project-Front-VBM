@@ -21,8 +21,9 @@ import { debounceTime, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import { StoresService } from 'app/services/config/localities.service';
+import { LocalityService } from 'app/services/config/localities.service';
 import * as XLSX from 'xlsx';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
   selector: 'app-stores',
@@ -42,6 +43,7 @@ import * as XLSX from 'xlsx';
     NzSpinModule,
     CommonModule,
     NzSwitchModule,
+    NzEmptyModule
   ],
   templateUrl: './localities.component.html',
   styleUrls: ['./localities.component.css', '../../../../animations/styles.css'],
@@ -64,7 +66,7 @@ export class LocalitiesComponent implements OnInit {
 
   constructor(
     private fb: UntypedFormBuilder,
-    private storesService: StoresService,
+    private localitiesService: LocalityService,
     private msgService: NzMessageService
   ) {
     this.form = this.fb.group({
@@ -87,12 +89,19 @@ export class LocalitiesComponent implements OnInit {
 
   getInitData() {
     this.isDataLoading = true;
-    this.storesService
+    this.localitiesService
       .get({ name: this.nameSearch }, this.page, this.page_size)
       .subscribe({
         next: (res: any) => {
           this.isDataLoading = false;
           this.dataToDisplay = res.results;
+
+          const isSearching = this.nameSearch;
+
+          if (isSearching && (!res.results || res.results.length === 0)) {
+            this.msgService.warning(JSON.stringify('No results found matching your search criteria'));
+          }
+
           this.setPagination(res.total);
         },
         error: (err) => {
@@ -126,7 +135,8 @@ export class LocalitiesComponent implements OnInit {
 
   delete(id: number) {
     Swal.fire({
-      title: 'Are you sure to delete?',
+      text: 'Are you sure you want to delete this locality?',
+      icon: 'warning',
       showDenyButton: true,
       confirmButtonText: 'Yes',
       denyButtonText: `No`,
@@ -134,7 +144,7 @@ export class LocalitiesComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
-        this.storesService.delete(id).subscribe({
+        this.localitiesService.delete(id).subscribe({
           next: () => {
             this.msgService.success(JSON.stringify('Locality deleted successfully'));
             this.isDataLoading = false;
@@ -142,7 +152,7 @@ export class LocalitiesComponent implements OnInit {
             if (this.dataToDisplay.length === 1 && this.page > 1) {
               this.page--;
             }
-            
+
             this.getInitData();
           },
           error: (err) => {
@@ -156,7 +166,7 @@ export class LocalitiesComponent implements OnInit {
 
   update(id: number, data: any) {
     this.isDataLoading = true;
-    this.storesService.update(id, data).subscribe({
+    this.localitiesService.update(id, data).subscribe({
       next: () => {
         this.msgService.success(JSON.stringify('Locality updated successfully'));
         this.isDataLoading = false;
@@ -177,9 +187,9 @@ export class LocalitiesComponent implements OnInit {
       if (this.isUpdating) {
         return this.update(this.dataDrawerCache.id, this.form.value);
       }
-      this.storesService.create(this.form.value).subscribe({
+      this.localitiesService.create(this.form.value).subscribe({
         next: () => {
-          this.msgService.success(JSON.stringify('New Locality created'));
+          this.msgService.success(JSON.stringify('Locality created successfully'));
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -225,64 +235,73 @@ export class LocalitiesComponent implements OnInit {
     this.num_pages = Math.ceil(count / this.page_size);
   }
 
-  exportStores(): void {
-    if (this.dataToDisplay.length === 0) {
-      this.msgService.warning(JSON.stringify('No data available to export'));
-      return;
-    }
+  exportLocalities(): void {
+    this.localitiesService
+      .get({}, null, null, true)
+      .subscribe({
+        next: (res: any) => {
+          if (res.length === 0) {
+            this.msgService.warning(JSON.stringify('No data available to export'));
+            this.isDataLoading = false;
+            return;
+          }
+          
+          this.isDataLoading = true;
 
-    this.isDataLoading = true;
+          const headers = {
+            name: 'Localities',
+            created: 'Created',
+            active: 'Status',
+          };
 
-    const headers = {
-      name: 'Localities',
-      created: 'Created',
-      active: 'Status',
-    } as const;
+          const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
-    const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+          const filteredData = res.map((product: any) =>
+            selectedColumns.reduce((obj: Record<string, any>, key) => {
+              if (key === 'active') {
+                obj[headers[key]] = product[key] ? 'Active' : 'Inactive';
+              } else if (key === 'created') {
+                const date = new Date(product[key]);
+                obj[headers[key]] = date.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                });
+              } else {
+                obj[headers[key]] = product[key];
+              }
+              return obj;
+            }, {})
+          );
 
-    const filteredData = this.dataToDisplay.map((store) =>
-      selectedColumns.reduce((obj: Record<string, any>, key) => {
-        if (key === 'active') {
-          obj[headers[key]] = store[key] ? 'Active' : 'Inactive';
-        } else if (key === 'created') {
-          const date = new Date(store[key]);
-          obj[headers[key]] = date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
+          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+          const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'Localities');
+
+          const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+            bookType: 'xlsx',
+            type: 'array',
           });
-        } else {
-          obj[headers[key]] = store[key];
-        }
-        return obj;
-      }, {})
-    );
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+          const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+          const link = document.createElement('a');
+          const url = URL.createObjectURL(blob);
 
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Stores');
+          link.setAttribute('href', url);
+          link.setAttribute('download', 'Localities.xlsx');
+          link.style.visibility = 'hidden';
 
-    const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
 
-    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'Localities.xlsx');
-    link.style.visibility = 'hidden';
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    this.isDataLoading = false;
-
-    this.msgService.success(JSON.stringify('Export completed successfully'));
+          this.isDataLoading = false;
+          this.msgService.success(JSON.stringify('Export completed successfully'));
+        },
+        error: (err) => {
+          this.isDataLoading = false;
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 }

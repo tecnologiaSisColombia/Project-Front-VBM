@@ -48,7 +48,10 @@
     </nz-input-group>
 
     <ng-template #suffixIconSearch>
-      <span nz-icon nzType="search"></span>
+      <span 
+        nz-icon 
+        nzType="search">
+      </span>
     </ng-template>
 
     <nz-input-group [nzSuffix]="suffixIconSearch">
@@ -62,7 +65,10 @@
     </nz-input-group>
 
     <ng-template #suffixIconSearch>
-      <span nz-icon nzType="search"></span>
+      <span 
+        nz-icon 
+        nzType="search">
+      </span>
     </ng-template>
   </div>
 
@@ -70,6 +76,7 @@
     #basicTable
     [nzData]="dataToDisplay"
     [nzLoading]="isDataLoading"
+    [nzNoResult]="noDataTemplate"
     [nzFrontPagination]="false">
     <thead>
       <tr>
@@ -117,6 +124,18 @@
       </tr>
     </tbody>
   </nz-table>
+
+  <ng-template #noDataTemplate>
+    <nz-empty
+      nzNotFoundImage="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+      [nzNotFoundContent]="contentTpl">
+      <ng-template #contentTpl>
+        <span>
+          No products found
+        </span>
+      </ng-template>
+    </nz-empty>
+  </ng-template>
 
   <nz-pagination
     [nzPageIndex]="page"

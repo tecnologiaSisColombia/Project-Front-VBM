@@ -24,6 +24,7 @@ import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import * as XLSX from 'xlsx';
 import { DoctorService } from 'app/services/config/doctors.service';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
   selector: 'app-products',
@@ -44,6 +45,7 @@ import { DoctorService } from 'app/services/config/doctors.service';
     CommonModule,
     NzSwitchModule,
     NzSelectModule,
+    NzEmptyModule
   ],
   templateUrl: './doctor.component.html',
   styleUrls: ['./doctor.component.css', '../../../../animations/styles.css'],
@@ -134,6 +136,13 @@ export class DoctorComponent {
         next: (res: any) => {
           this.isDataLoading = false;
           this.dataToDisplay = res.results;
+
+          const isSearching = this.licenseSearch || this.firstSearch || this.lastSearch;
+
+          if (isSearching && (!res.results || res.results.length === 0)) {
+            this.msgService.warning(JSON.stringify('No results found matching your search criteria'));
+          }
+
           this.setPagination(res.total);
         },
         error: (err) => {
@@ -167,7 +176,8 @@ export class DoctorComponent {
 
   delete(id: number) {
     Swal.fire({
-      title: 'Are you sure to delete?',
+      text: 'Are you sure you want to delete this doctor?',
+      icon: 'warning',
       showDenyButton: true,
       confirmButtonText: 'Yes',
       denyButtonText: `No`,
@@ -220,7 +230,7 @@ export class DoctorComponent {
       }
       this.doctorService.create(this.form.value).subscribe({
         next: () => {
-          this.msgService.success(JSON.stringify('New Doctor created'));
+          this.msgService.success(JSON.stringify('Doctor created successfully'));
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -256,69 +266,89 @@ export class DoctorComponent {
     this.getInitData();
   }
 
+  pageSizeChange(pageSize: number): void {
+    this.page_size = pageSize;
+    this.page = 1;
+    this.getInitData();
+  }
+  
   setPagination(count: number) {
     this.count_records = count;
     this.num_pages = Math.ceil(count / this.page_size);
   }
 
   exportDoctors(): void {
-    if (this.dataToDisplay.length === 0) {
-      this.msgService.warning(JSON.stringify('No data available to export'));
-      return;
-    }
+    this.doctorService
+      .get({}, null, null, true)
+      .subscribe({
+        next: (res: any) => {
+          if (res.length === 0) {
+            this.msgService.warning(JSON.stringify('No data available to export'));
+            this.isDataLoading = false;
+            return;
+          }
+          
+          this.isDataLoading = true;
 
-    this.isDataLoading = true;
+          const headers = {
+            first_name: 'First Name',
+            last_name: 'Last Name',
+            email: 'Email',
+            phone: 'Phone',
+            license_number: 'License Number',
+            created: 'Created',
+            active: 'Status',
+          };
 
-    const headers = {
-      name: 'Doctor',
-      created: 'Created',
-      active: 'Status',
-    } as const;
+          const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
-    const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+          const filteredData = res.map((doctor: any) =>
+            selectedColumns.reduce((obj: Record<string, any>, key) => {
+              if (key === 'active') {
+                obj[headers[key]] = doctor[key] ? 'Active' : 'Inactive';
+              } else if (key === 'created') {
+                const date = new Date(doctor[key]);
+                obj[headers[key]] = date.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                });
+              } else {
+                obj[headers[key]] = doctor[key];
+              }
+              return obj;
+            }, {})
+          );
 
-    const filteredData = this.dataToDisplay.map((product) =>
-      selectedColumns.reduce((obj: Record<string, any>, key) => {
-        if (key === 'active') {
-          obj[headers[key]] = product[key] ? 'Active' : 'Inactive';
-        } else if (key === 'created') {
-          const date = new Date(product[key]);
-          obj[headers[key]] = date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
+          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+          const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'Doctors');
+
+          const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+            bookType: 'xlsx',
+            type: 'array',
           });
-        } else {
-          obj[headers[key]] = product[key];
-        }
-        return obj;
-      }, {})
-    );
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+          const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+          const link = document.createElement('a');
+          const url = URL.createObjectURL(blob);
 
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Doctors');
+          link.setAttribute('href', url);
+          link.setAttribute('download', 'Doctors.xlsx');
+          link.style.visibility = 'hidden';
 
-    const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
 
-    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'Doctors.xlsx');
-    link.style.visibility = 'hidden';
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    this.isDataLoading = false;
-
-    this.msgService.success(JSON.stringify('Export completed successfully'));
+          this.isDataLoading = false;
+          this.msgService.success(JSON.stringify('Export completed successfully'));
+        },
+        error: (err) => {
+          this.isDataLoading = false;
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
+
 }

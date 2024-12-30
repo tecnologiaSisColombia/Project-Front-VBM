@@ -24,6 +24,7 @@ import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { ProductsService } from 'app/services/config/products.service';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import * as XLSX from 'xlsx';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
   selector: 'app-products',
@@ -44,6 +45,7 @@ import * as XLSX from 'xlsx';
     CommonModule,
     NzSwitchModule,
     NzSelectModule,
+    NzEmptyModule
   ],
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.css', '../../../../animations/styles.css'],
@@ -105,6 +107,13 @@ export class ProductsComponent implements OnInit {
         next: (res: any) => {
           this.isDataLoading = false;
           this.dataToDisplay = res.results;
+
+          const isSearching = this.codeSearch || this.descriptionSearch;
+
+          if (isSearching && (!res.results || res.results.length === 0)) {
+            this.msgService.warning(JSON.stringify('No results found matching your search criteria'));
+          }
+
           this.setPagination(res.total);
         },
         error: (err) => {
@@ -138,7 +147,8 @@ export class ProductsComponent implements OnInit {
 
   delete(id: number) {
     Swal.fire({
-      title: 'Are you sure to delete?',
+      text: 'Are you sure you want to delete this product?',
+      icon: 'warning',
       showDenyButton: true,
       confirmButtonText: 'Yes',
       denyButtonText: `No`,
@@ -154,7 +164,7 @@ export class ProductsComponent implements OnInit {
             if (this.dataToDisplay.length === 1 && this.page > 1) {
               this.page--;
             }
-            
+
             this.getInitData();
           },
           error: (err) => {
@@ -191,7 +201,7 @@ export class ProductsComponent implements OnInit {
       }
       this.productService.create(this.form.value).subscribe({
         next: () => {
-          this.msgService.success(JSON.stringify('New product created'));
+          this.msgService.success(JSON.stringify('Product created successfully'));
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -239,64 +249,74 @@ export class ProductsComponent implements OnInit {
   }
 
   exportProducts(): void {
-    if (this.dataToDisplay.length === 0) {
-      this.msgService.warning(JSON.stringify('No data available to export'));
-      return;
-    }
+    this.productService
+      .get({}, null, null, true)
+      .subscribe({
+        next: (res: any) => {
+          if (res.length === 0) {
+            this.msgService.warning(JSON.stringify('No data available to export'));
+            this.isDataLoading = false;
+            return;
+          }
+          
+          this.isDataLoading = true;
 
-    this.isDataLoading = true;
+          const headers = {
+            code: 'Code',
+            description: 'Description',
+            created: 'Created',
+            active: 'Status',
+          };
 
-    const headers = {
-      code: 'Code Product',
-      description: 'Description Product',
-      created: 'Created Product',
-      active: 'Status Product',
-    } as const;
+          const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
-    const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+          const filteredData = res.map((product: any) =>
+            selectedColumns.reduce((obj: Record<string, any>, key) => {
+              if (key === 'active') {
+                obj[headers[key]] = product[key] ? 'Active' : 'Inactive';
+              } else if (key === 'created') {
+                const date = new Date(product[key]);
+                obj[headers[key]] = date.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                });
+              } else {
+                obj[headers[key]] = product[key];
+              }
+              return obj;
+            }, {})
+          );
 
-    const filteredData = this.dataToDisplay.map((product) =>
-      selectedColumns.reduce((obj: Record<string, any>, key) => {
-        if (key === 'active') {
-          obj[headers[key]] = product[key] ? 'Active' : 'Inactive';
-        } else if (key === 'created') {
-          const date = new Date(product[key]);
-          obj[headers[key]] = date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
+          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+          const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'Products');
+
+          const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+            bookType: 'xlsx',
+            type: 'array',
           });
-        } else {
-          obj[headers[key]] = product[key];
-        }
-        return obj;
-      }, {})
-    );
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+          const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+          const link = document.createElement('a');
+          const url = URL.createObjectURL(blob);
 
-    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Products');
+          link.setAttribute('href', url);
+          link.setAttribute('download', 'Products.xlsx');
+          link.style.visibility = 'hidden';
 
-    const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
 
-    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'Products.xlsx');
-    link.style.visibility = 'hidden';
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    this.isDataLoading = false;
-
-    this.msgService.success(JSON.stringify('Export completed successfully'));
+          this.isDataLoading = false;
+          this.msgService.success(JSON.stringify('Export completed successfully'));
+        },
+        error: (err) => {
+          this.isDataLoading = false;
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
+
 }
