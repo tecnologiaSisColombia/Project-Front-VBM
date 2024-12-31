@@ -17,7 +17,7 @@ export class AuthService {
     private http: HttpClient,
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  ) { }
 
   doLogin(data: any) {
     localStorage.setItem(this.ACCESS_TOKEN, data.AccessToken);
@@ -49,7 +49,7 @@ export class AuthService {
         { headers }
       )
       .pipe(
-        tap((tokens: any) => {}),
+        tap((tokens: any) => { }),
         catchError(() => {
           localStorage.removeItem(this.ACCESS_TOKEN);
           this.router.navigate(['/login']);
@@ -93,6 +93,7 @@ export class AuthService {
     localStorage.removeItem(this.ACCESS_TOKEN);
     localStorage.removeItem(this.REFRESH_TOKEN);
     localStorage.removeItem(this.USER_ATTRIBUTES);
+    localStorage.removeItem('user_attr');
     this.router.navigate(['/login']);
   }
 }

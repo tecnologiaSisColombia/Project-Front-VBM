@@ -8,8 +8,15 @@
   </div>
 
   <div class="btn-container">
-    <button nz-button nzType="primary" (click)="openDrawer()">
-      <i nz-icon nzType="user" nzTheme="outline"> </i>
+    <button 
+      nz-button 
+      nzType="primary" 
+      (click)="openDrawer()">
+      <i 
+        nz-icon 
+        nzType="user" 
+        nzTheme="outline"> 
+      </i>
       New Doctor
     </button>
 
@@ -17,9 +24,12 @@
       nz-button
       [style.background-color]="'#00a651'"
       [style.color]="'white'"
-      (click)="exportDoctors()"
-    >
-      <i nz-icon nzType="download" nzTheme="outline"> </i>
+      (click)="exportDoctors()">
+      <i 
+        nz-icon 
+        nzType="download" 
+        nzTheme="outline"> 
+      </i>
       Export Doctors
     </button>
   </div>
@@ -29,8 +39,7 @@
   <div class="table-filters">
     <nz-input-group
       *ngFor="let field of searchFields"
-      [nzSuffix]="suffixIconSearch"
-    >
+      [nzSuffix]="suffixIconSearch">
       <input
         type="text"
         nz-input
@@ -40,7 +49,10 @@
       />
 
       <ng-template #suffixIconSearch>
-        <span nz-icon nzType="search"> </span>
+        <span 
+          nz-icon 
+          nzType="search"> 
+        </span>
       </ng-template>
     </nz-input-group>
   </div>
@@ -50,8 +62,7 @@
     [nzData]="dataToDisplay"
     [nzLoading]="isDataLoading"
     [nzNoResult]="noDataTemplate"
-    [nzFrontPagination]="false"
-  >
+    [nzFrontPagination]="false">
     <thead>
       <tr>
         <th>Fisrt name</th>
@@ -77,8 +88,7 @@
               title="Status"
               [(ngModel)]="data.active"
               nzSize="small"
-              (ngModelChange)="changeStatus(data.id, data)"
-            >
+              (ngModelChange)="changeStatus(data.id, data)">
             </nz-switch>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
@@ -88,8 +98,7 @@
               title="Edit"
               nzType="edit"
               nzTheme="outline"
-              (click)="openEditDrawer(data)"
-            >
+              (click)="openEditDrawer(data)">
             </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
@@ -99,8 +108,7 @@
               title="Delete"
               nzType="delete"
               nzTheme="outline"
-              (click)="delete(data.id)"
-            >
+              (click)="delete(data.id)">
             </span>
           </a>
         </td>
@@ -111,8 +119,7 @@
   <ng-template #noDataTemplate>
     <nz-empty
       nzNotFoundImage="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-      [nzNotFoundContent]="contentTpl"
-    >
+      [nzNotFoundContent]="contentTpl">
       <ng-template #contentTpl>
         <span> No doctors found </span>
       </ng-template>
@@ -127,8 +134,7 @@
     (nzPageIndexChange)="pageChange($event)"
     (nzPageSizeChange)="pageSizeChange($event)"
     [nzShowSizeChanger]="true"
-    nzShowQuickJumper
-  >
+    nzShowQuickJumper>
   </nz-pagination>
 </div>
 
@@ -141,8 +147,7 @@
   [nzTitle]="drawerTitle"
   (nzOnClose)="closeDrawer()"
   [nzWidth]="720"
-  [nzFooter]="footerTpl"
->
+  [nzFooter]="footerTpl">
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="drawerLoader">
       <form nz-form [formGroup]="form" (ngSubmit)="submit()">
@@ -151,16 +156,14 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="code"
-            style="text-align: center"
-          >
+            style="text-align: center">
             First name
           </nz-form-label>
 
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="first_nameError"
-          >
+            [nzErrorTip]="first_nameError">
             <input nz-input formControlName="first_name" id="first_name" />
           </nz-form-control>
         </nz-form-item>
@@ -179,17 +182,19 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="last_name"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Last name
           </nz-form-label>
 
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="last_nameError"
-          >
-            <input nz-input formControlName="last_name" id="last_name" />
+            [nzErrorTip]="last_nameError">
+            <input 
+              nz-input 
+              formControlName="last_name" 
+              id="last_name" 
+            />
           </nz-form-control>
         </nz-form-item>
 
@@ -207,16 +212,14 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="license_number"
-            style="text-align: center"
-          >
+            style="text-align: center">
             License number
           </nz-form-label>
 
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="license_numberError"
-          >
+            [nzErrorTip]="license_numberError">
             <input
               nz-input
               formControlName="license_number"
@@ -239,13 +242,20 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="email"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Email
           </nz-form-label>
 
-          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="emailError">
-            <input nz-input type="email" formControlName="email" id="email" />
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="emailError">
+            <input 
+              nz-input 
+              type="email" 
+              formControlName="email" 
+              id="email" 
+            />
           </nz-form-control>
         </nz-form-item>
 
@@ -263,13 +273,19 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="phone"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Phone
           </nz-form-label>
 
-          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="phoneError">
-            <input nz-input formControlName="phone" id="phone" />
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="phoneError">
+            <input 
+              nz-input 
+              formControlName="phone" 
+              id="phone" 
+            />
           </nz-form-control>
         </nz-form-item>
 
@@ -287,23 +303,23 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="phone"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Supplier
           </nz-form-label>
 
-          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="supplierError">
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="supplierError">
             <nz-select
               formControlName="supplier"
               nzPlaceHolder="Select Supplier"
               style="width: 100%; border-radius: 6px"
-              nzAllowClear
-            >
+              nzAllowClear>
               <nz-option
                 *ngFor="let o of suppliers"
                 [nzLabel]="o.user.first_name"
-                [nzValue]="o.id"
-              >
+                [nzValue]="o.id">
               </nz-option>
             </nz-select>
           </nz-form-control>
@@ -320,11 +336,19 @@
 
   <ng-template #footerTpl>
     <div style="display: flex; float: right">
-      <button nz-button style="margin-right: 8px" (click)="closeDrawer()">
+      <button 
+        nz-button 
+        style="margin-right: 8px" 
+        (click)="closeDrawer()">
         Close
       </button>
 
-      <button nz-button nzType="primary" (click)="submit()">Save</button>
+      <button 
+        nz-button 
+        nzType="primary" 
+        (click)="submit()">
+        Save
+      </button>
     </div>
   </ng-template>
 </nz-drawer>

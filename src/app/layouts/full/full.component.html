@@ -7,11 +7,17 @@
         nzTheme="dark"
         nzMode="horizontal"
         class="header-menu"
-        style="text-align: right"
-      >
-        <span class="role-display"> Rol: {{ role }} </span>
+        style="text-align: right">
 
-        <span class="current-date">
+        <span class="session"> 
+          Login: {{ username }} 
+        </span>
+        
+        <span class="session"> 
+          Profile: {{ role }} 
+        </span>
+
+        <span class="session">
           {{ currentDate | date : "MMM d, y HH:mm:ss" }}
         </span>
 
@@ -21,8 +27,7 @@
           nzIcon="user"
           nz-dropdown
           nzTrigger="click"
-          [nzDropdownMenu]="menu"
-        >
+          [nzDropdownMenu]="menu">
         </nz-avatar>
 
         <nz-dropdown-menu #menu="nzDropdownMenu">
@@ -38,13 +43,11 @@
     <nz-layout>
       <nz-sider nzCollapsible nzWidth="260px">
         <ul nz-menu nzTheme="dark" nzMode="inline">
-          <!-- *ngIf="access.admin" -->
           <li
             nz-submenu
             nzTitle="Resource Management"
             nzIcon="check-circle"
-            *ngIf="access.doctors || access.localities || access.admin"
-          >
+            *ngIf="access.doctors || access.localities || access.admin">
             <ul>
               <li nz-menu-item *ngIf="access.doctors">
                 <a routerLink="/config/doctors">Doctors</a>
@@ -64,8 +67,7 @@
             *ngIf="access.users"
             nz-submenu
             nzTitle="Control Access"
-            nzIcon="lock"
-          >
+            nzIcon="lock">
             <ul>
               <li nz-menu-item>
                 <a routerLink="/users/user_management">User Management</a>
@@ -79,8 +81,7 @@
             *ngIf="access.insurers || access.plans"
             nz-submenu
             nzTitle="Configure Insurers / Coverages"
-            nzIcon="profile"
-          >
+            nzIcon="profile">
             <ul>
               <li *ngIf="access.insurers" nz-menu-item>
                 <a routerLink="/insurers">Insurers</a>
@@ -94,8 +95,7 @@
             nz-submenu
             nzTitle="Eligibility"
             nzIcon="solution"
-            *ngIf="access.eligibility"
-          >
+            *ngIf="access.eligibility">
             <ul>
               <li nz-menu-item>
                 <a routerLink="/eligibility">Validate rights</a>

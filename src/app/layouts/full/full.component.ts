@@ -45,18 +45,20 @@ export class FullComponent implements OnInit {
     localities: false,
   };
   role: string = '';
+  username: string = '';
 
   constructor(
     private authService: AuthService,
     private message: NzMessageService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.authService.getProfile().subscribe({
       next: (res: any) => {
-        // console.log(res);
         this.role = res.groups[0];
+        this.username = res['username'];
 
+        console.log(this.username)
         localStorage.setItem(
           'user_attr',
           JSON.stringify({
