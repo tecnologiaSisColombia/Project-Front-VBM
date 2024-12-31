@@ -207,7 +207,11 @@
         <div
           nz-row
           [nzGutter]="16"
-          *ngIf="user.extra_data && user_type.type == 'PARTNER'"
+          *ngIf="
+            user.extra_data &&
+            user_type.type == 'PARTNER' &&
+            user_attr.rol != 'SUPPLIER'
+          "
         >
           <div nz-col [nzSpan]="12">
             <nz-form-item>

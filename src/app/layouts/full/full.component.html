@@ -39,7 +39,12 @@
       <nz-sider nzCollapsible nzWidth="260px">
         <ul nz-menu nzTheme="dark" nzMode="inline">
           <!-- *ngIf="access.admin" -->
-          <li nz-submenu nzTitle="Resource Management" nzIcon="check-circle">
+          <li
+            nz-submenu
+            nzTitle="Resource Management"
+            nzIcon="check-circle"
+            *ngIf="access.doctors || access.localities || access.admin"
+          >
             <ul>
               <!-- <li nz-menu-item>
                 <a routerLink="/config/specialities">Specialities</a>

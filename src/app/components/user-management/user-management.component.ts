@@ -52,10 +52,13 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
     ReactiveFormsModule,
     NzSpinModule,
     NzPaginationModule,
-    NzEmptyModule
+    NzEmptyModule,
   ],
   templateUrl: './user-management.component.html',
-  styleUrls: ['./user-management.component.css', '../../../animations/styles.css'],
+  styleUrls: [
+    './user-management.component.css',
+    '../../../animations/styles.css',
+  ],
 })
 export class UserManagementComponent implements OnInit {
   isDataLoading = false;
@@ -78,10 +81,11 @@ export class UserManagementComponent implements OnInit {
   page_size = 10;
   page = 1;
   [key: string]: any;
+  user_attr: any = null;
   searchFields = [
     { placeholder: 'Username...', model: 'usernameSearch', key: 'username' },
     { placeholder: 'First Name...', model: 'firstSearch', key: 'first_name' },
-    { placeholder: 'Last Name...', model: 'lastSearch', key: 'last_name' }
+    { placeholder: 'Last Name...', model: 'lastSearch', key: 'last_name' },
   ];
   private searchNameSubject = new Subject<{ type: string; value: string }>();
 
@@ -95,7 +99,10 @@ export class UserManagementComponent implements OnInit {
     private supplierService: DoctorService
   ) {
     this.form = this.fb.group({
-      first_name: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)],],
+      first_name: [
+        '',
+        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
+      ],
       last_name: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
@@ -106,18 +113,20 @@ export class UserManagementComponent implements OnInit {
       insurers: [null],
       number_license: [''],
     });
-    this.searchNameSubject.pipe(debounceTime(1000)).subscribe(({ type, value }) => {
-      const fields = {
-        first_name: () => (this.firstSearch = value),
-        last_name: () => (this.lastSearch = value),
-        username: () => (this.usernameSearch = value),
-      };
+    this.searchNameSubject
+      .pipe(debounceTime(1000))
+      .subscribe(({ type, value }) => {
+        const fields = {
+          first_name: () => (this.firstSearch = value),
+          last_name: () => (this.lastSearch = value),
+          username: () => (this.usernameSearch = value),
+        };
 
-      (fields as Record<string, () => void>)[type]?.();
-      this.page = 1;
-      this.getInitData();
-      this.isDataLoading = false;
-    });
+        (fields as Record<string, () => void>)[type]?.();
+        this.page = 1;
+        this.getInitData();
+        this.isDataLoading = false;
+      });
   }
 
   ngOnInit(): void {
@@ -126,12 +135,20 @@ export class UserManagementComponent implements OnInit {
     this.getLocalities();
     this.getSuppliers();
     this.getInsurers();
+    this.user_attr = JSON.parse(localStorage.getItem('user_attr')!);
   }
 
   getSuppliers(): void {
     this.supplierService.getSuppliers({ status: 1 }, 1, 10, true).subscribe({
       next: (res: any) => {
         this.suppliers = res;
+        if (this.user_attr.rol == 'SUPPLIER') {
+          const supplier = this.suppliers.find(
+            (s) => s.user.id == this.user_attr.id
+          );
+
+          this.form.patchValue({ supplier: supplier.id });
+        }
       },
       error: (err) => {
         this.msgService.error(JSON.stringify(err.error));
@@ -204,17 +221,21 @@ export class UserManagementComponent implements OnInit {
     };
 
     const resetControls = () => {
-      Object.values(controls).flat().forEach((control) => {
-        this.form.get(control)?.clearValidators();
-        this.form.get(control)?.updateValueAndValidity();
-      });
+      Object.values(controls)
+        .flat()
+        .forEach((control) => {
+          this.form.get(control)?.clearValidators();
+          this.form.get(control)?.updateValueAndValidity();
+        });
     };
 
     const applyValidation = (type: string | null) => {
       Object.entries(controls).forEach(([key, controlNames]) => {
         const isActive = type === key;
         controlNames.forEach((control) => {
-          this.form.get(control)?.setValidators(isActive ? [Validators.required] : null);
+          this.form
+            .get(control)
+            ?.setValidators(isActive ? [Validators.required] : null);
           this.form.get(control)?.updateValueAndValidity();
         });
       });
@@ -266,10 +287,13 @@ export class UserManagementComponent implements OnInit {
           this.dataToDisplay = res.results;
           this.isDataLoading = false;
 
-          const isSearching = this.usernameSearch || this.firstSearch || this.lastSearch;
+          const isSearching =
+            this.usernameSearch || this.firstSearch || this.lastSearch;
 
           if (isSearching && (!res.results || res.results.length === 0)) {
-            this.msgService.warning(JSON.stringify('No results found matching your search criteria'));
+            this.msgService.warning(
+              JSON.stringify('No results found matching your search criteria')
+            );
           }
 
           this.setPagination(res.total);
@@ -343,10 +367,14 @@ export class UserManagementComponent implements OnInit {
         this.isDataLoading = true;
         this.userService.deleteUser(user.username).subscribe({
           next: () => {
-            this.msgService.success(JSON.stringify('User deleted successfully'));
+            this.msgService.success(
+              JSON.stringify('User deleted successfully')
+            );
             this.isDataLoading = false;
 
-            this.dataToDisplay = this.dataToDisplay.filter((u) => u.username !== user.username);
+            this.dataToDisplay = this.dataToDisplay.filter(
+              (u) => u.username !== user.username
+            );
 
             const userAttributes = localStorage.getItem('user_attributes');
             const currentUser = userAttributes
@@ -381,9 +409,7 @@ export class UserManagementComponent implements OnInit {
     //   this.msgService.warning(JSON.stringify('No data available to export'));
     //   return;
     // }
-
     // this.isDataLoading = true;
-
     // const headers: Record<
     //   | 'first_name'
     //   | 'last_name'
@@ -402,9 +428,7 @@ export class UserManagementComponent implements OnInit {
     //   phone: 'Phone',
     //   is_active: 'Status',
     // };
-
     // const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
-
     // const filteredData = this.data.map((user) =>
     //   selectedColumns.reduce((obj: Record<string, any>, key) => {
     //     if (key === 'is_active') {
@@ -419,29 +443,22 @@ export class UserManagementComponent implements OnInit {
     //     return obj;
     //   }, {})
     // );
-
     // const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
-
     // const workbook: XLSX.WorkBook = XLSX.utils.book_new();
     // XLSX.utils.book_append_sheet(workbook, worksheet, 'Users');
-
     // const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
     //   bookType: 'xlsx',
     //   type: 'array',
     // });
-
     // const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
     // const link = document.createElement('a');
     // const url = URL.createObjectURL(blob);
-
     // link.setAttribute('href', url);
     // link.setAttribute('download', 'users.xlsx');
     // link.style.visibility = 'hidden';
-
     // document.body.appendChild(link);
     // link.click();
     // document.body.removeChild(link);
-
     // this.isDataLoading = false;
   }
 }

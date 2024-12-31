@@ -77,6 +77,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
   visibleDrawer = false;
   isUpdatingDrawer: boolean = false;
   dataCacheDrawer: any = null;
+  user_attr: any = null;
   workingHourForm = {
     id: 0,
     day: '',
@@ -114,6 +115,7 @@ export class NzDemoModalLocaleComponent implements OnInit {
     this.getStores();
     this.getInsurers();
     this.getSuppliers();
+    this.user_attr = JSON.parse(localStorage.getItem('user_attr')!);
   }
   // getPartnerTypes() {
   //   this.createUserService.getPartnerTypes().subscribe({
@@ -135,6 +137,13 @@ export class NzDemoModalLocaleComponent implements OnInit {
     this.supplierService.getSuppliers({ status: 1 }, 1, 10, true).subscribe({
       next: (res: any) => {
         this.suppliers = res;
+        if (this.user_attr.rol == 'SUPPLIER') {
+          const supplier = this.suppliers.find(
+            (s) => s.user.id == this.user_attr.id
+          );
+
+          this.tempUser.extra_data[0].supplier_id = supplier.id;
+        }
       },
       error: (err) => {
         this.msgService.error(JSON.stringify(err.error));

@@ -390,7 +390,11 @@
         </ng-template>
       </div>
 
-      <div nz-col nzSpan="24" *ngIf="extraForm?.type === 'PARTNER'">
+      <div
+        nz-col
+        nzSpan="24"
+        *ngIf="extraForm?.type === 'PARTNER' && user_attr.rol != 'SUPPLIER'"
+      >
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"

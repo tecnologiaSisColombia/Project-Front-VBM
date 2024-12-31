@@ -54,8 +54,17 @@ export class FullComponent implements OnInit {
   ngOnInit(): void {
     this.authService.getProfile().subscribe({
       next: (res: any) => {
-        console.log(res);
+        // console.log(res);
         this.role = res.groups[0];
+
+        localStorage.setItem(
+          'user_attr',
+          JSON.stringify({
+            user: res.username,
+            id: res.id,
+            rol: res.rol,
+          })
+        );
 
         res.group_profile.forEach((e: any) => {
           if (e.modulo__modulo == 'users') {

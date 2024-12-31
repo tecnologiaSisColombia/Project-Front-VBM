@@ -45,7 +45,7 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
     CommonModule,
     NzSwitchModule,
     NzSelectModule,
-    NzEmptyModule
+    NzEmptyModule,
   ],
   templateUrl: './doctor.component.html',
   styleUrls: ['./doctor.component.css', '../../../../animations/styles.css'],
@@ -68,11 +68,16 @@ export class DoctorComponent {
   firstSearch: any = null;
   lastSearch: any = null;
   licenseSearch: any = null;
+  user_attr: any = null;
   [key: string]: any;
   searchFields = [
     { placeholder: 'First Name...', model: 'firstSearch', key: 'first_name' },
     { placeholder: 'Last Name...', model: 'lastSearch', key: 'last_name' },
-    { placeholder: 'License Number...', model: 'licenseSearch', key: 'license' },
+    {
+      placeholder: 'License Number...',
+      model: 'licenseSearch',
+      key: 'license',
+    },
   ];
   private searchNameSubject = new Subject<{ type: string; value: string }>();
 
@@ -82,37 +87,56 @@ export class DoctorComponent {
     private msgService: NzMessageService
   ) {
     this.form = this.fb.group({
-      license_number: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      license_number: [
+        null,
+        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
+      ],
       email: [null, [Validators.required, Validators.email]],
       phone: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
-      last_name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
-      first_name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      last_name: [
+        null,
+        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
+      ],
+      first_name: [
+        null,
+        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
+      ],
       supplier: [null, [Validators.required]],
     });
 
-    this.searchNameSubject.pipe(debounceTime(1000)).subscribe(({ type, value }) => {
-      const fields = {
-        first_name: () => (this.firstSearch = value),
-        last_name: () => (this.lastSearch = value),
-        license: () => (this.licenseSearch = value),
-      };
+    this.searchNameSubject
+      .pipe(debounceTime(1000))
+      .subscribe(({ type, value }) => {
+        const fields = {
+          first_name: () => (this.firstSearch = value),
+          last_name: () => (this.lastSearch = value),
+          license: () => (this.licenseSearch = value),
+        };
 
-      (fields as Record<string, () => void>)[type]?.();
-      this.page = 1;
-      this.getInitData();
-      this.isDataLoading = false;
-    });
+        (fields as Record<string, () => void>)[type]?.();
+        this.page = 1;
+        this.getInitData();
+        this.isDataLoading = false;
+      });
   }
 
   ngOnInit(): void {
     this.getInitData();
     this.getSuppliers();
+    this.user_attr = JSON.parse(localStorage.getItem('user_attr')!);
   }
 
   getSuppliers() {
     this.doctorService.getSuppliers({}, 1, 1, true).subscribe({
       next: (res: any) => {
         this.suppliers = res;
+        if (this.user_attr.rol == 'SUPPLIER') {
+          const supplier = this.suppliers.find(
+            (s) => s.user.id == this.user_attr.id
+          );
+
+          this.form.patchValue({ supplier: supplier.id });
+        }
       },
       error: (err) => {
         this.msgService.error(JSON.stringify(err.error));
@@ -127,7 +151,7 @@ export class DoctorComponent {
         {
           license: this.licenseSearch,
           first_name: this.firstSearch,
-          last_name: this.lastSearch
+          last_name: this.lastSearch,
         },
         this.page,
         this.page_size
@@ -137,10 +161,13 @@ export class DoctorComponent {
           this.isDataLoading = false;
           this.dataToDisplay = res.results;
 
-          const isSearching = this.licenseSearch || this.firstSearch || this.lastSearch;
+          const isSearching =
+            this.licenseSearch || this.firstSearch || this.lastSearch;
 
           if (isSearching && (!res.results || res.results.length === 0)) {
-            this.msgService.warning(JSON.stringify('No results found matching your search criteria'));
+            this.msgService.warning(
+              JSON.stringify('No results found matching your search criteria')
+            );
           }
 
           this.setPagination(res.total);
@@ -187,7 +214,9 @@ export class DoctorComponent {
         this.isDataLoading = true;
         this.doctorService.delete(id).subscribe({
           next: () => {
-            this.msgService.success(JSON.stringify('Doctor deleted successfully'));
+            this.msgService.success(
+              JSON.stringify('Doctor deleted successfully')
+            );
             this.isDataLoading = false;
 
             if (this.dataToDisplay.length === 1 && this.page > 1) {
@@ -230,7 +259,9 @@ export class DoctorComponent {
       }
       this.doctorService.create(this.form.value).subscribe({
         next: () => {
-          this.msgService.success(JSON.stringify('Doctor created successfully'));
+          this.msgService.success(
+            JSON.stringify('Doctor created successfully')
+          );
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -271,84 +302,90 @@ export class DoctorComponent {
     this.page = 1;
     this.getInitData();
   }
-  
+
   setPagination(count: number) {
     this.count_records = count;
     this.num_pages = Math.ceil(count / this.page_size);
   }
 
   exportDoctors(): void {
-    this.doctorService
-      .get({}, null, null, true)
-      .subscribe({
-        next: (res: any) => {
-          if (res.length === 0) {
-            this.msgService.warning(JSON.stringify('No data available to export'));
-            this.isDataLoading = false;
-            return;
-          }
-          
-          this.isDataLoading = true;
-
-          const headers = {
-            first_name: 'First Name',
-            last_name: 'Last Name',
-            email: 'Email',
-            phone: 'Phone',
-            license_number: 'License Number',
-            created: 'Created',
-            active: 'Status',
-          };
-
-          const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
-
-          const filteredData = res.map((doctor: any) =>
-            selectedColumns.reduce((obj: Record<string, any>, key) => {
-              if (key === 'active') {
-                obj[headers[key]] = doctor[key] ? 'Active' : 'Inactive';
-              } else if (key === 'created') {
-                const date = new Date(doctor[key]);
-                obj[headers[key]] = date.toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                });
-              } else {
-                obj[headers[key]] = doctor[key];
-              }
-              return obj;
-            }, {})
+    this.doctorService.get({}, null, null, true).subscribe({
+      next: (res: any) => {
+        if (res.length === 0) {
+          this.msgService.warning(
+            JSON.stringify('No data available to export')
           );
-
-          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
-          const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(workbook, worksheet, 'Doctors');
-
-          const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-            bookType: 'xlsx',
-            type: 'array',
-          });
-
-          const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-          const link = document.createElement('a');
-          const url = URL.createObjectURL(blob);
-
-          link.setAttribute('href', url);
-          link.setAttribute('download', 'Doctors.xlsx');
-          link.style.visibility = 'hidden';
-
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-
           this.isDataLoading = false;
-          this.msgService.success(JSON.stringify('Export completed successfully'));
-        },
-        error: (err) => {
-          this.isDataLoading = false;
-          this.msgService.error(JSON.stringify(err.error));
-        },
-      });
+          return;
+        }
+
+        this.isDataLoading = true;
+
+        const headers = {
+          first_name: 'First Name',
+          last_name: 'Last Name',
+          email: 'Email',
+          phone: 'Phone',
+          license_number: 'License Number',
+          created: 'Created',
+          active: 'Status',
+        };
+
+        const selectedColumns = Object.keys(
+          headers
+        ) as (keyof typeof headers)[];
+
+        const filteredData = res.map((doctor: any) =>
+          selectedColumns.reduce((obj: Record<string, any>, key) => {
+            if (key === 'active') {
+              obj[headers[key]] = doctor[key] ? 'Active' : 'Inactive';
+            } else if (key === 'created') {
+              const date = new Date(doctor[key]);
+              obj[headers[key]] = date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              });
+            } else {
+              obj[headers[key]] = doctor[key];
+            }
+            return obj;
+          }, {})
+        );
+
+        const worksheet: XLSX.WorkSheet =
+          XLSX.utils.json_to_sheet(filteredData);
+        const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Doctors');
+
+        const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+          bookType: 'xlsx',
+          type: 'array',
+        });
+
+        const blob = new Blob([excelBuffer], {
+          type: 'application/octet-stream',
+        });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'Doctors.xlsx');
+        link.style.visibility = 'hidden';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        this.isDataLoading = false;
+        this.msgService.success(
+          JSON.stringify('Export completed successfully')
+        );
+      },
+      error: (err) => {
+        this.isDataLoading = false;
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
   }
-
 }
