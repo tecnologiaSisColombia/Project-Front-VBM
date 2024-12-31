@@ -46,12 +46,6 @@
             *ngIf="access.doctors || access.localities || access.admin"
           >
             <ul>
-              <!-- <li nz-menu-item>
-                <a routerLink="/config/specialities">Specialities</a>
-              </li> -->
-              <!-- <li nz-menu-item>
-                <a routerLink="/config/offices">Offices</a>
-              </li> -->
               <li nz-menu-item *ngIf="access.doctors">
                 <a routerLink="/config/doctors">Doctors</a>
               </li>
@@ -96,14 +90,6 @@
               </li>
             </ul>
           </li>
-          <!-- <li nz-submenu nzTitle="Manage Product Catalogs" nzIcon="shopping">
-            <ul>
-              <li nz-menu-item>Create Sub-catalogs by Covers and Insurers</li>
-              <li nz-menu-item>Modify Sub-catalogs by Covers and Insurers</li>
-              <li nz-menu-item>Deactivate products in Sub-catalogs</li>
-              <li nz-menu-item>Consult Sub-catalogs</li>
-            </ul>
-          </li> -->
           <li
             nz-submenu
             nzTitle="Eligibility"
@@ -116,44 +102,16 @@
               </li>
             </ul>
           </li>
-          <!-- <li
-            nz-submenu
-            nzTitle="Electronic Download of Orders"
-            nzIcon="download"
-          >
-            <ul>
-              <li nz-menu-item>View Prescription Information</li>
-            </ul>
-          </li> -->
-          <!-- <li nz-submenu nzTitle="Billing" nzIcon="file-text">
-            <ul>
-              <li nz-menu-item>Generate invoice applying coverage rules</li>
-              <li nz-menu-item>Transmit EDI files on demand</li>
-              <li nz-menu-item>View results of clearinghouse validations</li>
-              <li nz-menu-item>Manage rejected invoices</li>
-            </ul>
-          </li> -->
-          <!-- <li nz-submenu nzTitle="Parameterization" nzIcon="control">
-            <ul>
-              <li nz-menu-item>Manage Insureds</li>
-              <li nz-menu-item>Manage Stores</li>
-              <li nz-menu-item>Manage Doctors</li>
-            </ul>
-          </li> -->
-          <!-- <li nz-submenu nzTitle="Reports and Reports" nzIcon="file-search">
-            <ul>
-              <li nz-menu-item>Generate General Operation Report</li>
-              <li nz-menu-item>Generate General Billing Report</li>
-            </ul>
-          </li>  -->
         </ul>
       </nz-sider>
+
       <nz-layout class="inner-layout">
         <nz-content>
           <nz-breadcrumb></nz-breadcrumb>
           <br />
           <router-outlet></router-outlet>
         </nz-content>
+
         <nz-footer class="footer">
           <div class="footer-content">
             <div class="company-info">

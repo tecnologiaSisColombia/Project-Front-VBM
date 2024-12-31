@@ -44,7 +44,7 @@ export class AuthService {
 
     return this.http
       .post(
-        this.hostname + 'UserAccessControl/ValidateTokenCognito',
+        this.hostname + 'access-control/ValidateTokenCognito',
         { refresh_token: refreshToken },
         { headers }
       )
@@ -74,7 +74,7 @@ export class AuthService {
     }
 
     return this.http
-      .post<any>(`${this.hostname}UserAccessControl/RefreshTokenCognito`, {
+      .post<any>(`${this.hostname}access-control/RefreshTokenCognito`, {
         refresh_token: this.getRefreshToken(),
       })
       .pipe(

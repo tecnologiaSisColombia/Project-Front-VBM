@@ -12,14 +12,14 @@ export class LoginService {
     constructor(private http: HttpClient) { }
 
     signIn(data: any): Observable<any> {
-        return this.http.post(`${this.baseUrl}UserAccessControl/AuthUsers`, data);
+        return this.http.post(`${this.baseUrl}access-control/AuthUsers`, data);
     }
 
     changeTemporaryPassword(data: any): Observable<any> {
-        return this.http.post(`${this.baseUrl}UserAccessControl/ChangeTemporaryPassword`, data);
+        return this.http.post(`${this.baseUrl}access-control/ChangeTemporaryPassword`, data);
     }
 
     ChangePasswordDays(data: any): Observable<any> {
-        return this.http.post(`${this.baseUrl}UserAccessControl/ChangePasswordDays`, data);
+        return this.http.post(`${this.baseUrl}access-control/ChangePasswordDays`, data);
     }
 }

@@ -1,80 +1,133 @@
-<button nz-button nzType="link" (click)="showModal()">
-  <i nz-icon nzType="edit" nzTheme="outline"></i>
+<button nz-button nzType="link" (click)="showDrawer()">
+  <i nz-icon nzType="edit" nzTheme="outline"> </i>
 </button>
 
-<nz-modal
-  [(nzVisible)]="isVisible"
-  nzTitle="Edit User Attributes"
-  nzOkText="Update Attributes"
-  nzCancelText="Cancel"
-  (nzOnOk)="handleOk()"
-  (nzOnCancel)="handleCancel()"
+<nz-drawer
+  [nzBodyStyle]="{ overflow: 'auto' }"
+  [nzMaskClosable]="false"
+  [nzClosable]="false"
+  [nzVisible]="isVisible"
+  nzPlacement="right"
+  nzTitle="Edit User"
+  [nzWidth]="720"
+  [nzFooter]="footerTpl"
 >
-  <ng-container *nzModalContent>
-    <nz-spin [nzSpinning]="loading">
-      <form
-        nz-form
-        [nzLayout]="'vertical'"
-        class="form-container"
-        *ngIf="tempUser"
-      >
-        <div nz-row [nzGutter]="16">
-          <div nz-col [nzSpan]="12">
-            <nz-form-item>
-              <nz-form-label [nzSpan]="24">First Name</nz-form-label>
-              <nz-form-control [nzSpan]="24">
-                <input
-                  nz-input
-                  [(ngModel)]="tempUser.first_name"
-                  name="firstName"
-                  placeholder="Enter first name"
-                />
-              </nz-form-control>
-            </nz-form-item>
-          </div>
+  <ng-container *nzDrawerContent>
+    <nz-spin [nzSpinning]="isDataLoading">
+      <form nz-form *ngIf="tempUser">
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            style="text-align: center"
+            nzFor="firstName"
+          >
+            First name
+          </nz-form-label>
 
-          <div nz-col [nzSpan]="12">
-            <nz-form-item>
-              <nz-form-label [nzSpan]="24">Last Name</nz-form-label>
-              <nz-form-control [nzSpan]="24">
-                <input
-                  nz-input
-                  [(ngModel)]="tempUser.last_name"
-                  name="lastName"
-                  placeholder="Enter last name"
-                />
-              </nz-form-control>
-            </nz-form-item>
-          </div>
-        </div>
+          <nz-form-control [nzSm]="16" [nzXs]="24">
+            <input
+              nz-input
+              [(ngModel)]="tempUser.first_name"
+              name="firstName"
+              id="firstName"
+            />
+          </nz-form-control>
+        </nz-form-item>
 
-        <div nz-row [nzGutter]="16">
-          <div nz-col [nzSpan]="12">
-            <nz-form-item>
-              <nz-form-label [nzSpan]="24">Email</nz-form-label>
-              <nz-form-control [nzSpan]="24">
-                <input
-                  nz-input
-                  [(ngModel)]="tempUser.email"
-                  name="email"
-                  type="email"
-                  placeholder="Enter email"
-                />
-              </nz-form-control>
-            </nz-form-item>
-          </div>
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            style="text-align: center"
+            nzFor="lastName"
+          >
+            Last name
+          </nz-form-label>
 
-          <div nz-col [nzSpan]="12">
+          <nz-form-control [nzSm]="16" [nzXs]="24">
+            <input
+              nz-input
+              [(ngModel)]="tempUser.last_name"
+              name="lastName"
+              id="lastName"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            style="text-align: center"
+            nzFor="email"
+          >
+            Email
+          </nz-form-label>
+
+          <nz-form-control [nzSm]="16" [nzXs]="24">
+            <input
+              nz-input
+              [(ngModel)]="tempUser.email"
+              name="email"
+              id="email"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            style="text-align: center"
+            nzFor="phone"
+          >
+            Phone
+          </nz-form-label>
+
+          <nz-form-control [nzSm]="16" [nzXs]="24">
+            <input
+              nz-input
+              [(ngModel)]="tempUser.phone"
+              name="phone"
+              id="phone"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <div
+          nz-row
+          [nzGutter]="16"
+          *ngIf="user.extra_data && user_type.type == 'SUPPLIER'"
+        >
+          <div nz-col [nzSpan]="24">
             <nz-form-item>
-              <nz-form-label [nzSpan]="24">Phone</nz-form-label>
-              <nz-form-control [nzSpan]="24">
-                <input
-                  nz-input
-                  [(ngModel)]="tempUser.phone"
-                  name="phone"
-                  type="tel"
-                  placeholder="Enter phone"
-                />
+              <nz-form-label
+                [nzSm]="8"
+                [nzXs]="24"
+                style="text-align: center"
+                nzFor="localities"
+              >
+                Localities
+              </nz-form-label>
+
+              <nz-form-control [nzSm]="16" [nzXs]="24">
+                <nz-select
+                  *ngIf="tempUser?.extra_data?.length > 0"
+                  [(ngModel)]="tempUser.localities"
+                  nzPlaceHolder="Select localities"
+                  name="localities"
+                  id="localities"
+                  nzMode="multiple"
+                  style="width: 100%; border-radius: 6px"
+                >
+                  <nz-option
+                    *ngFor="let o of localities"
+                    [nzLabel]="o.name"
+                    [nzValue]="o.id"
+                  >
+                  </nz-option>
+                </nz-select>
               </nz-form-control>
             </nz-form-item>
           </div>
@@ -85,40 +138,22 @@
           [nzGutter]="16"
           *ngIf="user.extra_data && user_type.type == 'SUPPLIER'"
         >
-          <div nz-col [nzSpan]="12">
+          <div nz-col [nzSpan]="24">
             <nz-form-item>
-              <nz-form-label [nzSpan]="24">Localities</nz-form-label>
-              <nz-form-control [nzSpan]="24">
-                <nz-select
-                  *ngIf="tempUser?.extra_data?.length > 0"
-                  (ngModelChange)="storeChange($event)"
-                  [(ngModel)]="tempUser.localities"
-                  nzPlaceHolder="Select localities"
-                  style="width: 100%; border-radius: 6px"
-                  name="localities"
-                  nzMode="multiple"
-                >
-                  <nz-option
-                    *ngFor="let o of localities"
-                    [nzLabel]="o.name"
-                    [nzValue]="o.id"
-                  ></nz-option>
-                </nz-select>
-              </nz-form-control>
-            </nz-form-item>
-          </div>
+              <nz-form-label
+                [nzSm]="8"
+                [nzXs]="24"
+                style="text-align: center"
+                nzFor="license_number"
+              >
+                License Number
+              </nz-form-label>
 
-          <div
-            nz-col
-            [nzSpan]="12"
-            *ngIf="user.extra_data && user_type.type == 'SUPPLIER'"
-          >
-            <nz-form-item>
-              <nz-form-label [nzSpan]="24">License Number</nz-form-label>
-              <nz-form-control [nzSpan]="24">
+              <nz-form-control [nzSm]="16" [nzXs]="24">
                 <input
                   *ngIf="tempUser?.extra_data?.length > 0"
                   name="license_number"
+                  id="license_number"
                   nz-input
                   [(ngModel)]="tempUser.extra_data[0].license_number"
                   placeholder="Enter license number"
@@ -128,63 +163,18 @@
           </div>
         </div>
 
-        <!-- <div
-          nz-row
-          [nzGutter]="16"
-          *ngIf="user.extra_data && user_type == 'Supplier'"
-        >
-          
-          <div nz-col [nzSpan]="12">
-            <nz-form-item>
-              <nz-form-label [nzSpan]="24">Specialies</nz-form-label>
-              <nz-form-control [nzSpan]="24">
-                <nz-select
-                  *ngIf="tempUser?.extra_data?.length > 0"
-                  name="specialities"
-                  nzMode="multiple"
-                  [(ngModel)]="tempUser.specialities"
-                  nzPlaceHolder="Select specialities"
-                  style="width: 100%; border-radius: 6px"
-                >
-                  <nz-option
-                    *ngFor="let o of specialities"
-                    [nzLabel]="o.description"
-                    [nzValue]="o.id"
-                  ></nz-option>
-                </nz-select>
-              </nz-form-control>
-            </nz-form-item>
-          </div>
-          <div nz-col [nzSpan]="12" *ngIf="user_type == 'Supplier'">
-            <nz-form-item>
-              <nz-form-label [nzSpan]="24">Office</nz-form-label>
-              <nz-form-control [nzSpan]="24">
-                <nz-select
-                  *ngIf="tempUser?.extra_data?.length > 0"
-                  name="office_id"
-                  [(ngModel)]="tempUser.extra_data[0].office_id"
-                  nzPlaceHolder="Select office"
-                  style="width: 100%; border-radius: 6px"
-                >
-                  <nz-option
-                    *ngFor="let o of officesToDisplay"
-                    [nzLabel]="o.name"
-                    [nzValue]="o.id"
-                  ></nz-option>
-                </nz-select>
-              </nz-form-control>
-            </nz-form-item>
-          </div>
-        </div> -->
         <div
           nz-row
           [nzGutter]="16"
           *ngIf="user.extra_data && user_type.type == 'SUPPLIER'"
         >
-          <div nz-col [nzSpan]="12">
+          <div nz-col [nzSpan]="24">
             <nz-form-item>
-              <nz-form-label [nzSpan]="24">Insurers</nz-form-label>
-              <nz-form-control [nzSpan]="24">
+              <nz-form-label [nzSm]="8" style="text-align: center" [nzXs]="24">
+                Insurers
+              </nz-form-label>
+
+              <nz-form-control [nzSm]="16" [nzXs]="24">
                 <nz-select
                   *ngIf="tempUser?.extra_data?.length > 0"
                   name="insurers"
@@ -197,7 +187,8 @@
                     *ngFor="let o of insurers"
                     [nzLabel]="o.name"
                     [nzValue]="o.id"
-                  ></nz-option>
+                  >
+                  </nz-option>
                 </nz-select>
               </nz-form-control>
             </nz-form-item>
@@ -215,8 +206,11 @@
         >
           <div nz-col [nzSpan]="12">
             <nz-form-item>
-              <nz-form-label [nzSpan]="24">Supplier</nz-form-label>
-              <nz-form-control [nzSpan]="24">
+              <nz-form-label [nzSm]="8" style="text-align: center" [nzXs]="24">
+                Supplier
+              </nz-form-label>
+
+              <nz-form-control [nzSm]="16" [nzXs]="24">
                 <nz-select
                   *ngIf="tempUser?.extra_data?.length > 0"
                   name="supplier"
@@ -228,175 +222,27 @@
                     *ngFor="let o of suppliers"
                     [nzLabel]="o.user.first_name + ' ' + o.user.last_name"
                     [nzValue]="o.id"
-                  ></nz-option>
+                  >
+                  </nz-option>
                 </nz-select>
               </nz-form-control>
             </nz-form-item>
           </div>
-          <!-- <div nz-col [nzSpan]="12">
-            <nz-form-item>
-              <nz-form-label [nzSpan]="24">Partner type</nz-form-label>
-              <nz-form-control [nzSpan]="24">
-                <nz-select
-                  *ngIf="tempUser?.extra_data?.length > 0"
-                  name="partner_type_id"
-                  [(ngModel)]="tempUser.extra_data[0].partner_type_id"
-                  nzPlaceHolder="Select partner type"
-                  style="width: 100%; border-radius: 6px"
-                >
-                  <nz-option
-                    *ngFor="let o of partner_types"
-                    [nzLabel]="o.description"
-                    [nzValue]="o.id"
-                  ></nz-option>
-                </nz-select>
-              </nz-form-control>
-            </nz-form-item>
-          </div> -->
         </div>
-        <!--  -->
       </form>
-
-      <!-- <div
-        style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        "
-        *ngIf="user_type == 'Supplier' || user_type == 'Partner'"
-      >
-        <h3>Working Hours</h3>
-        <button nz-button nzType="primary" [nzSize]="'small'" (click)="open()">
-          Add
-        </button>
-      </div>
-
-      <nz-table
-        #basicTable
-        [nzData]="workingHours"
-        [nzFrontPagination]="false"
-        *ngIf="user_type == 'Supplier' || user_type == 'Partner'"
-      >
-        <thead>
-          <tr>
-            <th>Store</th>
-            <th>Day</th>
-            <th>Start Hour</th>
-            <th>End Hour</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let data of basicTable.data">
-            <td>{{ data.store_data.name }}</td>
-            <td>{{ data.day }}</td>
-            <td>{{ data.hour_start }}</td>
-            <td>{{ data.hour_end }}</td>
-            <td>
-              <a
-                ><i
-                  nz-icon
-                  nzType="edit"
-                  (click)="openEdit(data)"
-                  nzTheme="outline"
-                ></i
-              ></a>
-              <nz-divider nzType="vertical"></nz-divider>
-              <a
-                ><i nz-icon nzType="delete" (click)="deleteHour(data.id)"></i
-              ></a>
-            </td>
-          </tr>
-        </tbody>
-      </nz-table> -->
     </nz-spin>
   </ng-container>
-</nz-modal>
 
-<!-- <nz-modal
-  [(nzVisible)]="visibleDrawer"
-  [nzTitle]="titleDrawer"
-  (nzOnCancel)="closeDrawer()"
-  (nzOnOk)="submitDrawer()"
->
-  <ng-container *nzModalContent>
-    <div nz-col nzSpan="24">
-      <nz-form-item>
-        <nz-form-label nz-col nzSpan="4">Day</nz-form-label>
-        <nz-form-control nz-col nzSpan="16">
-          <nz-select
-            [(ngModel)]="workingHourForm.day"
-            name="day"
-            nzPlaceHolder="Select day"
-            style="width: 100%; border-radius: 6px"
-          >
-            <nz-option
-              *ngFor="let o of days"
-              [nzLabel]="o"
-              [nzValue]="o"
-            ></nz-option>
-          </nz-select>
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-    <div nz-col nzSpan="24">
-      <nz-form-item>
-        <nz-form-label nz-col nzSpan="4">Store</nz-form-label>
-        <nz-form-control nz-col nzSpan="16">
-          <nz-select
-            [(ngModel)]="workingHourForm.store"
-            name="store"
-            nzPlaceHolder="Select store"
-            style="width: 100%; border-radius: 6px"
-          >
-            <nz-option
-              *ngFor="let o of localities"
-              [nzLabel]="o.name"
-              [nzValue]="o.id"
-            ></nz-option>
-          </nz-select>
-        </nz-form-control>
-      </nz-form-item>
-    </div>
+  <ng-template #footerTpl>
+    <div
+      class="footer-actions"
+      style="display: flex; justify-content: flex-end"
+    >
+      <button nz-button style="margin-right: 8px" (click)="closeDrawer()">
+        Close
+      </button>
 
-    <div nz-col nzSpan="24">
-      <nz-form-item>
-        <nz-form-label nz-col nzSpan="4">Start Hour</nz-form-label>
-        <nz-form-control nz-col nzSpan="16">
-          <input
-            nz-input
-            type="number"
-            name="hour_start"
-            [(ngModel)]="workingHourForm.hour_start"
-            style="
-              width: 100%;
-              border-radius: 6px;
-              font-size: 14px;
-              padding: 8px;
-            "
-          />
-        </nz-form-control>
-      </nz-form-item>
+      <button nz-button nzType="primary" (click)="submit()">Save</button>
     </div>
-
-    <div nz-col nzSpan="24">
-      <nz-form-item>
-        <nz-form-label nz-col nzSpan="4">End Hour</nz-form-label>
-        <nz-form-control nz-col nzSpan="16">
-          <input
-            nz-input
-            type="number"
-            name="hour_end"
-            [(ngModel)]="workingHourForm.hour_end"
-            style="
-              width: 100%;
-              border-radius: 6px;
-              font-size: 14px;
-              padding: 8px;
-            "
-          />
-        </nz-form-control>
-      </nz-form-item>
-    </div>
-  </ng-container>
-</nz-modal> -->
+  </ng-template>
+</nz-drawer>

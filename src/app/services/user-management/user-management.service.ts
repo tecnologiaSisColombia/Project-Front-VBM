@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -13,7 +13,7 @@ export class UserService {
 
   createUser(userData: any): Observable<any> {
     return this.http.post(
-      `${this.baseUrl}UserAccessControl/CreateUser`,
+      `${this.baseUrl}access-control/CreateUser`,
       userData
     );
   }
@@ -44,27 +44,27 @@ export class UserService {
     return this.http.get<any[]>(`${this.baseUrl}core/users`, { params });
   }
 
-  disableUser(username: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}UserAccessControl/DisableUser`, {
-      username,
-    });
+  update(id: number, data: { username: string; is_active: boolean }): Observable<any> {
+    const params = new HttpParams()
+      .set('username', data.username)
+      .set('is_active', String(data.is_active));
+
+    const cognito = this.http.put(`${this.baseUrl}access-control/ChangeStatus`, {}, { params });
+    const db = this.http.put(`${this.baseUrl}core/users/${id}`, data);
+
+    return forkJoin([cognito, db]);
   }
 
-  enableUser(username: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}UserAccessControl/EnableUser`, {
-      username,
-    });
-  }
+  delete(username: string, id: number): Observable<any> {
+    const cognito = this.http.delete(`${this.baseUrl}access-control/DeleteUser/${username}`);
+    const db = this.http.delete(`${this.baseUrl}core/users/${id}`);
 
-  deleteUser(username: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}UserAccessControl/DeleteUser`, {
-      username,
-    });
+    return forkJoin([cognito, db]);
   }
 
   updateAttributes(userData: any): Observable<any> {
     return this.http.post(
-      `${this.baseUrl}UserAccessControl/UpdateAttributes`,
+      `${this.baseUrl}access-control/UpdateAttributes`,
       userData
     );
   }
@@ -84,7 +84,7 @@ export class UserService {
   updateDataByType(type_user: any, user_id: number, user: any
   ): Observable<any> {
     return this.http.put(
-      `${this.baseUrl}UserAccessControl/update-type-user/${user_id}?type_user=${type_user.id}`,
+      `${this.baseUrl}access-control/update-type-user/${user_id}?type_user=${type_user.id}`,
       user
     );
   }
