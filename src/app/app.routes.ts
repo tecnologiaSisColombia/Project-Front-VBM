@@ -6,8 +6,6 @@ import {
   ProductsComponent,
   DoctorComponent,
   LocalitiesComponent,
-  // SpecialitiesComponent,
-  // OfficesComponent
   LoginComponent,
   ResetPasswordComponent,
   PlansComponent,
@@ -55,18 +53,10 @@ export const routes: Routes = [
         path: 'config',
         canActivate: [AuthGuardService],
         children: [
-          // {
-          //   path: 'specialities',
-          //   component: SpecialitiesComponent,
-          // },
           {
             path: 'localities',
             component: LocalitiesComponent,
           },
-          // {
-          //   path: 'offices',
-          //   component: OfficesComponent,
-          // },
           {
             path: 'services',
             component: ServicesComponent,

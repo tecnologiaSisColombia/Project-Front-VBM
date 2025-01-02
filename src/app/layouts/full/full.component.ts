@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-full',
   templateUrl: './full.component.html',
-  styleUrls: ['./full.component.css'],
+  styleUrls: ['./full.component.css', '../../../animations/styles.css'],
   standalone: true,
   imports: [
     NzBreadCrumbModule,
@@ -58,7 +58,6 @@ export class FullComponent implements OnInit {
         this.role = res.groups[0];
         this.username = res['username'];
 
-        console.log(this.username)
         localStorage.setItem(
           'user_attr',
           JSON.stringify({
