@@ -16,7 +16,8 @@ import {
   EligibilityComponent,
   MainMenuComponent,
   ChangePasswordComponent,
-  DiagnosisComponent
+  DiagnosisComponent,
+  LocationComponent
 } from './components';
 
 export const routes: Routes = [
@@ -73,6 +74,10 @@ export const routes: Routes = [
           {
             path: 'diagnosis',
             component: DiagnosisComponent,
+          },
+          {
+            path: 'location',
+            component: LocationComponent,
           },
         ],
       },

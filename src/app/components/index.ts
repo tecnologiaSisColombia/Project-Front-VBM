@@ -3,7 +3,7 @@ export * from './configuration/products/products.component';
 export * from './configuration/doctors/doctor.component';
 export * from './configuration/localities/localities.component';
 export * from './configuration/diagnosis/diagnosis.component';
-// export * from './configuration/offices/offices.component';
+export * from './configuration/location/location.component';
 export * from './login/login.component';
 export * from './reset-password/reset-password.component';
 export * from './plans/plans.component';

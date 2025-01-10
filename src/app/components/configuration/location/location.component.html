@@ -3,7 +3,7 @@
     <nz-breadcrumb>
       <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
       <nz-breadcrumb-item>Resource Management</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Diagnosis</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Location</nz-breadcrumb-item>
     </nz-breadcrumb>
   </div>
 
@@ -14,23 +14,23 @@
       (click)="openDrawer()">
       <i 
         nz-icon 
-        nzType="file-text" 
+        nzType="environment" 
         nzTheme="outline"> 
       </i>
-      New Diagnosis
+      New Location
     </button>
 
     <button
       nz-button
       [style.background-color]="'#00a651'"
       [style.color]="'white'"
-      (click)="exportDiagnosis()">
+      (click)="exportLocation()">
       <i 
         nz-icon 
         nzType="download" 
         nzTheme="outline"> 
       </i>
-      Export Diagnosis
+      Export Location
     </button>
   </div>
 </div>
@@ -115,7 +115,7 @@
       nzNotFoundImage="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
       [nzNotFoundContent]="contentTpl">
       <ng-template #contentTpl>
-        <span> No diagnosis found </span>
+        <span> No location found </span>
       </ng-template>
     </nz-empty>
   </ng-template>
