@@ -23,7 +23,7 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import * as XLSX from 'xlsx';
-import { DoctorService } from 'app/services/config/doctors.service';
+import { DiagnosisService } from 'app/services/config/diagnosis.service';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
@@ -63,12 +63,8 @@ export class DiagnosisComponent {
   count_records = 0;
   page_size = 10;
   page = 1;
-  stores: any[] = [];
-  suppliers: any[] = [];
   codeSearch: any = null;
   descriptionSearch: any = null;
-  licenseSearch: any = null;
-  user_attr: any = null;
   [key: string]: any;
   searchFields = [
     { placeholder: 'Code...', model: 'codeSearch', key: 'code' },
@@ -78,33 +74,26 @@ export class DiagnosisComponent {
 
   constructor(
     private fb: UntypedFormBuilder,
-    private doctorService: DoctorService,
+    private diagnosisService: DiagnosisService,
     private msgService: NzMessageService
   ) {
     this.form = this.fb.group({
-      license_number: [
+      code: [
         null,
         [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
       ],
-      email: [null, [Validators.required, Validators.email]],
-      phone: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
-      last_name: [
+      description: [
         null,
         [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
       ],
-      first_name: [
-        null,
-        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
-      ],
-      supplier: [null, [Validators.required]],
     });
 
     this.searchNameSubject
       .pipe(debounceTime(1000))
       .subscribe(({ type, value }) => {
         const fields = {
-          first_name: () => (this.codeSearch = value),
-          last_name: () => (this.descriptionSearch = value),
+          code: () => (this.codeSearch = value),
+          description: () => (this.descriptionSearch = value),
         };
 
         (fields as Record<string, () => void>)[type]?.();
@@ -116,35 +105,15 @@ export class DiagnosisComponent {
 
   ngOnInit(): void {
     this.getInitData();
-    this.getSuppliers();
-    this.user_attr = JSON.parse(localStorage.getItem('user_attr')!);
-  }
-
-  getSuppliers() {
-    this.doctorService.getSuppliers({}, 1, 1, true).subscribe({
-      next: (res: any) => {
-        this.suppliers = res;
-        if (this.user_attr.rol == 'SUPPLIER') {
-          const supplier = this.suppliers.find(
-            (s) => s.user.id == this.user_attr.id
-          );
-
-          this.form.patchValue({ supplier: supplier.id });
-        }
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-    });
   }
 
   getInitData() {
     this.isDataLoading = true;
-    this.doctorService
+    this.diagnosisService
       .get(
         {
-          first_name: this.codeSearch,
-          last_name: this.descriptionSearch,
+          code: this.codeSearch,
+          description: this.descriptionSearch,
         },
         this.page,
         this.page_size
@@ -173,13 +142,13 @@ export class DiagnosisComponent {
 
   openDrawer(): void {
     this.visible = true;
-    this.drawerTitle = 'New Doctor';
+    this.drawerTitle = 'New Diagnosis';
   }
 
   openEditDrawer(data: any): void {
     this.visible = true;
     this.isUpdating = true;
-    this.drawerTitle = 'Edit Doctor';
+    this.drawerTitle = 'Edit Diagnosis';
     this.dataDrawerCache = data;
     this.form.patchValue({ ...data });
   }
@@ -195,7 +164,7 @@ export class DiagnosisComponent {
 
   delete(id: number) {
     Swal.fire({
-      text: 'Are you sure you want to delete this doctor?',
+      text: 'Are you sure you want to delete this diagnosis?',
       icon: 'warning',
       showDenyButton: true,
       confirmButtonText: 'Yes',
@@ -204,10 +173,10 @@ export class DiagnosisComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
-        this.doctorService.delete(id).subscribe({
+        this.diagnosisService.delete(id).subscribe({
           next: () => {
             this.msgService.success(
-              JSON.stringify('Doctor deleted successfully')
+              JSON.stringify('Diagnosis deleted successfully')
             );
             this.isDataLoading = false;
 
@@ -228,9 +197,9 @@ export class DiagnosisComponent {
 
   update(id: number, data: any) {
     this.isDataLoading = true;
-    this.doctorService.update(id, data).subscribe({
+    this.diagnosisService.update(id, data).subscribe({
       next: () => {
-        this.msgService.success(JSON.stringify('Doctor updated successfully'));
+        this.msgService.success(JSON.stringify('Diagnosis updated successfully'));
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -249,10 +218,10 @@ export class DiagnosisComponent {
       if (this.isUpdating) {
         return this.update(this.dataDrawerCache.id, this.form.value);
       }
-      this.doctorService.create(this.form.value).subscribe({
+      this.diagnosisService.create(this.form.value).subscribe({
         next: () => {
           this.msgService.success(
-            JSON.stringify('Doctor created successfully')
+            JSON.stringify('Diagnosis created successfully')
           );
           this.isDataLoading = false;
           this.getInitData();
@@ -275,7 +244,6 @@ export class DiagnosisComponent {
   }
 
   changeStatus(id: number, data: any) {
-    delete data.store_data;
     this.update(id, data);
   }
 
@@ -301,83 +269,80 @@ export class DiagnosisComponent {
   }
 
   exportDiagnosis(): void {
-    this.doctorService.get({}, null, null, true).subscribe({
-      next: (res: any) => {
-        if (res.length === 0) {
-          this.msgService.warning(
-            JSON.stringify('No data available to export')
+      this.diagnosisService.get({}, null, null, true).subscribe({
+        next: (res: any) => {
+          if (res.length === 0) {
+            this.msgService.warning(
+              JSON.stringify('No data available to export')
+            );
+            this.isDataLoading = false;
+            return;
+          }
+
+          this.isDataLoading = true;
+
+          const headers = {
+            code: 'Code',
+            description: 'Description',
+            created: 'Created',
+            active: 'Status',
+          };
+
+          const selectedColumns = Object.keys(
+            headers
+          ) as (keyof typeof headers)[];
+
+          const filteredData = res.map((diagnosis: any) =>
+            selectedColumns.reduce((obj: Record<string, any>, key) => {
+              if (key === 'active') {
+                obj[headers[key]] = diagnosis[key] ? 'Active' : 'Inactive';
+              } else if (key === 'created') {
+                const date = new Date(diagnosis[key]);
+                obj[headers[key]] = date.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                });
+              } else {
+                obj[headers[key]] = diagnosis[key];
+              }
+              return obj;
+            }, {})
           );
+
+          const worksheet: XLSX.WorkSheet =
+            XLSX.utils.json_to_sheet(filteredData);
+          const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'Diagnosis');
+
+          const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+            bookType: 'xlsx',
+            type: 'array',
+          });
+
+          const blob = new Blob([excelBuffer], {
+            type: 'application/octet-stream',
+          });
+          const link = document.createElement('a');
+          const url = URL.createObjectURL(blob);
+
+          link.setAttribute('href', url);
+          link.setAttribute('download', 'Diagnosis.xlsx');
+          link.style.visibility = 'hidden';
+
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
           this.isDataLoading = false;
-          return;
-        }
-
-        this.isDataLoading = true;
-
-        const headers = {
-          first_name: 'First Name',
-          last_name: 'Last Name',
-          email: 'Email',
-          phone: 'Phone',
-          license_number: 'License Number',
-          created: 'Created',
-          active: 'Status',
-        };
-
-        const selectedColumns = Object.keys(
-          headers
-        ) as (keyof typeof headers)[];
-
-        const filteredData = res.map((doctor: any) =>
-          selectedColumns.reduce((obj: Record<string, any>, key) => {
-            if (key === 'active') {
-              obj[headers[key]] = doctor[key] ? 'Active' : 'Inactive';
-            } else if (key === 'created') {
-              const date = new Date(doctor[key]);
-              obj[headers[key]] = date.toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              });
-            } else {
-              obj[headers[key]] = doctor[key];
-            }
-            return obj;
-          }, {})
-        );
-
-        const worksheet: XLSX.WorkSheet =
-          XLSX.utils.json_to_sheet(filteredData);
-        const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Doctors');
-
-        const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-          bookType: 'xlsx',
-          type: 'array',
-        });
-
-        const blob = new Blob([excelBuffer], {
-          type: 'application/octet-stream',
-        });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-
-        link.setAttribute('href', url);
-        link.setAttribute('download', 'Doctors.xlsx');
-        link.style.visibility = 'hidden';
-
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        this.isDataLoading = false;
-        this.msgService.success(
-          JSON.stringify('Export completed successfully')
-        );
-      },
-      error: (err) => {
-        this.isDataLoading = false;
-        this.msgService.error(JSON.stringify(err.error));
-      },
-    });
+          this.msgService.success(
+            JSON.stringify('Export completed successfully')
+          );
+        },
+        error: (err) => {
+          this.isDataLoading = false;
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 }

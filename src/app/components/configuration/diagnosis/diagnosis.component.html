@@ -151,22 +151,22 @@
             [nzXs]="24"
             nzFor="code"
             style="text-align: center">
-            First name
+            Code
           </nz-form-label>
 
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="first_nameError">
-            <input nz-input formControlName="first_name" id="first_name" />
+            [nzErrorTip]="codeError">
+            <input nz-input formControlName="code" id="code" />
           </nz-form-control>
         </nz-form-item>
 
-        <ng-template #first_nameError>
-          <span *ngIf="form.get('first_name')?.hasError('required')">
+        <ng-template #codeError>
+          <span *ngIf="form.get('code')?.hasError('required')">
             This field is required
           </span>
-          <span *ngIf="form.get('first_name')?.hasError('pattern')">
+          <span *ngIf="form.get('code')?.hasError('pattern')">
             This field cannot be empty or contain only spaces
           </span>
         </ng-template>
@@ -175,153 +175,29 @@
           <nz-form-label
             [nzSm]="8"
             [nzXs]="24"
-            nzFor="last_name"
+            nzFor="description"
             style="text-align: center">
-            Last name
+            Description
           </nz-form-label>
 
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="last_nameError">
+            [nzErrorTip]="descriptionError">
             <input 
               nz-input 
-              formControlName="last_name" 
-              id="last_name" 
+              formControlName="description" 
+              id="description" 
             />
           </nz-form-control>
         </nz-form-item>
 
-        <ng-template #last_nameError>
-          <span *ngIf="form.get('last_name')?.hasError('required')">
+        <ng-template #descriptionError>
+          <span *ngIf="form.get('description')?.hasError('required')">
             This field is required
           </span>
-          <span *ngIf="form.get('last_name')?.hasError('pattern')">
+          <span *ngIf="form.get('description')?.hasError('pattern')">
             This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
-
-        <nz-form-item>
-          <nz-form-label
-            [nzSm]="8"
-            [nzXs]="24"
-            nzFor="license_number"
-            style="text-align: center">
-            License number
-          </nz-form-label>
-
-          <nz-form-control
-            [nzSm]="16"
-            [nzXs]="24"
-            [nzErrorTip]="license_numberError">
-            <input
-              nz-input
-              formControlName="license_number"
-              id="license_number"
-            />
-          </nz-form-control>
-        </nz-form-item>
-
-        <ng-template #license_numberError>
-          <span *ngIf="form.get('license_number')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('license_number')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
-
-        <nz-form-item>
-          <nz-form-label
-            [nzSm]="8"
-            [nzXs]="24"
-            nzFor="email"
-            style="text-align: center">
-            Email
-          </nz-form-label>
-
-          <nz-form-control 
-            [nzSm]="16" 
-            [nzXs]="24" 
-            [nzErrorTip]="emailError">
-            <input 
-              nz-input 
-              type="email" 
-              formControlName="email" 
-              id="email" 
-            />
-          </nz-form-control>
-        </nz-form-item>
-
-        <ng-template #emailError>
-          <span *ngIf="form.get('email')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('email')?.hasError('email')">
-            Please enter a valid email address
-          </span>
-        </ng-template>
-
-        <nz-form-item>
-          <nz-form-label
-            [nzSm]="8"
-            [nzXs]="24"
-            nzFor="phone"
-            style="text-align: center">
-            Phone
-          </nz-form-label>
-
-          <nz-form-control 
-            [nzSm]="16" 
-            [nzXs]="24" 
-            [nzErrorTip]="phoneError">
-            <input 
-              nz-input 
-              formControlName="phone" 
-              id="phone" 
-            />
-          </nz-form-control>
-        </nz-form-item>
-
-        <ng-template #phoneError>
-          <span *ngIf="form.get('phone')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('phone')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
-
-        <nz-form-item *ngIf="user_attr.rol != 'SUPPLIER'">
-          <nz-form-label
-            [nzSm]="8"
-            [nzXs]="24"
-            nzFor="phone"
-            style="text-align: center">
-            Supplier
-          </nz-form-label>
-
-          <nz-form-control 
-            [nzSm]="16" 
-            [nzXs]="24" 
-            [nzErrorTip]="supplierError">
-            <nz-select
-              formControlName="supplier"
-              nzPlaceHolder="Select Supplier"
-              style="width: 100%; border-radius: 6px"
-              nzAllowClear>
-              <nz-option
-                *ngFor="let o of suppliers"
-                [nzLabel]="o.user.first_name + ' ' + o.user.last_name"
-                [nzValue]="o.id">
-              </nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-
-        <ng-template #supplierError>
-          <span *ngIf="form.get('supplier')?.hasError('required')">
-            This field is required
           </span>
         </ng-template>
       </form>
