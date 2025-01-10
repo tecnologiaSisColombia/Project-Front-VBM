@@ -61,6 +61,9 @@
               <li nz-menu-item *ngIf="access.admin">
                 <a routerLink="/config/products">Products</a>
               </li>
+              <li nz-menu-item *ngIf="access.admin">
+                <a routerLink="/config/diagnosis">Diagnosis</a>
+              </li>
             </ul>
           </li>
           <li
@@ -93,12 +96,12 @@
           </li>
           <li
             nz-submenu
-            nzTitle="Eligibility"
+            nzTitle="Patients"
             nzIcon="solution"
             *ngIf="access.eligibility">
             <ul>
               <li nz-menu-item>
-                <a routerLink="/eligibility">Validate rights</a>
+                <a routerLink="/eligibility">Patient management</a>
               </li>
             </ul>
           </li>

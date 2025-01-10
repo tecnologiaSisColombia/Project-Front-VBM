@@ -27,7 +27,7 @@ import { DoctorService } from 'app/services/config/doctors.service';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
-  selector: 'app-doctors',
+  selector: 'app-diagnosis',
   standalone: true,
   imports: [
     NzBreadCrumbModule,
@@ -47,10 +47,10 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
     NzSelectModule,
     NzEmptyModule,
   ],
-  templateUrl: './doctor.component.html',
-  styleUrls: ['./doctor.component.css', '../../../../animations/styles.css'],
+  templateUrl: './diagnosis.component.html',
+  styleUrls: ['./diagnosis.component.css', '../../../../animations/styles.css'],
 })
-export class DoctorComponent {
+export class DiagnosisComponent {
   form: UntypedFormGroup;
   isDataLoading = false;
   dataToDisplay: any[] = [];
@@ -65,19 +65,14 @@ export class DoctorComponent {
   page = 1;
   stores: any[] = [];
   suppliers: any[] = [];
-  firstSearch: any = null;
-  lastSearch: any = null;
+  codeSearch: any = null;
+  descriptionSearch: any = null;
   licenseSearch: any = null;
   user_attr: any = null;
   [key: string]: any;
   searchFields = [
-    { placeholder: 'First Name...', model: 'firstSearch', key: 'first_name' },
-    { placeholder: 'Last Name...', model: 'lastSearch', key: 'last_name' },
-    {
-      placeholder: 'License Number...',
-      model: 'licenseSearch',
-      key: 'license',
-    },
+    { placeholder: 'Code...', model: 'codeSearch', key: 'code' },
+    { placeholder: 'Description...', model: 'descriptionSearch', key: 'description' },
   ];
   private searchNameSubject = new Subject<{ type: string; value: string }>();
 
@@ -108,9 +103,8 @@ export class DoctorComponent {
       .pipe(debounceTime(1000))
       .subscribe(({ type, value }) => {
         const fields = {
-          first_name: () => (this.firstSearch = value),
-          last_name: () => (this.lastSearch = value),
-          license: () => (this.licenseSearch = value),
+          first_name: () => (this.codeSearch = value),
+          last_name: () => (this.descriptionSearch = value),
         };
 
         (fields as Record<string, () => void>)[type]?.();
@@ -149,9 +143,8 @@ export class DoctorComponent {
     this.doctorService
       .get(
         {
-          license: this.licenseSearch,
-          first_name: this.firstSearch,
-          last_name: this.lastSearch,
+          first_name: this.codeSearch,
+          last_name: this.descriptionSearch,
         },
         this.page,
         this.page_size
@@ -161,8 +154,7 @@ export class DoctorComponent {
           this.isDataLoading = false;
           this.dataToDisplay = res.results;
 
-          const isSearching =
-            this.licenseSearch || this.firstSearch || this.lastSearch;
+          const isSearching = this.codeSearch || this.descriptionSearch;
 
           if (isSearching && (!res.results || res.results.length === 0)) {
             this.msgService.warning(
@@ -308,7 +300,7 @@ export class DoctorComponent {
     this.num_pages = Math.ceil(count / this.page_size);
   }
 
-  exportDoctors(): void {
+  exportDiagnosis(): void {
     this.doctorService.get({}, null, null, true).subscribe({
       next: (res: any) => {
         if (res.length === 0) {

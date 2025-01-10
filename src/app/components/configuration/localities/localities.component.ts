@@ -26,7 +26,7 @@ import * as XLSX from 'xlsx';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
-  selector: 'app-stores',
+  selector: 'app-localities',
   standalone: true,
   imports: [
     NzBreadCrumbModule,
