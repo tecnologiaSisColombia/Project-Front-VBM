@@ -318,7 +318,7 @@
               nzAllowClear>
               <nz-option
                 *ngFor="let o of suppliers"
-                [nzLabel]="o.user.first_name"
+                [nzLabel]="o.user.first_name + ' ' + o.user.last_name"
                 [nzValue]="o.id">
               </nz-option>
             </nz-select>

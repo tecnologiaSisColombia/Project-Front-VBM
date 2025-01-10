@@ -50,7 +50,7 @@ import { DoctorService } from 'app/services/config/doctors.service';
     `,
   ],
 })
-export class NzDemoModalLocaleComponent implements OnInit {
+export class EditUser implements OnInit {
   @Input() user: any = null;
   @Output() userUpdated = new EventEmitter<any>();
   isVisible = false;

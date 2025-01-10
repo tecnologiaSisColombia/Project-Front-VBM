@@ -1,0 +1,140 @@
+<nz-card nzTitle="Claim entry" [nzBordered]="true" class="main-card">
+    <div class="section">
+        <p>
+            <b>Physician information:</b>
+        </p>
+    </div>
+
+    <div class="section">
+        <nz-divider nzText="Diagnosis"></nz-divider>
+        <form nz-form>
+            <nz-row [nzGutter]="16">
+                <nz-col [nzSpan]="6" *ngFor="let item of inputs">
+                    <nz-form-item [style.margin-bottom.px]="8">
+                        <nz-form-label 
+                            [nzSm]="8" 
+                            [nzXs]="24" 
+                            [style.text-align]="'center'">
+                            {{ item.label }}
+                        </nz-form-label>
+
+                        <nz-form-control 
+                            [nzSm]="16" 
+                            [nzXs]="24">
+                            <input 
+                                nz-input 
+                            />
+                        </nz-form-control>
+                    </nz-form-item>
+                </nz-col>
+            </nz-row>
+        </form>
+    </div>
+
+    <div class="section">
+        <p>
+            Facility: 
+            <select name="facility" id="facility">
+                <option value="N/A" selected>N/A</option>
+                <option value="New York">New York</option>
+                <option value="Chicago">Chicago</option>
+                <option value="Houston">Houston</option>
+            </select>
+        </p>
+        <p>
+            Location: 
+            <select name="location" id="location">
+                <option value="New York">New York</option>
+                <option value="Los Angeles">Los Angeles</option>
+                <option value="Chicago">Chicago</option>
+                <option value="Houston">Houston</option>
+            </select>
+        </p>
+        <p>
+            Member have C.O.B information: 
+            <select name="information" id="information">
+                <option value="yes">Yes</option>
+                <option value="no" selected>No</option>
+            </select>
+        </p>
+    </div>
+
+    <div class="section">
+        <div class="section">
+            <b>
+                Service(s): SOSA CORTES, JORGE A Valid From 01/01/2025 Thru 12/31/2025
+            </b>
+        </div>
+        <table class="service-table">
+            <thead>
+                <tr>
+                    <th>From (mm/dd/yyyy)</th>
+                    <th>To (mm/dd/yyyy)</th>
+                    <th>Tos</th>
+                    <th>CPT</th>
+                    <th>Modifiers 1-2-3</th>
+                    <th>Diagnosis Pointer(1-12)</th>
+                    <th>Charges</th>
+                    <th>Units</th>
+                    <th>CL</th>
+                    <th>DL</th>
+                    <th>COB</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let row of rows; index as i">
+                    <td>
+                        <nz-date-picker nzFormat="MM/dd/yyyy"></nz-date-picker>
+                    </td>
+                    <td>
+                        <nz-date-picker nzFormat="MM/dd/yyyy"></nz-date-picker>
+                    </td>
+                    <td><input nz-input type="text" class="tos-input" /></td>
+                    <td><input nz-input type="text" /></td>
+                    <td>
+                        <div class="modifiers">
+                            <input 
+                                nz-input 
+                                type="text"
+                                maxlength="3" 
+                                *ngFor="let mod of [1,2,3]"
+                            />
+                        </div>
+                    </td>                    
+                    <td>
+                        <input 
+                            nz-input 
+                            type="text" 
+                            class="diagnosis-input" 
+                        />
+                    </td>
+                    <td>
+                        <input nz-input type="number" class="charges-input" />
+                    </td>
+                    <td>
+                        <input nz-input type="number"  class="units-input" />
+                    </td>
+                    <td>
+                        <button nz-button nzType="link">cpy</button>
+                    </td>
+                    <td>
+                        <button 
+                            nz-button 
+                            nzType="primary" 
+                            nzShape="round" 
+                            nzSize="small" 
+                            class="ant-btn-dangerous"
+                            title="Delete">
+                            <span 
+                                nz-icon 
+                                nzType="delete" 
+                                nzTheme="outline">
+                            </span>
+                        </button>
+                    </td>
+                    <td><button nz-button nzType="link">cob</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</nz-card>

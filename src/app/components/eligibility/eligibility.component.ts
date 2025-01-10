@@ -20,6 +20,7 @@ import { MemberComponent } from './member/member.component';
 import { PlanDetailsComponent } from './plan-details/plan-details.component';
 import { EligibilityService } from 'app/services/eligibility/eligibility.service';
 import * as XLSX from 'xlsx';
+import { ClaimEntryComponent } from "./claim-entry/claim-entry.component";
 
 @Component({
   selector: 'app-eligibility',
@@ -41,8 +42,9 @@ import * as XLSX from 'xlsx';
     FormsModule,
     NzModalModule,
     MemberComponent,
-    PlanDetailsComponent
-  ],
+    PlanDetailsComponent,
+    ClaimEntryComponent
+],
   templateUrl: './eligibility.component.html',
   styleUrls: ['./eligibility.component.css', '../../../animations/styles.css']
 })
@@ -56,9 +58,10 @@ export class EligibilityComponent {
   firstSearch: any = null;
   lastSearch: any = null;
   suscriberSearch: any = null;
-  
   isVisibleModalDetails = false;
   isVisibleModalMember = false;
+  isVisibleModalClaim = false;
+
   [key: string]: any;
   searchFields = [
     { placeholder: 'First Name...', model: 'firstSearch', key: 'first_name' },
@@ -149,8 +152,22 @@ export class EligibilityComponent {
     // this.dataCacheModal = data;
   }
 
+  openModalClaim(): void {
+    this.isVisibleModalClaim = true;
+    // this.dataCacheModal = data;
+  }
+
+  CancelModalClaim(): void {
+    this.isVisibleModalClaim = false;
+    // this.dataCacheModal = null;
+  }
+
   OkModalMember(): void {
     this.CancelModalMember();
+  }
+
+  OkModalClaim(): void {
+    this.isVisibleModalClaim = false;
   }
 
   OkModalDetails(): void {

@@ -309,7 +309,7 @@
             [nzSm]="8" 
             [nzXs]="24" 
             nzFor="logo_description">
-            Logo Description
+            Logo description
           </nz-form-label>
 
           <nz-form-control
@@ -443,6 +443,7 @@
 </nz-drawer>
 
 <nz-modal
+  [nzAutofocus]="null"
   [(nzVisible)]="isVisibleCatalog"
   nzTitle="Products and Services"
   (nzOnCancel)="handleCancelCatalog()"

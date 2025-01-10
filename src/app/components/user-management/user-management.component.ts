@@ -13,7 +13,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
-import { NzDemoModalLocaleComponent } from '../drawers-modals/edit-user/edit-user.component';
+import { EditUser } from '../edit-user/edit-user.component';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import Swal from 'sweetalert2';
@@ -47,7 +47,7 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
     NzTagModule,
     NzDrawerModule,
     NzBreadCrumbModule,
-    NzDemoModalLocaleComponent,
+    EditUser,
     NzSwitchModule,
     ReactiveFormsModule,
     NzSpinModule,

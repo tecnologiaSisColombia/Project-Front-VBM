@@ -217,7 +217,7 @@
               formControlName="insurer">
               <nz-option
                 *ngFor="let o of insurers"
-                [nzLabel]="o.name"
+                [nzLabel]="o.payer_id + ' - ' + o.name"
                 [nzValue]="o.id">
               </nz-option>
             </nz-select>
@@ -247,6 +247,7 @@
 </nz-drawer>
 
 <nz-modal
+  [nzAutofocus]="null"
   [(nzVisible)]="isVisibleModal"
   nzTitle="Subplans"
   (nzOnCancel)="handleCancelModal()"

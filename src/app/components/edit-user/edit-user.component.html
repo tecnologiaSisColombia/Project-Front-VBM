@@ -185,7 +185,7 @@
                 >
                   <nz-option
                     *ngFor="let o of insurers"
-                    [nzLabel]="o.name"
+                    [nzLabel]="o.payer_id + ' - ' + o.name"
                     [nzValue]="o.id"
                   >
                   </nz-option>
@@ -204,13 +204,18 @@
             user_attr.rol != 'SUPPLIER'
           "
         >
-          <div nz-col [nzSpan]="12">
+          <div nz-col [nzSpan]="24">
             <nz-form-item>
-              <nz-form-label [nzSm]="8" style="text-align: center" [nzXs]="24">
+              <nz-form-label 
+                [nzSm]="8" 
+                style="text-align: center" 
+                [nzXs]="24">
                 Supplier
               </nz-form-label>
 
-              <nz-form-control [nzSm]="16" [nzXs]="24">
+              <nz-form-control 
+                [nzSm]="16" 
+                [nzXs]="24">
                 <nz-select
                   *ngIf="tempUser?.extra_data?.length > 0"
                   name="supplier"

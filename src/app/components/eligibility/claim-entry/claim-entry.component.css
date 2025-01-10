@@ -1,0 +1,55 @@
+.main-card {
+    width: 100%;
+    margin: 20px auto;
+    padding: 25px;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.section {
+    margin-bottom: 20px;
+}
+
+input[nz-input],
+select {
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    background-color: #fff;
+}
+
+input[nz-input]:focus,
+select:focus {
+    border-color: #40a9ff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(64, 169, 255, 0.6);
+}
+
+.modifiers input[nz-input],
+.diagnosis-input,
+.charges-input,
+.tos-input,
+.units-input {
+    width: 50px;
+    margin-right: 8px;
+}
+
+.service-table {
+    border-spacing: 0 6px;
+    border-collapse: separate;
+    text-align: center;
+}
+
+.service-table th,
+.service-table td {
+    word-wrap: break-word;
+    white-space: nowrap;
+    padding: 6px;
+}
+
+.service-table th {
+    padding-bottom: 10px;
+}

@@ -8,18 +8,6 @@
   </div>
 
   <div class="btn-container">
-    <!-- <button 
-      nz-button 
-      nzType="primary" 
-      (click)="openDrawer()">
-      <i 
-        nz-icon 
-        nzType="user" 
-        nzTheme="outline">
-      </i>
-      New Doctor
-    </button> -->
-
     <button
       nz-button
       [style.background-color]="'#00a651'"
@@ -61,14 +49,14 @@
     [nzFrontPagination]="false">
     <thead>
       <tr>
-        <th>Name - ID #</th>
+        <th>Name - ID</th>
         <th>DOB</th>
         <th>Effective</th>
         <th>Terminates</th>
         <th>Benefit</th>
         <th>Active member</th>
-        <th>Physician can provide services?</th>
-        <th>Member has primary insurance throught other insurance</th>
+        <th>Service availability</th>
+        <th>Primary Insurance via Other</th>
         <th>Action</th>
       </tr>
     </thead>
@@ -78,8 +66,20 @@
         <td>{{data.effective}}</td>
         <td>{{data.effective}}</td>
         <td>{{data.terminates}}</td>
-        <td></td>
-        <td>{{ data.active == 1 ? 'Yes' : 'No' }}</td>
+        <td>Prueba</td>
+        <td>
+          <button
+            nz-button
+            nzShape="round"
+            nzSize="small"
+            title="{{ data.active == 1 ? 'Active' : 'Inactive' }}"
+            [ngStyle]="{
+              'background-color': data.active == 1 ? '#52c41a' : '#f5222d',
+              'color': 'white'
+            }">
+            <span>{{ data.active == 1 ? 'Yes' : 'No' }}</span>
+          </button>
+        </td>
         <td>Yes</td>
         <td>Yes</td>
         <td>
@@ -102,6 +102,15 @@
               title="Show Member">
           </span>
           </a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <button 
+            nz-button nzType="primary" 
+            nzShape="round" 
+            nzSize="small"
+            (click)="openModalClaim()"
+            title="Claim entry">
+            Claim entry
+          </button>
         </td>        
       </tr>
     </tbody>
@@ -153,6 +162,7 @@
 </nz-modal>
 
 <nz-modal
+  [nzAutofocus]="null"
   [(nzVisible)]="isVisibleModalDetails"
   nzWidth="1000px"
   [nzClosable]="false"
@@ -182,6 +192,33 @@
       [ngStyle]="{'background-color': '#FF5733', 'border-color': '#FF5733'}" 
       (click)="printContentDetails()">
       Print Page
+    </button>
+  </ng-container>
+</nz-modal>
+
+<nz-modal
+  [nzAutofocus]="null"
+  [(nzVisible)]="isVisibleModalClaim"
+  nzWidth="1255px"
+  [nzClosable]="false"
+  nzMaskClosable="false">
+
+  <ng-container *nzModalContent>
+    <app-claim-entry>
+    </app-claim-entry>
+  </ng-container>
+
+  <ng-container *nzModalFooter>
+    <button 
+      nz-button 
+      (click)="CancelModalClaim()">
+      Cancel
+    </button>
+
+    <button 
+      nz-button nzType="primary" 
+      (click)="OkModalClaim()">
+      Continue
     </button>
   </ng-container>
 </nz-modal>
