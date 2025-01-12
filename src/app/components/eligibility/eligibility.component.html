@@ -46,23 +46,26 @@
     #basicTable
     [nzData]="dataToDisplay"
     [nzLoading]="isDataLoading"
+    [nzNoResult]="noDataTemplate"
     [nzFrontPagination]="false">
     <thead>
       <tr>
-        <th>Name - ID</th>
-        <th>DOB</th>
-        <th>Effective</th>
-        <th>Terminates</th>
-        <th>Benefit</th>
-        <th>Active member</th>
-        <th>Service availability</th>
-        <th>Primary Insurance via Other</th>
-        <th>Action</th>
+        <th nzWidth="17%">Insurer</th>
+        <th nzWidth="16%">Name - ID</th>
+        <th nzWidth="10%">DOB</th>
+        <th nzWidth="7%">Effective</th>
+        <th nzWidth="7%">Terminates</th>
+        <th nzWidth="10%">Benefit</th>
+        <th nzWidth="8%">Active</th>
+        <th nzWidth="5%">Service availability</th>
+        <th nzWidth="5%">Primary insurance via other</th>
+        <th nzWidth="15%">Action</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let data of basicTable.data">
-        <td>{{ data.first_name + ' ' + data.last_name + ' - ' + data.primary_subscriber_id}}</td>
+        <td>{{data.insurer_data?.name}}</td>
+        <td>{{data.first_name + ' ' + data.last_name + ' - ' + data.primary_subscriber_id}}</td>
         <td>{{data.effective}}</td>
         <td>{{data.effective}}</td>
         <td>{{data.terminates}}</td>
@@ -107,7 +110,7 @@
             nz-button nzType="primary" 
             nzShape="round" 
             nzSize="small"
-            (click)="openModalClaim()"
+            (click)="openModalClaim(data)"
             title="Claim entry">
             Claim entry
           </button>
@@ -116,13 +119,27 @@
     </tbody>
   </nz-table>
 
+  <ng-template #noDataTemplate>
+    <nz-empty
+      nzNotFoundImage="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+      [nzNotFoundContent]="contentTpl">
+      <ng-template #contentTpl>
+        <span>
+          No patients found
+        </span>
+      </ng-template>
+    </nz-empty>
+  </ng-template>
+
   <nz-pagination
     [nzPageIndex]="page"
     [nzResponsive]="true"
     [nzTotal]="count_records"
     [nzPageSize]="page_size"
+    [nzShowSizeChanger]="true"
     (nzPageIndexChange)="pageChange($event)"
-    nzShowQuickJumper>
+    (nzPageSizeChange)="pageSizeChange($event)"
+    [nzShowQuickJumper]="true">
   </nz-pagination>
 </div>
 
@@ -199,12 +216,17 @@
 <nz-modal
   [nzAutofocus]="null"
   [(nzVisible)]="isVisibleModalClaim"
-  nzWidth="1255px"
+  nzWidth="75%"
   [nzClosable]="false"
   nzMaskClosable="false">
 
   <ng-container *nzModalContent>
-    <app-claim-entry>
+    <app-claim-entry
+      [patientName]="selectedPatientName"
+      [serviceValidFrom]="selectedValidFrom"
+      [birthDate]="selectedBirthDate"
+      [addressPatient]="selectedAddressPatient"
+      [serviceValidThru]="selectedValidThru">
     </app-claim-entry>
   </ng-container>
 
@@ -218,7 +240,7 @@
     <button 
       nz-button nzType="primary" 
       (click)="OkModalClaim()">
-      Continue
+      Ok
     </button>
   </ng-container>
 </nz-modal>

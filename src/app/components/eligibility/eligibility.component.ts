@@ -21,6 +21,7 @@ import { PlanDetailsComponent } from './plan-details/plan-details.component';
 import { EligibilityService } from 'app/services/eligibility/eligibility.service';
 import * as XLSX from 'xlsx';
 import { ClaimEntryComponent } from "./claim-entry/claim-entry.component";
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
   selector: 'app-eligibility',
@@ -43,8 +44,9 @@ import { ClaimEntryComponent } from "./claim-entry/claim-entry.component";
     NzModalModule,
     MemberComponent,
     PlanDetailsComponent,
-    ClaimEntryComponent
-],
+    ClaimEntryComponent,
+    NzEmptyModule
+  ],
   templateUrl: './eligibility.component.html',
   styleUrls: ['./eligibility.component.css', '../../../animations/styles.css']
 })
@@ -61,7 +63,11 @@ export class EligibilityComponent {
   isVisibleModalDetails = false;
   isVisibleModalMember = false;
   isVisibleModalClaim = false;
-
+  selectedPatientName: string = '';
+  selectedValidFrom: string = '';
+  selectedValidThru: string = '';
+  selectedBirthDate: string = '';
+  selectedAddressPatient: string = '';
   [key: string]: any;
   searchFields = [
     { placeholder: 'First Name...', model: 'firstSearch', key: 'first_name' },
@@ -152,9 +158,14 @@ export class EligibilityComponent {
     // this.dataCacheModal = data;
   }
 
-  openModalClaim(): void {
+  openModalClaim(rowData: any): void {
+    this.selectedPatientName = `${rowData.last_name} ${rowData.first_name}`;
+    this.selectedValidFrom = rowData.effective;
+    this.selectedValidThru = rowData.terminates;
+    this.selectedBirthDate = rowData.birth_date;
+    this.selectedAddressPatient = `${rowData.primary_address} ${rowData.address_1}`;
+
     this.isVisibleModalClaim = true;
-    // this.dataCacheModal = data;
   }
 
   CancelModalClaim(): void {
@@ -187,6 +198,12 @@ export class EligibilityComponent {
   setPagination(count: number) {
     this.count_records = count;
     this.num_pages = Math.ceil(count / this.page_size);
+  }
+
+  pageSizeChange(pageSize: number): void {
+    this.page_size = pageSize;
+    this.page = 1;
+    this.getInitData();
   }
 
   exportBenefits(): void {

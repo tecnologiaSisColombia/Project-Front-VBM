@@ -117,7 +117,7 @@ export const routes: Routes = [
         ],
       },
       {
-        path: 'eligibility',
+        path: 'patients',
         component: EligibilityComponent,
         canActivate: [AuthGuardService],
       },

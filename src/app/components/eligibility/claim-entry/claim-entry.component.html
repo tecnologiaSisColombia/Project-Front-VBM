@@ -1,4 +1,4 @@
-<nz-card nzTitle="Claim entry" [nzBordered]="true" class="main-card">
+<nz-card nzTitle="CLAIM ENTRY" [nzBordered]="true" class="main-card">
     <div class="section">
         <p>
             <b>Physician information:</b>
@@ -7,115 +7,230 @@
 
     <div class="section">
         <nz-divider nzText="Diagnosis"></nz-divider>
+        <button
+            nz-button
+            nzType="primary"
+            nzShape="round"
+            nzIcon="plus"
+            (click)="addDiagnosis()">
+            Add diagnosis
+        </button>
+        <br>
+        <br>
         <form nz-form>
             <nz-row [nzGutter]="16">
-                <nz-col [nzSpan]="6" *ngFor="let item of inputs">
-                    <nz-form-item [style.margin-bottom.px]="8">
-                        <nz-form-label 
-                            [nzSm]="8" 
-                            [nzXs]="24" 
-                            [style.text-align]="'center'">
-                            {{ item.label }}
-                        </nz-form-label>
-
-                        <nz-form-control 
-                            [nzSm]="16" 
-                            [nzXs]="24">
-                            <input 
-                                nz-input 
-                            />
-                        </nz-form-control>
-                    </nz-form-item>
+                <nz-col [nzSpan]="6" *ngFor="let item of selectedDiagnosis; let i = index">
+                    <div>
+                        <label class="input-label">{{ getOrdinalSuffix(i + 1) }}</label>
+                        <nz-form-item>
+                            <nz-form-control>
+                                <nz-select
+                                nzShowSearch
+                                [(ngModel)]="item.description"
+                                [nzOptions]="diagnosisOptions"
+                                style="width: 235px;"
+                                placeholder="Select a diagnosis"
+                                name="diagnosis{{ i }}">
+                            </nz-select>                            
+                            </nz-form-control>
+                        </nz-form-item>
+                        <button
+                            nz-button
+                            nzType="text"
+                            nzDanger
+                            nzShape="circle"
+                            nzTooltipTitle="delete diagnosis"
+                            (click)="removeDiagnosis(i)"
+                            *ngIf="selectedDiagnosis.length > 2">
+                            <i 
+                                nz-icon 
+                                nzType="delete">
+                            </i>
+                        </button>
+                    </div>
                 </nz-col>
             </nz-row>
         </form>
-    </div>
+    </div>     
+      
+    <div class="section">
+        <nz-form-item>
+            <nz-form-label
+                [nzSm]="4"
+                [nzXs]="16"
+                nzFor="facility">
+                Facility:
+            </nz-form-label>
+
+            <nz-form-control
+                [nzSm]="20" 
+                [nzXs]="24">
+                <nz-select 
+                    name="facility" 
+                    id="facility" 
+                    style="width: 100%;"
+                    nzShowSearch
+                    [(ngModel)]="selectedLocality">
+                    <nz-option 
+                        *ngFor="let locality of localities" 
+                        [nzValue]="locality.id" 
+                        [nzLabel]="locality.name">
+                    </nz-option>
+                </nz-select>
+            </nz-form-control>
+        </nz-form-item>
+
+        <br>
+
+        <nz-form-item>
+            <nz-form-label
+                [nzSm]="4"
+                [nzXs]="16"
+                nzFor="location">
+                Location:
+            </nz-form-label>
+        
+            <nz-form-control
+                [nzSm]="20" 
+                [nzXs]="24">
+                <nz-select 
+                    name="location" 
+                    id="location" 
+                    style="width: 100%;"
+                    nzShowSearch
+                    [(ngModel)]="selectedLocation" 
+                    [nzPlaceHolder]="'Select a location'">
+                    <nz-option 
+                        *ngFor="let location of locations" 
+                        [nzValue]="location.code" 
+                        [nzLabel]="location.code + ' - ' + location.description">
+                    </nz-option>
+                </nz-select>
+            </nz-form-control>
+        </nz-form-item>        
+
+        <br>
+
+        <nz-form-item>
+            <nz-form-label
+                [nzSm]="4"
+                [nzXs]="16"
+                nzFor="information">
+                Member have C.O.B
+            </nz-form-label>
+
+            <nz-form-control
+                [nzSm]="20" 
+                [nzXs]="24">
+                <nz-select 
+                    name="information" 
+                    id="information" 
+                    style="width: 100%;"
+                    [(ngModel)]="selectedMemberHave" 
+                    [nzPlaceHolder]="'Select a member'">
+                    <nz-option 
+                        *ngFor="let member of memberHave" 
+                        [nzValue]="member.id" 
+                        [nzLabel]="member.name">
+                    </nz-option>
+                </nz-select>
+            </nz-form-control>
+        </nz-form-item>
+    </div>    
 
     <div class="section">
-        <p>
-            Facility: 
-            <select name="facility" id="facility">
-                <option value="N/A" selected>N/A</option>
-                <option value="New York">New York</option>
-                <option value="Chicago">Chicago</option>
-                <option value="Houston">Houston</option>
-            </select>
-        </p>
-        <p>
-            Location: 
-            <select name="location" id="location">
-                <option value="New York">New York</option>
-                <option value="Los Angeles">Los Angeles</option>
-                <option value="Chicago">Chicago</option>
-                <option value="Houston">Houston</option>
-            </select>
-        </p>
-        <p>
-            Member have C.O.B information: 
-            <select name="information" id="information">
-                <option value="yes">Yes</option>
-                <option value="no" selected>No</option>
-            </select>
-        </p>
-    </div>
-
-    <div class="section">
-        <div class="section">
-            <b>
-                Service(s): SOSA CORTES, JORGE A Valid From 01/01/2025 Thru 12/31/2025
-            </b>
-        </div>
-        <table class="service-table">
+        <b>
+            Service(s): {{ patientName | uppercase }} &nbsp; &nbsp; Valid From {{ serviceValidFrom }} Thru {{ serviceValidThru }}
+        </b>
+        <br /><br />
+        <button 
+            nz-button 
+            nzShape="round" 
+            nzType="primary" 
+            nzIcon="plus" 
+            (click)="addRow()">
+            Add Line
+        </button>
+        <br /><br />
+        <nz-table 
+            #basicTable 
+            [nzData]="rows" 
+            [nzSize]="'small'" 
+            [nzFrontPagination]="false">
             <thead>
                 <tr>
-                    <th>From (mm/dd/yyyy)</th>
-                    <th>To (mm/dd/yyyy)</th>
+                    <th nzWidth="180px">Date Initial</th>
+                    <th nzWidth="180px">Date Final</th>
                     <th>Tos</th>
-                    <th>CPT</th>
-                    <th>Modifiers 1-2-3</th>
-                    <th>Diagnosis Pointer(1-12)</th>
+                    <th>Cpt</th>
+                    <th>Modifiers</th>
+                    <th nzWidth="80px">Diagnosis pointer</th>
                     <th>Charges</th>
-                    <th>Units</th>
-                    <th>CL</th>
-                    <th>DL</th>
-                    <th>COB</th>
+                    <th nzWidth="100px">Units</th>
+                    <th nzWidth="40px">C</th>
+                    <th nzWidth="40px">D</th>
+                    <th nzWidth="40px">C</th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let row of rows; index as i">
                     <td>
-                        <nz-date-picker nzFormat="MM/dd/yyyy"></nz-date-picker>
+                        <nz-date-picker 
+                            nzFormat="MM/dd/yyyy" 
+                            [(ngModel)]="row.dateInitial"
+                        ></nz-date-picker>
                     </td>
                     <td>
-                        <nz-date-picker nzFormat="MM/dd/yyyy"></nz-date-picker>
+                        <nz-date-picker 
+                            nzFormat="MM/dd/yyyy" 
+                            [(ngModel)]="row.dateFinal">
+                        </nz-date-picker>
                     </td>
-                    <td><input nz-input type="text" class="tos-input" /></td>
-                    <td><input nz-input type="text" /></td>
-                    <td>
-                        <div class="modifiers">
-                            <input 
-                                nz-input 
-                                type="text"
-                                maxlength="3" 
-                                *ngFor="let mod of [1,2,3]"
-                            />
-                        </div>
-                    </td>                    
                     <td>
                         <input 
                             nz-input 
                             type="text" 
-                            class="diagnosis-input" 
+                            [(ngModel)]="row.tos" 
                         />
                     </td>
                     <td>
-                        <input nz-input type="number" class="charges-input" />
+                        <input 
+                            nz-input 
+                            type="text" 
+                            [(ngModel)]="row.cpt" 
+                        />
                     </td>
                     <td>
-                        <input nz-input type="number"  class="units-input" />
+                        <ng-container *ngFor="let modifier of row.modifiers; index as modIndex">
+                            <input
+                                nz-input
+                                type="text"
+                                style="width: 60px; margin-right: 8px;"
+                                [(ngModel)]="modifier.value"
+                                [id]="modifier.id"
+                            />
+                        </ng-container>
+                    </td>                                     
+                    <td>
+                        <input 
+                            nz-input 
+                            type="text" 
+                            [(ngModel)]="row.diagnosisPointer"
+                        />
                     </td>
                     <td>
-                        <button nz-button nzType="link">cpy</button>
+                        <input 
+                            nz-input 
+                            type="text" 
+                            [(ngModel)]="row.charges" 
+                        />
+                    </td>
+                    <td>
+                        <input 
+                            nz-input 
+                            type="text" 
+                            [(ngModel)]="row.units" 
+                        />
                     </td>
                     <td>
                         <button 
@@ -123,8 +238,24 @@
                             nzType="primary" 
                             nzShape="round" 
                             nzSize="small" 
-                            class="ant-btn-dangerous"
-                            title="Delete">
+                            title="Copy"
+                            (click)="copyRow(i)">
+                            <span 
+                                nz-icon 
+                                nzType="copy" 
+                                nzTheme="outline">
+                            </span>
+                        </button>
+                    </td>                    
+                    <td>
+                        <button 
+                            nz-button 
+                            nzType="primary" 
+                            nzShape="round" 
+                            nzDanger 
+                            nzSize="small" 
+                            title="Delete"
+                            (click)="deleteRow(i)">
                             <span 
                                 nz-icon 
                                 nzType="delete" 
@@ -132,9 +263,194 @@
                             </span>
                         </button>
                     </td>
-                    <td><button nz-button nzType="link">cob</button></td>
+                    <td>
+                        <button 
+                            nz-button 
+                            nzType="default" 
+                            nzShape="round" 
+                            nzSize="small" 
+                            title="Reset"
+                            (click)="resetRow(i)">
+                            <span 
+                                nz-icon 
+                                nzType="reload" 
+                                nzTheme="outline">
+                            </span>
+                        </button>
+                    </td>                    
                 </tr>
             </tbody>
-        </table>
+        </nz-table>
+    </div>   
+    
+    <div class="section">
+        <h2>Account information</h2>
+        <br />
+        <ng-container *ngFor="let field of accountFields">
+            <nz-form-item>
+              <nz-form-label 
+                [nzSm]="4" 
+                [nzXs]="16">
+                {{ field.label }}
+              </nz-form-label>
+
+              <nz-form-control 
+                [nzSm]="20" 
+                [nzXs]="24">
+                <input 
+                    nz-input 
+                    [id]="field.id" 
+                />
+              </nz-form-control>
+            </nz-form-item>
+            <br />
+        </ng-container>
     </div>
+
+    <button
+        nz-button
+        nzType="default"
+        nzShape="round"
+        nzIcon="eye"
+        (click)="previewClaim()">
+        Preview Claim
+    </button>
 </nz-card>
+
+ <nz-modal
+    [nzAutofocus]="null"
+    [(nzVisible)]="isPreviewVisible"
+    [nzClosable]="false"
+    nzTitle="Claim Preview"
+    (nzOnCancel)="closePreview()"
+    nzMaskClosable="false"
+    nzWidth="75%">
+
+    <ng-container *nzModalContent>
+        <nz-card nzTitle="Unsubmitted Claim" [nzBordered]="true" class="preview-card">
+        <div class="section">
+            <nz-row [nzGutter]="16">
+                <nz-col [nzSpan]="8">
+                  <p><b>2. Patient's Name:</b> {{ patientName }}</p>
+                </nz-col>
+                <nz-col [nzSpan]="8">
+                  <p><b>3. Patient's BirthDate:</b>{{ birthDate }} </p>
+                </nz-col>
+                <nz-col [nzSpan]="8">
+                  <p><b>4. Insured's Name:</b></p>
+                </nz-col>
+              </nz-row>
+
+            <nz-divider></nz-divider>
+
+            <nz-row [nzGutter]="16">
+                <nz-col [nzSpan]="12">
+                  <p><b>5. Patient's Address:</b> {{ addressPatient }}</p>
+                </nz-col>
+                <nz-col [nzSpan]="12">
+                  <p><b>6. Insured's Address:</b></p>
+                </nz-col>
+            </nz-row>
+
+            <nz-divider></nz-divider>
+
+            <nz-row [nzGutter]="16">
+                <nz-col [nzSpan]="6">
+                  <p><b>City:</b></p>
+                </nz-col>
+                <nz-col [nzSpan]="6">
+                  <p><b>State:</b></p>
+                </nz-col>
+                <nz-col [nzSpan]="6">
+                  <p><b>City:</b></p>
+                </nz-col>
+                <nz-col [nzSpan]="6">
+                  <p><b>State:</b></p>
+                </nz-col>
+            </nz-row>
+              
+            <nz-divider></nz-divider>
+
+            <nz-row [nzGutter]="16">
+                <nz-col [nzSpan]="6">
+                  <p><b>Zip:</b></p>
+                </nz-col>
+                <nz-col [nzSpan]="6">
+                  <p><b>Phone:</b></p>
+                </nz-col>
+                <nz-col [nzSpan]="6">
+                  <p><b>Zip Code:</b></p>
+                </nz-col>
+                <nz-col [nzSpan]="6">
+                  <p><b>Phone:</b></p>
+                </nz-col>
+            </nz-row>
+
+            <nz-divider></nz-divider>
+
+            <nz-row [nzGutter]="16">
+                <nz-col [nzSpan]="12">
+                  <p><b>Physician's Name:</b></p>
+                </nz-col>
+              
+                <nz-col [nzSpan]="12">
+                  <p><b>11. Insured's Policy Group Or Feca #:</b></p>
+                  <p><b>a. Insured's Dob:</b></p>
+                  <p><b>c. Insurance Plan / Program Name:</b></p>
+                </nz-col>
+            </nz-row>
+
+            <nz-divider></nz-divider>
+
+            <nz-row [nzGutter]="16">
+                <nz-col [nzSpan]="24">
+                  <p><b>19.Reserved For Local Use:</b></p>
+                </nz-col>
+            </nz-row>
+              
+            <nz-divider></nz-divider>
+
+            <nz-row [nzGutter]="16">
+                <nz-col [nzSpan]="12">
+                  <p><b>21. Diagnosis or Nature Of Illness Or Injury</b></p>
+                  <p><b>(RELATE Items below to 24E By LINE)</b></p>
+                </nz-col>
+                <nz-col [nzSpan]="12">
+                  <p><b>DIAGNOSIS CODE</b></p>
+                </nz-col>
+            </nz-row>
+
+            <ul>
+            <li *ngFor="let diagnosis of selectedDiagnosis">
+                {{ diagnosis.description }}
+            </li>
+            </ul>
+            <p><b>Rows:</b></p>
+            <table>
+            <thead>
+                <tr>
+                <th>Date Initial</th>
+                <th>Date Final</th>
+                <th>TOS</th>
+                <th>CPT</th>
+                <th>Diagnosis Pointer</th>
+                <th>Charges</th>
+                <th>Units</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let row of rows">
+                <td>{{ row.dateInitial | date: 'MM/dd/yyyy' }}</td>
+                <td>{{ row.dateFinal | date: 'MM/dd/yyyy' }}</td>
+                <td>{{ row.tos }}</td>
+                <td>{{ row.cpt }}</td>
+                <td>{{ row.diagnosisPointer }}</td>
+                <td>{{ row.charges }}</td>
+                <td>{{ row.units }}</td>
+                </tr>
+            </tbody>
+            </table>
+        </div>
+        </nz-card>
+    </ng-container>
+</nz-modal>
