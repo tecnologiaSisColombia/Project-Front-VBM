@@ -180,6 +180,14 @@ export class EligibilityComponent {
     this.CancelModalMember();
   }
 
+  cancelModalUpload(): void {
+    this.isVisibleModalUpload = false;
+  }
+
+  openModalUpload(): void {
+    this.isVisibleModalUpload = true;
+  }
+
   pageChange(event: number) {
     this.page = event;
   }
@@ -195,20 +203,90 @@ export class EligibilityComponent {
     this.getInitData();
   }
 
+  isWithinRange(effective: string, terminates: string): boolean {
+    const currentDate = new Date();
+    const effectiveDate = new Date(effective);
+    const terminatesDate = new Date(terminates);
+    return currentDate >= effectiveDate && currentDate <= terminatesDate;
+  }
+
   exportBenefits(): void {
+    this.eligibilityService.getPatients({}, null, null, true).subscribe({
+      next: (res: any) => {
+        if (res.length === 0) {
+          this.msgService.warning(
+            JSON.stringify('No data available to export')
+          );
+          this.isDataLoading = false;
+          return;
+        }
 
+        this.isDataLoading = true;
+
+        const headers = {
+          first_name: 'First Name',
+          last_name: 'Last Name',
+          gender: 'Gender',
+          birth_date: 'BirthDate',
+          age: 'Age',
+          email: 'Email',
+          occupation: 'Occupation',
+          effective: 'Effective',
+          terminates: 'Terminates',
+        };
+
+        const selectedColumns = Object.keys(
+          headers
+        ) as (keyof typeof headers)[];
+
+        const filteredData = res.map((patient: any) => {
+          const row: Record<string, any> = {};
+          selectedColumns.forEach((key) => {
+            row[headers[key]] = patient[key] != null ? patient[key] : '';
+          });
+          return row;
+        });
+
+        const worksheet: XLSX.WorkSheet =
+          XLSX.utils.json_to_sheet(filteredData);
+        const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'patients');
+
+        const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+          bookType: 'xlsx',
+          type: 'array',
+        });
+
+        const blob = new Blob([excelBuffer], {
+          type: 'application/octet-stream',
+        });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'Patients.xlsx');
+        link.style.visibility = 'hidden';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        this.isDataLoading = false;
+        this.msgService.success(
+          JSON.stringify('Export completed successfully')
+        );
+      },
+      error: (err) => {
+        this.isDataLoading = false;
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
   }
 
-  openModalUpload(): void {
-    this.isVisibleModalUpload = true;
-  }
+
 
   okUploadFile(): void {
 
-  }
-
-  cancelModalUpload(): void {
-    this.isVisibleModalUpload = false;
   }
 
   printContentMember(): void {

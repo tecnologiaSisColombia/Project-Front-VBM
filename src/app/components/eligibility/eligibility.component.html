@@ -20,7 +20,7 @@
       Upload Eligibility
     </button>
 
-    <!-- <button
+    <button
       nz-button
       [style.background-color]="'#00a651'"
       [style.color]="'white'"
@@ -31,7 +31,7 @@
         nzTheme="outline">
       </i>
       Export Benefits
-    </button> -->
+    </button>
   </div>
 </div>
 
@@ -67,10 +67,10 @@
         <th>DOB</th>
         <th>Effective</th>
         <th>Terminates</th>
-        <th>Benefit</th>
+        <!-- <th>Benefit</th> -->
         <th>Active</th>
-        <th>Service availability</th>
-        <th>Primary insurance via other</th>
+        <!-- <th>Service availability</th>
+        <th>Primary insurance via other</th> -->
         <th>Action</th>
       </tr>
     </thead>
@@ -78,25 +78,21 @@
       <tr *ngFor="let data of basicTable.data">
         <td>{{data.insurer_data?.name}}</td>
         <td>{{data.first_name + ' ' + data.last_name + ' - ' + data.primary_subscriber_id}}</td>
-        <td>{{data.effective}}</td>
+        <td>{{data.birth_date}}</td>
         <td>{{data.effective}}</td>
         <td>{{data.terminates}}</td>
-        <td>Prueba</td>
         <td>
           <button
             nz-button
             nzShape="round"
             nzSize="small"
-            title="{{ data.active == 1 ? 'Active' : 'Inactive' }}"
             [ngStyle]="{
-              'background-color': data.active == 1 ? '#52c41a' : '#f5222d',
+              'background-color': isWithinRange(data.effective, data.terminates) ? '#52c41a' : '#f5222d',
               'color': 'white'
             }">
-            <span>{{ data.active == 1 ? 'Yes' : 'No' }}</span>
+            <span>{{ isWithinRange(data.effective, data.terminates) ? 'Yes' : 'No' }}</span>
           </button>
         </td>
-        <td>Yes</td>
-        <td>Yes</td>
         <td>
           <a>
             <span
