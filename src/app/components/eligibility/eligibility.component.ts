@@ -63,6 +63,7 @@ export class EligibilityComponent {
   isVisibleModalDetails = false;
   isVisibleModalMember = false;
   isVisibleModalClaim = false;
+  isVisibleModalUpload = false;
   selectedPatientName: string = '';
   selectedValidFrom: string = '';
   selectedValidThru: string = '';
@@ -138,61 +139,49 @@ export class EligibilityComponent {
     this.searchNameSubject.next({ type, value });
   }
 
-  CancelModalDetails(): void {
-    this.isVisibleModalDetails = false;
-    // this.dataCacheModal = null;
-  }
-
-  CancelModalMember(): void {
-    this.isVisibleModalMember = false;
-    // this.dataCacheModal = null;
-  }
-
-  openModalMember(): void {
-    this.isVisibleModalMember = true;
-    // this.dataCacheModal = data;
-  }
-
-  openModalDetails(): void {
-    this.isVisibleModalDetails = true;
-    // this.dataCacheModal = data;
-  }
-
   openModalClaim(rowData: any): void {
     this.selectedPatientName = `${rowData.last_name} ${rowData.first_name}`;
     this.selectedValidFrom = rowData.effective;
     this.selectedValidThru = rowData.terminates;
     this.selectedBirthDate = rowData.birth_date;
     this.selectedAddressPatient = `${rowData.primary_address} ${rowData.address_1}`;
-
     this.isVisibleModalClaim = true;
   }
 
-  CancelModalClaim(): void {
+  cancelModalClaim(): void {
     this.isVisibleModalClaim = false;
-    // this.dataCacheModal = null;
+  }
+
+  okModalClaim(): void {
+    this.isVisibleModalClaim = false;
+  }
+
+  cancelModalDetails(): void {
+    this.isVisibleModalDetails = false;
+  }
+
+  okModalDetails(): void {
+    this.cancelModalDetails();
+  }
+
+  openModalDetails(): void {
+    this.isVisibleModalDetails = true;
+  }
+
+  CancelModalMember(): void {
+    this.isVisibleModalMember = false;
+  }
+
+  openModalMember(): void {
+    this.isVisibleModalMember = true;
   }
 
   OkModalMember(): void {
     this.CancelModalMember();
   }
 
-  OkModalClaim(): void {
-    this.isVisibleModalClaim = false;
-  }
-
-  OkModalDetails(): void {
-    this.CancelModalDetails();
-  }
-
-  openPlanDetails(event: number) {
-    this.page = event;
-    // this.getInitData();
-  }
-
   pageChange(event: number) {
     this.page = event;
-    // this.getInitData();
   }
 
   setPagination(count: number) {
@@ -208,6 +197,18 @@ export class EligibilityComponent {
 
   exportBenefits(): void {
 
+  }
+
+  openModalUpload(): void {
+    this.isVisibleModalUpload = true;
+  }
+
+  okUploadFile(): void {
+
+  }
+
+  cancelModalUpload(): void {
+    this.isVisibleModalUpload = false;
   }
 
   printContentMember(): void {

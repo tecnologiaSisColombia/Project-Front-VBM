@@ -96,6 +96,9 @@
         <th>Address</th>
         <th>Phone</th>
         <th>Payer ID</th>
+        <th>Modifiers</th>
+        <th>Orderring NPI</th>
+        <th>Refering NPI</th>
         <th>Created</th>
         <th>Action</th>
       </tr>
@@ -106,6 +109,9 @@
         <td>{{ data.address }}</td>
         <td>{{ data.phone }}</td>
         <td>{{ data.payer_id }}</td>
+        <td>{{ data.modifiers == 1 ? "Yes" : "No" }}</td>
+        <td>{{ data.orderring_npi == 1 ? "Yes" : "No" }}</td>
+        <td>{{ data.refering_npi == 1 ? "Yes" : "No" }}</td>
         <td>{{ data.created | date }}</td>
         <td>
           <a>
@@ -427,6 +433,81 @@
             This field cannot be empty or contain only spaces
           </span>
         </ng-template>
+
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="modifiers"
+            style="text-align: center">
+            Modifiers
+          </nz-form-label>
+
+          <nz-form-control
+            [nzSm]="16"
+            [nzXs]="24"
+            nzErrorTip="This field is required">
+            <nz-select
+              nzShowSearch
+              nzAllowClear
+              id="modifiers"
+              nzPlaceHolder="Select an Modifiers"
+              formControlName="modifiers">
+              <nz-option nzLabel="Yes" [nzValue]="1"></nz-option>
+              <nz-option nzLabel="No" [nzValue]="2"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="orderring_npi"
+            style="text-align: center">
+            Orderring NPI
+          </nz-form-label>
+
+          <nz-form-control
+            [nzSm]="16"
+            [nzXs]="24"
+            nzErrorTip="This field is required">
+            <nz-select
+              nzShowSearch
+              nzAllowClear
+              id="orderring_npi"
+              nzPlaceHolder="Select an Orderring NPI"
+              formControlName="orderring_npi">
+              <nz-option nzLabel="Yes" [nzValue]="1"></nz-option>
+              <nz-option nzLabel="No" [nzValue]="2"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="refering_npi"
+            style="text-align: center">
+            Refering NPI
+          </nz-form-label>
+
+          <nz-form-control
+            [nzSm]="16"
+            [nzXs]="24"
+            nzErrorTip="This field is required">
+            <nz-select
+              nzShowSearch
+              nzAllowClear
+              id="refering_npi"
+              nzPlaceHolder="Select an Refering NPI"
+              formControlName="refering_npi">
+              <nz-option nzLabel="Yes" [nzValue]="1"></nz-option>
+              <nz-option nzLabel="No" [nzValue]="2"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
       </form>
     </nz-spin>
   </ng-container>

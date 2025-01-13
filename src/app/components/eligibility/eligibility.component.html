@@ -2,13 +2,25 @@
   <div class="breadcrumb-container">
     <nz-breadcrumb>
       <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Eligibility</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Member Benefits</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Patients</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Patient Management</nz-breadcrumb-item>
     </nz-breadcrumb>
   </div>
 
   <div class="btn-container">
     <button
+      nz-button
+      nzType="primary" 
+      (click)="openModalUpload()">
+      <i 
+        nz-icon 
+        nzType="upload" 
+        nzTheme="outline">
+      </i>
+      Upload Eligibility
+    </button>
+
+    <!-- <button
       nz-button
       [style.background-color]="'#00a651'"
       [style.color]="'white'"
@@ -19,7 +31,7 @@
         nzTheme="outline">
       </i>
       Export Benefits
-    </button>
+    </button> -->
   </div>
 </div>
 
@@ -50,16 +62,16 @@
     [nzFrontPagination]="false">
     <thead>
       <tr>
-        <th nzWidth="17%">Insurer</th>
-        <th nzWidth="16%">Name - ID</th>
-        <th nzWidth="10%">DOB</th>
-        <th nzWidth="7%">Effective</th>
-        <th nzWidth="7%">Terminates</th>
-        <th nzWidth="10%">Benefit</th>
-        <th nzWidth="8%">Active</th>
-        <th nzWidth="5%">Service availability</th>
-        <th nzWidth="5%">Primary insurance via other</th>
-        <th nzWidth="15%">Action</th>
+        <th>Insurer</th>
+        <th>Name - ID</th>
+        <th>DOB</th>
+        <th>Effective</th>
+        <th>Terminates</th>
+        <th>Benefit</th>
+        <th>Active</th>
+        <th>Service availability</th>
+        <th>Primary insurance via other</th>
+        <th>Action</th>
       </tr>
     </thead>
     <tbody>
@@ -193,13 +205,13 @@
   <ng-container *nzModalFooter>
     <button 
       nz-button 
-      (click)="CancelModalDetails()">
+      (click)="cancelModalDetails()">
       Cancel
     </button>
 
     <button 
       nz-button nzType="primary" 
-      (click)="OkModalDetails()">
+      (click)="okModalDetails()">
       OK
     </button>
 
@@ -233,14 +245,40 @@
   <ng-container *nzModalFooter>
     <button 
       nz-button 
-      (click)="CancelModalClaim()">
+      (click)="cancelModalClaim()">
       Cancel
     </button>
 
     <button 
       nz-button nzType="primary" 
-      (click)="OkModalClaim()">
+      (click)="okModalClaim()">
       Ok
+    </button>
+  </ng-container>
+</nz-modal>
+
+<nz-modal
+  [nzAutofocus]="null"
+  [(nzVisible)]="isVisibleModalUpload"
+  nzWidth="30%"
+  [nzClosable]="false"
+  nzMaskClosable="false">
+
+  <ng-container *nzModalContent>
+
+  </ng-container>
+
+  <ng-container *nzModalFooter>
+    <button 
+      nz-button 
+      (click)="cancelModalUpload()">
+      Cancel
+    </button>
+
+    <button 
+      nz-button nzType="primary" 
+      (click)="okUploadFile()">
+      Upload
     </button>
   </ng-container>
 </nz-modal>

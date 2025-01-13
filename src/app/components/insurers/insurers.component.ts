@@ -95,6 +95,9 @@ export class InsurersComponent implements OnInit {
       phone: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       address: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      modifiers: [null, [Validators.required]],
+      orderring_npi: [null, [Validators.required]],
+      refering_npi: [null, [Validators.required]],
     });
 
     this.searchNameSubject
@@ -383,7 +386,7 @@ export class InsurersComponent implements OnInit {
           this.isDataLoading = false;
           return;
         }
-        
+
         this.isDataLoading = true;
 
         const headers = {
