@@ -22,7 +22,6 @@ import { EligibilityService } from 'app/services/eligibility/eligibility.service
 import * as XLSX from 'xlsx';
 import { ClaimEntryComponent } from "./claim-entry/claim-entry.component";
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
-import { NzUploadFile, NzUploadModule } from 'ng-zorro-antd/upload';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { S3Service } from 'app/services/upload-s3/upload-s3.service';
 import jsPDF from 'jspdf';
@@ -51,7 +50,6 @@ import html2canvas from 'html2canvas';
     PlanDetailsComponent,
     ClaimEntryComponent,
     NzEmptyModule,
-    NzUploadModule,
     NzButtonModule
   ],
   templateUrl: './eligibility.component.html',
@@ -75,9 +73,9 @@ export class EligibilityComponent {
   selectedValidFrom: string = '';
   selectedValidThru: string = '';
   selectedBirthDate: string = '';
-  uploading = false;
   isPrinting = false;
-  fileList: NzUploadFile[] = [];
+  selectedFile: File | null = null;
+  uploading = false;
   selectedAddressPatient: string = '';
   [key: string]: any;
   searchFields = [
@@ -145,19 +143,6 @@ export class EligibilityComponent {
       });
   }
 
-  beforeUpload = (file: NzUploadFile): boolean => {
-    this.fileList = this.fileList.concat(file);
-    return false;
-  };
-
-  handleUpload(): void {
-    const formData = new FormData();
-
-    this.fileList.forEach((file: any) => {
-      formData.append('files[]', file);
-    });
-    this.uploading = true;
-  }
 
   search(value: string, type: string) {
     this.isDataLoading = true;
@@ -205,15 +190,54 @@ export class EligibilityComponent {
     this.CancelModalMember();
   }
 
+  onFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+    } else {
+      this.selectedFile = null;
+    }
+  }
+
+  handleUpload(): void {
+    if (!this.selectedFile) return;
+
+    const insurerName = this.dataToDisplay[0].insurer_data.name;
+    const insurerId = this.dataToDisplay[0].insurer_data.id;
+
+    const formData = new FormData();
+    formData.append('file', this.selectedFile);
+    formData.append('insurer_name', insurerName);
+    formData.append('insurer_id', insurerId);
+
+    this.uploading = true;
+
+    this.s3Service.uploadEligibility(formData).subscribe({
+      next: () => {
+        this.msgService.success(JSON.stringify('File upload successful'));
+        this.uploading = false;
+        this.isVisibleModalUpload = false;
+        this.selectedFile = null;
+      },
+      error: (err) => {
+        this.msgService.error(JSON.stringify(err));
+        this.uploading = false;
+        this.selectedFile = null;
+      }
+    });
+  }
+
   cancelModalUpload(): void {
     this.isVisibleModalUpload = false;
-    this.fileList = [];
+    this.selectedFile = null;
+    this.uploading = false;
   }
 
   okUploadFile(): void {
     this.isVisibleModalUpload = false;
-    this.fileList = [];
     this.uploading = false;
+    this.selectedFile = null;
   }
 
   openModalUpload(): void {
@@ -328,22 +352,21 @@ export class EligibilityComponent {
 
     this.isPrinting = true;
 
-    if (content) {
-      html2canvas(content, { scale: 4 })
-        .then((canvas) => {
-          const imgData = canvas.toDataURL('image/png');
-          const pdf = new jsPDF('p', 'mm', 'a4');
-          const pdfWidth = pdf.internal.pageSize.getWidth();
-          const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    html2canvas(content, { scale: 4, logging: false, useCORS: true, backgroundColor: null })
+      .then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
-          pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, '', 'FAST');
-          pdf.save('details.pdf');
-          this.msgService.success(JSON.stringify('Export completed successfully'));
-        })
-        .catch(error => this.msgService.error(JSON.stringify(error)))
-        .finally(() => {
-          this.isPrinting = false;
-        });
-    }
+        pdf.addImage(imgData, 'PNG', 0, 10, pdfWidth, pdfHeight, '', 'FAST');
+        pdf.save('details.pdf');
+        this.msgService.success('Export completed successfully');
+      })
+      .catch(error => this.msgService.error(JSON.stringify(error)))
+      .finally(() => {
+        this.isPrinting = false;
+      });
   }
+
 }

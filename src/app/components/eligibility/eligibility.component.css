@@ -26,3 +26,50 @@ nz-input-group {
     height: 100%;
     text-align: center;
 }
+
+.text-red {
+    color: red;
+}
+
+.text-green {
+    color: green;
+}
+
+.modal-content-wrapper {
+    text-align: center;
+    padding: 16px;
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.file-input {
+    width: 100%;
+    max-width: 300px;
+}
+
+.upload-button {
+    width: 100%;
+    max-width: 300px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px;
+}
+
+.cancel-button,
+.ok-button {
+    width: 120px;
+}

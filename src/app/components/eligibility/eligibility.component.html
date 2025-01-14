@@ -63,36 +63,30 @@
     <thead>
       <tr>
         <th>Insurer</th>
-        <th>Name - ID</th>
+        <th>Name</th>
+        <th>Suscriber Id</th>
         <th>DOB</th>
         <th>Effective</th>
         <th>Terminates</th>
-        <!-- <th>Benefit</th> -->
-        <th>Active</th>
-        <!-- <th>Service availability</th>
-        <th>Primary insurance via other</th> -->
+        <th>Active Member</th>
+        <th>Other Insurance</th>
         <th>Action</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let data of basicTable.data">
         <td>{{data.insurer_data?.name}}</td>
-        <td>{{data.first_name + ' ' + data.last_name + ' - ' + data.primary_subscriber_id}}</td>
+        <td>{{data.first_name + ' ' + data.last_name}}</td>
+        <td>{{data.primary_subscriber_id}}</td>
         <td>{{data.birth_date}}</td>
         <td>{{data.effective}}</td>
         <td>{{data.terminates}}</td>
-        <td>
-          <button
-            nz-button
-            nzShape="round"
-            nzSize="small"
-            [ngStyle]="{
-              'background-color': isWithinRange(data.effective, data.terminates) ? '#52c41a' : '#f5222d',
-              'color': 'white'
-            }">
-            <span>{{ isWithinRange(data.effective, data.terminates) ? 'Yes' : 'No' }}</span>
-          </button>
+        <td [ngClass]="isWithinRange(data.effective, data.terminates) ? 'text-green' : 'text-red'">
+          {{isWithinRange(data.effective, data.terminates) ? 'Yes' : 'No'}}
         </td>
+        <td [ngClass]="data.secondary_insure_plan_name === 'No' ? 'text-red' : 'text-green'">
+          {{data.secondary_insure_plan_name}}
+        </td>              
         <td>
           <a>
             <span
@@ -257,45 +251,51 @@
 <nz-modal
   [nzAutofocus]="null"
   [(nzVisible)]="isVisibleModalUpload"
-  nzWidth="30%"
+  nzWidth="400px"
   [nzClosable]="false"
-  nzMaskClosable="false">
+  nzMaskClosable="false"
+  nzCentered="true">
   <ng-container *nzModalContent>
-    <h3>Start eligibility process</h3>
-    <div class="center-content">
-      <nz-upload 
-        [(nzFileList)]="fileList" 
-        [nzBeforeUpload]="beforeUpload">
-        <button 
-          nz-button 
-          nzType="default">
-          Select File
-        </button>
+    <div class="modal-content-wrapper">
+      <h3 class="modal-title">Start Eligibility Process</h3>
+      <div class="modal-body">
+        <input 
+          type="file" 
+          class="file-input"
+          (change)="onFileChange($event)" 
+        />
+        
         <br />
-      </nz-upload>
-      <br />
-      <button
-        nz-button
-        nzType="primary"
-        [nzLoading]="uploading"
-        (click)="handleUpload()"
-        [disabled]="fileList.length === 0">
-        {{ uploading ? 'Uploading' : 'Start Upload' }}
-      </button>
+
+        <button
+          nz-button
+          nzType="primary"
+          [nzLoading]="uploading"
+          class="upload-button"
+          (click)="handleUpload()"
+          [disabled]="!selectedFile">
+          {{ uploading ? 'Uploading' : 'Start Upload' }}
+        </button>
+      </div>
     </div>
-  </ng-container>  
+  </ng-container>
 
   <ng-container *nzModalFooter>
-    <button 
-      nz-button 
-      (click)="cancelModalUpload()">
-      Cancel
-    </button>
+    <div class="modal-footer">
+      <button 
+        nz-button 
+        class="cancel-button"
+        (click)="cancelModalUpload()">
+        Cancel
+      </button>
 
-    <button 
-      nz-button nzType="primary" 
-      (click)="okUploadFile()">
-      Ok
-    </button>
+      <button 
+        nz-button 
+        nzType="primary" 
+        class="ok-button"
+        (click)="okUploadFile()">
+        Ok
+      </button>
+    </div>
   </ng-container>
 </nz-modal>
