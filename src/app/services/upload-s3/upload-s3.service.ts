@@ -14,4 +14,8 @@ export class S3Service {
     uploadLogo(data: any): Observable<{ url: string }> {
         return this.http.post<{ url: string }>(`${this.hostname}upload-logo/`, data);
     }
+
+    uploadEligibility(data: any): Observable<{ url: string }> {
+        return this.http.post<{ url: string }>(`${this.hostname}upload-eligibility/`, data);
+    }
 }

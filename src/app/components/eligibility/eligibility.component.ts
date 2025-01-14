@@ -22,6 +22,11 @@ import { EligibilityService } from 'app/services/eligibility/eligibility.service
 import * as XLSX from 'xlsx';
 import { ClaimEntryComponent } from "./claim-entry/claim-entry.component";
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { NzUploadFile, NzUploadModule } from 'ng-zorro-antd/upload';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { S3Service } from 'app/services/upload-s3/upload-s3.service';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-eligibility',
@@ -45,7 +50,9 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
     MemberComponent,
     PlanDetailsComponent,
     ClaimEntryComponent,
-    NzEmptyModule
+    NzEmptyModule,
+    NzUploadModule,
+    NzButtonModule
   ],
   templateUrl: './eligibility.component.html',
   styleUrls: ['./eligibility.component.css', '../../../animations/styles.css']
@@ -68,6 +75,9 @@ export class EligibilityComponent {
   selectedValidFrom: string = '';
   selectedValidThru: string = '';
   selectedBirthDate: string = '';
+  uploading = false;
+  isPrinting = false;
+  fileList: NzUploadFile[] = [];
   selectedAddressPatient: string = '';
   [key: string]: any;
   searchFields = [
@@ -77,11 +87,12 @@ export class EligibilityComponent {
   ];
   private searchNameSubject = new Subject<{ type: string; value: string }>();
   @ViewChild('memberContent') memberContent!: ElementRef;
+  @ViewChild(PlanDetailsComponent, { static: false }) planDetailsComponent!: PlanDetailsComponent;
 
   constructor(
     private msgService: NzMessageService,
-    private eligibilityService: EligibilityService
-
+    private eligibilityService: EligibilityService,
+    private s3Service: S3Service
   ) {
 
     this.searchNameSubject.pipe(debounceTime(1000)).subscribe(({ type, value }) => {
@@ -134,6 +145,20 @@ export class EligibilityComponent {
       });
   }
 
+  beforeUpload = (file: NzUploadFile): boolean => {
+    this.fileList = this.fileList.concat(file);
+    return false;
+  };
+
+  handleUpload(): void {
+    const formData = new FormData();
+
+    this.fileList.forEach((file: any) => {
+      formData.append('files[]', file);
+    });
+    this.uploading = true;
+  }
+
   search(value: string, type: string) {
     this.isDataLoading = true;
     this.searchNameSubject.next({ type, value });
@@ -182,10 +207,18 @@ export class EligibilityComponent {
 
   cancelModalUpload(): void {
     this.isVisibleModalUpload = false;
+    this.fileList = [];
+  }
+
+  okUploadFile(): void {
+    this.isVisibleModalUpload = false;
+    this.fileList = [];
+    this.uploading = false;
   }
 
   openModalUpload(): void {
     this.isVisibleModalUpload = true;
+    this.uploading = false;
   }
 
   pageChange(event: number) {
@@ -233,6 +266,8 @@ export class EligibilityComponent {
           occupation: 'Occupation',
           effective: 'Effective',
           terminates: 'Terminates',
+          city: 'City',
+          primary_phone: 'Phone'
         };
 
         const selectedColumns = Object.keys(
@@ -283,18 +318,32 @@ export class EligibilityComponent {
     });
   }
 
-
-
-  okUploadFile(): void {
-
-  }
-
   printContentMember(): void {
 
   }
 
-  printContentDetails(): void {
+  printContentDetails() {
+    const content = this.planDetailsComponent.getChildContent()?.nativeElement;
+    if (!content) return;
 
+    this.isPrinting = true;
+
+    if (content) {
+      html2canvas(content, { scale: 4 })
+        .then((canvas) => {
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jsPDF('p', 'mm', 'a4');
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+          pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, '', 'FAST');
+          pdf.save('details.pdf');
+          this.msgService.success(JSON.stringify('Export completed successfully'));
+        })
+        .catch(error => this.msgService.error(JSON.stringify(error)))
+        .finally(() => {
+          this.isPrinting = false;
+        });
+    }
   }
-
 }

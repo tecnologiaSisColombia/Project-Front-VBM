@@ -214,6 +214,7 @@
     <button 
       nz-button 
       nzType="primary" 
+      [disabled]="isPrinting" 
       [ngStyle]="{'background-color': '#FF5733', 'border-color': '#FF5733'}" 
       (click)="printContentDetails()">
       Print Page
@@ -259,10 +260,30 @@
   nzWidth="30%"
   [nzClosable]="false"
   nzMaskClosable="false">
-
   <ng-container *nzModalContent>
-
-  </ng-container>
+    <h3>Start eligibility process</h3>
+    <div class="center-content">
+      <nz-upload 
+        [(nzFileList)]="fileList" 
+        [nzBeforeUpload]="beforeUpload">
+        <button 
+          nz-button 
+          nzType="default">
+          Select File
+        </button>
+        <br />
+      </nz-upload>
+      <br />
+      <button
+        nz-button
+        nzType="primary"
+        [nzLoading]="uploading"
+        (click)="handleUpload()"
+        [disabled]="fileList.length === 0">
+        {{ uploading ? 'Uploading' : 'Start Upload' }}
+      </button>
+    </div>
+  </ng-container>  
 
   <ng-container *nzModalFooter>
     <button 
@@ -274,7 +295,7 @@
     <button 
       nz-button nzType="primary" 
       (click)="okUploadFile()">
-      Upload
+      Ok
     </button>
   </ng-container>
 </nz-modal>
