@@ -99,6 +99,8 @@ export class ClaimEntryComponent {
         this.selectedDiagnosis = [
             { code: null, description: null },
             { code: null, description: null },
+            { code: null, description: null },
+            { code: null, description: null },
         ];
     }
 
@@ -163,7 +165,7 @@ export class ClaimEntryComponent {
         if (this.selectedDiagnosis.length > 2) {
             this.selectedDiagnosis.splice(index, 1);
         } else {
-            this.msgService.warning(JSON.stringify('You must have at least 2 diagnoses.'));
+            this.msgService.warning(JSON.stringify('You must have at least 2 diagnoses'));
         }
     }
 
