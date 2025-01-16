@@ -200,7 +200,17 @@ export class EligibilityComponent {
     const input = event.target as HTMLInputElement;
 
     if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
+      const file = input.files[0];
+
+      const fileType = file.type.toLowerCase();
+      const fileName = file.name;
+
+      if (fileType === 'text/csv' || fileName.endsWith('.csv')) {
+        this.selectedFile = file;
+      } else {
+        this.msgService.warning(JSON.stringify('Only files with .csv extension are allowed'));
+        this.selectedFile = null;
+      }
     } else {
       this.selectedFile = null;
     }

@@ -24,34 +24,68 @@
 </div>
   
 <div class="main-table layout-container">
-    <nz-table
-      #basicTable
-      [nzData]="dataToDisplay"
-      [nzLoading]="isDataLoading"
-      [nzFrontPagination]="false">
-      <thead>
-        <tr>
-          <th>DOS</th>
-          <th>Service</th>
-          <th>ICD</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
+  <div class="table-filters">
+    <nz-input-group
+      *ngFor="let field of searchFields"
+      [nzSuffix]="suffixIconSearch">
+      <input
+        type="text"
+        nz-input
+        [placeholder]="field.placeholder"
+        [(ngModel)]="this[field.model]"
+        (ngModelChange)="search($event, field.key)"
+      />
+
+      <ng-template #suffixIconSearch>
+        <span 
+          nz-icon 
+          nzType="search"> 
+        </span>
+      </ng-template>
+    </nz-input-group>
+  </div>
+
+  <nz-table
+    #basicTable
+    [nzData]="dataToDisplay"
+    [nzLoading]="isDataLoading"
+    [nzNoResult]="noDataTemplate"
+    [nzFrontPagination]="false">
+    <thead>
+      <tr>
+        <th>DOS</th>
+        <th>Service</th>
+        <th>ICD</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
           <!-- <td></td>
           <td></td>
           <td></td>
           <td></td>      -->
-        </tr>
-      </tbody>
-    </nz-table>
+      </tr>
+    </tbody>
+  </nz-table>
   
-    <nz-pagination
-      [nzPageIndex]="page"
-      [nzResponsive]="true"
-      [nzTotal]="count_records"
-      [nzPageSize]="page_size"
-      (nzPageIndexChange)="pageChange($event)"
-      nzShowQuickJumper>
+  <ng-template #noDataTemplate>
+    <nz-empty
+      nzNotFoundImage="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+      [nzNotFoundContent]="contentTpl">
+      <ng-template #contentTpl>
+        <span>
+          No records found
+        </span>
+      </ng-template>
+    </nz-empty>
+  </ng-template>
+
+  <nz-pagination
+    [nzPageIndex]="page"
+    [nzResponsive]="true"
+    [nzTotal]="count_records"
+    [nzPageSize]="page_size"
+    (nzPageIndexChange)="pageChange($event)"
+    nzShowQuickJumper>
     </nz-pagination>
 </div>

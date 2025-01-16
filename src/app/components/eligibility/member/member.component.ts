@@ -17,6 +17,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { FormsModule } from '@angular/forms';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import * as XLSX from 'xlsx';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
   selector: 'app-member',
@@ -36,7 +37,8 @@ import * as XLSX from 'xlsx';
     NzSwitchModule,
     NzSelectModule,
     FormsModule,
-    NzModalModule
+    NzModalModule,
+    NzEmptyModule
   ],
   templateUrl: './member.component.html',
   styleUrls: ['./member.component.css']
@@ -48,13 +50,31 @@ export class MemberComponent {
   count_records = 0;
   page_size = 10;
   page = 1;
-  isVisibleModal = false;
+  serviceSearch: any = null;
+  icdSearch: any = null;
   [key: string]: any;
+  searchFields = [
+    { placeholder: 'Service...', model: 'serviceSearch', key: 'service' },
+    { placeholder: 'ICD...', model: 'icdSearch', key: 'icd' },
+  ];
   private searchNameSubject = new Subject<{ type: string; value: string }>();
 
   constructor(
     private msgService: NzMessageService
   ) {
+    this.searchNameSubject
+      .pipe(debounceTime(1000))
+      .subscribe(({ type, value }) => {
+        const fields = {
+          service: () => (this.serviceSearch = value),
+          icd: () => (this.icdSearch = value),
+        };
+
+        (fields as Record<string, () => void>)[type]?.();
+        this.page = 1;
+        // this.getInitData();
+        this.isDataLoading = false;
+      });
   }
 
   ngOnInit(): void {
@@ -65,25 +85,6 @@ export class MemberComponent {
   search(value: string, type: string) {
     this.isDataLoading = true;
     this.searchNameSubject.next({ type, value });
-  }
-
-  handleCancelModal(): void {
-    this.isVisibleModal = false;
-    // this.dataCacheModal = null;
-  }
-
-  openModal(): void {
-    this.isVisibleModal = true;
-    // this.dataCacheModal = data;
-  }
-
-  handleOkModal(): void {
-    this.handleCancelModal();
-  }
-
-  openPlanDetails(event: number) {
-    // this.page = event;
-    // this.getInitData();
   }
 
   pageChange(event: number) {
