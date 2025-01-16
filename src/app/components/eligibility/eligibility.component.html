@@ -219,7 +219,7 @@
 <nz-modal
   [nzAutofocus]="null"
   [(nzVisible)]="isVisibleModalClaim"
-  nzWidth="75%"
+  nzWidth="90%"
   [nzClosable]="false"
   nzMaskClosable="false">
 
@@ -229,6 +229,9 @@
       [serviceValidFrom]="selectedValidFrom"
       [birthDate]="selectedBirthDate"
       [addressPatient]="selectedAddressPatient"
+      [orderringNpi]="selectedOrderringNpi"
+      [referingNpi]="selectedReferingNpi"
+      [modifiers]="selectedModifiers"
       [serviceValidThru]="selectedValidThru">
     </app-claim-entry>
   </ng-container>

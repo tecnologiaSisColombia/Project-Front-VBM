@@ -17,7 +17,6 @@ import { LocalityService } from 'app/services/config/localities.service';
 import { DiagnosisService } from 'app/services/config/diagnosis.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Input } from '@angular/core';
-import { last } from 'rxjs';
 
 @Component({
     selector: 'app-claim-entry',
@@ -46,7 +45,9 @@ export class ClaimEntryComponent {
     @Input() serviceValidThru: string = '';
     @Input() birthDate: string = '';
     @Input() addressPatient: string = '';
-
+    @Input() orderringNpi: string = '';
+    @Input() referingNpi: string = '';
+    @Input() modifiers: string = '';
     locations: any[] = [];
     selectedLocation: any = null;
     localities: any[] = [{ id: 'N/A', name: 'N/A' }];
@@ -78,6 +79,8 @@ export class ClaimEntryComponent {
             diagnosisPointer: '',
             charges: '',
             units: '',
+            ordering_npi: '',
+            refering_npi: ''
         },
     ];
 
@@ -95,7 +98,7 @@ export class ClaimEntryComponent {
         this.getDiagnosis();
         this.selectedDiagnosis = [
             { code: null, description: null },
-            { code: null, description: null }
+            { code: null, description: null },
         ];
     }
 
@@ -185,6 +188,8 @@ export class ClaimEntryComponent {
             diagnosisPointer: '',
             charges: '',
             units: '',
+            ordering_npi: '',
+            refering_npi: ''
         });
     }
 
@@ -218,6 +223,8 @@ export class ClaimEntryComponent {
             diagnosisPointer: '',
             charges: '',
             units: '',
+            ordering_npi: '',
+            refering_npi: ''
         };
     }
 

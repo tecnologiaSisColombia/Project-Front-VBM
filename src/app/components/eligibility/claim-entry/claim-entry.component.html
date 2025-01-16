@@ -1,9 +1,9 @@
 <nz-card nzTitle="CLAIM ENTRY" [nzBordered]="true" class="main-card">
-    <div class="section">
+    <!-- <div class="section">
         <p>
             <b>Physician information:</b>
         </p>
-    </div>
+    </div> -->
 
     <div class="section">
         <nz-divider nzText="Diagnosis"></nz-divider>
@@ -163,10 +163,18 @@
                     <th nzWidth="180px">Date Final</th>
                     <th>Tos</th>
                     <th>Cpt</th>
-                    <th>Modifiers</th>
+                    <th *ngIf="modifiers == '1'">
+                        Modifiers
+                    </th>
                     <th nzWidth="80px">Diagnosis pointer</th>
                     <th>Charges</th>
                     <th nzWidth="100px">Units</th>
+                    <th *ngIf="orderringNpi == '1'">
+                        Ordering NPI
+                    </th>
+                    <th *ngIf="referingNpi == '1'">
+                        Refering NPI
+                    </th>                                     
                     <th nzWidth="40px">C</th>
                     <th nzWidth="40px">D</th>
                     <th nzWidth="40px">C</th>
@@ -200,7 +208,7 @@
                             [(ngModel)]="row.cpt" 
                         />
                     </td>
-                    <td>
+                    <td *ngIf="modifiers == '1'">
                         <ng-container *ngFor="let modifier of row.modifiers; index as modIndex">
                             <input
                                 nz-input
@@ -230,6 +238,20 @@
                             nz-input 
                             type="text" 
                             [(ngModel)]="row.units" 
+                        />
+                    </td>
+                    <td *ngIf="orderringNpi == '1'">
+                        <input 
+                            nz-input 
+                            type="text" 
+                            [(ngModel)]="row.ordering_npi" 
+                        />
+                    </td>
+                    <td *ngIf="referingNpi == '1'">
+                        <input 
+                            nz-input 
+                            type="text" 
+                            [(ngModel)]="row.refering_npi" 
                         />
                     </td>
                     <td>

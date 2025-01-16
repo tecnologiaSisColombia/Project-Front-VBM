@@ -73,6 +73,9 @@ export class EligibilityComponent {
   selectedValidFrom: string = '';
   selectedValidThru: string = '';
   selectedBirthDate: string = '';
+  selectedOrderringNpi: string = '';
+  selectedReferingNpi: string = '';
+  selectedModifiers: string = '';
   isPrinting = false;
   selectedFile: File | null = null;
   uploading = false;
@@ -154,6 +157,9 @@ export class EligibilityComponent {
     this.selectedValidFrom = rowData.effective;
     this.selectedValidThru = rowData.terminates;
     this.selectedBirthDate = rowData.birth_date;
+    this.selectedOrderringNpi = rowData.insurer_data.orderring_npi;
+    this.selectedReferingNpi = rowData.insurer_data.refering_npi;
+    this.selectedModifiers = rowData.insurer_data.modifiers;
     this.selectedAddressPatient = `${rowData.primary_address} ${rowData.address_1}`;
     this.isVisibleModalClaim = true;
   }
