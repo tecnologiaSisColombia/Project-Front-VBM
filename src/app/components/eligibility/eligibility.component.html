@@ -96,7 +96,7 @@
               nz-icon
               nzType="plus-circle"
               nzTheme="outline"
-              (click)="openModalDetails()"
+              (click)="openModalDetails(data)"
               title="Show Plan Details">
           </span>
           </a>
@@ -110,7 +110,7 @@
               title="Show Member">
           </span>
           </a>
-          <nz-divider nzType="vertical"></nz-divider>
+          <!-- <nz-divider nzType="vertical"></nz-divider>
           <button 
             nz-button nzType="primary" 
             nzShape="round" 
@@ -118,7 +118,7 @@
             (click)="openModalClaim(data)"
             title="Claim entry">
             Claim entry
-          </button>
+          </button> -->
         </td>        
       </tr>
     </tbody>
@@ -192,7 +192,8 @@
   nzMaskClosable="false">
 
   <ng-container *nzModalContent>
-    <app-plan-details>
+    <app-plan-details
+    [patientName]="selectedPatientName">
     </app-plan-details>
   </ng-container>
 

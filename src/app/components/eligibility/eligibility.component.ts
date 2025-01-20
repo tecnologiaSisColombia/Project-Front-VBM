@@ -180,7 +180,8 @@ export class EligibilityComponent {
     this.cancelModalDetails();
   }
 
-  openModalDetails(): void {
+  openModalDetails(rowData: any): void {
+    this.selectedPatientName = `${rowData.last_name} ${rowData.first_name}`;
     this.isVisibleModalDetails = true;
   }
 

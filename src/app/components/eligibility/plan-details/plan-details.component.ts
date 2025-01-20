@@ -5,6 +5,7 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { Input } from '@angular/core';
 
 @Component({
     selector: 'app-plan-details',
@@ -21,6 +22,7 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
     styleUrls: ['./plan-details.component.css']
 })
 export class PlanDetailsComponent {
+    @Input() patientName: string = '';
     @ViewChild('childContent', { static: false }) childContent!: ElementRef;
 
     constructor() {
