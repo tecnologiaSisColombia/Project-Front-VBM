@@ -9,15 +9,8 @@
   </div>
 
   <div class="btn-container">
-    <button 
-      nz-button 
-      nzType="primary" 
-      (click)="openDrawer()">
-      <i 
-        nz-icon 
-        nzType="folder-add" 
-        nzTheme="outline">
-      </i>
+    <button nz-button nzType="primary" (click)="openDrawer()">
+      <i nz-icon nzType="folder-add" nzTheme="outline"> </i>
       New Subplan
     </button>
 
@@ -25,12 +18,9 @@
       nz-button
       [style.background-color]="'#00a651'"
       [style.color]="'white'"
-      (click)="exportSubplans()">
-      <i 
-        nz-icon 
-        nzType="download" 
-        nzTheme="outline">
-      </i>
+      (click)="exportSubplans()"
+    >
+      <i nz-icon nzType="download" nzTheme="outline"> </i>
       Export Subplans
     </button>
   </div>
@@ -79,10 +69,7 @@
     </nz-input-group>
 
     <ng-template #suffixIconSearch>
-      <span 
-        nz-icon 
-        nzType="search">
-      </span>
+      <span nz-icon nzType="search"> </span>
     </ng-template>
   </div>
 
@@ -91,7 +78,8 @@
     [nzData]="dataToDisplay"
     [nzFrontPagination]="false"
     [nzNoResult]="noDataTemplate"
-    [nzLoading]="isDataLoading">
+    [nzLoading]="isDataLoading"
+  >
     <thead>
       <tr>
         <th>Plan</th>
@@ -102,7 +90,9 @@
         <th>Visual test medicare</th>
         <th>Visual surgery medicare</th>
         <th>Routine visual test</th>
+        <th>Routine visual test benefit</th>
         <th>Vision element</th>
+        <th>Vision element benefit</th>
         <th>Created</th>
         <th>Action</th>
       </tr>
@@ -117,7 +107,9 @@
         <td>{{ data.visual_test_medicare }}</td>
         <td>{{ data.visual_surgery_medicare }}</td>
         <td>{{ data.routine_visual_test }}</td>
+        <td>{{ data.routine_visual_test_benefit }}</td>
         <td>{{ data.vision_elements }}</td>
+        <td>{{ data.vision_elements_benefit }}</td>
         <td>{{ data.created | date }}</td>
         <td>
           <a>
@@ -125,7 +117,8 @@
               title="Status"
               [(ngModel)]="data.active"
               nzSize="small"
-              (ngModelChange)="changeStatus(data.id, data)">
+              (ngModelChange)="changeStatus(data.id, data)"
+            >
             </nz-switch>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
@@ -135,7 +128,8 @@
               nz-icon
               nzType="edit"
               nzTheme="outline"
-              (click)="openEditDrawer(data)">
+              (click)="openEditDrawer(data)"
+            >
             </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
@@ -145,7 +139,8 @@
               nz-icon
               nzType="delete"
               nzTheme="outline"
-              (click)="delete(data.id)">
+              (click)="delete(data.id)"
+            >
             </span>
           </a>
         </td>
@@ -156,11 +151,10 @@
   <ng-template #noDataTemplate>
     <nz-empty
       nzNotFoundImage="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-      [nzNotFoundContent]="contentTpl">
+      [nzNotFoundContent]="contentTpl"
+    >
       <ng-template #contentTpl>
-        <span>
-          No subplans found
-        </span>
+        <span> No subplans found </span>
       </ng-template>
     </nz-empty>
   </ng-template>
@@ -173,7 +167,8 @@
     [nzShowSizeChanger]="true"
     (nzPageIndexChange)="pageChange($event)"
     (nzPageSizeChange)="pageSizeChange($event)"
-    [nzShowQuickJumper]="true">
+    [nzShowQuickJumper]="true"
+  >
   </nz-pagination>
 </div>
 
@@ -186,8 +181,8 @@
   [nzTitle]="drawerTitle"
   (nzOnClose)="closeDrawer()"
   [nzWidth]="720"
-  [nzFooter]="footerTpl">
-  
+  [nzFooter]="footerTpl"
+>
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="drawerLoader">
       <form nz-form [formGroup]="form" (ngSubmit)="submit()">
@@ -196,19 +191,13 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="name"
-            style="text-align: center">
+            style="text-align: center"
+          >
             Name
           </nz-form-label>
 
-          <nz-form-control 
-            [nzSm]="16" 
-            [nzXs]="24" 
-            [nzErrorTip]="nameError">
-            <input 
-              nz-input 
-              formControlName="name" 
-              id="name" 
-            />
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="nameError">
+            <input nz-input formControlName="name" id="name" />
           </nz-form-control>
         </nz-form-item>
 
@@ -226,19 +215,13 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="group"
-            style="text-align: center">
+            style="text-align: center"
+          >
             Group
           </nz-form-label>
 
-          <nz-form-control 
-            [nzSm]="16" 
-            [nzXs]="24" 
-            [nzErrorTip]="groupError">
-            <input 
-              nz-input 
-              formControlName="group" 
-              id="group" 
-            />
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="groupError">
+            <input nz-input formControlName="group" id="group" />
           </nz-form-control>
         </nz-form-item>
 
@@ -256,14 +239,12 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="plan_contract"
-            style="text-align: center">
+            style="text-align: center"
+          >
             Plan Contract
           </nz-form-label>
 
-          <nz-form-control 
-            [nzSm]="16" 
-            [nzXs]="24" 
-            [nzErrorTip]="contractError">
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="contractError">
             <input
               nz-input
               formControlName="plan_contract"
@@ -280,26 +261,29 @@
             This field cannot be empty or contain only spaces
           </span>
         </ng-template>
-        
+
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
             [nzXs]="24"
             nzFor="pds"
-            style="text-align: center">
+            style="text-align: center"
+          >
             PDS
           </nz-form-label>
 
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required">
+            nzErrorTip="This field is required"
+          >
             <nz-select
               nzShowSearch
               nzAllowClear
               id="pds"
               nzPlaceHolder="Select an PDS"
-              formControlName="pds">
+              formControlName="pds"
+            >
               <nz-option nzLabel="Yes" [nzValue]="1"></nz-option>
               <nz-option nzLabel="No" [nzValue]="2"></nz-option>
             </nz-select>
@@ -311,14 +295,16 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="visual_test_medicare"
-            style="text-align: center">
+            style="text-align: center"
+          >
             Visual Test Medicare $
           </nz-form-label>
 
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required">
+            nzErrorTip="This field is required"
+          >
             <input
               nz-input
               type="number"
@@ -333,14 +319,16 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="visual_surgery_medicare"
-            style="text-align: center">
+            style="text-align: center"
+          >
             Visual Surgery Medicare $
           </nz-form-label>
 
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required">
+            nzErrorTip="This field is required"
+          >
             <input
               nz-input
               type="number"
@@ -355,14 +343,16 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="routine_visual_test"
-            style="text-align: center">
+            style="text-align: center"
+          >
             Routine Visual Test $
           </nz-form-label>
 
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required">
+            nzErrorTip="This field is required"
+          >
             <input
               nz-input
               type="number"
@@ -376,20 +366,70 @@
           <nz-form-label
             [nzSm]="8"
             [nzXs]="24"
+            nzFor="routine_visual_test_benefit"
+            style="text-align: center"
+          >
+            Routine visual test benefit
+          </nz-form-label>
+
+          <nz-form-control
+            [nzSm]="16"
+            [nzXs]="24"
+            nzErrorTip="This field is required"
+          >
+            <input
+              nz-input
+              type="text"
+              formControlName="routine_visual_test_benefit"
+              id="routine_visual_test_benefit"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
             nzFor="vision_elements"
-            style="text-align: center">
+            style="text-align: center"
+          >
             Vision Elements $
           </nz-form-label>
 
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required">
+            nzErrorTip="This field is required"
+          >
             <input
               nz-input
               type="number"
               formControlName="vision_elements"
               id="vision_elements"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="vision_elements_benefit"
+            style="text-align: center"
+          >
+            Vision elements benefit
+          </nz-form-label>
+
+          <nz-form-control
+            [nzSm]="16"
+            [nzXs]="24"
+            nzErrorTip="This field is required"
+          >
+            <input
+              nz-input
+              type="text"
+              formControlName="vision_elements_benefit"
+              id="vision_elements_benefit"
             />
           </nz-form-control>
         </nz-form-item>
@@ -402,16 +442,12 @@
       <button
         nz-button
         style="display: flex; margin-right: 8px"
-        (click)="closeDrawer()">
+        (click)="closeDrawer()"
+      >
         close
       </button>
 
-      <button 
-        nz-button 
-        nzType="primary" 
-        (click)="submit()">
-        Save
-      </button>
+      <button nz-button nzType="primary" (click)="submit()">Save</button>
     </div>
   </ng-template>
 </nz-drawer>

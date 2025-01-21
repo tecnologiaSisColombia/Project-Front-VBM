@@ -46,7 +46,7 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
     CommonModule,
     NzSwitchModule,
     NzSelectModule,
-    NzEmptyModule
+    NzEmptyModule,
   ],
   templateUrl: './subplans.component.html',
   styleUrl: './subplans.component.css',
@@ -83,11 +83,16 @@ export class SubplansComponent implements OnInit {
       pds: [null, [Validators.required]],
       name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       group: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
-      plan_contract: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      plan_contract: [
+        null,
+        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
+      ],
       visual_test_medicare: [null, [Validators.required]],
       visual_surgery_medicare: [null, [Validators.required]],
       routine_visual_test: [null, [Validators.required]],
+      routine_visual_test_benefit: [null],
       vision_elements: [null, [Validators.required]],
+      vision_elements_benefit: [null],
     });
 
     this.searchNameSubject.pipe(debounceTime(1000)).subscribe((data) => {
@@ -125,10 +130,16 @@ export class SubplansComponent implements OnInit {
           this.isDataLoading = false;
           this.dataToDisplay = res.results;
 
-          const isSearching = this.nameSearch || this.planSearch || this.groupSearch || this.planContractSearch;
+          const isSearching =
+            this.nameSearch ||
+            this.planSearch ||
+            this.groupSearch ||
+            this.planContractSearch;
 
           if (isSearching && (!res.results || res.results.length === 0)) {
-            this.msgService.warning(JSON.stringify('No results found matching your search criteria'));
+            this.msgService.warning(
+              JSON.stringify('No results found matching your search criteria')
+            );
           }
 
           this.setPagination(res.total);
@@ -187,7 +198,9 @@ export class SubplansComponent implements OnInit {
         this.isDataLoading = true;
         this.subplanService.deleteSubPlan(id).subscribe({
           next: () => {
-            this.msgService.success(JSON.stringify('Subplan deleted successfully'));
+            this.msgService.success(
+              JSON.stringify('Subplan deleted successfully')
+            );
             this.isDataLoading = false;
 
             if (this.dataToDisplay.length === 1 && this.page > 1) {
@@ -226,11 +239,13 @@ export class SubplansComponent implements OnInit {
     if (this.form.valid) {
       this.drawerLoader = true;
       if (this.isUpdating) {
-        return this.update(this.dataDrawerCahe.id, this.form.value);
+        return this.update(this.dataDrawerCahe.group, this.form.value);
       }
       this.subplanService.createSubPlan(this.form.value).subscribe({
         next: () => {
-          this.msgService.success(JSON.stringify('Subplan created successfully'));
+          this.msgService.success(
+            JSON.stringify('Subplan created successfully')
+          );
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -326,7 +341,8 @@ export class SubplansComponent implements OnInit {
 
           const subplansData = formatData(res, headers);
 
-          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(subplansData);
+          const worksheet: XLSX.WorkSheet =
+            XLSX.utils.json_to_sheet(subplansData);
           const workbook: XLSX.WorkBook = XLSX.utils.book_new();
           XLSX.utils.book_append_sheet(workbook, worksheet, 'Subplans');
 
@@ -335,7 +351,9 @@ export class SubplansComponent implements OnInit {
             type: 'array',
           });
 
-          const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+          const blob = new Blob([excelBuffer], {
+            type: 'application/octet-stream',
+          });
           const link = document.createElement('a');
           const url = URL.createObjectURL(blob);
 
@@ -357,5 +375,4 @@ export class SubplansComponent implements OnInit {
         },
       });
   }
-
 }
