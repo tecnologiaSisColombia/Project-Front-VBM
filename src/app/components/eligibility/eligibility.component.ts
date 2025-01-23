@@ -76,6 +76,7 @@ export class EligibilityComponent {
   selectedOrderringNpi: string = '';
   selectedReferingNpi: string = '';
   selectedModifiers: string = '';
+  selectedPrimaryPlanName: string = ''
   isPrinting = false;
   selectedFile: File | null = null;
   uploading = false;
@@ -182,6 +183,7 @@ export class EligibilityComponent {
 
   openModalDetails(rowData: any): void {
     this.selectedPatientName = `${rowData.last_name} ${rowData.first_name}`;
+    this.selectedPrimaryPlanName = `${rowData.primary_insure_plan_name}`;
     this.isVisibleModalDetails = true;
   }
 
@@ -204,12 +206,12 @@ export class EligibilityComponent {
       const file = input.files[0];
 
       const fileType = file.type.toLowerCase();
-      const fileName = file.name;
+      const fileName = file.name.toLowerCase();
 
-      if (fileType === 'text/csv' || fileName.endsWith('.csv')) {
+      if (fileType === 'application/zip' || fileName.endsWith('.zip')) {
         this.selectedFile = file;
       } else {
-        this.msgService.warning(JSON.stringify('Only files with .csv extension are allowed'));
+        this.msgService.warning(JSON.stringify('Only files with .zip extension are allowed'));
         this.selectedFile = null;
       }
     } else {
