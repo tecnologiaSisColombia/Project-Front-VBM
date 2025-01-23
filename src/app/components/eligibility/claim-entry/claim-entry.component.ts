@@ -15,6 +15,7 @@ import { FormsModule } from '@angular/forms';
 import { LocationService } from 'app/services/config/location.service';
 import { LocalityService } from 'app/services/config/localities.service';
 import { DiagnosisService } from 'app/services/config/diagnosis.service';
+import { ModifiersService } from 'app/services/config/modifiers.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Input } from '@angular/core';
 
@@ -48,22 +49,25 @@ export class ClaimEntryComponent {
     @Input() orderringNpi: string = '';
     @Input() referingNpi: string = '';
     @Input() modifiers: string = '';
+    @Input() auth: string = '';
     locations: any[] = [];
     selectedLocation: any = null;
     localities: any[] = [{ id: 'N/A', name: 'N/A' }];
     selectedLocality: any = 'N/A';
     selectedMemberHave: any = 'no';
     diagnosis: any[] = [];
+    modifiersInput: any[] = [];
     selectedDiagnosis: { code: any; description: any }[] = [];
     diagnosisOptions: { label: string; value: number }[] = [];
+    modifiersOptions: { label: string; value: number }[] = [];
     isPreviewVisible = false;
     accountFields = [
         { id: 'observations', label: 'Reserved for local use:' },
         { id: 'p_account', label: 'Patient account:' },
         { id: 'auth', label: 'Auth:' },
-        { id: 'charge', label: 'Total charge:' },
-        { id: 'paid', label: 'Paid:' },
-        { id: 'balance', label: 'Balance:' },
+        { id: 'charge', label: 'Total charge:', value: 0 },
+        { id: 'paid', label: 'Paid:', value: 0 },
+        { id: 'balance', label: 'Balance:', value: 0 },
     ];
     memberHave: any[] = [
         { id: 'no', name: 'NO' },
@@ -77,10 +81,10 @@ export class ClaimEntryComponent {
             cpt: '',
             modifiers: [{ id: 1, value: '' }, { id: 2, value: '' }, { id: 3, value: '' }],
             diagnosisPointer: '',
-            charges: '',
-            units: '',
-            ordering_npi: '',
-            refering_npi: ''
+            charges: null,
+            units: null,
+            ordering_npi: null,
+            refering_npi: null
         },
     ];
 
@@ -88,7 +92,8 @@ export class ClaimEntryComponent {
         private msgService: NzMessageService,
         private locationService: LocationService,
         private localityService: LocalityService,
-        private diagnosisService: DiagnosisService
+        private diagnosisService: DiagnosisService,
+        private modifiersService: ModifiersService
     ) {
     }
 
@@ -96,12 +101,14 @@ export class ClaimEntryComponent {
         this.getLocations();
         this.getLocalities();
         this.getDiagnosis();
+        this.getModifiers();
         this.selectedDiagnosis = [
             { code: null, description: null },
             { code: null, description: null },
             { code: null, description: null },
             { code: null, description: null },
         ];
+        console.log(this.auth)
     }
 
     onLocationChange(): void {
@@ -163,6 +170,21 @@ export class ClaimEntryComponent {
         });
     }
 
+    getModifiers(): void {
+        this.modifiersService.get({}, null, null, true).subscribe({
+            next: (res: any) => {
+                this.modifiersInput = res;
+                this.modifiersOptions = this.modifiersInput.map(d => ({
+                    value: d.code,
+                    label: `${d.code}`,
+                }));
+            },
+            error: (err) => {
+                this.msgService.error(JSON.stringify(err.error));
+            },
+        });
+    }
+
     addDiagnosis(): void {
         if (this.selectedDiagnosis.length < 12) {
             this.selectedDiagnosis.push(
@@ -170,16 +192,12 @@ export class ClaimEntryComponent {
                     code: this.selectedDiagnosis.length + 1,
                     description: null
                 });
-        } else {
-            this.msgService.warning(JSON.stringify('You cannot add more than 12 diagnoses'));
         }
     }
 
     removeDiagnosis(index: number): void {
         if (this.selectedDiagnosis.length > 2) {
             this.selectedDiagnosis.splice(index, 1);
-        } else {
-            this.msgService.warning(JSON.stringify('You must have at least 2 diagnoses'));
         }
     }
 
@@ -187,6 +205,11 @@ export class ClaimEntryComponent {
         const suffixes = ['th', 'st', 'nd', 'rd'];
         const value = index % 100;
         return index + (suffixes[(value - 20) % 10] || suffixes[value] || suffixes[0]);
+    }
+
+    calculateTotalCharges(): void {
+        const total = this.rows.reduce((sum, row) => sum + (row.charges || 0), 0);
+        this.accountFields.find(field => field.id === 'charge')!.value = total;
     }
 
     addRow(): void {
@@ -202,18 +225,17 @@ export class ClaimEntryComponent {
                 { id: rowId * 10 + 3, value: '' }
             ],
             diagnosisPointer: '',
-            charges: '',
-            units: '',
-            ordering_npi: '',
-            refering_npi: ''
+            charges: null,
+            units: null,
+            ordering_npi: null,
+            refering_npi: null
         });
     }
 
     deleteRow(index: number): void {
         if (this.rows.length > 1) {
             this.rows.splice(index, 1);
-        } else {
-            this.msgService.warning(JSON.stringify('You must have at least one row'));
+            this.calculateTotalCharges();
         }
     }
 
@@ -227,6 +249,8 @@ export class ClaimEntryComponent {
         }));
 
         this.rows.push(copiedRow);
+
+        this.calculateTotalCharges();
     }
 
     resetRow(index: number): void {
@@ -237,11 +261,11 @@ export class ClaimEntryComponent {
             cpt: '',
             modifiers: [{ id: 1, value: '' }, { id: 2, value: '' }, { id: 3, value: '' }],
             diagnosisPointer: '',
-            charges: '',
-            units: '',
-            ordering_npi: '',
-            refering_npi: ''
+            charges: null,
+            units: null,
+            ordering_npi: null,
+            refering_npi: null
         };
+        this.calculateTotalCharges();
     }
-
 }

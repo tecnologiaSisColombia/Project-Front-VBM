@@ -1,9 +1,5 @@
 <nz-card nzTitle="CLAIM ENTRY" [nzBordered]="true" class="main-card">
     <div class="section">
-        <b>Physician information:</b>
-    </div>
-
-    <div class="section">
         <button nz-button nzType="primary" nzIcon="plus" (click)="addDiagnosis()">
             Add diagnosis
         </button>
@@ -105,26 +101,22 @@
     <br /><br />
 
     <div class="section">
-        <b>
-            Service(s): {{ patientName | uppercase }}
-        </b>
-
+        <b> Service(s): {{ patientName | uppercase }} </b>
         <br /><br />
-
         <nz-table #basicTable [nzData]="rows" [nzSize]="'small'" [nzFrontPagination]="false">
             <thead>
                 <tr>
-                    <th nzWidth="180px">Date Initial</th>
-                    <th nzWidth="180px">Date Final</th>
-                    <th>Tos</th>
-                    <th nzWidth="120px">Cpt</th>
-                    <th *ngIf="modifiers == '1'">Modifiers</th>
-                    <th nzWidth="80px">Diagnosis pointer</th>
-                    <th>Charges</th>
-                    <th nzWidth="100px">Units</th>
-                    <th *ngIf="orderringNpi == '1'">Ordering NPI</th>
-                    <th *ngIf="referingNpi == '1'">Refering NPI</th>
-                    <th nzWidth="40px">Action</th>
+                    <th nzWidth="12.09%">Date Initial</th>
+                    <th nzWidth="12.09%">Date Final</th>
+                    <th nzWidth="7.09%">Tos</th>
+                    <th nzWidth="9.09%">Cpt</th>
+                    <th *ngIf="modifiers == '1'" nzWidth="9.09%">Modifiers</th>
+                    <th nzWidth="7.09%">Diagnosis pointer</th>
+                    <th nzWidth="9.09%">Charges</th>
+                    <th nzWidth="7.09%">Units</th>
+                    <th *ngIf="orderringNpi == '1'" nzWidth="9.09%">Ordering NPI</th>
+                    <th *ngIf="referingNpi == '1'" nzWidth="9.09%">Refering NPI</th>
+                    <th nzWidth="9.09%">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -157,15 +149,20 @@
                     </td>
                     <td *ngIf="modifiers == '1'">
                         <ng-container *ngFor="let modifier of row.modifiers; index as modIndex">
-                            <input 
-                                nz-input 
-                                type="text" 
-                                style="width: 60px; margin-right: 8px;"
+                            <nz-select 
                                 [(ngModel)]="modifier.value" 
                                 [id]="modifier.id" 
-                            />
+                                style="width: 100px; margin-right: 8px;"
+                                nzShowSearch 
+                                nzAllowClear>
+                                <nz-option 
+                                    *ngFor="let option of modifiersOptions" 
+                                    [nzValue]="option.value" 
+                                    [nzLabel]="option.label">
+                                </nz-option>
+                            </nz-select>
                         </ng-container>
-                    </td>
+                    </td>                    
                     <td>
                         <input 
                             nz-input 
@@ -176,28 +173,29 @@
                     <td>
                         <input 
                             nz-input 
-                            type="text" 
+                            type="number" 
                             [(ngModel)]="row.charges" 
+                            (ngModelChange)="calculateTotalCharges()" 
                         />
                     </td>
                     <td>
                         <input 
                             nz-input 
-                            type="text" 
+                            type="number" 
                             [(ngModel)]="row.units" 
                         />
                     </td>
                     <td *ngIf="orderringNpi == '1'">
                         <input 
                             nz-input 
-                            type="text" 
+                            type="number" 
                             [(ngModel)]="row.ordering_npi" 
                         />
                     </td>
                     <td *ngIf="referingNpi == '1'">
                         <input 
                             nz-input 
-                            type="text" 
+                            type="number" 
                             [(ngModel)]="row.refering_npi" 
                         />
                     </td>
@@ -249,31 +247,35 @@
 
     <div class="section">
         <nz-divider nzText="Account information"></nz-divider>
-
+    
         <nz-row [nzGutter]="16">
             <ng-container *ngFor="let field of accountFields; let i = index">
-                <nz-col [nzSpan]="8">
+                <nz-col [nzSpan]="8" *ngIf="field.id != 'auth' || (field.id == 'auth' && auth == '1')">
                     <nz-form-item>
                         <nz-form-label 
                             [nzSm]="8" 
                             [nzXs]="16">
                             {{ field.label }}
                         </nz-form-label>
-
+    
                         <nz-form-control 
                             [nzSm]="16" 
                             [nzXs]="24">
                             <input 
-                                nz-input 
-                                [id]="field.id" 
-                            />
+                            nz-input 
+                            [id]="field.id" 
+                            [value]="field.value || ''" 
+                            [readonly]="field.id === 'charge' || field.id === 'balance'"
+                            [type]="['charge', 'paid', 'balance'].includes(field.id) ? 'number' : 'text'" 
+                            [(ngModel)]="field.value"
+                        />                        
                         </nz-form-control>
                     </nz-form-item>
                     <br>
                 </nz-col>
             </ng-container>
         </nz-row>
-    </div>
+    </div>    
 
     <!-- <nz-divider [nzText]="dividerTemplate"></nz-divider>
 

@@ -98,6 +98,7 @@ export class InsurersComponent implements OnInit {
       modifiers: [null, [Validators.required]],
       orderring_npi: [null, [Validators.required]],
       refering_npi: [null, [Validators.required]],
+      auth: [null, [Validators.required]],
     });
 
     this.searchNameSubject

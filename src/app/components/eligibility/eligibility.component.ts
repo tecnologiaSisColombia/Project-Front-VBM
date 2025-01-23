@@ -75,6 +75,7 @@ export class EligibilityComponent {
   selectedBirthDate: string = '';
   selectedOrderringNpi: string = '';
   selectedReferingNpi: string = '';
+  selectedAuth: string = '';
   selectedModifiers: string = '';
   selectedPrimaryPlanName: string = ''
   isPrinting = false;
@@ -160,6 +161,7 @@ export class EligibilityComponent {
     this.selectedBirthDate = rowData.birth_date;
     this.selectedOrderringNpi = rowData.insurer_data.orderring_npi;
     this.selectedReferingNpi = rowData.insurer_data.refering_npi;
+    this.selectedAuth = rowData.insurer_data.auth;
     this.selectedModifiers = rowData.insurer_data.modifiers;
     this.selectedAddressPatient = `${rowData.primary_address} ${rowData.address_1}`;
     this.isVisibleModalClaim = true;

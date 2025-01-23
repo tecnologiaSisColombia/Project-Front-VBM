@@ -99,6 +99,7 @@
         <th>Modifiers</th>
         <th>Orderring NPI</th>
         <th>Refering NPI</th>
+        <th>Auth</th>
         <th>Created</th>
         <th>Action</th>
       </tr>
@@ -112,6 +113,7 @@
         <td>{{ data.modifiers == 1 ? "Yes" : "No" }}</td>
         <td>{{ data.orderring_npi == 1 ? "Yes" : "No" }}</td>
         <td>{{ data.refering_npi == 1 ? "Yes" : "No" }}</td>
+        <td>{{ data.auth == 1 ? "Yes" : "No" }}</td>
         <td>{{ data.created | date }}</td>
         <td>
           <a>
@@ -503,6 +505,31 @@
               id="refering_npi"
               nzPlaceHolder="Select an Refering NPI"
               formControlName="refering_npi">
+              <nz-option nzLabel="Yes" [nzValue]="1"></nz-option>
+              <nz-option nzLabel="No" [nzValue]="2"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="auth"
+            style="text-align: center">
+            Auth
+          </nz-form-label>
+
+          <nz-form-control
+            [nzSm]="16"
+            [nzXs]="24"
+            nzErrorTip="This field is required">
+            <nz-select
+              nzShowSearch
+              nzAllowClear
+              id="auth"
+              nzPlaceHolder="Select auth"
+              formControlName="auth">
               <nz-option nzLabel="Yes" [nzValue]="1"></nz-option>
               <nz-option nzLabel="No" [nzValue]="2"></nz-option>
             </nz-select>
