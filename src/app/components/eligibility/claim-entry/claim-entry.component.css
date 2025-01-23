@@ -18,12 +18,3 @@ nz-table td {
     padding: 10px;
     white-space: nowrap;
 }
-
-.delete-icon {
-    /* position: relative;
-    top: 50%;
-    right: -30px;
-    transform: translateY(-50%); */
-    cursor: pointer;
-    color: #ff4d4f;
-}

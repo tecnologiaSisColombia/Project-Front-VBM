@@ -104,21 +104,22 @@
           <a>
             <span
               nz-icon
-              nzType="folder-open"
+              nzType="unordered-list"
               nzTheme="outline"
               (click)="openModalMember()"
               title="Show Member">
-          </span>
+            </span>
           </a>
-          <!-- <nz-divider nzType="vertical"></nz-divider>
-          <button 
-            nz-button nzType="primary" 
-            nzShape="round" 
-            nzSize="small"
-            (click)="openModalClaim(data)"
-            title="Claim entry">
-            Claim entry
-          </button> -->
+          <nz-divider nzType="vertical"></nz-divider>
+          <a>
+            <span
+              nz-icon
+              nzType="form"
+              nzTheme="outline"
+              (click)="openModalClaim(data)"
+              title="Claim entry">
+            </span>
+          </a>
         </td>        
       </tr>
     </tbody>
