@@ -76,11 +76,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let user of userTable.data">
-        <td>
-          {{
-            user.extra_data && user.user_type ? mapUserRole(user.user_type) : ""
-          }}
-        </td>
+        <td>{{ user.user_type ? mapUserRole(user.user_type) : ""}} </td>
         <td>{{ user.username }}</td>
         <td>{{ user.first_name }}</td>
         <td>{{ user.last_name }}</td>

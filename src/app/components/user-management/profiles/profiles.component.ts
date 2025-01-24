@@ -86,6 +86,10 @@ export class ProfilesComponent implements OnInit {
       id: 'PARTNER',
       label: 'Partner',
     },
+    {
+      id: 'EXTERNAL',
+      label: 'External',
+    },
   ];
   private searchSubject: Subject<{ type: string; value: string }> = new Subject();
 
