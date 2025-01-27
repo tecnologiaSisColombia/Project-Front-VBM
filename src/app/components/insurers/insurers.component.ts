@@ -50,7 +50,7 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
     NzSwitchModule,
     NzSelectModule,
     NzModalModule,
-    NzEmptyModule
+    NzEmptyModule,
   ],
   templateUrl: './insurers.component.html',
   styleUrls: ['./insurers.component.css', '../../../animations/styles.css'],
@@ -76,7 +76,8 @@ export class InsurersComponent implements OnInit {
   products: any[] = [];
   isVisibleCatalog: boolean = false;
   dataCatalog: any;
-  private searchNameSubject: Subject<{ type: string; value: string }> = new Subject();
+  private searchNameSubject: Subject<{ type: string; value: string }> =
+    new Subject();
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -90,8 +91,14 @@ export class InsurersComponent implements OnInit {
       services: [null, [Validators.required]],
       products: [null, [Validators.required]],
       logo: [null],
-      logo_description: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
-      payer_id: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      logo_description: [
+        null,
+        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
+      ],
+      payer_id: [
+        null,
+        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
+      ],
       phone: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       address: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
@@ -165,11 +172,17 @@ export class InsurersComponent implements OnInit {
           this.isDataLoading = false;
           this.dataToDisplay = res.results;
 
-          console.log(this.dataToDisplay)
-          const isSearching = this.nameSearch || this.payerIdSearch || this.addresSearch || this.phoneSearch;
+          console.log(this.dataToDisplay);
+          const isSearching =
+            this.nameSearch ||
+            this.payerIdSearch ||
+            this.addresSearch ||
+            this.phoneSearch;
 
           if (isSearching && (!res.results || res.results.length === 0)) {
-            this.msgService.warning(JSON.stringify('No results found matching your search criteria'));
+            this.msgService.warning(
+              JSON.stringify('No results found matching your search criteria')
+            );
           }
 
           this.setPagination(res.total);
@@ -228,7 +241,9 @@ export class InsurersComponent implements OnInit {
         this.isDataLoading = true;
         this.insurerService.deleteInsurer(id).subscribe({
           next: () => {
-            this.msgService.success(JSON.stringify('Insurer deleted successfully'));
+            this.msgService.success(
+              JSON.stringify('Insurer deleted successfully')
+            );
             this.isDataLoading = false;
 
             if (this.dataToDisplay.length === 1 && this.page > 1) {
@@ -324,7 +339,9 @@ export class InsurersComponent implements OnInit {
     } else {
       this.insurerService.createInsurer(formData).subscribe({
         next: () => {
-          this.msgService.success(JSON.stringify('Insurer created successfully'));
+          this.msgService.success(
+            JSON.stringify('Insurer created successfully')
+          );
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -339,6 +356,9 @@ export class InsurersComponent implements OnInit {
   }
 
   changeStatus(id: number, data: any): void {
+    data.services = data.services.map((e: any) => e.id);
+    data.products = data.products.map((e: any) => e.id);
+
     this.update(id, data);
   }
 
@@ -398,7 +418,9 @@ export class InsurersComponent implements OnInit {
           active: 'Status',
         };
 
-        const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+        const selectedColumns = Object.keys(
+          headers
+        ) as (keyof typeof headers)[];
 
         const filteredData = res.map((insurer: any) =>
           selectedColumns.reduce((obj: Record<string, any>, key) => {
@@ -418,7 +440,8 @@ export class InsurersComponent implements OnInit {
           }, {})
         );
 
-        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+        const worksheet: XLSX.WorkSheet =
+          XLSX.utils.json_to_sheet(filteredData);
         const workbook: XLSX.WorkBook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Insurers');
 
@@ -427,7 +450,9 @@ export class InsurersComponent implements OnInit {
           type: 'array',
         });
 
-        const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+        const blob = new Blob([excelBuffer], {
+          type: 'application/octet-stream',
+        });
         const url = URL.createObjectURL(blob);
 
         const link = document.createElement('a');

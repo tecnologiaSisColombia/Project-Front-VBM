@@ -99,7 +99,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let data of basicTable.data">
-        <td>{{ data.plan_data.name }}</td>
+        <td>{{ data.plan_data?.name }}</td>
         <td>{{ data.name }}</td>
         <td>{{ data.pds == 1 ? "Yes" : "No" }}</td>
         <td>{{ data.group }}</td>
@@ -117,7 +117,7 @@
               title="Status"
               [(ngModel)]="data.active"
               nzSize="small"
-              (ngModelChange)="changeStatus(data.id, data)"
+              (ngModelChange)="changeStatus(data.group, data)"
             >
             </nz-switch>
           </a>
