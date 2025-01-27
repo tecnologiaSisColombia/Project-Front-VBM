@@ -24,7 +24,8 @@ import { Input } from '@angular/core';
 export class PlanDetailsComponent {
     @Input() patientName: string = '';
     @Input() primaryPlanName: string = '';
-
+    @Input() visualTestMedicare: string = '';
+    @Input() visionElements: string = '';
     @ViewChild('childContent', { static: false }) childContent!: ElementRef;
     currentTime: string = '';
 

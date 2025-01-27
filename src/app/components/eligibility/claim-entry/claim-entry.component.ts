@@ -49,7 +49,7 @@ export class ClaimEntryComponent {
     @Input() orderringNpi: string = '';
     @Input() referingNpi: string = '';
     @Input() modifiers: string = '';
-    @Input() auth: string = '';
+    @Input() auth: string = ''; 
     locations: any[] = [];
     selectedLocation: any = null;
     localities: any[] = [{ id: 'N/A', name: 'N/A' }];

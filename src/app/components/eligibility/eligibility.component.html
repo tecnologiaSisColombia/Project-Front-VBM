@@ -87,9 +87,9 @@
         <td [ngClass]="isWithinRange(data.effective, data.terminates) ? 'text-green' : 'text-red'">
           {{isWithinRange(data.effective, data.terminates) ? 'Yes' : 'No'}}
         </td>
-        <td [ngClass]="data.secondary_insure_plan_name === 'No' ? 'text-red' : 'text-green'">
-          {{data.secondary_insure_plan_name}}
-        </td>              
+        <td [ngClass]="data.secondary_insure_plan_name === '' ? 'text-red' : 'text-green'">
+          {{ data.secondary_insure_plan_name === '' ? 'No' : data.secondary_insure_plan_name }}
+        </td>                    
         <td>
           <a>
             <span
@@ -196,7 +196,8 @@
     <app-plan-details
     [patientName]="selectedPatientName"
     [primaryPlanName]="selectedPrimaryPlanName"
-    >
+    [visionElements]="selectedVisionElements"
+    [visualTestMedicare]="selectedVisualTestMedicare">
     </app-plan-details>
   </ng-container>
 
@@ -273,6 +274,8 @@
     <div class="modal-content-wrapper">
       <h3 class="modal-title">Start Eligibility Process</h3>
       <div class="modal-body">
+        <!-- <h4 style="color: red;">Only files with .zip extension are allowed</h4> -->
+        <a href="assets/example.xlsx">Download Example of Eligibility to Upload</a>
         <input 
           type="file" 
           class="file-input"

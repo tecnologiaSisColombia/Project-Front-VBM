@@ -77,7 +77,9 @@ export class EligibilityComponent {
   selectedReferingNpi: string = '';
   selectedAuth: string = '';
   selectedModifiers: string = '';
-  selectedPrimaryPlanName: string = ''
+  selectedPrimaryPlanName: string = '';
+  selectedVisualTestMedicare: string = '';
+  selectedVisionElements: string = '';
   isPrinting = false;
   selectedFile: File | null = null;
   uploading = false;
@@ -184,8 +186,10 @@ export class EligibilityComponent {
   }
 
   openModalDetails(rowData: any): void {
-    this.selectedPatientName = `${rowData.last_name} ${rowData.first_name}`;
+    this.selectedPatientName = `${rowData.last_name} ${rowData.middle_initial} ${rowData.first_name}`;
     this.selectedPrimaryPlanName = `${rowData.primary_insure_plan_name}`;
+    this.selectedVisualTestMedicare = `${rowData.subplan_data.visual_test_medicare}`;
+    this.selectedVisionElements = `${rowData.subplan_data.vision_elements}`;
     this.isVisibleModalDetails = true;
   }
 
@@ -224,12 +228,12 @@ export class EligibilityComponent {
   handleUpload(): void {
     if (!this.selectedFile) return;
 
-    const insurerName = this.dataToDisplay[0].insurer_data.name;
+    const insurerPayerId = this.dataToDisplay[0].insurer_data.payer_id;
     const insurerId = this.dataToDisplay[0].insurer_data.id;
 
     const formData = new FormData();
     formData.append('file', this.selectedFile);
-    formData.append('insurer_name', insurerName);
+    formData.append('payer_id', insurerPayerId);
     formData.append('insurer_id', insurerId);
 
     this.uploading = true;
