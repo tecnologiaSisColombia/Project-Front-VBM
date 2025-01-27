@@ -8,5 +8,3 @@ export * from './config/doctors.service';
 export * from './config/localities.service';
 export * from './config/products.service';
 export * from './config/services.service';
-// export * from './config/especialities.service';
-// export * from './config/offices.service';
