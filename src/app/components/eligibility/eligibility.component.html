@@ -87,16 +87,16 @@
         <td [ngClass]="isWithinRange(data.effective, data.terminates) ? 'text-green' : 'text-red'">
           {{isWithinRange(data.effective, data.terminates) ? 'Yes' : 'No'}}
         </td>
-        <td [ngClass]="data.secondary_insure_plan_name === 'No' ? 'text-red' : 'text-green'">
-          {{data.secondary_insure_plan_name}}
-        </td>              
+        <td [ngClass]="data.secondary_insure_plan_name === '' ? 'text-red' : 'text-green'">
+          {{ data.secondary_insure_plan_name === '' ? 'No' : data.secondary_insure_plan_name }}
+        </td>                    
         <td>
           <a>
             <span
               nz-icon
               nzType="plus-circle"
               nzTheme="outline"
-              (click)="openModalDetails()"
+              (click)="openModalDetails(data)"
               title="Show Plan Details">
           </span>
           </a>
@@ -104,21 +104,22 @@
           <a>
             <span
               nz-icon
-              nzType="folder-open"
+              nzType="unordered-list"
               nzTheme="outline"
               (click)="openModalMember()"
               title="Show Member">
-          </span>
+            </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
-          <button 
-            nz-button nzType="primary" 
-            nzShape="round" 
-            nzSize="small"
-            (click)="openModalClaim(data)"
-            title="Claim entry">
-            Claim entry
-          </button>
+          <a>
+            <span
+              nz-icon
+              nzType="form"
+              nzTheme="outline"
+              (click)="openModalClaim(data)"
+              title="Claim entry">
+            </span>
+          </a>
         </td>        
       </tr>
     </tbody>
@@ -192,7 +193,11 @@
   nzMaskClosable="false">
 
   <ng-container *nzModalContent>
-    <app-plan-details>
+    <app-plan-details
+    [patientName]="selectedPatientName"
+    [primaryPlanName]="selectedPrimaryPlanName"
+    [visionElements]="selectedVisionElements"
+    [visualTestMedicare]="selectedVisualTestMedicare">
     </app-plan-details>
   </ng-container>
 
@@ -236,6 +241,7 @@
       [addressPatient]="selectedAddressPatient"
       [orderringNpi]="selectedOrderringNpi"
       [referingNpi]="selectedReferingNpi"
+      [auth]="selectedAuth"
       [modifiers]="selectedModifiers"
       [serviceValidThru]="selectedValidThru">
     </app-claim-entry>
@@ -268,6 +274,8 @@
     <div class="modal-content-wrapper">
       <h3 class="modal-title">Start Eligibility Process</h3>
       <div class="modal-body">
+        <!-- <h4 style="color: red;">Only files with .zip extension are allowed</h4> -->
+        <a href="assets/example.xlsx">Download Example of Eligibility to Upload</a>
         <input 
           type="file" 
           class="file-input"

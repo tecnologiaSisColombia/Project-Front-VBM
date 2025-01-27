@@ -75,7 +75,11 @@ export class EligibilityComponent {
   selectedBirthDate: string = '';
   selectedOrderringNpi: string = '';
   selectedReferingNpi: string = '';
+  selectedAuth: string = '';
   selectedModifiers: string = '';
+  selectedPrimaryPlanName: string = '';
+  selectedVisualTestMedicare: string = '';
+  selectedVisionElements: string = '';
   isPrinting = false;
   selectedFile: File | null = null;
   uploading = false;
@@ -134,7 +138,7 @@ export class EligibilityComponent {
           const isSearching = this.firstSearch || this.lastSearch || this.suscriberSearch;
 
           if (isSearching && (!res.results || res.results.length === 0)) {
-            this.msgService.warning(JSON.stringify('No results found matching your search criteria'));
+            this.msgService.warning('No results found matching your search criteria');
           }
 
           this.setPagination(res.total);
@@ -159,6 +163,7 @@ export class EligibilityComponent {
     this.selectedBirthDate = rowData.birth_date;
     this.selectedOrderringNpi = rowData.insurer_data.orderring_npi;
     this.selectedReferingNpi = rowData.insurer_data.refering_npi;
+    this.selectedAuth = rowData.insurer_data.auth;
     this.selectedModifiers = rowData.insurer_data.modifiers;
     this.selectedAddressPatient = `${rowData.primary_address} ${rowData.address_1}`;
     this.isVisibleModalClaim = true;
@@ -180,7 +185,11 @@ export class EligibilityComponent {
     this.cancelModalDetails();
   }
 
-  openModalDetails(): void {
+  openModalDetails(rowData: any): void {
+    this.selectedPatientName = `${rowData.last_name} ${rowData.middle_initial} ${rowData.first_name}`;
+    this.selectedPrimaryPlanName = `${rowData.primary_insure_plan_name}`;
+    this.selectedVisualTestMedicare = `${rowData.subplan_data.visual_test_medicare}`;
+    this.selectedVisionElements = `${rowData.subplan_data.vision_elements}`;
     this.isVisibleModalDetails = true;
   }
 
@@ -203,12 +212,12 @@ export class EligibilityComponent {
       const file = input.files[0];
 
       const fileType = file.type.toLowerCase();
-      const fileName = file.name;
+      const fileName = file.name.toLowerCase();
 
-      if (fileType === 'text/csv' || fileName.endsWith('.csv')) {
+      if (fileType === 'application/zip' || fileName.endsWith('.zip')) {
         this.selectedFile = file;
       } else {
-        this.msgService.warning(JSON.stringify('Only files with .csv extension are allowed'));
+        this.msgService.warning('Only files with .zip extension are allowed');
         this.selectedFile = null;
       }
     } else {
@@ -219,19 +228,19 @@ export class EligibilityComponent {
   handleUpload(): void {
     if (!this.selectedFile) return;
 
-    const insurerName = this.dataToDisplay[0].insurer_data.name;
+    const insurerPayerId = this.dataToDisplay[0].insurer_data.payer_id;
     const insurerId = this.dataToDisplay[0].insurer_data.id;
 
     const formData = new FormData();
     formData.append('file', this.selectedFile);
-    formData.append('insurer_name', insurerName);
+    formData.append('payer_id', insurerPayerId);
     formData.append('insurer_id', insurerId);
 
     this.uploading = true;
 
     this.s3Service.uploadEligibility(formData).subscribe({
       next: () => {
-        this.msgService.success(JSON.stringify('File upload successful'));
+        this.msgService.success('File upload successfuly');
         this.uploading = false;
         this.isVisibleModalUpload = false;
         this.selectedFile = null;
@@ -287,9 +296,7 @@ export class EligibilityComponent {
     this.eligibilityService.getPatients({}, null, null, true).subscribe({
       next: (res: any) => {
         if (res.length === 0) {
-          this.msgService.warning(
-            JSON.stringify('No data available to export')
-          );
+          this.msgService.warning('No data available to export');
           this.isDataLoading = false;
           return;
         }
@@ -322,8 +329,7 @@ export class EligibilityComponent {
           return row;
         });
 
-        const worksheet: XLSX.WorkSheet =
-          XLSX.utils.json_to_sheet(filteredData);
+        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
         const workbook: XLSX.WorkBook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'patients');
 
@@ -347,19 +353,13 @@ export class EligibilityComponent {
         document.body.removeChild(link);
 
         this.isDataLoading = false;
-        this.msgService.success(
-          JSON.stringify('Export completed successfully')
-        );
+        this.msgService.success('Export completed successfully');
       },
       error: (err) => {
         this.isDataLoading = false;
         this.msgService.error(JSON.stringify(err.error));
       },
     });
-  }
-
-  printContentMember(): void {
-
   }
 
   printContentDetails() {
@@ -385,4 +385,7 @@ export class EligibilityComponent {
       });
   }
 
+  printContentMember(): void {
+
+  }
 }

@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { catchError, of, tap } from 'rxjs';
 import { Router } from '@angular/router';
-import { environment } from '../../../environments/environment';
+import { environment } from 'environments/environment';
 
 @Injectable({
   providedIn: 'root',

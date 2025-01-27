@@ -85,6 +85,7 @@ export class PlansComponent implements OnInit {
       insurer: [null, [Validators.required]],
       name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
     });
+
     this.searchNameSubject.pipe(debounceTime(1000)).subscribe((data) => {
       if (data.type === 'name') this.nameSearch = data.value;
       if (data.type === 'insurer') this.insurerSearch = data.value;
@@ -115,7 +116,7 @@ export class PlansComponent implements OnInit {
           const isSearching = this.nameSearch || this.insurerSearch;
 
           if (isSearching && (!res.results || res.results.length === 0)) {
-            this.msgService.warning(JSON.stringify('No results found matching your search criteria'));
+            this.msgService.warning('No results found matching your search criteria');
           }
 
           this.setPagination(res.total);
@@ -173,7 +174,7 @@ export class PlansComponent implements OnInit {
         this.isDataLoading = true;
         this.planService.deletePlan(id).subscribe({
           next: () => {
-            this.msgService.success(JSON.stringify('Coverage deleted successfully'));
+            this.msgService.success('Coverage deleted successfully');
             this.isDataLoading = false;
 
             if (this.dataToDisplay.length === 1 && this.page > 1) {
@@ -195,7 +196,7 @@ export class PlansComponent implements OnInit {
     this.isDataLoading = true;
     this.planService.updatePlan(id, data).subscribe({
       next: () => {
-        this.msgService.success(JSON.stringify('Coverage updated successfully'));
+        this.msgService.success('Coverage updated successfully');
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -216,7 +217,7 @@ export class PlansComponent implements OnInit {
       }
       this.planService.createPlan(this.form.value).subscribe({
         next: () => {
-          this.msgService.success(JSON.stringify('Coverage created successfully'));
+          this.msgService.success('Coverage created successfully');
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -283,7 +284,7 @@ export class PlansComponent implements OnInit {
       .subscribe({
         next: (res: any) => {
           if (res.length === 0) {
-            this.msgService.warning(JSON.stringify('No data available to export'));
+            this.msgService.warning('No data available to export');
             this.isDataLoading = false;
             return;
           }
@@ -320,7 +321,6 @@ export class PlansComponent implements OnInit {
           );
 
           const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
-
           const workbook: XLSX.WorkBook = XLSX.utils.book_new();
           XLSX.utils.book_append_sheet(workbook, worksheet, 'Coverages');
 
@@ -343,7 +343,7 @@ export class PlansComponent implements OnInit {
 
           this.isDataLoading = false;
 
-          this.msgService.success(JSON.stringify('Export completed successfully'));
+          this.msgService.success('Export completed successfully');
         },
         error: (err) => {
           this.isDataLoading = false;

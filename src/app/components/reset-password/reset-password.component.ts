@@ -74,10 +74,10 @@ export class ResetPasswordComponent {
 
           this.isLoading = false;
 
-          this.msg.success(JSON.stringify('Reset request sent successfully'));
+          this.msg.success('Reset request sent successfully');
         },
         error: (error) => {
-          this.msg.error(JSON.stringify(error?.error?.error?.message || 'Reset failed'));
+          this.msg.error(JSON.stringify(error?.error?.error?.message));
           this.isLoading = false;
         }
       });
@@ -101,10 +101,10 @@ export class ResetPasswordComponent {
         this.showVerificationCode = true;
         this.showPassword = true;
         this.isLoading = false;
-        this.msg.success(JSON.stringify('Verification code resent successfully'));
+        this.msg.success('Verification code resent successfully');
       },
       error: (error) => {
-        this.msg.error(JSON.stringify(error?.error?.error?.message || 'Resend failed'));
+        this.msg.error(JSON.stringify(error?.error?.error?.message));
         this.isLoading = false;
       }
     });
@@ -135,7 +135,7 @@ export class ResetPasswordComponent {
         this.isLoading = false;
       },
       error: (error) => {
-        this.msg.error(JSON.stringify(error?.error?.error?.message || 'Reset confirm failed'));
+        this.msg.error(JSON.stringify(error?.error?.error?.message));
         this.isLoading = false;
       }
     });

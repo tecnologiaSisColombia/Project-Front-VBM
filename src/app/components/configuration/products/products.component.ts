@@ -111,7 +111,7 @@ export class ProductsComponent implements OnInit {
           const isSearching = this.codeSearch || this.descriptionSearch;
 
           if (isSearching && (!res.results || res.results.length === 0)) {
-            this.msgService.warning(JSON.stringify('No results found matching your search criteria'));
+            this.msgService.warning('No results found matching your search criteria');
           }
 
           this.setPagination(res.total);
@@ -158,7 +158,7 @@ export class ProductsComponent implements OnInit {
         this.isDataLoading = true;
         this.productService.delete(id).subscribe({
           next: () => {
-            this.msgService.success(JSON.stringify('Product deleted successfully'));
+            this.msgService.success('Product deleted successfully');
             this.isDataLoading = false;
 
             if (this.dataToDisplay.length === 1 && this.page > 1) {
@@ -180,7 +180,7 @@ export class ProductsComponent implements OnInit {
     this.isDataLoading = true;
     this.productService.update(id, data).subscribe({
       next: () => {
-        this.msgService.success(JSON.stringify('Product updated successfully'));
+        this.msgService.success('Product updated successfully');
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -201,7 +201,7 @@ export class ProductsComponent implements OnInit {
       }
       this.productService.create(this.form.value).subscribe({
         next: () => {
-          this.msgService.success(JSON.stringify('Product created successfully'));
+          this.msgService.success('Product created successfully');
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -254,11 +254,11 @@ export class ProductsComponent implements OnInit {
       .subscribe({
         next: (res: any) => {
           if (res.length === 0) {
-            this.msgService.warning(JSON.stringify('No data available to export'));
+            this.msgService.warning('No data available to export');
             this.isDataLoading = false;
             return;
           }
-          
+
           this.isDataLoading = true;
 
           const headers = {
@@ -310,7 +310,7 @@ export class ProductsComponent implements OnInit {
           document.body.removeChild(link);
 
           this.isDataLoading = false;
-          this.msgService.success(JSON.stringify('Export completed successfully'));
+          this.msgService.success('Export completed successfully');
         },
         error: (err) => {
           this.isDataLoading = false;

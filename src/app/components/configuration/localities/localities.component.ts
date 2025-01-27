@@ -99,7 +99,7 @@ export class LocalitiesComponent implements OnInit {
           const isSearching = this.nameSearch;
 
           if (isSearching && (!res.results || res.results.length === 0)) {
-            this.msgService.warning(JSON.stringify('No results found matching your search criteria'));
+            this.msgService.warning('No results found matching your search criteria');
           }
 
           this.setPagination(res.total);
@@ -146,7 +146,7 @@ export class LocalitiesComponent implements OnInit {
         this.isDataLoading = true;
         this.localitiesService.delete(id).subscribe({
           next: () => {
-            this.msgService.success(JSON.stringify('Locality deleted successfully'));
+            this.msgService.success('Locality deleted successfully');
             this.isDataLoading = false;
 
             if (this.dataToDisplay.length === 1 && this.page > 1) {
@@ -168,7 +168,7 @@ export class LocalitiesComponent implements OnInit {
     this.isDataLoading = true;
     this.localitiesService.update(id, data).subscribe({
       next: () => {
-        this.msgService.success(JSON.stringify('Locality updated successfully'));
+        this.msgService.success('Locality updated successfully');
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -189,7 +189,7 @@ export class LocalitiesComponent implements OnInit {
       }
       this.localitiesService.create(this.form.value).subscribe({
         next: () => {
-          this.msgService.success(JSON.stringify('Locality created successfully'));
+          this.msgService.success('Locality created successfully');
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -241,11 +241,11 @@ export class LocalitiesComponent implements OnInit {
       .subscribe({
         next: (res: any) => {
           if (res.length === 0) {
-            this.msgService.warning(JSON.stringify('No data available to export'));
+            this.msgService.warning('No data available to export');
             this.isDataLoading = false;
             return;
           }
-          
+
           this.isDataLoading = true;
 
           const headers = {
@@ -296,7 +296,7 @@ export class LocalitiesComponent implements OnInit {
           document.body.removeChild(link);
 
           this.isDataLoading = false;
-          this.msgService.success(JSON.stringify('Export completed successfully'));
+          this.msgService.success('Export completed successfully');
         },
         error: (err) => {
           this.isDataLoading = false;

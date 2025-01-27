@@ -78,14 +78,8 @@ export class LocationComponent {
     private msgService: NzMessageService
   ) {
     this.form = this.fb.group({
-      code: [
-        null,
-        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
-      ],
-      description: [
-        null,
-        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
-      ],
+      code: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      description: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
     });
 
     this.searchNameSubject
@@ -126,9 +120,7 @@ export class LocationComponent {
           const isSearching = this.codeSearch || this.descriptionSearch;
 
           if (isSearching && (!res.results || res.results.length === 0)) {
-            this.msgService.warning(
-              JSON.stringify('No results found matching your search criteria')
-            );
+            this.msgService.warning('No results found matching your search criteria');
           }
 
           this.setPagination(res.total);
@@ -175,9 +167,7 @@ export class LocationComponent {
         this.isDataLoading = true;
         this.locationService.delete(id).subscribe({
           next: () => {
-            this.msgService.success(
-              JSON.stringify('Location deleted successfully')
-            );
+            this.msgService.success('Location deleted successfully');
             this.isDataLoading = false;
 
             if (this.dataToDisplay.length === 1 && this.page > 1) {
@@ -199,7 +189,7 @@ export class LocationComponent {
     this.isDataLoading = true;
     this.locationService.update(id, data).subscribe({
       next: () => {
-        this.msgService.success(JSON.stringify('Location updated successfully'));
+        this.msgService.success('Location updated successfully');
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -220,9 +210,7 @@ export class LocationComponent {
       }
       this.locationService.create(this.form.value).subscribe({
         next: () => {
-          this.msgService.success(
-            JSON.stringify('Location created successfully')
-          );
+          this.msgService.success('Location created successfully');
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -269,80 +257,75 @@ export class LocationComponent {
   }
 
   exportLocation(): void {
-      this.locationService.get({}, null, null, true).subscribe({
-        next: (res: any) => {
-          if (res.length === 0) {
-            this.msgService.warning(
-              JSON.stringify('No data available to export')
-            );
-            this.isDataLoading = false;
-            return;
-          }
-
-          this.isDataLoading = true;
-
-          const headers = {
-            code: 'Code',
-            description: 'Description',
-            created: 'Created',
-            active: 'Status',
-          };
-
-          const selectedColumns = Object.keys(
-            headers
-          ) as (keyof typeof headers)[];
-
-          const filteredData = res.map((location: any) =>
-            selectedColumns.reduce((obj: Record<string, any>, key) => {
-              if (key === 'active') {
-                obj[headers[key]] = location[key] ? 'Active' : 'Inactive';
-              } else if (key === 'created') {
-                const date = new Date(location[key]);
-                obj[headers[key]] = date.toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                });
-              } else {
-                obj[headers[key]] = location[key];
-              }
-              return obj;
-            }, {})
-          );
-
-          const worksheet: XLSX.WorkSheet =
-            XLSX.utils.json_to_sheet(filteredData);
-          const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(workbook, worksheet, 'Location');
-
-          const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-            bookType: 'xlsx',
-            type: 'array',
-          });
-
-          const blob = new Blob([excelBuffer], {
-            type: 'application/octet-stream',
-          });
-          const link = document.createElement('a');
-          const url = URL.createObjectURL(blob);
-
-          link.setAttribute('href', url);
-          link.setAttribute('download', 'Location.xlsx');
-          link.style.visibility = 'hidden';
-
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-
+    this.locationService.get({}, null, null, true).subscribe({
+      next: (res: any) => {
+        if (res.length === 0) {
+          this.msgService.warning('No data available to export');
           this.isDataLoading = false;
-          this.msgService.success(
-            JSON.stringify('Export completed successfully')
-          );
-        },
-        error: (err) => {
-          this.isDataLoading = false;
-          this.msgService.error(JSON.stringify(err.error));
-        },
-      });
+          return;
+        }
+
+        this.isDataLoading = true;
+
+        const headers = {
+          code: 'Code',
+          description: 'Description',
+          created: 'Created',
+          active: 'Status',
+        };
+
+        const selectedColumns = Object.keys(
+          headers
+        ) as (keyof typeof headers)[];
+
+        const filteredData = res.map((location: any) =>
+          selectedColumns.reduce((obj: Record<string, any>, key) => {
+            if (key === 'active') {
+              obj[headers[key]] = location[key] ? 'Active' : 'Inactive';
+            } else if (key === 'created') {
+              const date = new Date(location[key]);
+              obj[headers[key]] = date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              });
+            } else {
+              obj[headers[key]] = location[key];
+            }
+            return obj;
+          }, {})
+        );
+
+        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+        const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Location');
+
+        const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+          bookType: 'xlsx',
+          type: 'array',
+        });
+
+        const blob = new Blob([excelBuffer], {
+          type: 'application/octet-stream',
+        });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'Location.xlsx');
+        link.style.visibility = 'hidden';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        this.isDataLoading = false;
+        this.msgService.success('Export completed successfully');
+      },
+      error: (err) => {
+        this.isDataLoading = false;
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
   }
 }

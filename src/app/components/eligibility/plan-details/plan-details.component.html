@@ -1,8 +1,12 @@
 <div #childContent>
-  <nz-card nzTitle="Member" [nzBordered]="true" class="main-card">
+  <nz-card [nzBordered]="true" class="main-card">
+    <b> Member(s): {{ patientName | uppercase }} {{ currentTime }}</b>
+
     <div class="section">
       <nz-divider nzText="Routine"></nz-divider>
-      <p>
+
+
+      <!-- <p>
         <b 
           class="text-danger">
           Member IS NOT ELIGIBLE
@@ -12,12 +16,12 @@
 
       <p>Last Claim was on</p>
 
-      <p>Member will be eligible on/after</p>
+      <p>Member will be eligible on/after</p> -->
     </div>
 
     <div class="section">
       <nz-divider nzText="Hardware"></nz-divider>
-      <p>
+      <!-- <p>
         <b 
           class="text-success">
           Member IS ELIGIBLE
@@ -25,25 +29,108 @@
         for Routine Hardware ON
       </p>
 
-      <p>Member has used.</p>
+      <p>Member has used.</p> -->
     </div>
 
     <div class="section">
       <nz-divider nzText="Benefit"></nz-divider>
+
+      <b>{{primaryPlanName | uppercase}}</b> <br> <br>
+
       <nz-row>
         <nz-col [nzSpan]="12">
-          <ul>
-            <li>Examen ocular de rutina: Co-Pago: $0</li>
-            <li>Materiales de rutina: Subsidio de $1100 por año. Co-pago: $0</li>
-            <li>Exámenes médicos/cirugías: No cubiertos.</li>
-          </ul>
+          <p>
+            Beneficios de examen ocular de rutina dentro de la red:
+            Miembros son elegibles para un examen ocular de rutina cada año calendario. <br>
+            <strong>Co-Pago: ${{visualTestMedicare}}</strong>
+          </p>
         </nz-col>
+
         <nz-col [nzSpan]="12">
-          <ul>
-            <li>Routine Vision Exam: Co-pay: $0</li>
-            <li>Routine Materials: $1100 retail allowance annually. Co-pay: $0</li>
-            <li>Medical/Surgical: Not covered.</li>
-          </ul>
+          <p>
+            In-Network Routine Vision Exam Benefit:
+            Members are eligible for one routine vision exam per calendary year. <br>
+            <strong>Co-Pay: ${{visualTestMedicare}}</strong>
+          </p>
+        </nz-col>
+      </nz-row>
+
+      <nz-row>
+        <nz-col [nzSpan]="12">
+          <p>
+            Beneficios de materiales de rutina dentro de la red:
+            Los miembros son elegibles para recibir un subsidio
+            de <strong> ${{visionElements}} </strong> por cada año natural hacia la compra de
+            espejuelos con receta (incluyendo accesorios y reparaciones) y/o lentes de contacto
+            (incluyendo el cargo por ajuste). <br>
+            <strong>Co-Pago:</strong>
+          </p>
+        </nz-col>
+
+        <nz-col [nzSpan]="12">
+          <p>
+            In-Network Routine Supplies Benefits: Members are eligible to receive
+            a <strong> ${{visionElements}} </strong>  allowance each calendar year toward the purchase of prescription
+            eyewear (including fittings and repairs)
+            and/or contact lenses (including the fitting fee). <br>
+            <strong>Co-Pay:</strong>
+          </p>
+        </nz-col>
+
+        <nz-col [nzSpan]="12">
+          <p>
+            Examenes medicos/cirugias dentro de la red: <br>
+            No son cubiertos por Envolve Vision.
+          </p>
+        </nz-col>
+
+        <nz-col [nzSpan]="12">
+          <p>
+            In-Network Medical/Surgical Benefit: <br>
+            Not covered through Envolve Vision.
+          </p>
+        </nz-col>
+
+        <nz-col [nzSpan]="12">
+          <p>
+            Materiales medicamente necesarios despues de cataratas: <br>
+            Son cubiertos.
+          </p>
+        </nz-col>
+
+        <nz-col [nzSpan]="12">
+          <p>
+            In-Network Post Cataract and Medically Necesary Hardware Benefit: <br>
+            Covered.
+          </p>
+        </nz-col>
+
+        <nz-col [nzSpan]="12">
+          <p>
+            Servicios fuera de la red son cubiertos. POS los miembros
+            pagan el 35% de coaseguro para tener acceso a proveedores fuera de la red.
+          </p>
+        </nz-col>
+
+        <nz-col [nzSpan]="12">
+          <p>
+            Out-of-Network services are covered. POS members pay 35% coinsurance to
+            access out of network providers.
+          </p>
+        </nz-col>
+
+        <nz-col [nzSpan]="12">
+          <p>
+            Los beneficios son citados solo de cortesia. Esto no constituya una
+            garantia de pago.
+          </p>
+        </nz-col>
+
+        <nz-col [nzSpan]="12">
+          <p>
+            Benefits are quoted as a courtesy only. This does not constitute a
+            guarantee of payment.
+          </p>
         </nz-col>
       </nz-row>
     </div>
@@ -53,10 +140,10 @@
       <p>
         <b>
           Disclaimer:
-        </b> 
+        </b>
         Eligibility is based on current information in our system and does not guarantee
         claims payment. If you have any questions or concerns regarding the information
-        above, please contact Envolve Vision /AECC Total Vision Healt of Textas, 
+        above, please contact Envolve Vision /AECC Total Vision Healt of Textas,
         Inc/Envolve Vision Plan's customer service department.
       </p>
     </div>
