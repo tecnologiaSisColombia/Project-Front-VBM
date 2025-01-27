@@ -138,7 +138,7 @@ export class EligibilityComponent {
           const isSearching = this.firstSearch || this.lastSearch || this.suscriberSearch;
 
           if (isSearching && (!res.results || res.results.length === 0)) {
-            this.msgService.warning(JSON.stringify('No results found matching your search criteria'));
+            this.msgService.warning('No results found matching your search criteria');
           }
 
           this.setPagination(res.total);
@@ -217,7 +217,7 @@ export class EligibilityComponent {
       if (fileType === 'application/zip' || fileName.endsWith('.zip')) {
         this.selectedFile = file;
       } else {
-        this.msgService.warning(JSON.stringify('Only files with .zip extension are allowed'));
+        this.msgService.warning('Only files with .zip extension are allowed');
         this.selectedFile = null;
       }
     } else {
@@ -240,7 +240,7 @@ export class EligibilityComponent {
 
     this.s3Service.uploadEligibility(formData).subscribe({
       next: () => {
-        this.msgService.success(JSON.stringify('File upload successful'));
+        this.msgService.success('File upload successfuly');
         this.uploading = false;
         this.isVisibleModalUpload = false;
         this.selectedFile = null;
@@ -296,9 +296,7 @@ export class EligibilityComponent {
     this.eligibilityService.getPatients({}, null, null, true).subscribe({
       next: (res: any) => {
         if (res.length === 0) {
-          this.msgService.warning(
-            JSON.stringify('No data available to export')
-          );
+          this.msgService.warning('No data available to export');
           this.isDataLoading = false;
           return;
         }
@@ -331,8 +329,7 @@ export class EligibilityComponent {
           return row;
         });
 
-        const worksheet: XLSX.WorkSheet =
-          XLSX.utils.json_to_sheet(filteredData);
+        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
         const workbook: XLSX.WorkBook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'patients');
 
@@ -356,19 +353,13 @@ export class EligibilityComponent {
         document.body.removeChild(link);
 
         this.isDataLoading = false;
-        this.msgService.success(
-          JSON.stringify('Export completed successfully')
-        );
+        this.msgService.success('Export completed successfully');
       },
       error: (err) => {
         this.isDataLoading = false;
         this.msgService.error(JSON.stringify(err.error));
       },
     });
-  }
-
-  printContentMember(): void {
-
   }
 
   printContentDetails() {
@@ -394,4 +385,7 @@ export class EligibilityComponent {
       });
   }
 
+  printContentMember(): void {
+
+  }
 }

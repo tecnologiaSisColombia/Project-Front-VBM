@@ -112,7 +112,7 @@ export class ChangePasswordComponent implements OnInit {
       },
       error: (error) => {
         this.isLoading = false;
-        this.msg.error(JSON.stringify(error?.error?.error?.message || 'Change password failed'));
+        this.msg.error(JSON.stringify(error?.error?.error?.message));
       },
     });
   }

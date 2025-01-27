@@ -109,7 +109,7 @@ export class LoginComponent implements OnInit {
                 this.isLoading = false;
               });
           } else {
-            this.msg.error(JSON.stringify(error?.error?.error?.message || 'Login failed'));
+            this.msg.error(JSON.stringify(error?.error?.error?.message));
           }
         },
       });

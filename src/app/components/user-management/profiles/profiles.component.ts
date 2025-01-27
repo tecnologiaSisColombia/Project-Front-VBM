@@ -155,7 +155,6 @@ export class ProfilesComponent implements OnInit {
 
     this.profileService.updatePerfil(id, permissions).subscribe({
       next: () => {
-        this.message.success(JSON.stringify('Permissions updated successfully'));
         this.seePermissions(group);
         this.isDataLoading = false;
       },
@@ -177,7 +176,9 @@ export class ProfilesComponent implements OnInit {
     }
 
     this.idPermisions = id_grupo;
+
     this.isDataLoadingP = true;
+
     this.profileService.getGroupPerfil(id_grupo, this.p_page, this.p_page_size, false, this.moduleSearch)
       .subscribe({
         next: (res: any) => {
@@ -208,7 +209,7 @@ export class ProfilesComponent implements OnInit {
 
       this.profileService.updateGroup(updatedData.id, updatedData).subscribe({
         next: () => {
-          this.message.success(JSON.stringify('Profile updated successfully'));
+          this.message.success('Profile updated successfully');
           this.getGroups();
           this.closeEditDrawer();
           this.isDataLoading = false;
@@ -243,7 +244,7 @@ export class ProfilesComponent implements OnInit {
       .updateGroup(this.editCache[id].data.id, this.editCache[id].data)
       .subscribe({
         next: () => {
-          this.message.success(JSON.stringify('Group updated successfully'));
+          this.message.success('Group updated successfully');
           Object.assign(this.listOfDisplayData[index], this.editCache[id].data);
           this.editCache[id].edit = false;
           this.isDataLoading = false;
@@ -293,7 +294,7 @@ export class ProfilesComponent implements OnInit {
 
       this.profileService.addGroup(data).subscribe({
         next: () => {
-          this.message.success(JSON.stringify('Group created successfully'));
+          this.message.success('Group created successfully');
           this.getGroups();
           this.closeDrawerNewProfile();
         },
@@ -334,7 +335,7 @@ export class ProfilesComponent implements OnInit {
           const isSearching = this.nameSearch;
 
           if (isSearching && (!res.results || res.results.length === 0)) {
-            this.message.warning(JSON.stringify('No results found matching your search criteria'));
+            this.message.warning('No results found matching your search criteria');
           }
 
           this.isDataLoading = false;
@@ -381,7 +382,7 @@ export class ProfilesComponent implements OnInit {
         this.isDataLoading = true;
         this.profileService.deleteGroup(id_group).subscribe({
           next: () => {
-            this.message.success(JSON.stringify('Group deleted successfully'));
+            this.message.success('Group deleted successfully');
             this.isDataLoading = false;
 
             if (this.listOfDisplayData.length === 1 && this.page > 1) {

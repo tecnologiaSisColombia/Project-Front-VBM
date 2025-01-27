@@ -115,7 +115,7 @@ export class ServicesComponent implements OnInit {
           const isSearching = this.codeSearch || this.descriptionSearch;
 
           if (isSearching && (!res.results || res.results.length === 0)) {
-            this.msgService.warning(JSON.stringify('No results found matching your search criteria'));
+            this.msgService.warning('No results found matching your search criteria');
           }
 
           this.setPagination(res.total);
@@ -162,7 +162,7 @@ export class ServicesComponent implements OnInit {
         this.isDataLoading = true;
         this.serviceService.delete(id).subscribe({
           next: () => {
-            this.msgService.success(JSON.stringify('Service deleted successfully'));
+            this.msgService.success('Service deleted successfully');
             this.isDataLoading = false;
 
             if (this.dataToDisplay.length === 1 && this.page > 1) {
@@ -184,7 +184,7 @@ export class ServicesComponent implements OnInit {
     this.isDataLoading = true;
     this.serviceService.update(id, data).subscribe({
       next: () => {
-        this.msgService.success(JSON.stringify('Service updated successfully'));
+        this.msgService.success('Service updated successfully');
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -205,7 +205,7 @@ export class ServicesComponent implements OnInit {
       }
       this.serviceService.create(this.form.value).subscribe({
         next: () => {
-          this.msgService.success(JSON.stringify('Service created successfully'));
+          this.msgService.success('Service created successfully');
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -258,7 +258,7 @@ export class ServicesComponent implements OnInit {
       .subscribe({
         next: (res: any) => {
           if (res.length === 0) {
-            this.msgService.warning(JSON.stringify('No data available to export'));
+            this.msgService.warning('No data available to export');
             this.isDataLoading = false;
             return;
           }
@@ -315,7 +315,7 @@ export class ServicesComponent implements OnInit {
           document.body.removeChild(link);
 
           this.isDataLoading = false;
-          this.msgService.success(JSON.stringify('Export completed successfully'));
+          this.msgService.success('Export completed successfully');
         },
         error: (err) => {
           this.isDataLoading = false;

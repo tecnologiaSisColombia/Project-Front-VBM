@@ -83,10 +83,7 @@ export class SubplansComponent implements OnInit {
       pds: [null, [Validators.required]],
       name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       group: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
-      plan_contract: [
-        null,
-        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
-      ],
+      plan_contract: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       visual_test_medicare: [null, [Validators.required]],
       visual_surgery_medicare: [null, [Validators.required]],
       routine_visual_test: [null, [Validators.required]],
@@ -137,9 +134,7 @@ export class SubplansComponent implements OnInit {
             this.planContractSearch;
 
           if (isSearching && (!res.results || res.results.length === 0)) {
-            this.msgService.warning(
-              JSON.stringify('No results found matching your search criteria')
-            );
+            this.msgService.warning('No results found matching your search criteria');
           }
 
           this.setPagination(res.total);
@@ -198,9 +193,7 @@ export class SubplansComponent implements OnInit {
         this.isDataLoading = true;
         this.subplanService.deleteSubPlan(id).subscribe({
           next: () => {
-            this.msgService.success(
-              JSON.stringify('Subplan deleted successfully')
-            );
+            this.msgService.success('Subplan deleted successfully');
             this.isDataLoading = false;
 
             if (this.dataToDisplay.length === 1 && this.page > 1) {
@@ -222,7 +215,7 @@ export class SubplansComponent implements OnInit {
     this.isDataLoading = true;
     this.subplanService.updateSubPlan(id, data).subscribe({
       next: () => {
-        this.msgService.success(JSON.stringify('Subplan updated successfully'));
+        this.msgService.success('Subplan updated successfully');
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -243,9 +236,7 @@ export class SubplansComponent implements OnInit {
       }
       this.subplanService.createSubPlan(this.form.value).subscribe({
         next: () => {
-          this.msgService.success(
-            JSON.stringify('Subplan created successfully')
-          );
+          this.msgService.success('Subplan created successfully');
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
@@ -341,8 +332,7 @@ export class SubplansComponent implements OnInit {
 
           const subplansData = formatData(res, headers);
 
-          const worksheet: XLSX.WorkSheet =
-            XLSX.utils.json_to_sheet(subplansData);
+          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(subplansData);
           const workbook: XLSX.WorkBook = XLSX.utils.book_new();
           XLSX.utils.book_append_sheet(workbook, worksheet, 'Subplans');
 

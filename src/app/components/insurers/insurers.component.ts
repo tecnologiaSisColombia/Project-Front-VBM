@@ -166,11 +166,10 @@ export class InsurersComponent implements OnInit {
           this.isDataLoading = false;
           this.dataToDisplay = res.results;
 
-          console.log(this.dataToDisplay)
           const isSearching = this.nameSearch || this.payerIdSearch || this.addresSearch || this.phoneSearch;
 
           if (isSearching && (!res.results || res.results.length === 0)) {
-            this.msgService.warning(JSON.stringify('No results found matching your search criteria'));
+            this.msgService.warning('No results found matching your search criteria');
           }
 
           this.setPagination(res.total);
@@ -229,7 +228,7 @@ export class InsurersComponent implements OnInit {
         this.isDataLoading = true;
         this.insurerService.deleteInsurer(id).subscribe({
           next: () => {
-            this.msgService.success(JSON.stringify('Insurer deleted successfully'));
+            this.msgService.success('Insurer deleted successfully');
             this.isDataLoading = false;
 
             if (this.dataToDisplay.length === 1 && this.page > 1) {
@@ -251,7 +250,7 @@ export class InsurersComponent implements OnInit {
     this.isDataLoading = true;
     this.insurerService.updateInsurer(id, data).subscribe({
       next: () => {
-        this.msgService.success(JSON.stringify('Insurer updated successfully'));
+        this.msgService.success('Insurer updated successfully');
         this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
@@ -272,7 +271,7 @@ export class InsurersComponent implements OnInit {
       const validFileTypes = ['image/jpeg', 'image/png'];
 
       if (!validFileTypes.includes(file.type)) {
-        this.msgService.warning(JSON.stringify('Only JPG and PNG files'));
+        this.msgService.warning('Only JPG and PNG files');
         this.form.patchValue({ logo: null });
         return;
       }
@@ -325,7 +324,7 @@ export class InsurersComponent implements OnInit {
     } else {
       this.insurerService.createInsurer(formData).subscribe({
         next: () => {
-          this.msgService.success(JSON.stringify('Insurer created successfully'));
+          this.msgService.success('Insurer created successfully');
           this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
