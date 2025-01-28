@@ -240,15 +240,14 @@ export class EligibilityComponent {
 
     this.s3Service.uploadEligibility(formData).subscribe({
       next: () => {
-        this.msgService.success('File upload successfuly');
+        this.msgService.success('File upload successfully');
         this.uploading = false;
         this.isVisibleModalUpload = false;
         this.selectedFile = null;
       },
       error: (err) => {
-        this.msgService.error(JSON.stringify(err));
+        this.msgService.error(JSON.stringify(err.error));
         this.uploading = false;
-        this.selectedFile = null;
       }
     });
   }
