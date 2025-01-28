@@ -122,7 +122,7 @@ export class ClaimEntryComponent {
     previewClaim(): void {
         for (const row of this.rows) {
             if (row.dateInitial && row.dateFinal && row.dateFinal < row.dateInitial) {
-                this.msgService.warning(JSON.stringify('The final date cannot be earlier than the initial date'));
+                this.msgService.warning('The final date cannot be earlier than the initial date');
                 return;
             }
         }
