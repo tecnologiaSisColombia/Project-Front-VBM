@@ -1,6 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, catchError, forkJoin, switchMap, throwError } from 'rxjs';
+import {
+  Observable,
+  catchError,
+  forkJoin,
+  of,
+  switchMap,
+  throwError,
+} from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -62,9 +69,13 @@ export class UserService {
   delete(username: string, id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}core/users/${id}`).pipe(
       switchMap((response: any) => {
-        return this.http.delete(
-          `${this.baseUrl}access-control/DeleteUser/${username}`
-        );
+        if (response == 'Deleted') {
+          return this.http.delete(
+            `${this.baseUrl}access-control/DeleteUser/${username}`
+          );
+        } else {
+          return of(false);
+        }
       }),
       catchError((error) => {
         return throwError(() => error);
