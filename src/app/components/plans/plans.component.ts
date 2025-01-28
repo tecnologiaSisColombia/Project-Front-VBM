@@ -239,10 +239,10 @@ export class PlansComponent implements OnInit {
   }
 
   changeStatus(id: number, data: any): void {
-    delete data.insurer_data;
-    this.update(id, data);
+    const { insurer_data, ...filteredData } = data;
+    this.update(id, filteredData);
   }
-
+  
   search(value: string, type: string) {
     this.isDataLoading = true;
     this.searchNameSubject.next({ type, value });

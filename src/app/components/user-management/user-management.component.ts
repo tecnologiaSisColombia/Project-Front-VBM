@@ -193,7 +193,7 @@ export class UserManagementComponent implements OnInit {
 
       this.userService.createUser(userData).subscribe({
         next: () => {
-          this.msgService.success(JSON.stringify('User created successfully'));
+          this.msgService.success('User created successfully');
           this.getInitData();
           this.getSuppliers();
           this.closeDrawer();
@@ -293,8 +293,7 @@ export class UserManagementComponent implements OnInit {
 
           if (isSearching && (!res.results || res.results.length === 0)) {
             this.msgService.warning(
-              JSON.stringify('No results found matching your search criteria')
-            );
+              'No results found matching your search criteria');
           }
 
           this.setPagination(res.total);
@@ -318,7 +317,7 @@ export class UserManagementComponent implements OnInit {
     this.isDataLoading = true;
     this.userService.update(id, data).subscribe({
       next: () => {
-        this.msgService.success(JSON.stringify('User updated successfully'));
+        this.msgService.success('User updated successfully');
         this.isDataLoading = false;
         this.closeDrawer();
       },
@@ -348,9 +347,7 @@ export class UserManagementComponent implements OnInit {
         this.isDataLoading = true;
         this.userService.delete(username, id).subscribe({
           next: () => {
-            this.msgService.success(
-              JSON.stringify('User deleted successfully')
-            );
+            this.msgService.success('User deleted successfully');
             this.isDataLoading = false;
 
             if (this.dataToDisplay.length === 1 && this.page > 1) {
@@ -403,9 +400,7 @@ export class UserManagementComponent implements OnInit {
     this.userService.getUsers({}, null, null, true).subscribe({
       next: (res: any) => {
         if (res.length === 0) {
-          this.msgService.warning(
-            JSON.stringify('No data available to export')
-          );
+          this.msgService.warning('No data available to export');
           this.isDataLoading = false;
           return;
         }
@@ -472,9 +467,7 @@ export class UserManagementComponent implements OnInit {
         document.body.removeChild(link);
 
         this.isDataLoading = false;
-        this.msgService.success(
-          JSON.stringify('Export completed successfully')
-        );
+        this.msgService.success('Export completed successfully');
       },
       error: (err) => {
         this.isDataLoading = false;

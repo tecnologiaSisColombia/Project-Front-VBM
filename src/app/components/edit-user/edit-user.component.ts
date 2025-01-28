@@ -142,9 +142,7 @@ export class EditUser implements OnInit {
             )
             .subscribe({
               next: (res) => {
-                this.msgService.success(
-                  JSON.stringify('User updated successfully')
-                );
+                this.msgService.success('User updated successfully');
                 this.user = { ...this.tempUser };
                 this.isVisible = false;
                 this.userUpdated.emit(res);
@@ -155,7 +153,7 @@ export class EditUser implements OnInit {
             });
           this.isDataLoading = false;
         } else {
-          this.msgService.success(JSON.stringify('User updated successfully'));
+          this.msgService.success('User updated successfully');
           this.user = { ...this.tempUser };
           this.isVisible = false;
           this.userUpdated.emit(response);
