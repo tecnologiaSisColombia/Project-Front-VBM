@@ -1,24 +1,25 @@
 import { Routes } from '@angular/router';
-import { BlankComponent, FullComponent } from './layouts';
-import { AuthGuardService, LoginGuardService, NewPasswordRequiredGuard } from './services'
-import {
-  ServicesComponent,
-  ProductsComponent,
-  DoctorComponent,
-  LocalitiesComponent,
-  LoginComponent,
-  ResetPasswordComponent,
-  PlansComponent,
-  InsurersComponent,
-  UserManagementComponent,
-  SubplansComponent,
-  ProfilesComponent,
-  EligibilityComponent,
-  MainMenuComponent,
-  ChangePasswordComponent,
-  DiagnosisComponent,
-  LocationComponent
-} from './components';
+import { BlankComponent } from 'app/layouts/blank/blank.component';
+import { FullComponent } from 'app/layouts/full/full.component';
+import { AuthGuardService } from 'app/services/guards/auth-guard.service'
+import { LoginGuardService } from 'app/services/guards/login.guard'
+import { NewPasswordRequiredGuard } from 'app/services/guards/new-password-required.guard'
+import { ServicesComponent } from 'app/components/configuration/services/services.component'
+import { ProductsComponent } from 'app/components/configuration/products/products.component'
+import { DoctorComponent } from 'app/components/configuration/doctors/doctor.component'
+import { LocalitiesComponent } from 'app/components/configuration/localities/localities.component'
+import { DiagnosisComponent } from 'app/components/configuration/diagnosis/diagnosis.component'
+import { LocationComponent } from 'app/components/configuration/location/location.component'
+import { LoginComponent } from 'app/components/login/login.component'
+import { ResetPasswordComponent } from 'app/components/reset-password/reset-password.component'
+import { ChangePasswordComponent } from 'app/components/change-password/change-password.component'
+import { InsurersComponent } from 'app/components/insurers/insurers.component'
+import { PlansComponent } from 'app/components/plans/plans.component'
+import { SubplansComponent } from 'app/components/subplans/subplans.component'
+import { UserManagementComponent } from 'app/components/user-management/user-management.component'
+import { ProfilesComponent } from 'app/components/user-management/profiles/profiles.component'
+import { EligibilityComponent } from 'app/components/eligibility/eligibility.component'
+import { MainMenuComponent } from 'app/components/main-menu/main-menu.component'
 
 export const routes: Routes = [
   {
