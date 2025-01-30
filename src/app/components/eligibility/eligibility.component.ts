@@ -271,6 +271,7 @@ export class EligibilityComponent {
 
   pageChange(event: number) {
     this.page = event;
+    this.getInitData();
   }
 
   setPagination(count: number) {
