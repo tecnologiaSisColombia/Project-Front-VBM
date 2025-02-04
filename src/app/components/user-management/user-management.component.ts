@@ -13,12 +13,11 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
-import { EditUser } from './edit-user/edit-user.component';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
-import { AuthService } from '../../services/auth/auth.service';
+import { AuthService } from 'app/services/auth/auth.service';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import * as XLSX from 'xlsx';
@@ -47,7 +46,6 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
     NzTagModule,
     NzDrawerModule,
     NzBreadCrumbModule,
-    EditUser,
     NzSwitchModule,
     ReactiveFormsModule,
     NzSpinModule,
@@ -63,7 +61,6 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 export class UserManagementComponent implements OnInit {
   isDataLoading = false;
   dataToDisplay: any[] = [];
-  originalData: any[] = [];
   userTypes: any[] = [];
   form: UntypedFormGroup;
   visible = false;
@@ -87,6 +84,9 @@ export class UserManagementComponent implements OnInit {
     { placeholder: 'First Name...', model: 'firstSearch', key: 'first_name' },
     { placeholder: 'Last Name...', model: 'lastSearch', key: 'last_name' },
   ];
+  isVisible = false;
+  tempUser: any = null;
+  user_type: any = '';
   private searchNameSubject = new Subject<{ type: string; value: string }>();
 
   constructor(
@@ -99,10 +99,7 @@ export class UserManagementComponent implements OnInit {
     private supplierService: DoctorService
   ) {
     this.form = this.fb.group({
-      first_name: [
-        '',
-        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
-      ],
+      first_name: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       last_name: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
@@ -146,7 +143,6 @@ export class UserManagementComponent implements OnInit {
           const supplier = this.suppliers.find(
             (s) => s.user.id == this.user_attr.id
           );
-
           this.form.patchValue({ supplier: supplier.id });
         }
       },
@@ -185,6 +181,10 @@ export class UserManagementComponent implements OnInit {
     this.drawerLoader = false;
   }
 
+  closeDrawerEdit(): void {
+    this.isVisible = false;
+  }
+
   submit(): void {
     if (this.form.valid) {
       const userData = this.form.value;
@@ -210,6 +210,45 @@ export class UserManagementComponent implements OnInit {
         control.updateValueAndValidity({ onlySelf: true });
       });
     }
+  }
+
+  submit2(): void {
+    this.drawerLoader = true;
+    this.userService.updateAttributes(this.tempUser).subscribe(
+      () => {
+        if (this.tempUser.extra_data) {
+          this.userService
+            .updateDataByType(
+              this.userTypeOptions.find((e) => e.id === this.user_type.id)!,
+              this.tempUser.id,
+              this.tempUser
+            )
+            .subscribe({
+              next: () => {
+                this.msgService.success('User updated successfully');
+                this.isVisible = false;
+                this.getInitData();
+
+              },
+              error: (err) => {
+                this.msgService.error(JSON.stringify(err?.error));
+              },
+            });
+          this.drawerLoader = false;
+        } else {
+          this.msgService.success('User updated successfully');
+          this.isVisible = false;
+          this.drawerLoader = false;
+          this.getInitData();
+
+        }
+        this.drawerLoader = false;
+      },
+      (error) => {
+        this.msgService.error(JSON.stringify(error?.error));
+        this.isDataLoading = false;
+      }
+    );
   }
 
   userTypeChange(event: any): void {
@@ -305,9 +344,38 @@ export class UserManagementComponent implements OnInit {
       });
   }
 
-  updateUser(updatedUser: any): void {
-    this.getInitData();
+  showDrawer(user: any): void {
+    this.isVisible = true;
+    this.tempUser = { ...user };
+
+    if (this.tempUser.extra_data?.length > 0 && this.tempUser.user_type) {
+      this.user_type =
+        this.userTypeOptions.find((e) => e.id == this.tempUser.user_type) || '';
+    } else {
+      this.user_type = { id: 1, type: 'MASTER' };
+    }
   }
+
+
+  // private saveOrUpdate(formData: any): void {
+  //   if (this.isUpdating) {
+  //     this.update(this.tempUser.id, formData);
+  //   } else {
+  //     this.insurerService.createInsurer(formData).subscribe({
+  //       next: () => {
+  //         this.msgService.success('Insurer created successfully');
+  //         this.isDataLoading = false;
+  //         this.getInitData();
+  //         this.closeDrawer();
+  //       },
+  //       error: (error) => {
+  //         this.drawerLoader = false;
+  //         this.isDataLoading = false;
+  //         this.msgService.error(JSON.stringify(error.error));
+  //       },
+  //     });
+  //   }
+  // }
 
   mapUserRole(user_type_id: number): string {
     return this.userTypes.find((t) => t.id === user_type_id)?.name;
