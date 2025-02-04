@@ -2,15 +2,22 @@
   <div class="breadcrumb-container">
     <nz-breadcrumb>
       <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Insurers</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Configure Insures - Coverages</nz-breadcrumb-item>
       <nz-breadcrumb-item>Coverages</nz-breadcrumb-item>
       <nz-breadcrumb-item>Subplans</nz-breadcrumb-item>
     </nz-breadcrumb>
   </div>
 
   <div class="btn-container">
-    <button nz-button nzType="primary" (click)="openDrawer()">
-      <i nz-icon nzType="folder-add" nzTheme="outline"> </i>
+    <button 
+      nz-button 
+      nzType="primary" 
+      (click)="openDrawer()">
+      <i 
+        nz-icon 
+        nzType="folder-add" 
+        nzTheme="outline"> 
+      </i>
       New Subplan
     </button>
 
@@ -18,9 +25,12 @@
       nz-button
       [style.background-color]="'#00a651'"
       [style.color]="'white'"
-      (click)="exportSubplans()"
-    >
-      <i nz-icon nzType="download" nzTheme="outline"> </i>
+      (click)="exportSubplans()">
+      <i 
+        nz-icon 
+        nzType="download" 
+        nzTheme="outline"> 
+      </i>
       Export Subplans
     </button>
   </div>
@@ -28,49 +38,25 @@
 
 <div class="main-table layout-container">
   <div class="table-filters">
-    <nz-input-group [nzSuffix]="suffixIconSearch">
+    <nz-input-group
+      *ngFor="let field of searchFields"
+      [nzSuffix]="suffixIconSearch">
+
       <input
         type="text"
         nz-input
-        placeholder="Name..."
-        [(ngModel)]="nameSearch"
-        (ngModelChange)="search($event, 'name')"
+        [placeholder]="field.placeholder"
+        [(ngModel)]="this[field.model]"
+        (ngModelChange)="search($event, field.key)"
       />
-    </nz-input-group>
 
-    <nz-input-group [nzSuffix]="suffixIconSearch">
-      <input
-        type="text"
-        nz-input
-        placeholder="Group..."
-        [(ngModel)]="groupSearch"
-        (ngModelChange)="search($event, 'group')"
-      />
+      <ng-template #suffixIconSearch>
+        <span 
+          nz-icon 
+          nzType="search"> 
+        </span>
+      </ng-template>
     </nz-input-group>
-
-    <nz-input-group [nzSuffix]="suffixIconSearch">
-      <input
-        type="text"
-        nz-input
-        placeholder="Plan..."
-        [(ngModel)]="planSearch"
-        (ngModelChange)="search($event, 'plan')"
-      />
-    </nz-input-group>
-
-    <nz-input-group [nzSuffix]="suffixIconSearch">
-      <input
-        type="text"
-        nz-input
-        placeholder="Plan contract..."
-        [(ngModel)]="planContractSearch"
-        (ngModelChange)="search($event, 'planContract')"
-      />
-    </nz-input-group>
-
-    <ng-template #suffixIconSearch>
-      <span nz-icon nzType="search"> </span>
-    </ng-template>
   </div>
 
   <nz-table

@@ -40,6 +40,7 @@
     <nz-input-group
       *ngFor="let field of searchFields"
       [nzSuffix]="suffixIconSearch">
+
       <input
         type="text"
         nz-input
@@ -141,7 +142,7 @@
   [nzTitle]="drawerTitle"
   (nzOnClose)="closeDrawer()"
   [nzWidth]="720"
-  [nzFooter]="footerTpl">
+  [nzFooter]="footer">
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="drawerLoader">
       <form nz-form [formGroup]="form" (ngSubmit)="submit()">
@@ -158,7 +159,11 @@
             [nzSm]="16"
             [nzXs]="24"
             [nzErrorTip]="codeError">
-            <input nz-input formControlName="code" id="code" />
+            <input 
+              nz-input 
+              formControlName="code" 
+              id="code" 
+            />
           </nz-form-control>
         </nz-form-item>
 
@@ -204,7 +209,7 @@
     </nz-spin>
   </ng-container>
 
-  <ng-template #footerTpl>
+  <ng-template #footer>
     <div style="display: flex; float: right">
       <button 
         nz-button 

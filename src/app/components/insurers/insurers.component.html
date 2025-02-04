@@ -2,6 +2,7 @@
   <div class="breadcrumb-container">
     <nz-breadcrumb>
       <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Configure Insures - Coverages</nz-breadcrumb-item>
       <nz-breadcrumb-item>Insurers</nz-breadcrumb-item>
     </nz-breadcrumb>
   </div>
@@ -36,52 +37,25 @@
 
 <div class="main-table layout-container">
   <div class="table-filters">
-    <nz-input-group [nzSuffix]="suffixIconSearch">
+    <nz-input-group
+      *ngFor="let field of searchFields"
+      [nzSuffix]="suffixIconSearch">
+
       <input
         type="text"
         nz-input
-        placeholder="Name..."
-        [(ngModel)]="nameSearch"
-        (ngModelChange)="search($event, 'name')"
+        [placeholder]="field.placeholder"
+        [(ngModel)]="this[field.model]"
+        (ngModelChange)="search($event, field.key)"
       />
-    </nz-input-group>
 
-    <nz-input-group [nzSuffix]="suffixIconSearch">
-      <input
-        type="text"
-        nz-input
-        placeholder="Payer ID..."
-        [(ngModel)]="payerIdSearch"
-        (ngModelChange)="search($event, 'payerId')"
-      />
+      <ng-template #suffixIconSearch>
+        <span 
+          nz-icon 
+          nzType="search"> 
+        </span>
+      </ng-template>
     </nz-input-group>
-
-    <nz-input-group [nzSuffix]="suffixIconSearch">
-      <input
-        type="text"
-        nz-input
-        placeholder="Address..."
-        [(ngModel)]="addresSearch"
-        (ngModelChange)="search($event, 'address')"
-      />
-    </nz-input-group>
-
-    <nz-input-group [nzSuffix]="suffixIconSearch">
-      <input
-        type="text"
-        nz-input
-        placeholder="Phone..."
-        [(ngModel)]="phoneSearch"
-        (ngModelChange)="search($event, 'phone')"
-      />
-    </nz-input-group>
-
-    <ng-template #suffixIconSearch>
-      <span 
-        nz-icon 
-        nzType="search">
-      </span>
-    </ng-template>
   </div>
 
   <nz-table
@@ -540,7 +514,7 @@
   </ng-container>
 
   <ng-template #footerTpl>
-    <div class="footer-actions" style="display: flex; justify-content: flex-end">
+    <div style="display: flex; float: right">
       <button 
         nz-button 
         style="margin-right: 8px" 

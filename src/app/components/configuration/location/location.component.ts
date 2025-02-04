@@ -48,7 +48,7 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
     NzEmptyModule,
   ],
   templateUrl: './location.component.html',
-  styleUrls: ['./location.component.css', '../../../../animations/styles.css'],
+  styleUrls: ['./location.component.css', '/src/animations/styles.css'],
 })
 export class LocationComponent {
   form: UntypedFormGroup;
@@ -117,9 +117,7 @@ export class LocationComponent {
           this.isDataLoading = false;
           this.dataToDisplay = res.results;
 
-          const isSearching = this.codeSearch || this.descriptionSearch;
-
-          if (isSearching && (!res.results || res.results.length === 0)) {
+          if (!res.results || res.results.length === 0) {
             this.msgService.warning('No results found matching your search criteria');
           }
 

@@ -53,7 +53,7 @@ import html2canvas from 'html2canvas';
     NzButtonModule
   ],
   templateUrl: './eligibility.component.html',
-  styleUrls: ['./eligibility.component.css', '../../../animations/styles.css']
+  styleUrls: ['./eligibility.component.css', '/src/animations/styles.css']
 })
 export class EligibilityComponent {
   isDataLoading = false;

@@ -47,7 +47,7 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
     NzEmptyModule
   ],
   templateUrl: './profiles.component.html',
-  styleUrls: ['./profiles.component.css', '../../../../animations/styles.css'],
+  styleUrls: ['./profiles.component.css', '/src/animations/styles.css'],
 })
 export class ProfilesComponent implements OnInit {
   listOfDisplayData: any[] = [];

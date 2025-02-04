@@ -37,39 +37,25 @@
 
 <div class="main-table layout-container">
   <div class="table-filters">
-    <nz-input-group [nzSuffix]="suffixIconSearch">
+    <nz-input-group
+      *ngFor="let field of searchFields"
+      [nzSuffix]="suffixIconSearch">
+
       <input
         type="text"
         nz-input
-        placeholder="Description..."
-        [(ngModel)]="descriptionSearch"
-        (ngModelChange)="search($event, 'description')"
+        [placeholder]="field.placeholder"
+        [(ngModel)]="this[field.model]"
+        (ngModelChange)="search($event, field.key)"
       />
+
+      <ng-template #suffixIconSearch>
+        <span 
+          nz-icon 
+          nzType="search"> 
+        </span>
+      </ng-template>
     </nz-input-group>
-
-    <ng-template #suffixIconSearch>
-      <span 
-        nz-icon 
-        nzType="search">
-      </span>
-    </ng-template>
-
-    <nz-input-group [nzSuffix]="suffixIconSearch">
-      <input
-        type="text"
-        nz-input
-        placeholder="Code..."
-        [(ngModel)]="codeSearch"
-        (ngModelChange)="search($event, 'code')"
-      />
-    </nz-input-group>
-
-    <ng-template #suffixIconSearch>
-      <span 
-        nz-icon 
-        nzType="search">
-      </span>
-    </ng-template>
   </div>
 
   <nz-table

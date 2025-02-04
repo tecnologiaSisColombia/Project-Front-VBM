@@ -19,11 +19,11 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzTableModule } from 'ng-zorro-antd/table';
-import { PlanService } from '../../services/insurers/plan.service';
+import { PlanService } from 'app/services/insurers/plan.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { debounceTime, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
-import { SubplanService } from '../../services/insurers/subplan.service';
+import { SubplanService } from 'app/services/insurers/subplan.service';
 import * as XLSX from 'xlsx';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
@@ -69,6 +69,14 @@ export class SubplansComponent implements OnInit {
   planSearch: any = null;
   groupSearch: any = null;
   planContractSearch: any = null;
+  [key: string]: any;
+  searchFields = [
+    { placeholder: 'Name...', model: 'nameSearch', key: 'name' },
+    { placeholder: 'Plan...', model: 'planSearch', key: 'plan' },
+    { placeholder: 'Group...', model: 'groupSearch', key: 'group' },
+    { placeholder: 'Plan Contract...', model: 'planContractSearch', key: 'plan_contract' }
+
+  ];
   private searchNameSubject = new Subject<{ type: string; value: string }>();
   @Input() planData: any;
 
@@ -127,13 +135,7 @@ export class SubplansComponent implements OnInit {
           this.isDataLoading = false;
           this.dataToDisplay = res.results;
 
-          const isSearching =
-            this.nameSearch ||
-            this.planSearch ||
-            this.groupSearch ||
-            this.planContractSearch;
-
-          if (isSearching && (!res.results || res.results.length === 0)) {
+          if (!res.results || res.results.length === 0) {
             this.msgService.warning('No results found matching your search criteria');
           }
 
@@ -147,7 +149,7 @@ export class SubplansComponent implements OnInit {
   }
 
   getPlans(): void {
-    this.planService.getPlans({ status: 1 }, 1, 1, true).subscribe({
+    this.planService.getPlans({ status: 1 }, null, null, true).subscribe({
       next: (res: any) => {
         this.plans = res;
       },

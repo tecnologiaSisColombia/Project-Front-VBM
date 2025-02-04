@@ -46,7 +46,7 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
     NzEmptyModule
   ],
   templateUrl: './localities.component.html',
-  styleUrls: ['./localities.component.css', '../../../../animations/styles.css'],
+  styleUrls: ['./localities.component.css', '/src/animations/styles.css'],
 })
 export class LocalitiesComponent implements OnInit {
   form: UntypedFormGroup;
@@ -96,9 +96,7 @@ export class LocalitiesComponent implements OnInit {
           this.isDataLoading = false;
           this.dataToDisplay = res.results;
 
-          const isSearching = this.nameSearch;
-
-          if (isSearching && (!res.results || res.results.length === 0)) {
+          if (!res.results || res.results.length === 0) {
             this.msgService.warning('No results found matching your search criteria');
           }
 

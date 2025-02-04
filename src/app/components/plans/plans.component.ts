@@ -53,7 +53,7 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
     NzEmptyModule
   ],
   templateUrl: './plans.component.html',
-  styleUrls: ['./plans.component.css', '../../../animations/styles.css'],
+  styleUrls: ['./plans.component.css', '/src/animations/styles.css'],
 })
 export class PlansComponent implements OnInit {
   form: UntypedFormGroup;
@@ -73,6 +73,11 @@ export class PlansComponent implements OnInit {
   isVisibleModal = false;
   dataCacheModal: any;
   insurers: any[] = [];
+  [key: string]: any;
+  searchFields = [
+    { placeholder: 'Name...', model: 'nameSearch', key: 'name' },
+    { placeholder: 'Insurer...', model: 'insurerSearch', key: 'insurer' }
+  ];
   private searchNameSubject = new Subject<{ type: string; value: string }>();
 
   constructor(
@@ -104,7 +109,10 @@ export class PlansComponent implements OnInit {
     this.isDataLoading = true;
     this.planService
       .getPlans(
-        { name: this.nameSearch, insurer: this.insurerSearch },
+        { 
+          name: this.nameSearch, 
+          insurer: this.insurerSearch 
+        },
         this.page,
         this.page_size
       )
@@ -113,9 +121,7 @@ export class PlansComponent implements OnInit {
           this.isDataLoading = false;
           this.dataToDisplay = res.results;
 
-          const isSearching = this.nameSearch || this.insurerSearch;
-
-          if (isSearching && (!res.results || res.results.length === 0)) {
+          if (!res.results || res.results.length === 0) {
             this.msgService.warning('No results found matching your search criteria');
           }
 

@@ -48,7 +48,7 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
     NzEmptyModule
   ],
   templateUrl: './products.component.html',
-  styleUrls: ['./products.component.css', '../../../../animations/styles.css'],
+  styleUrls: ['./products.component.css', '/src/animations/styles.css'],
 })
 export class ProductsComponent implements OnInit {
   form: UntypedFormGroup;
@@ -66,6 +66,11 @@ export class ProductsComponent implements OnInit {
   stores: any[] = [];
   descriptionSearch: any = null;
   codeSearch: any = null;
+  [key: string]: any;
+  searchFields = [
+    { placeholder: 'Code...', model: 'codeSearch', key: 'code' },
+    { placeholder: 'Description...', model: 'descriptionSearch', key: 'description' },
+  ];
   private searchNameSubject = new Subject<{ type: string; value: string }>();
 
   constructor(
@@ -108,9 +113,7 @@ export class ProductsComponent implements OnInit {
           this.isDataLoading = false;
           this.dataToDisplay = res.results;
 
-          const isSearching = this.codeSearch || this.descriptionSearch;
-
-          if (isSearching && (!res.results || res.results.length === 0)) {
+          if (!res.results || res.results.length === 0) {
             this.msgService.warning('No results found matching your search criteria');
           }
 

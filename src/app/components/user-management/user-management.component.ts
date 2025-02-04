@@ -53,10 +53,7 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
     NzEmptyModule,
   ],
   templateUrl: './user-management.component.html',
-  styleUrls: [
-    './user-management.component.css',
-    '../../../animations/styles.css',
-  ],
+  styleUrls: ['./user-management.component.css', '/src/animations/styles.css'],
 })
 export class UserManagementComponent implements OnInit {
   isDataLoading = false;

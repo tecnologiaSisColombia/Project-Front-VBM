@@ -139,7 +139,7 @@
   [nzTitle]="drawerTitle"
   (nzOnClose)="closeDrawer()"
   [nzWidth]="720"
-  [nzFooter]="footerTpl">
+  [nzFooter]="footer">
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="drawerLoader">
       <form nz-form [formGroup]="form" (ngSubmit)="submit()">
@@ -176,7 +176,7 @@
     </nz-spin>
   </ng-container>
 
-  <ng-template #footerTpl>
+  <ng-template #footer>
     <div style="display: flex; float: right">
       <button
         nz-button
