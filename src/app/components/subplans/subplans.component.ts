@@ -132,18 +132,14 @@ export class SubplansComponent implements OnInit {
       )
       .subscribe({
         next: (res: any) => {
-          this.isDataLoading = false;
           this.dataToDisplay = res.results;
-
-          if (!res.results || res.results.length === 0) {
-            this.msgService.warning('No results found matching your search criteria');
-          }
-
           this.setPagination(res.total);
         },
         error: (err) => {
-          this.isDataLoading = false;
           this.msgService.error(JSON.stringify(err.error));
+        },
+        complete: () => {
+          this.isDataLoading = false;
         },
       });
   }
@@ -196,7 +192,6 @@ export class SubplansComponent implements OnInit {
         this.subplanService.deleteSubPlan(id).subscribe({
           next: () => {
             this.msgService.success('Subplan deleted successfully');
-            this.isDataLoading = false;
 
             if (this.dataToDisplay.length === 1 && this.page > 1) {
               this.page--;
@@ -205,8 +200,10 @@ export class SubplansComponent implements OnInit {
             this.getInitData();
           },
           error: (err) => {
-            this.isDataLoading = false;
             this.msgService.error(JSON.stringify(err.error));
+          },
+          complete: () => {
+            this.isDataLoading = false;
           },
         });
       }
@@ -218,35 +215,37 @@ export class SubplansComponent implements OnInit {
     this.subplanService.updateSubPlan(id, data).subscribe({
       next: () => {
         this.msgService.success('Subplan updated successfully');
-        this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
       },
       error: (err) => {
-        this.drawerLoader = false;
-        this.isDataLoading = false;
         this.msgService.error(JSON.stringify(err.error));
+      },
+      complete: () => {
+        this.isDataLoading = false;
       },
     });
   }
 
   submit(): void {
     if (this.form.valid) {
-      this.drawerLoader = true;
       if (this.isUpdating) {
         return this.update(this.dataDrawerCahe.group, this.form.value);
       }
+
+      this.drawerLoader = true;
+
       this.subplanService.createSubPlan(this.form.value).subscribe({
         next: () => {
           this.msgService.success('Subplan created successfully');
-          this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
         },
         error: (err) => {
-          this.drawerLoader = false;
-          this.isDataLoading = false;
           this.msgService.error(JSON.stringify(err.error));
+        },
+        complete: () => {
+          this.drawerLoader = false;
         },
       });
     } else {
@@ -292,7 +291,6 @@ export class SubplansComponent implements OnInit {
         next: (res: any) => {
           if (res.length === 0) {
             this.msgService.warning('No data available to export');
-            this.isDataLoading = false;
             return;
           }
 
@@ -357,13 +355,13 @@ export class SubplansComponent implements OnInit {
           link.click();
           document.body.removeChild(link);
 
-          this.isDataLoading = false;
-
           this.msgService.success('Export completed successfully');
         },
         error: (err) => {
-          this.isDataLoading = false;
           this.msgService.error(JSON.stringify(err.error));
+        },
+        complete: () => {
+          this.isDataLoading = false;
         },
       });
   }

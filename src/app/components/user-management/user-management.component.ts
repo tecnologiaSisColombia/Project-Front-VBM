@@ -133,7 +133,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   getSuppliers(): void {
-    this.supplierService.getSuppliers({ status: 1 }, 1, 10, true).subscribe({
+    this.supplierService.getSuppliers({ status: 1 }, null, null, true).subscribe({
       next: (res: any) => {
         this.suppliers = res;
         if (this.user_attr.rol == 'SUPPLIER') {
@@ -150,7 +150,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   getInsurers(): void {
-    this.insurerService.getInsurers({ status: 1 }, 1, 10, true).subscribe({
+    this.insurerService.getInsurers({ status: 1 }, null, null, true).subscribe({
       next: (res: any) => {
         this.insurers = res;
       },
@@ -161,7 +161,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   getLocalities(): void {
-    this.localitiesService.get({ status: 1 }, 1, 1, true).subscribe({
+    this.localitiesService.get({ status: 1 }, null, null, true).subscribe({
       next: (res: any) => (this.localities = res),
       error: (err) => this.msgService.error(JSON.stringify(err.error)),
     });
@@ -194,10 +194,11 @@ export class UserManagementComponent implements OnInit {
           this.getInitData();
           this.getSuppliers();
           this.closeDrawer();
-          this.drawerLoader = false;
         },
         error: (error) => {
           this.msgService.error(JSON.stringify(error.error.error.message));
+        },
+        complete: () => {
           this.drawerLoader = false;
         },
       });
@@ -322,20 +323,12 @@ export class UserManagementComponent implements OnInit {
       .subscribe({
         next: (res: any) => {
           this.dataToDisplay = res.results;
-          this.isDataLoading = false;
-
-          const isSearching =
-            this.usernameSearch || this.firstSearch || this.lastSearch;
-
-          if (isSearching && (!res.results || res.results.length === 0)) {
-            this.msgService.warning(
-              'No results found matching your search criteria');
-          }
-
           this.setPagination(res.total);
         },
         error: (error) => {
           this.msgService.error(JSON.stringify(error));
+        },
+        complete: () => {
           this.isDataLoading = false;
         },
       });
@@ -353,27 +346,6 @@ export class UserManagementComponent implements OnInit {
     }
   }
 
-
-  // private saveOrUpdate(formData: any): void {
-  //   if (this.isUpdating) {
-  //     this.update(this.tempUser.id, formData);
-  //   } else {
-  //     this.insurerService.createInsurer(formData).subscribe({
-  //       next: () => {
-  //         this.msgService.success('Insurer created successfully');
-  //         this.isDataLoading = false;
-  //         this.getInitData();
-  //         this.closeDrawer();
-  //       },
-  //       error: (error) => {
-  //         this.drawerLoader = false;
-  //         this.isDataLoading = false;
-  //         this.msgService.error(JSON.stringify(error.error));
-  //       },
-  //     });
-  //   }
-  // }
-
   mapUserRole(user_type_id: number): string {
     return this.userTypes.find((t) => t.id === user_type_id)?.name;
   }
@@ -383,13 +355,13 @@ export class UserManagementComponent implements OnInit {
     this.userService.update(id, data).subscribe({
       next: () => {
         this.msgService.success('User updated successfully');
-        this.isDataLoading = false;
         this.closeDrawer();
       },
       error: (err) => {
-        this.drawerLoader = false;
-        this.isDataLoading = false;
         this.msgService.error(JSON.stringify(err.error));
+      },
+      complete: () => {
+        this.isDataLoading = false;
       },
     });
   }
@@ -413,7 +385,6 @@ export class UserManagementComponent implements OnInit {
         this.userService.delete(username, id).subscribe({
           next: () => {
             this.msgService.success('User deleted successfully');
-            this.isDataLoading = false;
 
             if (this.dataToDisplay.length === 1 && this.page > 1) {
               this.page--;
@@ -425,6 +396,8 @@ export class UserManagementComponent implements OnInit {
           },
           error: (err) => {
             this.msgService.error(JSON.stringify(err.error));
+          },
+          complete: () => {
             this.isDataLoading = false;
           },
         });
@@ -466,7 +439,6 @@ export class UserManagementComponent implements OnInit {
       next: (res: any) => {
         if (res.length === 0) {
           this.msgService.warning('No data available to export');
-          this.isDataLoading = false;
           return;
         }
 
@@ -531,12 +503,13 @@ export class UserManagementComponent implements OnInit {
         link.click();
         document.body.removeChild(link);
 
-        this.isDataLoading = false;
         this.msgService.success('Export completed successfully');
       },
       error: (err) => {
-        this.isDataLoading = false;
         this.msgService.error(JSON.stringify(err.error));
+      },
+      complete: () => {
+        this.isDataLoading = false;
       },
     });
   }

@@ -114,18 +114,14 @@ export class ServicesComponent implements OnInit {
       )
       .subscribe({
         next: (res: any) => {
-          this.isDataLoading = false;
           this.dataToDisplay = res.results;
-
-          if (!res.results || res.results.length === 0) {
-            this.msgService.warning('No results found matching your search criteria');
-          }
-
           this.setPagination(res.total);
         },
         error: (err) => {
-          this.isDataLoading = false;
           this.msgService.error(JSON.stringify(err.error));
+        },
+        complete: () => {
+          this.isDataLoading = false;
         },
       });
   }
@@ -166,7 +162,6 @@ export class ServicesComponent implements OnInit {
         this.serviceService.delete(id).subscribe({
           next: () => {
             this.msgService.success('Service deleted successfully');
-            this.isDataLoading = false;
 
             if (this.dataToDisplay.length === 1 && this.page > 1) {
               this.page--;
@@ -175,8 +170,10 @@ export class ServicesComponent implements OnInit {
             this.getInitData();
           },
           error: (err) => {
-            this.isDataLoading = false;
             this.msgService.error(JSON.stringify(err.error));
+          },
+          complete: () => {
+            this.isDataLoading = false;
           },
         });
       }
@@ -188,35 +185,37 @@ export class ServicesComponent implements OnInit {
     this.serviceService.update(id, data).subscribe({
       next: () => {
         this.msgService.success('Service updated successfully');
-        this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
       },
       error: (err) => {
-        this.drawerLoader = false;
-        this.isDataLoading = false;
         this.msgService.error(JSON.stringify(err.error));
+      },
+      complete: () => {
+        this.isDataLoading = false;
       },
     });
   }
 
   submit() {
     if (this.form.valid) {
-      this.drawerLoader = true;
       if (this.isUpdating) {
         return this.update(this.dataDrawerCache.id, this.form.value);
       }
+
+      this.drawerLoader = true;
+
       this.serviceService.create(this.form.value).subscribe({
         next: () => {
           this.msgService.success('Service created successfully');
-          this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
         },
         error: (err) => {
-          this.drawerLoader = false;
-          this.isDataLoading = false;
           this.msgService.error(JSON.stringify(err.error));
+        },
+        complete: () => {
+          this.drawerLoader = false;
         },
       });
     } else {
@@ -262,10 +261,9 @@ export class ServicesComponent implements OnInit {
         next: (res: any) => {
           if (res.length === 0) {
             this.msgService.warning('No data available to export');
-            this.isDataLoading = false;
             return;
           }
-          
+
           this.isDataLoading = true;
 
           const headers = {
@@ -317,12 +315,13 @@ export class ServicesComponent implements OnInit {
           link.click();
           document.body.removeChild(link);
 
-          this.isDataLoading = false;
           this.msgService.success('Export completed successfully');
         },
         error: (err) => {
-          this.isDataLoading = false;
           this.msgService.error(JSON.stringify(err.error));
+        },
+        complete: () => {
+          this.isDataLoading = false;
         },
       });
   }

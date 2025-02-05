@@ -132,10 +132,11 @@ export class InsurersComponent implements OnInit {
     this.serviceService.get({}, null, null, true).subscribe({
       next: (res: any) => {
         this.services = res;
-        this.isDataLoading = false;
       },
       error: (err) => {
         this.msgService.error(JSON.stringify(err.error));
+      },
+      complete: () => {
         this.isDataLoading = false;
       },
     });
@@ -146,10 +147,11 @@ export class InsurersComponent implements OnInit {
     this.productService.get({}, null, null, true).subscribe({
       next: (res: any) => {
         this.products = res;
-        this.isDataLoading = false;
       },
       error: (err) => {
         this.msgService.error(JSON.stringify(err.error));
+      },
+      complete: () => {
         this.isDataLoading = false;
       },
     });
@@ -170,18 +172,14 @@ export class InsurersComponent implements OnInit {
       )
       .subscribe({
         next: (res: any) => {
-          this.isDataLoading = false;
           this.dataToDisplay = res.results;
-
-          if (!res.results || res.results.length === 0) {
-            this.msgService.warning('No results found matching your search criteria');
-          }
-
           this.setPagination(res.total);
         },
         error: (err) => {
-          this.isDataLoading = false;
           this.msgService.error(JSON.stringify(err.error));
+        },
+        complete: () => {
+          this.isDataLoading = false;
         },
       });
   }
@@ -234,7 +232,6 @@ export class InsurersComponent implements OnInit {
         this.insurerService.deleteInsurer(id).subscribe({
           next: () => {
             this.msgService.success('Insurer deleted successfully');
-            this.isDataLoading = false;
 
             if (this.dataToDisplay.length === 1 && this.page > 1) {
               this.page--;
@@ -243,8 +240,10 @@ export class InsurersComponent implements OnInit {
             this.getInitData();
           },
           error: (err) => {
-            this.isDataLoading = false;
             this.msgService.error(JSON.stringify(err.error));
+          },
+          complete: () => {
+            this.isDataLoading = false;
           },
         });
       }
@@ -256,14 +255,14 @@ export class InsurersComponent implements OnInit {
     this.insurerService.updateInsurer(id, data).subscribe({
       next: () => {
         this.msgService.success('Insurer updated successfully');
-        this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
       },
       error: (err) => {
-        this.drawerLoader = false;
-        this.isDataLoading = false;
         this.msgService.error(JSON.stringify(err.error));
+      },
+      complete: () => {
+        this.isDataLoading = false;
       },
     });
   }
@@ -346,7 +345,6 @@ export class InsurersComponent implements OnInit {
   changeStatus(id: number, data: any): void {
     data.services = data.services.map((e: any) => e.id);
     data.products = data.products.map((e: any) => e.id);
-
     this.update(id, data);
   }
 
@@ -391,7 +389,6 @@ export class InsurersComponent implements OnInit {
       next: (res: any) => {
         if (res.length === 0) {
           this.msgService.warning('No data available to export');
-          this.isDataLoading = false;
           return;
         }
 
@@ -452,12 +449,13 @@ export class InsurersComponent implements OnInit {
         link.click();
         document.body.removeChild(link);
 
-        this.isDataLoading = false;
         this.msgService.success('Export completed successfully');
       },
       error: (err: any) => {
-        this.isDataLoading = false;
         this.msgService.error(JSON.stringify(err.error));
+      },
+      complete: () => {
+        this.isDataLoading = false;
       },
     });
   }

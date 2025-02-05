@@ -17,8 +17,8 @@ export class DoctorService {
     init = false
   ) {
     let params = new HttpParams()
-      .set('page', page!.toString())
-      .set('page_size', pageSize!.toString())
+      .set('page', (page ?? 1).toString())
+      .set('page_size', (pageSize ?? 10).toString())
       .set('init', init);
 
     if (name != null) {

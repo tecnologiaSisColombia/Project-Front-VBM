@@ -90,21 +90,23 @@ export class LocalitiesComponent implements OnInit {
   getInitData() {
     this.isDataLoading = true;
     this.localitiesService
-      .get({ name: this.nameSearch }, this.page, this.page_size)
+      .get(
+        {
+          name: this.nameSearch
+        },
+        this.page,
+        this.page_size
+      )
       .subscribe({
         next: (res: any) => {
-          this.isDataLoading = false;
           this.dataToDisplay = res.results;
-
-          if (!res.results || res.results.length === 0) {
-            this.msgService.warning('No results found matching your search criteria');
-          }
-
           this.setPagination(res.total);
         },
         error: (err) => {
-          this.isDataLoading = false;
           this.msgService.error(JSON.stringify(err.error));
+        },
+        complete: () => {
+          this.isDataLoading = false;
         },
       });
   }
@@ -145,7 +147,6 @@ export class LocalitiesComponent implements OnInit {
         this.localitiesService.delete(id).subscribe({
           next: () => {
             this.msgService.success('Locality deleted successfully');
-            this.isDataLoading = false;
 
             if (this.dataToDisplay.length === 1 && this.page > 1) {
               this.page--;
@@ -154,8 +155,10 @@ export class LocalitiesComponent implements OnInit {
             this.getInitData();
           },
           error: (err) => {
-            this.isDataLoading = false;
             this.msgService.error(JSON.stringify(err.error));
+          },
+          complete: () => {
+            this.isDataLoading = false;
           },
         });
       }
@@ -167,35 +170,37 @@ export class LocalitiesComponent implements OnInit {
     this.localitiesService.update(id, data).subscribe({
       next: () => {
         this.msgService.success('Locality updated successfully');
-        this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
       },
       error: (err) => {
-        this.drawerLoader = false;
-        this.isDataLoading = false;
         this.msgService.error(JSON.stringify(err.error));
+      },
+      complete: () => {
+        this.isDataLoading = false;
       },
     });
   }
 
   submit() {
     if (this.form.valid) {
-      this.drawerLoader = true;
       if (this.isUpdating) {
         return this.update(this.dataDrawerCache.id, this.form.value);
       }
+      
+      this.drawerLoader = true;
+
       this.localitiesService.create(this.form.value).subscribe({
         next: () => {
           this.msgService.success('Locality created successfully');
-          this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
         },
         error: (err) => {
-          this.drawerLoader = false;
-          this.isDataLoading = false;
           this.msgService.error(JSON.stringify(err.error));
+        },
+        complete: () => {
+          this.drawerLoader = false;
         },
       });
     } else {
@@ -240,7 +245,6 @@ export class LocalitiesComponent implements OnInit {
         next: (res: any) => {
           if (res.length === 0) {
             this.msgService.warning('No data available to export');
-            this.isDataLoading = false;
             return;
           }
 
@@ -293,12 +297,13 @@ export class LocalitiesComponent implements OnInit {
           link.click();
           document.body.removeChild(link);
 
-          this.isDataLoading = false;
           this.msgService.success('Export completed successfully');
         },
         error: (err) => {
-          this.isDataLoading = false;
           this.msgService.error(JSON.stringify(err.error));
+        },
+        complete: () => {
+          this.isDataLoading = false;
         },
       });
   }

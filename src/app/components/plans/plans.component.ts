@@ -109,33 +109,29 @@ export class PlansComponent implements OnInit {
     this.isDataLoading = true;
     this.planService
       .getPlans(
-        { 
-          name: this.nameSearch, 
-          insurer: this.insurerSearch 
+        {
+          name: this.nameSearch,
+          insurer: this.insurerSearch
         },
         this.page,
         this.page_size
       )
       .subscribe({
         next: (res: any) => {
-          this.isDataLoading = false;
           this.dataToDisplay = res.results;
-
-          if (!res.results || res.results.length === 0) {
-            this.msgService.warning('No results found matching your search criteria');
-          }
-
           this.setPagination(res.total);
         },
         error: (err) => {
-          this.isDataLoading = false;
           this.msgService.error(JSON.stringify(err.error));
+        },
+        complete: () => {
+          this.isDataLoading = false;
         },
       });
   }
 
   getInsurers(): void {
-    this.insurerService.getInsurers({ status: 1 }, 1, 10, true).subscribe({
+    this.insurerService.getInsurers({ status: 1 }, null, null, true).subscribe({
       next: (res: any) => {
         this.insurers = res;
       },
@@ -181,7 +177,6 @@ export class PlansComponent implements OnInit {
         this.planService.deletePlan(id).subscribe({
           next: () => {
             this.msgService.success('Coverage deleted successfully');
-            this.isDataLoading = false;
 
             if (this.dataToDisplay.length === 1 && this.page > 1) {
               this.page--;
@@ -190,8 +185,10 @@ export class PlansComponent implements OnInit {
             this.getInitData();
           },
           error: (err) => {
-            this.isDataLoading = false;
             this.msgService.error(JSON.stringify(err.error));
+          },
+          complete: () => {
+            this.isDataLoading = false;
           },
         });
       }
@@ -203,35 +200,37 @@ export class PlansComponent implements OnInit {
     this.planService.updatePlan(id, data).subscribe({
       next: () => {
         this.msgService.success('Coverage updated successfully');
-        this.isDataLoading = false;
         this.closeDrawer();
         this.getInitData();
       },
       error: (err) => {
-        this.drawerLoader = false;
-        this.isDataLoading = false;
         this.msgService.error(JSON.stringify(err.error));
+      },
+      complete: () => {
+        this.isDataLoading = false;
       },
     });
   }
 
   submit(): void {
     if (this.form.valid) {
-      this.drawerLoader = true;
       if (this.isUpdating) {
         return this.update(this.dataDrawerCahe.id, this.form.value);
       }
+
+      this.drawerLoader = true;
+
       this.planService.createPlan(this.form.value).subscribe({
         next: () => {
           this.msgService.success('Coverage created successfully');
-          this.isDataLoading = false;
           this.getInitData();
           this.closeDrawer();
         },
         error: (err) => {
-          this.drawerLoader = false;
-          this.isDataLoading = false;
           this.msgService.error(JSON.stringify(err.error));
+        },
+        complete: () => {
+          this.drawerLoader = false;
         },
       });
     } else {
@@ -248,7 +247,7 @@ export class PlansComponent implements OnInit {
     const { insurer_data, ...filteredData } = data;
     this.update(id, filteredData);
   }
-  
+
   search(value: string, type: string) {
     this.isDataLoading = true;
     this.searchNameSubject.next({ type, value });
@@ -291,7 +290,6 @@ export class PlansComponent implements OnInit {
         next: (res: any) => {
           if (res.length === 0) {
             this.msgService.warning('No data available to export');
-            this.isDataLoading = false;
             return;
           }
 
@@ -347,13 +345,13 @@ export class PlansComponent implements OnInit {
           link.click();
           document.body.removeChild(link);
 
-          this.isDataLoading = false;
-
           this.msgService.success('Export completed successfully');
         },
         error: (err) => {
-          this.isDataLoading = false;
           this.msgService.error(JSON.stringify(err.error));
+        },
+        complete: () => {
+          this.isDataLoading = false;
         },
       });
   }

@@ -34,7 +34,7 @@ import { NzCardModule } from 'ng-zorro-antd/card';
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
-  isLoading: boolean = false;
+  isDataLoading: boolean = false;
   showPassword: boolean = false;
 
   constructor(
@@ -55,7 +55,7 @@ export class LoginComponent implements OnInit {
 
   signIn(): void {
     if (this.loginForm.valid) {
-      this.isLoading = true;
+      this.isDataLoading = true;
 
       const data = {
         username: this.loginForm.get('username')?.value,
@@ -75,11 +75,11 @@ export class LoginComponent implements OnInit {
           this.authService.doLogin(res.properties);
 
           this.router.navigate(['/home']).then(() => {
-            this.isLoading = false;
+            this.isDataLoading = false;
           });
         },
         error: (error) => {
-          this.isLoading = false;
+          this.isDataLoading = false;
 
           const errorMapping: Record<string, { route: string; queryParams: Record<string, any> }> = {
             NewPasswordRequired: {
@@ -106,7 +106,7 @@ export class LoginComponent implements OnInit {
                 queryParams: errorMapping[errorCode].queryParams,
               })
               .then(() => {
-                this.isLoading = false;
+                this.isDataLoading = false;
               });
           } else {
             this.msg.error(JSON.stringify(error?.error?.error?.message));

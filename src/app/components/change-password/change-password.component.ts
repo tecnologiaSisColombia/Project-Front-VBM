@@ -35,7 +35,7 @@ export class ChangePasswordComponent implements OnInit {
   changePasswordForm: FormGroup;
   session: string | null = null;
   username: string | null = null;
-  isLoading: boolean = false;
+  isDataLoading = false;
   passwordVisible: boolean = false;
 
   constructor(
@@ -78,7 +78,7 @@ export class ChangePasswordComponent implements OnInit {
 
   changePassword(): void {
     const challenge = localStorage.getItem('auth_challenge');
-    this.isLoading = true;
+    this.isDataLoading = true;
 
     const baseData = {
       username: this.username,
@@ -107,12 +107,14 @@ export class ChangePasswordComponent implements OnInit {
         localStorage.removeItem('auth_challenge');
 
         this.router.navigate(['/home']).then(() => {
-          this.isLoading = false;
+          this.isDataLoading = false;
         });
       },
       error: (error) => {
-        this.isLoading = false;
         this.msg.error(JSON.stringify(error?.error?.error?.message));
+      },
+      complete: () => {
+        this.isDataLoading = false;
       },
     });
   }

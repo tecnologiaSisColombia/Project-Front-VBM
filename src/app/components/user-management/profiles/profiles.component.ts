@@ -156,11 +156,12 @@ export class ProfilesComponent implements OnInit {
     this.profileService.updatePerfil(id, permissions).subscribe({
       next: () => {
         this.seePermissions(group);
-        this.isDataLoading = false;
       },
       error: (err) => {
-        this.isDataLoading = false;
         this.message.error(JSON.stringify(err.error));
+      },
+      complete: () => {
+        this.isDataLoading = false;
       },
     });
   }
@@ -185,21 +186,16 @@ export class ProfilesComponent implements OnInit {
           this.permisosList = res.results;
           this.listOfDisplayPermisos = this.permisosList;
           this.p_count_records = res.total;
-
-          if ((!res.results || res.results.length === 0) && this.moduleSearch) {
-            this.message.warning('No results found matching your search criteria');
-          }
-
           this.isVisiblePermisosModal = true;
-          this.isDataLoadingP = false;
         },
         error: (err) => {
-          this.isDataLoadingP = false;
           this.message.error(JSON.stringify(err.error));
+        },
+        complete: () => {
+          this.isDataLoadingP = false;
         },
       });
   }
-
 
   submitEdit(): void {
     if (this.editForm.valid) {
@@ -212,10 +208,11 @@ export class ProfilesComponent implements OnInit {
           this.message.success('Profile updated successfully');
           this.getGroups();
           this.closeEditDrawer();
-          this.isDataLoading = false;
         },
         error: (err) => {
           this.message.error(JSON.stringify(err.error));
+        },
+        complete: () => {
           this.isDataLoading = false;
         },
       });
@@ -247,10 +244,11 @@ export class ProfilesComponent implements OnInit {
           this.message.success('Group updated successfully');
           Object.assign(this.listOfDisplayData[index], this.editCache[id].data);
           this.editCache[id].edit = false;
-          this.isDataLoading = false;
         },
         error: (err: any) => {
           this.message.error(JSON.stringify(err.error));
+        },
+        complete: () => {
           this.isDataLoading = false;
         },
       });
@@ -299,8 +297,10 @@ export class ProfilesComponent implements OnInit {
           this.closeDrawerNewProfile();
         },
         error: (err) => {
-          this.isDataLoading = false;
           this.message.error(JSON.stringify(err.error));
+        },
+        complete: () => {
+          this.isDataLoading = false;
         },
       });
     } else {
@@ -331,17 +331,11 @@ export class ProfilesComponent implements OnInit {
           this.listOfDisplayData = res.results;
           this.count_records = res.total;
           this.updateEditCache();
-
-          const isSearching = this.nameSearch;
-
-          if (isSearching && (!res.results || res.results.length === 0)) {
-            this.message.warning('No results found matching your search criteria');
-          }
-
-          this.isDataLoading = false;
         },
         error: (err: any) => {
           this.message.error(JSON.stringify(err.error));
+        },
+        complete: () => {
           this.isDataLoading = false;
         },
       });
@@ -383,7 +377,6 @@ export class ProfilesComponent implements OnInit {
         this.profileService.deleteGroup(id_group).subscribe({
           next: () => {
             this.message.success('Group deleted successfully');
-            this.isDataLoading = false;
 
             if (this.listOfDisplayData.length === 1 && this.page > 1) {
               this.page--;
@@ -393,6 +386,8 @@ export class ProfilesComponent implements OnInit {
           },
           error: (err) => {
             this.message.error(JSON.stringify(err.error));
+          },
+          complete: () => {
             this.isDataLoading = false;
           },
         });
@@ -405,7 +400,6 @@ export class ProfilesComponent implements OnInit {
       next: (res: any) => {
         if (res.length === 0) {
           this.message.warning('No data available to export');
-          this.isDataLoading = false;
           return;
         }
 
@@ -459,13 +453,13 @@ export class ProfilesComponent implements OnInit {
         link.click();
         document.body.removeChild(link);
 
-        this.isDataLoading = false;
-
         this.message.success('Export completed successfully');
       },
       error: (err) => {
-        this.isDataLoading = false;
         this.message.error(JSON.stringify(err.error));
+      },
+      complete: () => {
+        this.isDataLoading = false;
       },
     });
   }

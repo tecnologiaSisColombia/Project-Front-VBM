@@ -30,7 +30,7 @@ import { RouterLink } from '@angular/router';
 })
 export class ResetPasswordComponent {
   resetForm: FormGroup;
-  isLoading = false;
+  isDataLoading = false;
   showVerificationCode = false;
   showPassword = false;
   passwordVisible: boolean = false;
@@ -50,7 +50,7 @@ export class ResetPasswordComponent {
 
   onRequestReset(): void {
     if (this.resetForm.valid) {
-      this.isLoading = true;
+      this.isDataLoading = true;
 
       const email = this.resetForm.get('email')?.value;
 
@@ -72,14 +72,14 @@ export class ResetPasswordComponent {
 
           this.resetForm.get('newPassword')?.updateValueAndValidity();
 
-          this.isLoading = false;
-
           this.msg.success('Reset request sent successfully');
         },
         error: (error) => {
           this.msg.error(JSON.stringify(error?.error?.error?.message));
-          this.isLoading = false;
-        }
+        },
+        complete: () => {
+          this.isDataLoading = false;
+        },
       });
     } else {
       Object.values(this.resetForm.controls).forEach((control) => {
@@ -92,7 +92,7 @@ export class ResetPasswordComponent {
   }
 
   onResendCode(): void {
-    this.isLoading = true;
+    this.isDataLoading = true;
 
     const email = this.resetForm.get('email')?.value;
 
@@ -100,13 +100,14 @@ export class ResetPasswordComponent {
       next: () => {
         this.showVerificationCode = true;
         this.showPassword = true;
-        this.isLoading = false;
         this.msg.success('Verification code resent successfully');
       },
       error: (error) => {
         this.msg.error(JSON.stringify(error?.error?.error?.message));
-        this.isLoading = false;
-      }
+      },
+      complete: () => {
+        this.isDataLoading = false;
+      },
     });
   }
 
@@ -117,7 +118,7 @@ export class ResetPasswordComponent {
       new_password: this.resetForm.get('newPassword')?.value,
     };
 
-    this.isLoading = true;
+    this.isDataLoading = true;
 
     this.resetPasswordService.confirmResetPassword(data).subscribe({
       next: () => {
@@ -131,13 +132,13 @@ export class ResetPasswordComponent {
         setTimeout(() => {
           this.router.navigate(['./login']);
         }, 900);
-
-        this.isLoading = false;
       },
       error: (error) => {
         this.msg.error(JSON.stringify(error?.error?.error?.message));
-        this.isLoading = false;
-      }
+      },
+      complete: () => {
+        this.isDataLoading = false;
+      },
     });
   }
 

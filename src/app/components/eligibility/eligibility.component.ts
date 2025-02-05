@@ -132,24 +132,17 @@ export class EligibilityComponent {
       )
       .subscribe({
         next: (res: any) => {
-          this.isDataLoading = false;
           this.dataToDisplay = res.results;
-
-          const isSearching = this.firstSearch || this.lastSearch || this.suscriberSearch;
-
-          if (isSearching && (!res.results || res.results.length === 0)) {
-            this.msgService.warning('No results found matching your search criteria');
-          }
-
           this.setPagination(res.total);
         },
         error: (err) => {
-          this.isDataLoading = false;
           this.msgService.error(JSON.stringify(err.error));
+        },
+        complete: () => {
+          this.isDataLoading = false;
         },
       });
   }
-
 
   search(value: string, type: string) {
     this.isDataLoading = true;
@@ -241,14 +234,15 @@ export class EligibilityComponent {
     this.s3Service.uploadEligibility(formData).subscribe({
       next: () => {
         this.msgService.success('File upload successfully');
-        this.uploading = false;
         this.isVisibleModalUpload = false;
         this.selectedFile = null;
       },
       error: (err) => {
         this.msgService.error(JSON.stringify(err.error));
+      },
+      complete: () => {
         this.uploading = false;
-      }
+      },
     });
   }
 
@@ -297,7 +291,6 @@ export class EligibilityComponent {
       next: (res: any) => {
         if (res.length === 0) {
           this.msgService.warning('No data available to export');
-          this.isDataLoading = false;
           return;
         }
 
@@ -352,12 +345,13 @@ export class EligibilityComponent {
         link.click();
         document.body.removeChild(link);
 
-        this.isDataLoading = false;
         this.msgService.success('Export completed successfully');
       },
       error: (err) => {
-        this.isDataLoading = false;
         this.msgService.error(JSON.stringify(err.error));
+      },
+      complete: () => {
+        this.isDataLoading = false;
       },
     });
   }
