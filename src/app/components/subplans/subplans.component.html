@@ -28,10 +28,10 @@
       (click)="exportSubplans()">
       <i 
         nz-icon 
-        nzType="download" 
-        nzTheme="outline"> 
+        [nzType]="exportLoader ? 'loading' : 'download'" 
+        nzTheme="outline">
       </i>
-      Export Subplans
+      {{ exportLoader ? 'Exporting...' : 'Export Subplans' }}
     </button>
   </div>
 </div>
@@ -133,8 +133,7 @@
   <ng-template #noDataTemplate>
     <nz-empty
       nzNotFoundImage="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-      [nzNotFoundContent]="contentTpl"
-    >
+      [nzNotFoundContent]="contentTpl">
       <ng-template #contentTpl>
         <span> No records found </span>
       </ng-template>

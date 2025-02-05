@@ -15,6 +15,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzCardModule } from 'ng-zorro-antd/card';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-change-password',
@@ -94,29 +95,30 @@ export class ChangePasswordComponent implements OnInit {
         this.loginService.changeTemporaryPassword(data) :
         this.loginService.ChangePasswordDays(data);
 
-    serviceCall.subscribe({
-      next: (res: any) => {
-        res.properties.user = {
-          id: res.attributes.find((e: any) => e.Name === 'sub')?.Value,
-          email: res.attributes.find((e: any) => e.Name === 'email')?.Value,
-          username: res.attributes.find((e: any) => e.Name === 'username')?.Value,
-        };
-
-        this.authService.doLogin(res.properties);
-
-        localStorage.removeItem('auth_challenge');
-
-        this.router.navigate(['/home']).then(() => {
-          this.isDataLoading = false;
-        });
-      },
-      error: (error) => {
-        this.msg.error(JSON.stringify(error?.error?.error?.message));
-      },
-      complete: () => {
+    serviceCall
+      .pipe(finalize(() => {
         this.isDataLoading = false;
-      },
-    });
+      }))
+      .subscribe({
+        next: (res: any) => {
+          res.properties.user = {
+            id: res.attributes.find((e: any) => e.Name === 'sub')?.Value,
+            email: res.attributes.find((e: any) => e.Name === 'email')?.Value,
+            username: res.attributes.find((e: any) => e.Name === 'username')?.Value,
+          };
+
+          this.authService.doLogin(res.properties);
+
+          localStorage.removeItem('auth_challenge');
+
+          this.router.navigate(['/home']).then(() => {
+            this.isDataLoading = false;
+          });
+        },
+        error: (error) => {
+          this.msg.error(JSON.stringify(error?.error?.error?.message));
+        },
+      });
   }
 
 }

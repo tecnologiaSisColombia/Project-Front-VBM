@@ -27,10 +27,10 @@
       (click)="exportGroups()">
       <i 
         nz-icon 
-        nzType="download" 
-        nzTheme="outline"> 
+        [nzType]="exportLoader ? 'loading' : 'download'" 
+        nzTheme="outline">
       </i>
-      Export Groups
+      {{ exportLoader ? 'Exporting...' : 'Export Groups' }}
     </button>
   </div>
 </div>

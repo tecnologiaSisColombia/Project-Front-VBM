@@ -25,6 +25,7 @@ import { ProductsService } from 'app/services/config/products.service';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import * as XLSX from 'xlsx';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-products',
@@ -53,6 +54,7 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 export class ProductsComponent implements OnInit {
   form: UntypedFormGroup;
   isDataLoading = false;
+  exportLoader = false;
   dataToDisplay: any[] = [];
   visible = false;
   drawerLoader = false;
@@ -104,10 +106,16 @@ export class ProductsComponent implements OnInit {
     this.isDataLoading = true;
     this.productService
       .get(
-        { code: this.codeSearch, description: this.descriptionSearch },
+        {
+          code: this.codeSearch,
+          description: this.descriptionSearch
+        },
         this.page,
         this.page_size
       )
+      .pipe(finalize(() => {
+        this.isDataLoading = false;
+      }))
       .subscribe({
         next: (res: any) => {
           this.dataToDisplay = res.results;
@@ -115,9 +123,6 @@ export class ProductsComponent implements OnInit {
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
-        },
-        complete: () => {
-          this.isDataLoading = false;
         },
       });
   }
@@ -136,7 +141,6 @@ export class ProductsComponent implements OnInit {
   }
 
   closeDrawer(): void {
-    this.drawerLoader = false;
     this.isUpdating = false;
     this.visible = false;
     this.dataDrawerCache = null;
@@ -155,53 +159,68 @@ export class ProductsComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
-        this.productService.delete(id).subscribe({
-          next: () => {
-            this.msgService.success('Product deleted successfully');
-
-            if (this.dataToDisplay.length === 1 && this.page > 1) {
-              this.page--;
-            }
-
-            this.getInitData();
-          },
-          error: (err) => {
-            this.msgService.error(JSON.stringify(err.error));
-          },
-          complete: () => {
+        this.productService.delete(id)
+          .pipe(finalize(() => {
             this.isDataLoading = false;
-          },
-        });
+          }))
+          .subscribe({
+            next: () => {
+              this.msgService.success('Product deleted successfully');
+
+              if (this.dataToDisplay.length === 1 && this.page > 1) {
+                this.page--;
+              }
+
+              this.getInitData();
+            },
+            error: (err) => {
+              this.msgService.error(JSON.stringify(err.error));
+            },
+          });
       }
     });
   }
 
   update(id: number, data: any) {
     this.isDataLoading = true;
-    this.productService.update(id, data).subscribe({
-      next: () => {
-        this.msgService.success('Product updated successfully');
-        this.closeDrawer();
-        this.getInitData();
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-      complete: () => {
+    this.productService.update(id, data)
+      .pipe(finalize(() => {
         this.isDataLoading = false;
-      },
-    });
+      }))
+      .subscribe({
+        next: () => {
+          this.msgService.success('Product updated successfully');
+          this.closeDrawer();
+          this.getInitData();
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 
   submit() {
-    if (this.form.valid) {
-      if (this.isUpdating) {
-        return this.update(this.dataDrawerCache.id, this.form.value);
-      }
+    if (!this.form.valid) {
+      Object.values(this.form.controls).forEach((control) => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+      return;
+    }
 
-      this.drawerLoader = true;
+    if (this.isUpdating) {
+      return this.update(this.dataDrawerCache.id, this.form.value);
+    }
 
-      this.productService.create(this.form.value).subscribe({
+    this.drawerLoader = true;
+
+    this.productService.create(this.form.value)
+      .pipe(finalize(() => {
+        this.drawerLoader = false;
+      }))
+      .subscribe({
         next: () => {
           this.msgService.success('Product created successfully');
           this.getInitData();
@@ -210,18 +229,7 @@ export class ProductsComponent implements OnInit {
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
         },
-        complete: () => {
-          this.drawerLoader = false;
-        },
       });
-    } else {
-      Object.values(this.form.controls).forEach((control) => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-        }
-      });
-    }
   }
 
   changeStatus(id: number, data: any) {
@@ -253,6 +261,9 @@ export class ProductsComponent implements OnInit {
   exportProducts(): void {
     this.productService
       .get({}, null, null, true)
+      .pipe(finalize(() => {
+        this.exportLoader = false;
+      }))
       .subscribe({
         next: (res: any) => {
           if (res.length === 0) {
@@ -260,7 +271,7 @@ export class ProductsComponent implements OnInit {
             return;
           }
 
-          this.isDataLoading = true;
+          this.exportLoader = true;
 
           const headers = {
             code: 'Code',
@@ -314,9 +325,6 @@ export class ProductsComponent implements OnInit {
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
-        },
-        complete: () => {
-          this.isDataLoading = false;
         },
       });
   }

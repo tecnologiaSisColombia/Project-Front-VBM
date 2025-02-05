@@ -26,6 +26,7 @@ import Swal from 'sweetalert2';
 import { SubplanService } from 'app/services/insurers/subplan.service';
 import * as XLSX from 'xlsx';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-subplans',
@@ -55,6 +56,7 @@ export class SubplansComponent implements OnInit {
   form: UntypedFormGroup;
   plans: any[] = [];
   isDataLoading = false;
+  exportLoader = false;
   dataToDisplay: any[] = [];
   num_pages = 1;
   count_records = 0;
@@ -130,6 +132,9 @@ export class SubplansComponent implements OnInit {
         this.page,
         this.page_size
       )
+      .pipe(finalize(() => {
+        this.isDataLoading = false;
+      }))
       .subscribe({
         next: (res: any) => {
           this.dataToDisplay = res.results;
@@ -137,9 +142,6 @@ export class SubplansComponent implements OnInit {
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
-        },
-        complete: () => {
-          this.isDataLoading = false;
         },
       });
   }
@@ -170,7 +172,6 @@ export class SubplansComponent implements OnInit {
   }
 
   closeDrawer(): void {
-    this.drawerLoader = false;
     this.isUpdating = false;
     this.visible = false;
     this.dataDrawerCahe = null;
@@ -189,53 +190,68 @@ export class SubplansComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
-        this.subplanService.deleteSubPlan(id).subscribe({
-          next: () => {
-            this.msgService.success('Subplan deleted successfully');
-
-            if (this.dataToDisplay.length === 1 && this.page > 1) {
-              this.page--;
-            }
-
-            this.getInitData();
-          },
-          error: (err) => {
-            this.msgService.error(JSON.stringify(err.error));
-          },
-          complete: () => {
+        this.subplanService.deleteSubPlan(id)
+          .pipe(finalize(() => {
             this.isDataLoading = false;
-          },
-        });
+          }))
+          .subscribe({
+            next: () => {
+              this.msgService.success('Subplan deleted successfully');
+
+              if (this.dataToDisplay.length === 1 && this.page > 1) {
+                this.page--;
+              }
+
+              this.getInitData();
+            },
+            error: (err) => {
+              this.msgService.error(JSON.stringify(err.error));
+            },
+          });
       }
     });
   }
 
   update(id: number, data: any): void {
     this.isDataLoading = true;
-    this.subplanService.updateSubPlan(id, data).subscribe({
-      next: () => {
-        this.msgService.success('Subplan updated successfully');
-        this.closeDrawer();
-        this.getInitData();
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-      complete: () => {
+    this.subplanService.updateSubPlan(id, data)
+      .pipe(finalize(() => {
         this.isDataLoading = false;
-      },
-    });
+      }))
+      .subscribe({
+        next: () => {
+          this.msgService.success('Subplan updated successfully');
+          this.closeDrawer();
+          this.getInitData();
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 
   submit(): void {
-    if (this.form.valid) {
-      if (this.isUpdating) {
-        return this.update(this.dataDrawerCahe.group, this.form.value);
-      }
+    if (!this.form.valid) {
+      Object.values(this.form.controls).forEach((control) => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+      return;
+    }
 
-      this.drawerLoader = true;
+    if (this.isUpdating) {
+      return this.update(this.dataDrawerCahe.group, this.form.value);
+    }
 
-      this.subplanService.createSubPlan(this.form.value).subscribe({
+    this.drawerLoader = true;
+
+    this.subplanService.createSubPlan(this.form.value)
+      .pipe(finalize(() => {
+        this.drawerLoader = false;
+      }))
+      .subscribe({
         next: () => {
           this.msgService.success('Subplan created successfully');
           this.getInitData();
@@ -244,18 +260,7 @@ export class SubplansComponent implements OnInit {
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
         },
-        complete: () => {
-          this.drawerLoader = false;
-        },
       });
-    } else {
-      Object.values(this.form.controls).forEach((control) => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-        }
-      });
-    }
   }
 
   changeStatus(id: number, data: any): void {
@@ -287,6 +292,9 @@ export class SubplansComponent implements OnInit {
   exportSubplans(): void {
     this.subplanService
       .getSubPlans(this.planData.id, {}, null, null, true)
+      .pipe(finalize(() => {
+        this.exportLoader = false;
+      }))
       .subscribe({
         next: (res: any) => {
           if (res.length === 0) {
@@ -294,7 +302,7 @@ export class SubplansComponent implements OnInit {
             return;
           }
 
-          this.isDataLoading = true;
+          this.exportLoader = true;
 
           const headers = {
             plan_data: 'Plan',
@@ -359,9 +367,6 @@ export class SubplansComponent implements OnInit {
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
-        },
-        complete: () => {
-          this.isDataLoading = false;
         },
       });
   }

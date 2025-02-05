@@ -25,6 +25,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import * as XLSX from 'xlsx';
 import { LocationService } from 'app/services/config/location.service';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-location',
@@ -53,6 +54,7 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 export class LocationComponent {
   form: UntypedFormGroup;
   isDataLoading = false;
+  exportLoader = false;
   dataToDisplay: any[] = [];
   visible = false;
   drawerLoader = false;
@@ -112,6 +114,9 @@ export class LocationComponent {
         this.page,
         this.page_size
       )
+      .pipe(finalize(() => {
+        this.isDataLoading = false;
+      }))
       .subscribe({
         next: (res: any) => {
           this.dataToDisplay = res.results;
@@ -119,9 +124,6 @@ export class LocationComponent {
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
-        },
-        complete: () => {
-          this.isDataLoading = false;
         },
       });
   }
@@ -140,7 +142,6 @@ export class LocationComponent {
   }
 
   closeDrawer(): void {
-    this.drawerLoader = false;
     this.isUpdating = false;
     this.visible = false;
     this.dataDrawerCache = null;
@@ -159,53 +160,68 @@ export class LocationComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
-        this.locationService.delete(id).subscribe({
-          next: () => {
-            this.msgService.success('Location deleted successfully');
-
-            if (this.dataToDisplay.length === 1 && this.page > 1) {
-              this.page--;
-            }
-
-            this.getInitData();
-          },
-          error: (err) => {
-            this.msgService.error(JSON.stringify(err.error));
-          },
-          complete: () => {
+        this.locationService.delete(id)
+          .pipe(finalize(() => {
             this.isDataLoading = false;
-          },
-        });
+          }))
+          .subscribe({
+            next: () => {
+              this.msgService.success('Location deleted successfully');
+
+              if (this.dataToDisplay.length === 1 && this.page > 1) {
+                this.page--;
+              }
+
+              this.getInitData();
+            },
+            error: (err) => {
+              this.msgService.error(JSON.stringify(err.error));
+            },
+          });
       }
     });
   }
 
   update(id: number, data: any) {
     this.isDataLoading = true;
-    this.locationService.update(id, data).subscribe({
-      next: () => {
-        this.msgService.success('Location updated successfully');
-        this.closeDrawer();
-        this.getInitData();
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-      complete: () => {
+    this.locationService.update(id, data)
+      .pipe(finalize(() => {
         this.isDataLoading = false;
-      },
-    });
+      }))
+      .subscribe({
+        next: () => {
+          this.msgService.success('Location updated successfully');
+          this.closeDrawer();
+          this.getInitData();
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 
   submit() {
-    if (this.form.valid) {
-      if (this.isUpdating) {
-        return this.update(this.dataDrawerCache.id, this.form.value);
-      }
+    if (!this.form.valid) {
+      Object.values(this.form.controls).forEach((control) => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+      return;
+    }
 
-      this.drawerLoader = true;
+    if (this.isUpdating) {
+      return this.update(this.dataDrawerCache.id, this.form.value);
+    }
 
-      this.locationService.create(this.form.value).subscribe({
+    this.drawerLoader = true;
+
+    this.locationService.create(this.form.value)
+      .pipe(finalize(() => {
+        this.drawerLoader = false;
+      }))
+      .subscribe({
         next: () => {
           this.msgService.success('Location created successfully');
           this.getInitData();
@@ -214,18 +230,7 @@ export class LocationComponent {
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
         },
-        complete: () => {
-          this.drawerLoader = false;
-        },
       });
-    } else {
-      Object.values(this.form.controls).forEach((control) => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-        }
-      });
-    }
   }
 
   changeStatus(id: number, data: any) {
@@ -254,75 +259,76 @@ export class LocationComponent {
   }
 
   exportLocation(): void {
-    this.locationService.get({}, null, null, true).subscribe({
-      next: (res: any) => {
-        if (res.length === 0) {
-          this.msgService.warning('No data available to export');
-          return;
-        }
+    this.locationService.get({}, null, null, true)
+      .pipe(finalize(() => {
+        this.exportLoader = false;
+      }))
+      .subscribe({
+        next: (res: any) => {
+          if (res.length === 0) {
+            this.msgService.warning('No data available to export');
+            return;
+          }
 
-        this.isDataLoading = true;
+          this.exportLoader = true;
 
-        const headers = {
-          code: 'Code',
-          description: 'Description',
-          created: 'Created',
-          active: 'Status',
-        };
+          const headers = {
+            code: 'Code',
+            description: 'Description',
+            created: 'Created',
+            active: 'Status',
+          };
 
-        const selectedColumns = Object.keys(
-          headers
-        ) as (keyof typeof headers)[];
+          const selectedColumns = Object.keys(
+            headers
+          ) as (keyof typeof headers)[];
 
-        const filteredData = res.map((location: any) =>
-          selectedColumns.reduce((obj: Record<string, any>, key) => {
-            if (key === 'active') {
-              obj[headers[key]] = location[key] ? 'Active' : 'Inactive';
-            } else if (key === 'created') {
-              const date = new Date(location[key]);
-              obj[headers[key]] = date.toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              });
-            } else {
-              obj[headers[key]] = location[key];
-            }
-            return obj;
-          }, {})
-        );
+          const filteredData = res.map((location: any) =>
+            selectedColumns.reduce((obj: Record<string, any>, key) => {
+              if (key === 'active') {
+                obj[headers[key]] = location[key] ? 'Active' : 'Inactive';
+              } else if (key === 'created') {
+                const date = new Date(location[key]);
+                obj[headers[key]] = date.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                });
+              } else {
+                obj[headers[key]] = location[key];
+              }
+              return obj;
+            }, {})
+          );
 
-        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
-        const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Location');
+          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+          const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'Location');
 
-        const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-          bookType: 'xlsx',
-          type: 'array',
-        });
+          const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+            bookType: 'xlsx',
+            type: 'array',
+          });
 
-        const blob = new Blob([excelBuffer], {
-          type: 'application/octet-stream',
-        });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
+          const blob = new Blob([excelBuffer], {
+            type: 'application/octet-stream',
+          });
+          const link = document.createElement('a');
+          const url = URL.createObjectURL(blob);
 
-        link.setAttribute('href', url);
-        link.setAttribute('download', 'Location.xlsx');
-        link.style.visibility = 'hidden';
+          link.setAttribute('href', url);
+          link.setAttribute('download', 'Location.xlsx');
+          link.style.visibility = 'hidden';
 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
 
-        this.msgService.success('Export completed successfully');
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-      complete: () => {
-        this.isDataLoading = false;
-      },
-    });
+          this.msgService.success('Export completed successfully');
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 }

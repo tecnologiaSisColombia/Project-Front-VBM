@@ -27,10 +27,10 @@
       (click)="exportBenefits()">
       <i 
         nz-icon 
-        nzType="download" 
+        [nzType]="exportLoader ? 'loading' : 'download'" 
         nzTheme="outline">
       </i>
-      Export Benefits
+      {{ exportLoader ? 'Exporting...' : 'Export Benefits' }}
     </button>
   </div>
 </div>

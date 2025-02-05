@@ -27,10 +27,10 @@
       (click)="exportLocalities()">
       <i 
         nz-icon 
-        nzType="download" 
+        [nzType]="exportLoader ? 'loading' : 'download'" 
         nzTheme="outline">
       </i>
-      Export Localities
+      {{ exportLoader ? 'Exporting...' : 'Export Localities' }}
     </button>
   </div>
 </div>

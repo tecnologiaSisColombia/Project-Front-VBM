@@ -28,6 +28,7 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { SubplansComponent } from '../subplans/subplans.component';
 import * as XLSX from 'xlsx';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-plans',
@@ -60,6 +61,7 @@ export class PlansComponent implements OnInit {
   nameSearch: any = null;
   insurerSearch: any = null;
   isDataLoading = false;
+  exportLoader = false;
   dataToDisplay: any[] = [];
   num_pages = 1;
   count_records = 0;
@@ -116,6 +118,9 @@ export class PlansComponent implements OnInit {
         this.page,
         this.page_size
       )
+      .pipe(finalize(() => {
+        this.isDataLoading = false;
+      }))
       .subscribe({
         next: (res: any) => {
           this.dataToDisplay = res.results;
@@ -123,9 +128,6 @@ export class PlansComponent implements OnInit {
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
-        },
-        complete: () => {
-          this.isDataLoading = false;
         },
       });
   }
@@ -155,7 +157,6 @@ export class PlansComponent implements OnInit {
   }
 
   closeDrawer(): void {
-    this.drawerLoader = false;
     this.isUpdating = false;
     this.visible = false;
     this.dataDrawerCahe = null;
@@ -174,53 +175,68 @@ export class PlansComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
-        this.planService.deletePlan(id).subscribe({
-          next: () => {
-            this.msgService.success('Coverage deleted successfully');
-
-            if (this.dataToDisplay.length === 1 && this.page > 1) {
-              this.page--;
-            }
-
-            this.getInitData();
-          },
-          error: (err) => {
-            this.msgService.error(JSON.stringify(err.error));
-          },
-          complete: () => {
+        this.planService.deletePlan(id)
+          .pipe(finalize(() => {
             this.isDataLoading = false;
-          },
-        });
+          }))
+          .subscribe({
+            next: () => {
+              this.msgService.success('Coverage deleted successfully');
+
+              if (this.dataToDisplay.length === 1 && this.page > 1) {
+                this.page--;
+              }
+
+              this.getInitData();
+            },
+            error: (err) => {
+              this.msgService.error(JSON.stringify(err.error));
+            },
+          });
       }
     });
   }
 
   update(id: number, data: any): void {
     this.isDataLoading = true;
-    this.planService.updatePlan(id, data).subscribe({
-      next: () => {
-        this.msgService.success('Coverage updated successfully');
-        this.closeDrawer();
-        this.getInitData();
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-      complete: () => {
+    this.planService.updatePlan(id, data)
+      .pipe(finalize(() => {
         this.isDataLoading = false;
-      },
-    });
+      }))
+      .subscribe({
+        next: () => {
+          this.msgService.success('Coverage updated successfully');
+          this.closeDrawer();
+          this.getInitData();
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 
   submit(): void {
-    if (this.form.valid) {
-      if (this.isUpdating) {
-        return this.update(this.dataDrawerCahe.id, this.form.value);
-      }
+    if (!this.form.valid) {
+      Object.values(this.form.controls).forEach((control) => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+      return;
+    }
 
-      this.drawerLoader = true;
+    if (this.isUpdating) {
+      return this.update(this.dataDrawerCahe.id, this.form.value);
+    }
 
-      this.planService.createPlan(this.form.value).subscribe({
+    this.drawerLoader = true;
+
+    this.planService.createPlan(this.form.value)
+      .pipe(finalize(() => {
+        this.drawerLoader = false;
+      }))
+      .subscribe({
         next: () => {
           this.msgService.success('Coverage created successfully');
           this.getInitData();
@@ -229,18 +245,7 @@ export class PlansComponent implements OnInit {
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
         },
-        complete: () => {
-          this.drawerLoader = false;
-        },
       });
-    } else {
-      Object.values(this.form.controls).forEach((control) => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-        }
-      });
-    }
   }
 
   changeStatus(id: number, data: any): void {
@@ -286,6 +291,9 @@ export class PlansComponent implements OnInit {
   exportCoverages(): void {
     this.planService
       .getPlans({}, null, null, true)
+      .pipe(finalize(() => {
+        this.exportLoader = false;
+      }))
       .subscribe({
         next: (res: any) => {
           if (res.length === 0) {
@@ -293,7 +301,7 @@ export class PlansComponent implements OnInit {
             return;
           }
 
-          this.isDataLoading = true;
+          this.exportLoader = true;
 
           const headers = {
             insurer_name: 'Insurer',
@@ -349,9 +357,6 @@ export class PlansComponent implements OnInit {
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
-        },
-        complete: () => {
-          this.isDataLoading = false;
         },
       });
   }

@@ -27,10 +27,10 @@
       (click)="exportDoctors()">
       <i 
         nz-icon 
-        nzType="download" 
-        nzTheme="outline"> 
+        [nzType]="exportLoader ? 'loading' : 'download'" 
+        nzTheme="outline">
       </i>
-      Export Doctors
+      {{ exportLoader ? 'Exporting...' : 'Export Doctors' }}
     </button>
   </div>
 </div>

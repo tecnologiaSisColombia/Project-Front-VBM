@@ -26,6 +26,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { S3Service } from 'app/services/upload-s3/upload-s3.service';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-eligibility',
@@ -57,6 +58,7 @@ import html2canvas from 'html2canvas';
 })
 export class EligibilityComponent {
   isDataLoading = false;
+  exportLoader = false;
   dataToDisplay: any[] = [];
   num_pages = 1;
   count_records = 0;
@@ -130,6 +132,9 @@ export class EligibilityComponent {
         this.page,
         this.page_size
       )
+      .pipe(finalize(() => {
+        this.isDataLoading = false;
+      }))
       .subscribe({
         next: (res: any) => {
           this.dataToDisplay = res.results;
@@ -137,9 +142,6 @@ export class EligibilityComponent {
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
-        },
-        complete: () => {
-          this.isDataLoading = false;
         },
       });
   }
@@ -231,19 +233,20 @@ export class EligibilityComponent {
 
     this.uploading = true;
 
-    this.s3Service.uploadEligibility(formData).subscribe({
-      next: () => {
-        this.msgService.success('File upload successfully');
-        this.isVisibleModalUpload = false;
-        this.selectedFile = null;
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-      complete: () => {
+    this.s3Service.uploadEligibility(formData)
+      .pipe(finalize(() => {
         this.uploading = false;
-      },
-    });
+      }))
+      .subscribe({
+        next: () => {
+          this.msgService.success('File upload successfully');
+          this.isVisibleModalUpload = false;
+          this.selectedFile = null;
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 
   cancelModalUpload(): void {
@@ -287,73 +290,74 @@ export class EligibilityComponent {
   }
 
   exportBenefits(): void {
-    this.eligibilityService.getPatients({}, null, null, true).subscribe({
-      next: (res: any) => {
-        if (res.length === 0) {
-          this.msgService.warning('No data available to export');
-          return;
-        }
+    this.eligibilityService.getPatients({}, null, null, true)
+      .pipe(finalize(() => {
+        this.exportLoader = false;
+      }))
+      .subscribe({
+        next: (res: any) => {
+          if (res.length === 0) {
+            this.msgService.warning('No data available to export');
+            return;
+          }
 
-        this.isDataLoading = true;
+          this.exportLoader = true;
 
-        const headers = {
-          first_name: 'First Name',
-          last_name: 'Last Name',
-          gender: 'Gender',
-          birth_date: 'BirthDate',
-          age: 'Age',
-          email: 'Email',
-          occupation: 'Occupation',
-          effective: 'Effective',
-          terminates: 'Terminates',
-          city: 'City',
-          primary_phone: 'Phone'
-        };
+          const headers = {
+            first_name: 'First Name',
+            last_name: 'Last Name',
+            gender: 'Gender',
+            birth_date: 'BirthDate',
+            age: 'Age',
+            email: 'Email',
+            occupation: 'Occupation',
+            effective: 'Effective',
+            terminates: 'Terminates',
+            city: 'City',
+            primary_phone: 'Phone'
+          };
 
-        const selectedColumns = Object.keys(
-          headers
-        ) as (keyof typeof headers)[];
+          const selectedColumns = Object.keys(
+            headers
+          ) as (keyof typeof headers)[];
 
-        const filteredData = res.map((patient: any) => {
-          const row: Record<string, any> = {};
-          selectedColumns.forEach((key) => {
-            row[headers[key]] = patient[key] != null ? patient[key] : '';
+          const filteredData = res.map((patient: any) => {
+            const row: Record<string, any> = {};
+            selectedColumns.forEach((key) => {
+              row[headers[key]] = patient[key] != null ? patient[key] : '';
+            });
+            return row;
           });
-          return row;
-        });
 
-        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
-        const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'patients');
+          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+          const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'patients');
 
-        const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-          bookType: 'xlsx',
-          type: 'array',
-        });
+          const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+            bookType: 'xlsx',
+            type: 'array',
+          });
 
-        const blob = new Blob([excelBuffer], {
-          type: 'application/octet-stream',
-        });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
+          const blob = new Blob([excelBuffer], {
+            type: 'application/octet-stream',
+          });
+          const link = document.createElement('a');
+          const url = URL.createObjectURL(blob);
 
-        link.setAttribute('href', url);
-        link.setAttribute('download', 'Patients.xlsx');
-        link.style.visibility = 'hidden';
+          link.setAttribute('href', url);
+          link.setAttribute('download', 'Patients.xlsx');
+          link.style.visibility = 'hidden';
 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
 
-        this.msgService.success('Export completed successfully');
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-      complete: () => {
-        this.isDataLoading = false;
-      },
-    });
+          this.msgService.success('Export completed successfully');
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 
   printContentDetails() {

@@ -30,6 +30,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-user-management',
@@ -382,25 +383,24 @@ export class UserManagementComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
-        this.userService.delete(username, id).subscribe({
-          next: () => {
-            this.msgService.success('User deleted successfully');
+        this.userService.delete(username, id)
+          .pipe(finalize(() => { this.isDataLoading = false; }))
+          .subscribe({
+            next: () => {
+              this.msgService.success('User deleted successfully');
 
-            if (this.dataToDisplay.length === 1 && this.page > 1) {
-              this.page--;
-            }
+              if (this.dataToDisplay.length === 1 && this.page > 1) {
+                this.page--;
+              }
 
-            this.checkAndLogout(username);
+              this.checkAndLogout(username);
 
-            this.getInitData();
-          },
-          error: (err) => {
-            this.msgService.error(JSON.stringify(err.error));
-          },
-          complete: () => {
-            this.isDataLoading = false;
-          },
-        });
+              this.getInitData();
+            },
+            error: (err) => {
+              this.msgService.error(JSON.stringify(err.error));
+            },
+          });
       }
     });
   }

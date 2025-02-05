@@ -22,6 +22,7 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { debounceTime, Subject } from 'rxjs';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-profiles',
@@ -57,6 +58,7 @@ export class ProfilesComponent implements OnInit {
   new_group_name: string = '';
   editCache: { [key: number]: { edit: boolean; data: any } } = {};
   isDataLoading = false;
+  exportLoader = false;
   isDataLoadingP = false;
   isVisibleEditDrawer = false;
   editForm!: FormGroup;
@@ -153,17 +155,18 @@ export class ProfilesComponent implements OnInit {
       admin: updatedData.admin,
     };
 
-    this.profileService.updatePerfil(id, permissions).subscribe({
-      next: () => {
-        this.seePermissions(group);
-      },
-      error: (err) => {
-        this.message.error(JSON.stringify(err.error));
-      },
-      complete: () => {
+    this.profileService.updatePerfil(id, permissions)
+      .pipe(finalize(() => {
         this.isDataLoading = false;
-      },
-    });
+      }))
+      .subscribe({
+        next: () => {
+          this.seePermissions(group);
+        },
+        error: (err) => {
+          this.message.error(JSON.stringify(err.error));
+        },
+      });
   }
 
   openPermissionsModal(id_grupo: number): void {
@@ -181,6 +184,9 @@ export class ProfilesComponent implements OnInit {
     this.isDataLoadingP = true;
 
     this.profileService.getGroupPerfil(id_grupo, this.p_page, this.p_page_size, false, this.moduleSearch)
+      .pipe(finalize(() => {
+        this.isDataLoadingP = false;
+      }))
       .subscribe({
         next: (res: any) => {
           this.permisosList = res.results;
@@ -191,19 +197,29 @@ export class ProfilesComponent implements OnInit {
         error: (err) => {
           this.message.error(JSON.stringify(err.error));
         },
-        complete: () => {
-          this.isDataLoadingP = false;
-        },
       });
   }
 
   submitEdit(): void {
-    if (this.editForm.valid) {
-      const updatedData = { id: this.selectedGroupId, ...this.editForm.value };
+    if (!this.editForm.valid) {
+      Object.values(this.editForm.controls).forEach((control) => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+      return;
+    }
 
-      this.isDataLoading = true;
+    const updatedData = { id: this.selectedGroupId, ...this.editForm.value };
 
-      this.profileService.updateGroup(updatedData.id, updatedData).subscribe({
+    this.isDataLoading = true;
+
+    this.profileService.updateGroup(updatedData.id, updatedData)
+      .pipe(finalize(() => {
+        this.isDataLoading = false;
+      }))
+      .subscribe({
         next: () => {
           this.message.success('Profile updated successfully');
           this.getGroups();
@@ -212,18 +228,7 @@ export class ProfilesComponent implements OnInit {
         error: (err) => {
           this.message.error(JSON.stringify(err.error));
         },
-        complete: () => {
-          this.isDataLoading = false;
-        },
       });
-    } else {
-      Object.values(this.editForm.controls).forEach((control) => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-        }
-      });
-    }
   }
 
   changeStatus(id: number, paramToChange?: string) {
@@ -239,6 +244,9 @@ export class ProfilesComponent implements OnInit {
 
     this.profileService
       .updateGroup(this.editCache[id].data.id, this.editCache[id].data)
+      .pipe(finalize(() => {
+        this.isDataLoading = false;
+      }))
       .subscribe({
         next: () => {
           this.message.success('Group updated successfully');
@@ -247,9 +255,6 @@ export class ProfilesComponent implements OnInit {
         },
         error: (err: any) => {
           this.message.error(JSON.stringify(err.error));
-        },
-        complete: () => {
-          this.isDataLoading = false;
         },
       });
   }
@@ -282,15 +287,28 @@ export class ProfilesComponent implements OnInit {
   }
 
   SaveNewProfile() {
-    if (this.addForm.valid) {
-      this.isDataLoading = true;
+    if (!this.addForm.valid) {
+      Object.values(this.addForm.controls).forEach((control) => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+      return;
+    }
 
-      const data = {
-        name: this.addForm.get('new_group_name')?.value,
-        type: this.addForm.get('type')?.value,
-      };
+    this.isDataLoading = true;
 
-      this.profileService.addGroup(data).subscribe({
+    const data = {
+      name: this.addForm.get('new_group_name')?.value,
+      type: this.addForm.get('type')?.value,
+    };
+
+    this.profileService.addGroup(data)
+      .pipe(finalize(() => {
+        this.isDataLoading = false;
+      }))
+      .subscribe({
         next: () => {
           this.message.success('Group created successfully');
           this.getGroups();
@@ -299,18 +317,7 @@ export class ProfilesComponent implements OnInit {
         error: (err) => {
           this.message.error(JSON.stringify(err.error));
         },
-        complete: () => {
-          this.isDataLoading = false;
-        },
       });
-    } else {
-      Object.values(this.addForm.controls).forEach((control) => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-        }
-      });
-    }
   }
 
   updateEditCache(): void {
@@ -326,6 +333,9 @@ export class ProfilesComponent implements OnInit {
     this.isDataLoading = true;
     this.profileService
       .getGroups({ name: this.nameSearch }, this.page, this.page_size, init)
+      .pipe(finalize(() => {
+        this.isDataLoading = false;
+      }))
       .subscribe({
         next: (res: any) => {
           this.listOfDisplayData = res.results;
@@ -334,9 +344,6 @@ export class ProfilesComponent implements OnInit {
         },
         error: (err: any) => {
           this.message.error(JSON.stringify(err.error));
-        },
-        complete: () => {
-          this.isDataLoading = false;
         },
       });
   }
@@ -374,94 +381,96 @@ export class ProfilesComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
-        this.profileService.deleteGroup(id_group).subscribe({
-          next: () => {
-            this.message.success('Group deleted successfully');
-
-            if (this.listOfDisplayData.length === 1 && this.page > 1) {
-              this.page--;
-            }
-
-            this.getGroups();
-          },
-          error: (err) => {
-            this.message.error(JSON.stringify(err.error));
-          },
-          complete: () => {
+        this.profileService.deleteGroup(id_group)
+          .pipe(finalize(() => {
             this.isDataLoading = false;
-          },
-        });
+          }))
+          .subscribe({
+            next: () => {
+              this.message.success('Group deleted successfully');
+
+              if (this.listOfDisplayData.length === 1 && this.page > 1) {
+                this.page--;
+              }
+
+              this.getGroups();
+            },
+            error: (err) => {
+              this.message.error(JSON.stringify(err.error));
+            },
+          });
       }
     });
   }
 
   exportGroups(): void {
-    this.profileService.getGroups({}, null, null, true).subscribe({
-      next: (res: any) => {
-        if (res.length === 0) {
-          this.message.warning('No data available to export');
-          return;
-        }
+    this.profileService.getGroups({}, null, null, true)
+      .pipe(finalize(() => {
+        this.exportLoader = false;
+      }))
+      .subscribe({
+        next: (res: any) => {
+          if (res.length === 0) {
+            this.message.warning('No data available to export');
+            return;
+          }
 
-        this.isDataLoading = true;
+          this.exportLoader = true;
 
-        const headers = {
-          name: 'Group Name',
-          active: 'Status',
-          created: 'Created',
-        };
+          const headers = {
+            name: 'Group Name',
+            active: 'Status',
+            created: 'Created',
+          };
 
-        const formatData = (data: any[], headers: Record<string, string>) =>
-          data.map((group) =>
-            Object.keys(headers).reduce((obj: Record<string, any>, key) => {
-              if (key === 'active') {
-                obj[headers[key]] = group[key] ? 'Active' : 'Inactive';
-              } else if (key === 'created') {
-                const date = new Date(group[key]);
-                obj[headers[key]] = date.toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                });
-              } else {
-                obj[headers[key]] = group[key];
-              }
-              return obj;
-            }, {})
-          );
+          const formatData = (data: any[], headers: Record<string, string>) =>
+            data.map((group) =>
+              Object.keys(headers).reduce((obj: Record<string, any>, key) => {
+                if (key === 'active') {
+                  obj[headers[key]] = group[key] ? 'Active' : 'Inactive';
+                } else if (key === 'created') {
+                  const date = new Date(group[key]);
+                  obj[headers[key]] = date.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  });
+                } else {
+                  obj[headers[key]] = group[key];
+                }
+                return obj;
+              }, {})
+            );
 
-        const groupsData = formatData(res, headers);
+          const groupsData = formatData(res, headers);
 
-        const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(groupsData);
-        const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Groups');
+          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(groupsData);
+          const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'Groups');
 
-        const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-          bookType: 'xlsx',
-          type: 'array',
-        });
+          const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+            bookType: 'xlsx',
+            type: 'array',
+          });
 
-        const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-        const url = URL.createObjectURL(blob);
+          const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+          const url = URL.createObjectURL(blob);
 
-        const link = document.createElement('a');
-        link.setAttribute('href', url);
-        link.setAttribute('download', 'Groups.xlsx');
-        link.style.visibility = 'hidden';
+          const link = document.createElement('a');
+          link.setAttribute('href', url);
+          link.setAttribute('download', 'Groups.xlsx');
+          link.style.visibility = 'hidden';
 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
 
-        this.message.success('Export completed successfully');
-      },
-      error: (err) => {
-        this.message.error(JSON.stringify(err.error));
-      },
-      complete: () => {
-        this.isDataLoading = false;
-      },
-    });
+          this.message.success('Export completed successfully');
+        },
+        error: (err) => {
+          this.message.error(JSON.stringify(err.error));
+        },
+      });
   }
 
 }

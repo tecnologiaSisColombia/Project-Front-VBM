@@ -27,10 +27,10 @@
       (click)="exporInsurers()">
       <i 
         nz-icon 
-        nzType="download" 
+        [nzType]="exportLoader ? 'loading' : 'download'" 
         nzTheme="outline">
       </i>
-      Export Insurers
+      {{ exportLoader ? 'Exporting...' : 'Export Insurers' }}
     </button>
   </div>
 </div>
@@ -139,7 +139,7 @@
       [nzNotFoundContent]="contentTpl">
       <ng-template #contentTpl>
         <span>
-          No recordsfound
+          No records found
         </span>
       </ng-template>
     </nz-empty>

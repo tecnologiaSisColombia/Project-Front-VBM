@@ -29,6 +29,7 @@ import { ServicesService } from 'app/services/config/services.service';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-insurers',
@@ -65,6 +66,7 @@ export class InsurersComponent implements OnInit {
   dataToDisplay: any[] = [];
   visible = false;
   drawerLoader = false;
+  exportLoader = false;
   drawerTitle = '';
   dataDrawerCahe: any;
   isUpdating = false;
@@ -129,32 +131,34 @@ export class InsurersComponent implements OnInit {
 
   getServices() {
     this.isDataLoading = true;
-    this.serviceService.get({}, null, null, true).subscribe({
-      next: (res: any) => {
-        this.services = res;
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-      complete: () => {
+    this.serviceService.get({}, null, null, true)
+      .pipe(finalize(() => {
         this.isDataLoading = false;
-      },
-    });
+      }))
+      .subscribe({
+        next: (res: any) => {
+          this.services = res;
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 
   getProducts() {
     this.isDataLoading = true;
-    this.productService.get({}, null, null, true).subscribe({
-      next: (res: any) => {
-        this.products = res;
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-      complete: () => {
+    this.productService.get({}, null, null, true)
+      .pipe(finalize(() => {
         this.isDataLoading = false;
-      },
-    });
+      }))
+      .subscribe({
+        next: (res: any) => {
+          this.products = res;
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 
   getInitData(): void {
@@ -170,6 +174,9 @@ export class InsurersComponent implements OnInit {
         this.page,
         this.page_size
       )
+      .pipe(finalize(() => {
+        this.isDataLoading = false;
+      }))
       .subscribe({
         next: (res: any) => {
           this.dataToDisplay = res.results;
@@ -177,9 +184,6 @@ export class InsurersComponent implements OnInit {
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
-        },
-        complete: () => {
-          this.isDataLoading = false;
         },
       });
   }
@@ -194,7 +198,6 @@ export class InsurersComponent implements OnInit {
     this.isUpdating = true;
     this.drawerTitle = 'Edit Insurer';
     this.dataDrawerCahe = data;
-
     this.form.patchValue({ ...data });
     this.form.patchValue({
       services: data.services.map((e: any) => e.id),
@@ -203,19 +206,11 @@ export class InsurersComponent implements OnInit {
   }
 
   closeDrawer(): void {
-    this.drawerLoader = false;
     this.isUpdating = false;
     this.visible = false;
     this.dataDrawerCahe = null;
     this.drawerTitle = '';
-    this.form.reset({
-      logo: null,
-      logo_description: null,
-      payer_id: null,
-      phone: null,
-      address: null,
-      name: null,
-    });
+    this.form.reset();
   }
 
   delete(id: number): void {
@@ -229,42 +224,44 @@ export class InsurersComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
-        this.insurerService.deleteInsurer(id).subscribe({
-          next: () => {
-            this.msgService.success('Insurer deleted successfully');
-
-            if (this.dataToDisplay.length === 1 && this.page > 1) {
-              this.page--;
-            }
-
-            this.getInitData();
-          },
-          error: (err) => {
-            this.msgService.error(JSON.stringify(err.error));
-          },
-          complete: () => {
+        this.insurerService.deleteInsurer(id)
+          .pipe(finalize(() => {
             this.isDataLoading = false;
-          },
-        });
+          }))
+          .subscribe({
+            next: () => {
+              this.msgService.success('Insurer deleted successfully');
+
+              if (this.dataToDisplay.length === 1 && this.page > 1) {
+                this.page--;
+              }
+
+              this.getInitData();
+            },
+            error: (err) => {
+              this.msgService.error(JSON.stringify(err.error));
+            },
+          });
       }
     });
   }
 
   update(id: number, data: any): void {
     this.isDataLoading = true;
-    this.insurerService.updateInsurer(id, data).subscribe({
-      next: () => {
-        this.msgService.success('Insurer updated successfully');
-        this.closeDrawer();
-        this.getInitData();
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-      complete: () => {
+    this.insurerService.updateInsurer(id, data)
+      .pipe(finalize(() => {
         this.isDataLoading = false;
-      },
-    });
+      }))
+      .subscribe({
+        next: () => {
+          this.msgService.success('Insurer updated successfully');
+          this.closeDrawer();
+          this.getInitData();
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 
   onFileChange(event: Event): void {
@@ -286,39 +283,44 @@ export class InsurersComponent implements OnInit {
   }
 
   submit(): void {
-    if (this.form.valid) {
-      this.drawerLoader = true;
-      const formData = this.form.value;
+    if (!this.form.valid) {
+      Object.values(this.form.controls).forEach((control) => {
+        control.markAsDirty();
+        control.updateValueAndValidity({ onlySelf: true });
+      });
+      return;
+    }
 
-      if (!formData.logo) {
-        formData.logo = this.isUpdating ? this.dataDrawerCahe.logo : 'None';
-      }
+    this.drawerLoader = true;
 
-      const logoFile = this.form.get('logo')?.value;
+    const formData = this.form.value;
 
-      if (logoFile instanceof File) {
-        const uploadData = new FormData();
-        uploadData.append('name', formData.name);
-        uploadData.append('logo', logoFile);
+    if (!formData.logo) {
+      formData.logo = this.isUpdating ? this.dataDrawerCahe.logo : 'None';
+    }
 
-        this.s3Service.uploadLogo(uploadData).subscribe({
+    const logoFile = this.form.get('logo')?.value;
+
+    if (logoFile instanceof File) {
+      const uploadData = new FormData();
+      uploadData.append('name', formData.name);
+      uploadData.append('logo', logoFile);
+
+      this.s3Service.uploadLogo(uploadData)
+        .pipe(finalize(() => {
+          this.drawerLoader = false;
+        }))
+        .subscribe({
           next: (response: any) => {
             formData.logo = response.url;
             this.saveOrUpdate(formData);
           },
           error: (error: any) => {
-            this.drawerLoader = false;
             this.msgService.error(JSON.stringify(error.error));
           },
         });
-      } else {
-        this.saveOrUpdate(formData);
-      }
     } else {
-      Object.values(this.form.controls).forEach((control) => {
-        control.markAsDirty();
-        control.updateValueAndValidity({ onlySelf: true });
-      });
+      this.saveOrUpdate(formData);
     }
   }
 
@@ -326,19 +328,20 @@ export class InsurersComponent implements OnInit {
     if (this.isUpdating) {
       this.update(this.dataDrawerCahe.id, formData);
     } else {
-      this.insurerService.createInsurer(formData).subscribe({
-        next: () => {
-          this.msgService.success('Insurer created successfully');
-          this.isDataLoading = false;
-          this.getInitData();
-          this.closeDrawer();
-        },
-        error: (error) => {
+      this.insurerService.createInsurer(formData)
+        .pipe(finalize(() => {
           this.drawerLoader = false;
-          this.isDataLoading = false;
-          this.msgService.error(JSON.stringify(error.error));
-        },
-      });
+        }))
+        .subscribe({
+          next: () => {
+            this.msgService.success('Insurer created successfully');
+            this.getInitData();
+            this.closeDrawer();
+          },
+          error: (error) => {
+            this.msgService.error(JSON.stringify(error.error));
+          },
+        });
     }
   }
 
@@ -385,78 +388,79 @@ export class InsurersComponent implements OnInit {
   }
 
   exporInsurers(): void {
-    this.insurerService.getInsurers({}, null, null, true).subscribe({
-      next: (res: any) => {
-        if (res.length === 0) {
-          this.msgService.warning('No data available to export');
-          return;
-        }
+    this.insurerService.getInsurers({}, null, null, true)
+      .pipe(finalize(() => {
+        this.exportLoader = false;
+      }))
+      .subscribe({
+        next: (res: any) => {
+          if (res.length === 0) {
+            this.msgService.warning('No data available to export');
+            return;
+          }
 
-        this.isDataLoading = true;
+          this.exportLoader = true;
 
-        const headers = {
-          name: 'Insurer Name',
-          payer_id: 'Payer ID',
-          phone: 'Phone',
-          address: 'Address',
-          created: 'Created',
-          active: 'Status',
-        };
+          const headers = {
+            name: 'Insurer Name',
+            payer_id: 'Payer ID',
+            phone: 'Phone',
+            address: 'Address',
+            created: 'Created',
+            active: 'Status',
+          };
 
-        const selectedColumns = Object.keys(
-          headers
-        ) as (keyof typeof headers)[];
+          const selectedColumns = Object.keys(
+            headers
+          ) as (keyof typeof headers)[];
 
-        const filteredData = res.map((insurer: any) =>
-          selectedColumns.reduce((obj: Record<string, any>, key) => {
-            if (key === 'active') {
-              obj[headers[key]] = insurer[key] ? 'Active' : 'Inactive';
-            } else if (key === 'created') {
-              const date = new Date(insurer[key]);
-              obj[headers[key]] = date.toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              });
-            } else {
-              obj[headers[key]] = insurer[key];
-            }
-            return obj;
-          }, {})
-        );
+          const filteredData = res.map((insurer: any) =>
+            selectedColumns.reduce((obj: Record<string, any>, key) => {
+              if (key === 'active') {
+                obj[headers[key]] = insurer[key] ? 'Active' : 'Inactive';
+              } else if (key === 'created') {
+                const date = new Date(insurer[key]);
+                obj[headers[key]] = date.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                });
+              } else {
+                obj[headers[key]] = insurer[key];
+              }
+              return obj;
+            }, {})
+          );
 
-        const worksheet: XLSX.WorkSheet =
-          XLSX.utils.json_to_sheet(filteredData);
-        const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Insurers');
+          const worksheet: XLSX.WorkSheet =
+            XLSX.utils.json_to_sheet(filteredData);
+          const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'Insurers');
 
-        const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-          bookType: 'xlsx',
-          type: 'array',
-        });
+          const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+            bookType: 'xlsx',
+            type: 'array',
+          });
 
-        const blob = new Blob([excelBuffer], {
-          type: 'application/octet-stream',
-        });
-        const url = URL.createObjectURL(blob);
+          const blob = new Blob([excelBuffer], {
+            type: 'application/octet-stream',
+          });
+          const url = URL.createObjectURL(blob);
 
-        const link = document.createElement('a');
-        link.setAttribute('href', url);
-        link.setAttribute('download', 'Insurers.xlsx');
-        link.style.visibility = 'hidden';
+          const link = document.createElement('a');
+          link.setAttribute('href', url);
+          link.setAttribute('download', 'Insurers.xlsx');
+          link.style.visibility = 'hidden';
 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
 
-        this.msgService.success('Export completed successfully');
-      },
-      error: (err: any) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-      complete: () => {
-        this.isDataLoading = false;
-      },
-    });
+          this.msgService.success('Export completed successfully');
+        },
+        error: (err: any) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 }

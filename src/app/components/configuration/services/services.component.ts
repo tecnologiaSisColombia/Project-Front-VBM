@@ -25,6 +25,7 @@ import { ServicesService } from 'app/services/config/services.service';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import * as XLSX from 'xlsx';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-services',
@@ -53,6 +54,7 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 export class ServicesComponent implements OnInit {
   form: UntypedFormGroup;
   isDataLoading = false;
+  exportLoader = false;
   dataToDisplay: any[] = [];
   visible = false;
   drawerLoader = false;
@@ -112,6 +114,9 @@ export class ServicesComponent implements OnInit {
         this.page,
         this.page_size
       )
+      .pipe(finalize(() => {
+        this.isDataLoading = false;
+      }))
       .subscribe({
         next: (res: any) => {
           this.dataToDisplay = res.results;
@@ -119,9 +124,6 @@ export class ServicesComponent implements OnInit {
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
-        },
-        complete: () => {
-          this.isDataLoading = false;
         },
       });
   }
@@ -140,7 +142,6 @@ export class ServicesComponent implements OnInit {
   }
 
   closeDrawer(): void {
-    this.drawerLoader = false;
     this.isUpdating = false;
     this.visible = false;
     this.dataDrawerCache = null;
@@ -159,53 +160,68 @@ export class ServicesComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
-        this.serviceService.delete(id).subscribe({
-          next: () => {
-            this.msgService.success('Service deleted successfully');
-
-            if (this.dataToDisplay.length === 1 && this.page > 1) {
-              this.page--;
-            }
-
-            this.getInitData();
-          },
-          error: (err) => {
-            this.msgService.error(JSON.stringify(err.error));
-          },
-          complete: () => {
+        this.serviceService.delete(id)
+          .pipe(finalize(() => {
             this.isDataLoading = false;
-          },
-        });
+          }))
+          .subscribe({
+            next: () => {
+              this.msgService.success('Service deleted successfully');
+
+              if (this.dataToDisplay.length === 1 && this.page > 1) {
+                this.page--;
+              }
+
+              this.getInitData();
+            },
+            error: (err) => {
+              this.msgService.error(JSON.stringify(err.error));
+            },
+          });
       }
     });
   }
 
   update(id: number, data: any) {
     this.isDataLoading = true;
-    this.serviceService.update(id, data).subscribe({
-      next: () => {
-        this.msgService.success('Service updated successfully');
-        this.closeDrawer();
-        this.getInitData();
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-      complete: () => {
+    this.serviceService.update(id, data)
+      .pipe(finalize(() => {
         this.isDataLoading = false;
-      },
-    });
+      }))
+      .subscribe({
+        next: () => {
+          this.msgService.success('Service updated successfully');
+          this.closeDrawer();
+          this.getInitData();
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 
   submit() {
-    if (this.form.valid) {
-      if (this.isUpdating) {
-        return this.update(this.dataDrawerCache.id, this.form.value);
-      }
+    if (!this.form.valid) {
+      Object.values(this.form.controls).forEach((control) => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+      return;
+    }
 
-      this.drawerLoader = true;
+    if (this.isUpdating) {
+      return this.update(this.dataDrawerCache.id, this.form.value);
+    }
 
-      this.serviceService.create(this.form.value).subscribe({
+    this.drawerLoader = true;
+
+    this.serviceService.create(this.form.value)
+      .pipe(finalize(() => {
+        this.drawerLoader = false;
+      }))
+      .subscribe({
         next: () => {
           this.msgService.success('Service created successfully');
           this.getInitData();
@@ -214,18 +230,7 @@ export class ServicesComponent implements OnInit {
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
         },
-        complete: () => {
-          this.drawerLoader = false;
-        },
       });
-    } else {
-      Object.values(this.form.controls).forEach((control) => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-        }
-      });
-    }
   }
 
   changeStatus(id: number, data: any) {
@@ -257,6 +262,9 @@ export class ServicesComponent implements OnInit {
   exportServices(): void {
     this.serviceService
       .get({}, null, null, true)
+      .pipe(finalize(() => {
+        this.exportLoader = false;
+      }))
       .subscribe({
         next: (res: any) => {
           if (res.length === 0) {
@@ -264,7 +272,7 @@ export class ServicesComponent implements OnInit {
             return;
           }
 
-          this.isDataLoading = true;
+          this.exportLoader = true;
 
           const headers = {
             code: 'Code',
@@ -319,9 +327,6 @@ export class ServicesComponent implements OnInit {
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
-        },
-        complete: () => {
-          this.isDataLoading = false;
         },
       });
   }
