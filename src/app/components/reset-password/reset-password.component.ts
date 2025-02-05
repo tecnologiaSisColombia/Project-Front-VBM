@@ -32,9 +32,8 @@ import { finalize } from 'rxjs/operators';
 export class ResetPasswordComponent {
   resetForm: FormGroup;
   isDataLoading = false;
-  showVerificationCode = false;
-  showPassword = false;
-  passwordVisible: boolean = false;
+  resetStep: 'request' | 'confirm' = 'request';
+  passwordVisible = false;
 
   constructor(
     private fb: FormBuilder,
@@ -44,14 +43,14 @@ export class ResetPasswordComponent {
   ) {
     this.resetForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      verificationCode: [''],
-      newPassword: ['']
+      confirmation_code: [''],
+      new_password: ['']
     });
   }
 
-  onRequestReset(): void {
-    if (!this.resetForm.valid) {
-      Object.values(this.resetForm.controls).forEach((control) => {
+  requestReset(): void {
+    if (this.resetForm.invalid) {
+      Object.values(this.resetForm.controls).forEach(control => {
         if (control.invalid) {
           control.markAsDirty();
           control.updateValueAndValidity({ onlySelf: true });
@@ -70,21 +69,15 @@ export class ResetPasswordComponent {
       }))
       .subscribe({
         next: () => {
-          this.showVerificationCode = true;
-          this.showPassword = true;
+          this.resetStep = 'confirm';
 
-          this.resetForm.get('verificationCode')?.setValidators([
-            Validators.required,
-            Validators.pattern(/^\d+$/)
-          ]);
+          this.resetForm.get('confirmation_code')?.setValidators([Validators.required]);
 
-          this.resetForm.get('verificationCode')?.updateValueAndValidity();
+          this.resetForm.get('confirmation_code')?.updateValueAndValidity();
 
-          this.resetForm.get('newPassword')?.setValidators([
-            Validators.required, Validators.minLength(8)
-          ]);
+          this.resetForm.get('new_password')?.setValidators([Validators.required]);
 
-          this.resetForm.get('newPassword')?.updateValueAndValidity();
+          this.resetForm.get('new_password')?.updateValueAndValidity();
 
           this.msg.success('Reset request sent successfully');
         },
@@ -94,7 +87,7 @@ export class ResetPasswordComponent {
       });
   }
 
-  onResendCode(): void {
+  resendCode(): void {
     this.isDataLoading = true;
 
     const email = this.resetForm.get('email')?.value;
@@ -105,8 +98,7 @@ export class ResetPasswordComponent {
       }))
       .subscribe({
         next: () => {
-          this.showVerificationCode = true;
-          this.showPassword = true;
+          this.resetStep = 'confirm';
           this.msg.success('Verification code resent successfully');
         },
         error: (error) => {
@@ -115,31 +107,26 @@ export class ResetPasswordComponent {
       });
   }
 
-  onConfirmResetPassword(): void {
-    const data = {
-      email: this.resetForm.get('email')?.value,
-      confirmation_code: this.resetForm.get('verificationCode')?.value,
-      new_password: this.resetForm.get('newPassword')?.value,
-    };
-
+  confirmResetPassword(): void {
     this.isDataLoading = true;
 
-    this.resetPasswordService.confirmResetPassword(data)
+    this.resetPasswordService.confirmResetPassword(this.resetForm.value)
       .pipe(finalize(() => {
         this.isDataLoading = false;
       }))
       .subscribe({
         next: () => {
           this.resetForm.reset();
-          this.resetForm.get('verificationCode')?.clearValidators();
-          this.resetForm.get('newPassword')?.clearValidators();
+
+          this.resetForm.get('confirmation_code')?.clearValidators();
+          
+          this.resetForm.get('new_password')?.clearValidators();
+
           this.resetForm.updateValueAndValidity();
 
           this.msg.success('Password reset successfully');
 
-          setTimeout(() => {
-            this.router.navigate(['./login']);
-          }, 900);
+          setTimeout(() => this.router.navigate(['./login']), 900);
         },
         error: (error) => {
           this.msg.error(JSON.stringify(error?.error?.error?.message));

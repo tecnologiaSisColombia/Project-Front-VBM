@@ -64,8 +64,7 @@
     [nzData]="dataToDisplay"
     [nzFrontPagination]="false"
     [nzNoResult]="noDataTemplate"
-    [nzLoading]="isDataLoading"
-  >
+    [nzLoading]="isDataLoading">
     <thead>
       <tr>
         <th>Plan</th>
@@ -162,8 +161,7 @@
   [nzTitle]="drawerTitle"
   (nzOnClose)="closeDrawer()"
   [nzWidth]="720"
-  [nzFooter]="footerTpl"
->
+  [nzFooter]="footerTpl">
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="drawerLoader">
       <form nz-form [formGroup]="form" (ngSubmit)="submit()">
@@ -172,13 +170,19 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="name"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Name
           </nz-form-label>
 
-          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="nameError">
-            <input nz-input formControlName="name" id="name" />
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="nameError">
+            <input 
+              nz-input 
+              formControlName="name" 
+              id="name" 
+            />
           </nz-form-control>
         </nz-form-item>
 
@@ -196,13 +200,19 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="group"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Group
           </nz-form-label>
 
-          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="groupError">
-            <input nz-input formControlName="group" id="group" />
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="groupError">
+            <input 
+              nz-input 
+              formControlName="group" 
+              id="group" 
+            />
           </nz-form-control>
         </nz-form-item>
 
@@ -220,12 +230,14 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="plan_contract"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Plan contract
           </nz-form-label>
 
-          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="contractError">
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="contractError">
             <input
               nz-input
               formControlName="plan_contract"
@@ -248,23 +260,20 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="pds"
-            style="text-align: center"
-          >
+            style="text-align: center">
             PDS
           </nz-form-label>
 
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
+            nzErrorTip="This field is required">
             <nz-select
               nzShowSearch
               nzAllowClear
               id="pds"
               nzPlaceHolder="Select an PDS"
-              formControlName="pds"
-            >
+              formControlName="pds">
               <nz-option nzLabel="Yes" [nzValue]="1"></nz-option>
               <nz-option nzLabel="No" [nzValue]="2"></nz-option>
             </nz-select>
@@ -276,16 +285,14 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="visual_test_medicare"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Visual test medicare $
           </nz-form-label>
 
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
+            nzErrorTip="This field is required">
             <input
               nz-input
               type="number"
@@ -300,16 +307,14 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="visual_surgery_medicare"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Visual surgery medicare $
           </nz-form-label>
 
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
+            nzErrorTip="This field is required">
             <input
               nz-input
               type="number"
@@ -324,16 +329,14 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="routine_visual_test"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Routine visual test $
           </nz-form-label>
 
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
+            nzErrorTip="This field is required">
             <input
               nz-input
               type="number"
@@ -348,16 +351,14 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="routine_visual_test_benefit"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Routine visual test benefit
           </nz-form-label>
 
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
+            nzErrorTip="This field is required">
             <input
               nz-input
               type="text"
@@ -372,16 +373,14 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="vision_elements"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Vision elements $
           </nz-form-label>
 
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
+            nzErrorTip="This field is required">
             <input
               nz-input
               type="number"
@@ -396,16 +395,14 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="vision_elements_benefit"
-            style="text-align: center"
-          >
+            style="text-align: center">
             Vision elements benefit
           </nz-form-label>
 
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required"
-          >
+            nzErrorTip="This field is required">
             <input
               nz-input
               type="text"
@@ -423,12 +420,16 @@
       <button
         nz-button
         style="display: flex; margin-right: 8px"
-        (click)="closeDrawer()"
-      >
+        (click)="closeDrawer()">
         close
       </button>
 
-      <button nz-button nzType="primary" (click)="submit()">Save</button>
+      <button 
+        nz-button 
+        nzType="primary" 
+        (click)="submit()">
+        Save
+      </button>
     </div>
   </ng-template>
 </nz-drawer>

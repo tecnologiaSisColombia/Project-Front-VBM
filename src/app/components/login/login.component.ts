@@ -46,28 +46,36 @@ export class LoginComponent implements OnInit {
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
-      password: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/), Validators.minLength(8),
-      ]],
+      password: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
     });
   }
 
   ngOnInit(): void { }
 
   signIn(): void {
-    if (this.loginForm.valid) {
-      this.isDataLoading = true;
+    if (!this.loginForm.valid) {
+      Object.values(this.loginForm.controls).forEach(control => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+    }
 
-      const data = {
-        username: this.loginForm.get('username')?.value,
-        password: this.loginForm.get('password')?.value,
-      };
+    this.isDataLoading = true;
 
-      this.loginService.signIn(data).subscribe({
+    this.loginService.signIn(this.loginForm.value)
+      .subscribe({
         next: (res: any) => {
+          const getAttr = (name: string) => {
+            const attribute = res.attributes.find((attr: any) => attr.Name === name);
+            return attribute?.Value;
+          };
+
           res.properties.user = {
-            id: res.attributes.find((e: any) => e.Name === 'sub').Value,
-            email: res.attributes.find((e: any) => e.Name === 'email').Value,
-            username: res.attributes.find((e: any) => e.Name === 'username').Value,
+            id: getAttr('sub'),
+            email: getAttr('email'),
+            username: getAttr('username'),
           };
 
           localStorage.removeItem('auth_challenge');
@@ -78,49 +86,40 @@ export class LoginComponent implements OnInit {
             this.isDataLoading = false;
           });
         },
-        error: (error) => {
-          this.isDataLoading = false;
-
+        error: (err) => {
           const errorMapping: Record<string, { route: string; queryParams: Record<string, any> }> = {
             NewPasswordRequired: {
               route: '/change_password',
               queryParams: {
-                session: error.error.error.session,
-                username: data.username,
+                session: err.error.error.session,
+                username: this.loginForm.get('username')?.value,
               },
             },
             NewPasswordDays: {
               route: '/change_password',
               queryParams: {
-                username: data.username,
+                username: this.loginForm.get('username')?.value,
               },
             },
           };
 
-          const errorCode = error?.error?.error?.code;
+          const errorCode = err?.error?.error?.code;
 
           if (errorMapping[errorCode]) {
+            this.isDataLoading = false;
+
             localStorage.setItem('auth_challenge', errorCode);
-            this.router
-              .navigate([errorMapping[errorCode].route], {
-                queryParams: errorMapping[errorCode].queryParams,
-              })
-              .then(() => {
-                this.isDataLoading = false;
-              });
+
+            this.router.navigate([errorMapping[errorCode].route], {
+              queryParams: errorMapping[errorCode].queryParams,
+            });
           } else {
-            this.msg.error(JSON.stringify(error?.error?.error?.message));
+            this.isDataLoading = false;
+
+            this.msg.error(JSON.stringify(err?.error?.error?.message));
           }
         },
       });
-    } else {
-      Object.values(this.loginForm.controls).forEach((control) => {
-        if (control.invalid) {
-          control.markAsDirty();
-          control.updateValueAndValidity({ onlySelf: true });
-        }
-      });
-    }
   }
 
   togglePasswordVisibility(): void {
