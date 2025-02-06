@@ -15,6 +15,7 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
 import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { AuthService } from 'app/services/auth/auth.service';
@@ -52,40 +53,47 @@ import { finalize } from 'rxjs/operators';
     NzSpinModule,
     NzPaginationModule,
     NzEmptyModule,
+    NzDividerModule
   ],
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.css', '/src/animations/styles.css'],
 })
 export class UserManagementComponent implements OnInit {
-  isDataLoading = false;
-  dataToDisplay: any[] = [];
-  userTypes: any[] = [];
   form: UntypedFormGroup;
+  isDataLoading = false;
+  exportLoader = false;
+  drawerLoader = false;
+  dataToDisplay: any[] = [];
   visible = false;
+  drawerTitle = '';
   extraForm: any = null;
-  userTypeOptions: { id: number; label: string; value: string }[] = [];
+  userTypeOptions: { id: number; label: string; value: string, type: string }[] = [];
   localities: any[] = [];
   suppliers: any[] = [];
   insurers: any[] = [];
-  drawerLoader = false;
   firstSearch: any = null;
   lastSearch: any = null;
   usernameSearch: any = null;
+  isUpdating = false;
+  dataDrawerCahe: any = null;
   num_pages = 1;
   count_records = 0;
   page_size = 10;
   page = 1;
+  userAttr: any = null;
   [key: string]: any;
-  user_attr: any = null;
   searchFields = [
     { placeholder: 'Username...', model: 'usernameSearch', key: 'username' },
     { placeholder: 'First Name...', model: 'firstSearch', key: 'first_name' },
     { placeholder: 'Last Name...', model: 'lastSearch', key: 'last_name' },
   ];
-  isVisible = false;
-  tempUser: any = null;
-  user_type: any = '';
+  fieldsToClearMap: { [key: string]: string[] } = {
+    'SUPPLIER': ['type_user'],
+    'PARTNER': ['type_user', 'number_license', 'localities'],
+    'MASTER': ['type_user', 'number_license', 'supplier', 'localities']
+  };
   private searchNameSubject = new Subject<{ type: string; value: string }>();
+  user_type: any = '';
 
   constructor(
     private userService: UserService,
@@ -130,124 +138,87 @@ export class UserManagementComponent implements OnInit {
     this.getLocalities();
     this.getSuppliers();
     this.getInsurers();
-    this.user_attr = JSON.parse(localStorage.getItem('user_attr')!);
+    this.userAttr = JSON.parse(localStorage.getItem('user_attr')!);
   }
 
-  getSuppliers(): void {
-    this.supplierService.getSuppliers({ status: 1 }, null, null, true).subscribe({
-      next: (res: any) => {
-        this.suppliers = res;
-        if (this.user_attr.rol == 'SUPPLIER') {
-          const supplier = this.suppliers.find(
-            (s) => s.user.id == this.user_attr.id
-          );
-          this.form.patchValue({ supplier: supplier.id });
-        }
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-    });
-  }
-
-  getInsurers(): void {
-    this.insurerService.getInsurers({ status: 1 }, null, null, true).subscribe({
-      next: (res: any) => {
-        this.insurers = res;
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-    });
-  }
-
-  getLocalities(): void {
-    this.localitiesService.get({ status: 1 }, null, null, true).subscribe({
-      next: (res: any) => (this.localities = res),
-      error: (err) => this.msgService.error(JSON.stringify(err.error)),
-    });
-  }
-
-  openDrawer(): void {
+  openEditDrawer(data: any): void {
     this.visible = true;
-  }
+    this.isUpdating = true;
+    this.drawerTitle = 'Edit User';
+    this.dataDrawerCahe = data;
+    this.form.patchValue({ ...data });
 
-  closeDrawer(): void {
-    this.visible = false;
-    this.form.reset();
-    this.extraForm = null;
-    this.drawerLoader = false;
-  }
+    if (data.extra_data && data.extra_data.length > 0) {
+      this.form.patchValue({
+        number_license: data.extra_data[0].license_number,
+        supplier: data.extra_data[0].supplier_id
+      });
+    }
+    
+    const selectedUserType = this.userTypeOptions.find(
+      (e) => e.id === this.dataDrawerCahe.user_type
+    );
 
-  closeDrawerEdit(): void {
-    this.isVisible = false;
+    if (selectedUserType) {
+      const userType = selectedUserType.type;
+      const fieldsToClear = this.fieldsToClearMap[userType] || this.fieldsToClearMap['MASTER'];
+
+      fieldsToClear.forEach(field => {
+        const control = this.form.get(field);
+        if (control) {
+          control.clearValidators();
+          control.updateValueAndValidity();
+        }
+      });
+    }
+
+    if (this.dataDrawerCahe.extra_data?.length > 0 && this.dataDrawerCahe.user_type) {
+      this.user_type =
+        this.userTypeOptions.find((e) => e.id == this.dataDrawerCahe.user_type) || '';
+    } else {
+      this.user_type = { id: 1, type: 'MASTER' };
+    }
   }
 
   submit(): void {
-    if (this.form.valid) {
-      const userData = this.form.value;
+    if (!this.form.valid) {
+      Object.values(this.form.controls).forEach(control => {
+        control.markAsDirty();
+        control.updateValueAndValidity({ onlySelf: true });
+      });
+      return;
+    }
 
-      this.drawerLoader = true;
+    this.drawerLoader = true;
 
-      this.userService.createUser(userData).subscribe({
+    const request = this.isUpdating
+      ? this.userService.updateAttributes(this.form.value)
+      : this.userService.createUser(this.form.value);
+
+    request
+      .pipe(finalize(() => {
+        this.drawerLoader = false;
+      }))
+      .subscribe({
         next: () => {
-          this.msgService.success('User created successfully');
+          if (this.isUpdating && this.form.value) {
+            this.userService
+              .updateDataByType(
+                this.userTypeOptions.find(e => e.id === this.user_type.id)!,
+                this.dataDrawerCahe.id,
+                this.form.value
+              )
+              .subscribe({ error: err => this.msgService.error(JSON.stringify(err?.error)) });
+          }
+
+          this.msgService.success(`User ${this.isUpdating ? 'updated' : 'created'} successfully`);
+
           this.getInitData();
           this.getSuppliers();
           this.closeDrawer();
         },
-        error: (error) => {
-          this.msgService.error(JSON.stringify(error.error.error.message));
-        },
-        complete: () => {
-          this.drawerLoader = false;
-        },
+        error: err => this.msgService.error(JSON.stringify(err?.error?.message || err?.error)),
       });
-    } else {
-      Object.values(this.form.controls).forEach((control) => {
-        control.markAsDirty();
-        control.updateValueAndValidity({ onlySelf: true });
-      });
-    }
-  }
-
-  submit2(): void {
-    this.drawerLoader = true;
-    this.userService.updateAttributes(this.tempUser).subscribe(
-      () => {
-        if (this.tempUser.extra_data) {
-          this.userService
-            .updateDataByType(
-              this.userTypeOptions.find((e) => e.id === this.user_type.id)!,
-              this.tempUser.id,
-              this.tempUser
-            )
-            .subscribe({
-              next: () => {
-                this.msgService.success('User updated successfully');
-                this.isVisible = false;
-                this.getInitData();
-
-              },
-              error: (err) => {
-                this.msgService.error(JSON.stringify(err?.error));
-              },
-            });
-          this.drawerLoader = false;
-        } else {
-          this.msgService.success('User updated successfully');
-          this.isVisible = false;
-          this.drawerLoader = false;
-          this.getInitData();
-
-        }
-        this.drawerLoader = false;
-      },
-      (error) => {
-        this.msgService.error(JSON.stringify(error?.error));
-        this.isDataLoading = false;
-      }
-    );
   }
 
   userTypeChange(event: any): void {
@@ -272,9 +243,7 @@ export class UserManagementComponent implements OnInit {
       Object.entries(controls).forEach(([key, controlNames]) => {
         const isActive = type === key;
         controlNames.forEach((control) => {
-          this.form
-            .get(control)
-            ?.setValidators(isActive ? [Validators.required] : null);
+          this.form.get(control)?.setValidators(isActive ? [Validators.required] : null);
           this.form.get(control)?.updateValueAndValidity();
         });
       });
@@ -289,24 +258,81 @@ export class UserManagementComponent implements OnInit {
     this.extraForm = selectedType;
 
     resetControls();
+
     applyValidation(this.extraForm.type);
   }
 
+  getSuppliers(): void {
+    this.supplierService.getSuppliers({ status: 1 }, null, null, true)
+      .subscribe({
+        next: (res: any) => {
+          this.suppliers = res;
+          if (this.userAttr.rol == 'SUPPLIER') {
+            const supplier = this.suppliers.find(
+              (s) => s.user.id == this.userAttr.id
+            );
+            this.form.patchValue({ supplier: supplier.id });
+          }
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
+  }
+
+  closeDrawer(): void {
+    this.visible = false;
+    this.form.reset();
+    this.extraForm = null;
+    this.drawerLoader = false;
+    this.dataDrawerCahe = null;
+  }
+
+  openDrawer(): void {
+    this.visible = true;
+    this.drawerTitle = 'New User';
+    this.isUpdating = false;
+  }
+
+  getInsurers(): void {
+    this.insurerService.getInsurers({ status: 1 }, null, null, true)
+      .subscribe({
+        next: (res: any) => {
+          this.insurers = res;
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
+  }
+
+  getLocalities(): void {
+    this.localitiesService.get({ status: 1 }, null, null, true)
+      .subscribe({
+        next: (res: any) => {
+          this.localities = res
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
+  }
+
   getUserTypes(): void {
-    this.userService.getUserTypes().subscribe({
-      next: (res: any[]) => {
-        this.userTypeOptions = res.map((type) => ({
-          label: type.name,
-          value: type.name,
-          type: type.type,
-          id: type.id,
-        }));
-        this.userTypes = res || [];
-      },
-      error: (error) => {
-        this.msgService.error(JSON.stringify(error));
-      },
-    });
+    this.userService.getUserTypes()
+      .subscribe({
+        next: (res: any[]) => {
+          this.userTypeOptions = res.map((type) => ({
+            label: type.name,
+            value: type.name,
+            type: type.type,
+            id: type.id,
+          }));
+        },
+        error: (error) => {
+          this.msgService.error(JSON.stringify(error));
+        },
+      });
   }
 
   getInitData(): void {
@@ -335,22 +361,6 @@ export class UserManagementComponent implements OnInit {
       });
   }
 
-  showDrawer(user: any): void {
-    this.isVisible = true;
-    this.tempUser = { ...user };
-
-    if (this.tempUser.extra_data?.length > 0 && this.tempUser.user_type) {
-      this.user_type =
-        this.userTypeOptions.find((e) => e.id == this.tempUser.user_type) || '';
-    } else {
-      this.user_type = { id: 1, type: 'MASTER' };
-    }
-  }
-
-  mapUserRole(user_type_id: number): string {
-    return this.userTypes.find((t) => t.id === user_type_id)?.name;
-  }
-
   update(id: number, data: any) {
     this.isDataLoading = true;
     this.userService.update(id, data).subscribe({
@@ -365,11 +375,6 @@ export class UserManagementComponent implements OnInit {
         this.isDataLoading = false;
       },
     });
-  }
-
-  changeStatus(user: any) {
-    const data = { is_active: user.is_active, username: user.username };
-    this.update(user.id, data);
   }
 
   delete(username: string, id: number): void {
@@ -393,7 +398,11 @@ export class UserManagementComponent implements OnInit {
                 this.page--;
               }
 
-              this.checkAndLogout(username);
+              const storedUser = localStorage.getItem('user_attributes');
+
+              if (storedUser && JSON.parse(storedUser).username === username) {
+                this.authService.doLogout();
+              }
 
               this.getInitData();
             },
@@ -405,12 +414,12 @@ export class UserManagementComponent implements OnInit {
     });
   }
 
-  checkAndLogout(username: string): void {
-    const storedUser = localStorage.getItem('user_attributes');
+  changeStatus(username: string, id: number, is_active: boolean): void {
+    this.update(id, { is_active: is_active, username: username });
+  }
 
-    if (storedUser && JSON.parse(storedUser).username === username) {
-      this.authService.doLogout();
-    }
+  mapRole(userType: number): string | undefined {
+    return this.userTypeOptions.find((t) => t.id === userType)?.label;
   }
 
   search(value: string, type: string) {
@@ -435,82 +444,82 @@ export class UserManagementComponent implements OnInit {
   }
 
   exportUsers(): void {
-    this.userService.getUsers({}, null, null, true).subscribe({
-      next: (res: any) => {
-        if (res.length === 0) {
-          this.msgService.warning('No data available to export');
-          return;
-        }
+    this.userService.getUsers({}, null, null, true)
+      .pipe(finalize(() => {
+        this.exportLoader = false;
+      }))
+      .subscribe({
+        next: (res: any) => {
+          if (res.length === 0) {
+            this.msgService.warning('No data available to export');
+            return;
+          }
 
-        this.isDataLoading = true;
+          this.exportLoader = true;
 
-        const headers = {
-          role: 'Role',
-          first_name: 'First Name',
-          last_name: 'Last Name',
-          email: 'Email',
-          username: 'Username',
-          phone: 'Phone',
-          is_active: 'Status',
-          created: 'Created',
-        };
+          const headers = {
+            role: 'Role',
+            first_name: 'First Name',
+            last_name: 'Last Name',
+            email: 'Email',
+            username: 'Username',
+            phone: 'Phone',
+            is_active: 'Status',
+            created: 'Created',
+          };
 
-        const selectedColumns = Object.keys(
-          headers
-        ) as (keyof typeof headers)[];
+          const selectedColumns = Object.keys(
+            headers
+          ) as (keyof typeof headers)[];
 
-        const filteredData = res.map((user: any) =>
-          selectedColumns.reduce((obj: Record<string, any>, key) => {
-            if (key === 'is_active') {
-              obj[headers[key]] = user[key] ? 'Active' : 'Inactive';
-            } else if (key === 'created') {
-              const date = new Date(user[key]);
-              obj[headers[key]] = date.toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              });
-            } else if (key === 'role') {
-              obj[headers[key]] = this.mapUserRole(user.user_type);
-            } else {
-              obj[headers[key]] = user[key];
-            }
-            return obj;
-          }, {})
-        );
+          const filteredData = res.map((user: any) =>
+            selectedColumns.reduce((obj: Record<string, any>, key) => {
+              if (key === 'is_active') {
+                obj[headers[key]] = user[key] ? 'Active' : 'Inactive';
+              } else if (key === 'created') {
+                const date = new Date(user[key]);
+                obj[headers[key]] = date.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                });
+              } else if (key === 'role') {
+                obj[headers[key]] = this.mapRole(user.user_type);
+              } else {
+                obj[headers[key]] = user[key];
+              }
+              return obj;
+            }, {})
+          );
 
-        const worksheet: XLSX.WorkSheet =
-          XLSX.utils.json_to_sheet(filteredData);
-        const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Users');
+          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+          const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'Users');
 
-        const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-          bookType: 'xlsx',
-          type: 'array',
-        });
+          const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
+            bookType: 'xlsx',
+            type: 'array',
+          });
 
-        const blob = new Blob([excelBuffer], {
-          type: 'application/octet-stream',
-        });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
+          const blob = new Blob([excelBuffer], {
+            type: 'application/octet-stream',
+          });
+          const link = document.createElement('a');
+          const url = URL.createObjectURL(blob);
 
-        link.setAttribute('href', url);
-        link.setAttribute('download', 'Users.xlsx');
-        link.style.visibility = 'hidden';
+          link.setAttribute('href', url);
+          link.setAttribute('download', 'Users.xlsx');
+          link.style.visibility = 'hidden';
 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
 
-        this.msgService.success('Export completed successfully');
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-      complete: () => {
-        this.isDataLoading = false;
-      },
-    });
+          this.msgService.success('Export completed successfully');
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 }

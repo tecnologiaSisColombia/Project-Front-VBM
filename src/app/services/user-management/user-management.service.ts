@@ -16,7 +16,7 @@ import { environment } from '../../../environments/environment';
 export class UserService {
   private baseUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   createUser(userData: any): Observable<any> {
     return this.http.post(`${this.baseUrl}access-control/CreateUser`, userData);
@@ -83,11 +83,8 @@ export class UserService {
     );
   }
 
-  updateAttributes(userData: any): Observable<any> {
-    return this.http.post(
-      `${this.baseUrl}access-control/UpdateAttributes`,
-      userData
-    );
+  updateAttributes(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}access-control/UpdateAttributes`, data);
   }
 
   getUserTypes(): Observable<any[]> {
@@ -102,30 +99,10 @@ export class UserService {
     return this.http.post<any>(`${this.baseUrl}core/user-types`, userTypeData);
   }
 
-  updateDataByType(
-    type_user: any,
-    user_id: number,
-    user: any
-  ): Observable<any> {
+  updateDataByType(type_user: any, user_id: number, user: any): Observable<any> {
     return this.http.put(
       `${this.baseUrl}access-control/update-type-user/${user_id}?type_user=${type_user.id}`,
       user
     );
   }
-
-  // createWorkingHour(data: any): Observable<any> {
-  //   return this.http.post(`${this.baseUrl}core/user-working-hours`, data);
-  // }
-
-  // updateWorkingHour(id: any, data: any): Observable<any> {
-  //   return this.http.put(`${this.baseUrl}core/user-working-hours/${id}`, data);
-  // }
-
-  // deleteWorkingHour(id: any): Observable<any> {
-  //   return this.http.delete(`${this.baseUrl}core/user-working-hours/${id}`);
-  // }
-
-  // getWorkingHour(user_id: any): Observable<any> {
-  //   return this.http.get(`${this.baseUrl}core/user-working-hours/${user_id}`);
-  // }
 }

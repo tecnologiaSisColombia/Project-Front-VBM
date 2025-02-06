@@ -206,6 +206,7 @@ export class InsurersComponent implements OnInit {
   }
 
   closeDrawer(): void {
+    this.drawerLoader = false;
     this.isUpdating = false;
     this.visible = false;
     this.dataDrawerCahe = null;

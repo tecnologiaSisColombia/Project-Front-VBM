@@ -98,8 +98,7 @@
               title="Status"
               [(ngModel)]="data.active"
               nzSize="small"
-              (ngModelChange)="changeStatus(data.group, data)"
-            >
+              (ngModelChange)="changeStatus(data.group, data)">
             </nz-switch>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
@@ -109,8 +108,7 @@
               nz-icon
               nzType="edit"
               nzTheme="outline"
-              (click)="openEditDrawer(data)"
-            >
+              (click)="openEditDrawer(data)">
             </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
@@ -120,8 +118,7 @@
               nz-icon
               nzType="delete"
               nzTheme="outline"
-              (click)="delete(data.group)"
-            >
+              (click)="delete(data.group)">
             </span>
           </a>
         </td>
@@ -147,8 +144,7 @@
     [nzShowSizeChanger]="true"
     (nzPageIndexChange)="pageChange($event)"
     (nzPageSizeChange)="pageSizeChange($event)"
-    [nzShowQuickJumper]="true"
-  >
+    [nzShowQuickJumper]="true">
   </nz-pagination>
 </div>
 

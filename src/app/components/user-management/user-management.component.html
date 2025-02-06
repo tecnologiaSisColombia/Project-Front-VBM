@@ -26,10 +26,10 @@
       (click)="exportUsers()">
       <i 
         nz-icon 
-        nzType="download" 
-        nzTheme="outline"> 
+        [nzType]="exportLoader ? 'loading' : 'download'" 
+        nzTheme="outline">
       </i>
-      Export Users
+      {{ exportLoader ? 'Exporting...' : 'Export Users' }}
     </button>
   </div>
 </div>
@@ -57,7 +57,7 @@
   </div>
 
   <nz-table
-    #userTable
+    #basicTable
     [nzData]="dataToDisplay"
     [nzFrontPagination]="false"
     [nzNoResult]="noDataTemplate"
@@ -75,42 +75,42 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let user of userTable.data">
-        <td>{{ user.user_type ? mapUserRole(user.user_type) : ""}} </td>
-        <td>{{ user.username }}</td>
-        <td>{{ user.first_name }}</td>
-        <td>{{ user.last_name }}</td>
-        <td>{{ user.email }}</td>
-        <td>{{ user.phone }}</td>
-        <td>{{ user.created | date }}</td>
+      <tr *ngFor="let data of basicTable.data">
+        <td>{{ mapRole(data.user_type) }} </td>
+        <td>{{ data.username }}</td>
+        <td>{{ data.first_name }}</td>
+        <td>{{ data.last_name }}</td>
+        <td>{{ data.email }}</td>
+        <td>{{ data.phone }}</td>
+        <td>{{ data.created | date }}</td>
         <td>
-          <nz-switch
-            [(ngModel)]="user.is_active"
-            (ngModelChange)="changeStatus(user)"
-            [nzSize]="'small'">
-          </nz-switch>
-
-          <button 
-            nz-button 
-            nzType="link" 
-            (click)="showDrawer(user)">
-            <i 
-              nz-icon 
-              nzType="edit" 
-              nzTheme="outline">
-            </i>
-          </button>
-
-          <button
-            nz-button
-            nzType="link"
-            [nzSize]="'small'"
-            (click)="delete(user.username, user.id)">
-            <i 
-              nz-icon 
-              nzType="delete"> 
-            </i>
-          </button>
+          <a>
+            <nz-switch
+              [(ngModel)]="data.is_active"
+              (ngModelChange)="changeStatus(data.username, data.id, data.is_active)"
+              [nzSize]="'small'">
+            </nz-switch>
+          </a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <a>
+            <span
+              title="Edit"
+              nz-icon
+              nzType="edit"
+              nzTheme="outline"
+              (click)="openEditDrawer(data)">
+            </span>
+          </a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <a>
+            <span
+              title="Delete"
+              nz-icon
+              nzType="delete"
+              nzTheme="outline"
+              (click)="delete(data.username, data.id)">
+            </span>
+          </a>
         </td>
       </tr>
     </tbody>
@@ -143,330 +143,337 @@
 <nz-drawer
   [nzBodyStyle]="{ overflow: 'auto' }"
   [nzMaskClosable]="false"
+  [nzClosable]="false"
   [nzVisible]="visible"
-  nzTitle="Create User"
-  [nzFooter]="footerTpl"
+  nzPlacement="right"
+  [nzTitle]="drawerTitle"
   (nzOnClose)="closeDrawer()"
   [nzWidth]="720"
-  nzPlacement="right"
-  [nzClosable]="false">
-  <form nz-form nzLayout="vertical" [formGroup]="form" *nzDrawerContent>
+  [nzFooter]="footerTpl">
+  <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="drawerLoader">
-      <nz-form-item>
-        <nz-form-label
-          [nzSm]="8"
-          [nzXs]="24"
-          nzFor="first_name"
-          style="text-align: center">
-          First name:
-        </nz-form-label>
-
-        <nz-form-control 
-          [nzSm]="16" 
-          [nzXs]="24" 
-          [nzErrorTip]="firstNameError">
-          <input 
-            nz-input 
-            formControlName="first_name" 
-            name="first_name" 
-          />
-        </nz-form-control>
-      </nz-form-item>
-
-      <ng-template #firstNameError>
-        <span *ngIf="form.get('first_name')?.hasError('required')">
-          This field is required
-        </span>
-        <span *ngIf="form.get('first_name')?.hasError('pattern')">
-          This field cannot be empty or contain only spaces
-        </span>
-      </ng-template>
-
-      <nz-form-item>
-        <nz-form-label
-          [nzSm]="8"
-          [nzXs]="24"
-          nzFor="last_name"
-          style="text-align: center">
-          Last name:
-        </nz-form-label>
-
-        <nz-form-control 
-          [nzSm]="16" 
-          [nzXs]="24" 
-          [nzErrorTip]="lastNameError">
-          <input 
-            nz-input 
-            formControlName="last_name" 
-            name="last_name" 
-          />
-        </nz-form-control>
-      </nz-form-item>
-
-      <ng-template #lastNameError>
-        <span *ngIf="form.get('last_name')?.hasError('required')">
-          This field is required
-        </span>
-        <span *ngIf="form.get('last_name')?.hasError('pattern')">
-          This field cannot be empty or contain only spaces
-        </span>
-      </ng-template>
-
-      <nz-form-item>
-        <nz-form-label
-          [nzSm]="8"
-          [nzXs]="24"
-          nzFor="email"
-          style="text-align: center">
-          Email:
-        </nz-form-label>
-
-        <nz-form-control 
-          [nzSm]="16" 
-          [nzXs]="24" 
-          [nzErrorTip]="emailError">
-          <input 
-            nz-input 
-            formControlName="email" 
-          />
-        </nz-form-control>
-      </nz-form-item>
-
-      <ng-template #emailError>
-        <span *ngIf="form.get('email')?.hasError('required')">
-          This field is required
-        </span>
-        <span *ngIf="form.get('email')?.hasError('email')">
-          Please enter a valid email address
-        </span>
-      </ng-template>
-
-      <nz-form-item>
-        <nz-form-label
-          [nzSm]="8"
-          [nzXs]="24"
-          nzFor="phone"
-          style="text-align: center">
-          Phone:
-        </nz-form-label>
-
-        <nz-form-control 
-          [nzSm]="16" 
-          [nzXs]="24" 
-          [nzErrorTip]="phoneError">
-          <input 
-            nz-input 
-            type="tel" 
-            formControlName="phone" 
-          />
-        </nz-form-control>
-      </nz-form-item>
-
-      <ng-template #phoneError>
-        <span *ngIf="form.get('phone')?.hasError('required')">
-          This field is required
-        </span>
-        <span *ngIf="form.get('phone')?.hasError('pattern')">
-          This field cannot be empty or contain only spaces
-        </span>
-      </ng-template>
-
-      <nz-form-item>
-        <nz-form-label
-          [nzSm]="8"
-          [nzXs]="24"
-          nzFor="username"
-          style="text-align: center">
-          Username:
-        </nz-form-label>
-
-        <nz-form-control 
-          [nzSm]="16" 
-          [nzXs]="24" 
-          [nzErrorTip]="usernameError">
-          <input 
-            nz-input 
-            formControlName="username" 
-            name="username" 
-          />
-        </nz-form-control>
-      </nz-form-item>
-
-      <ng-template #usernameError>
-        <span *ngIf="form.get('username')?.hasError('required')">
-          This field is required
-        </span>
-        <span *ngIf="form.get('username')?.hasError('pattern')">
-          This field cannot be empty or contain only spaces
-        </span>
-      </ng-template>
-
-      <nz-form-item>
-        <nz-form-label
-          [nzSm]="8"
-          [nzXs]="24"
-          nzFor="type_user"
-          style="text-align: center">
-          User type:
-        </nz-form-label>
-
-        <nz-form-control 
-          [nzSm]="16" 
-          [nzXs]="24" 
-          [nzErrorTip]="typeUserError">
-          <nz-select
-            formControlName="type_user"
-            name="userType"
-            [nzOptions]="userTypeOptions"
-            nzPlaceHolder="Select a user type"
-            (ngModelChange)="userTypeChange($event)">
-          </nz-select>
-        </nz-form-control>
-      </nz-form-item>
-
-      <ng-template #typeUserError>
-        <span *ngIf="form.get('type_user')?.hasError('required')">
-          This field is required
-        </span>
-      </ng-template>
-
-      <div nz-col nzSpan="24" *ngIf="extraForm?.type === 'SUPPLIER'">
+      <form nz-form [formGroup]="form" (ngSubmit)="submit()">
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
             [nzXs]="24"
-            nzFor="number_license"
+            nzFor="first_name"
             style="text-align: center">
-            Number license:
+            First name:
           </nz-form-label>
 
-          <nz-form-control
+          <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="licenceError">
-            <input
-              nz-input
-              name="number_license"
-              formControlName="number_license"
+            [nzErrorTip]="firstNameError">
+            <input 
+              nz-input 
+              formControlName="first_name" 
+              name="first_name" 
+            />
+            </nz-form-control>
+        </nz-form-item>
+
+        <ng-template #firstNameError>
+          <span *ngIf="form.get('first_name')?.hasError('required')">
+            This field is required
+          </span>
+          <span *ngIf="form.get('first_name')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
+        </ng-template>
+
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="last_name"
+            style="text-align: center">
+            Last name:
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="lastNameError">
+            <input 
+              nz-input 
+              formControlName="last_name" 
+              name="last_name" 
             />
           </nz-form-control>
         </nz-form-item>
 
-        <ng-template #licenceError>
-          <span *ngIf="form.get('number_license')?.hasError('required')">
+        <ng-template #lastNameError>
+          <span *ngIf="form.get('last_name')?.hasError('required')">
             This field is required
           </span>
+          <span *ngIf="form.get('last_name')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
         </ng-template>
-      </div>
 
-      <div nz-col nzSpan="24" *ngIf="extraForm?.type === 'SUPPLIER'">
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
             [nzXs]="24"
-            nzFor="stores"
+            nzFor="email"
             style="text-align: center">
-            Localities:
-          </nz-form-label>
-
-          <nz-form-control
-            [nzSm]="16"
-            [nzXs]="24"
-            [nzErrorTip]="localitiesError">
-            <nz-select
-              formControlName="localities"
-              name="localities"
-              nzPlaceHolder="Select locality"
-              nzMode="multiple">
-              <nz-option
-                *ngFor="let o of localities"
-                [nzLabel]="o.name"
-                [nzValue]="o.id">
-              </nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-
-        <ng-template #localitiesError>
-          <span *ngIf="form.get('localities')?.hasError('required')">
-            This field is required
-          </span>
-        </ng-template>
-      </div>
-
-      <div nz-col nzSpan="24" *ngIf="extraForm?.type === 'SUPPLIER'">
-        <nz-form-item>
-          <nz-form-label
-            [nzSm]="8"
-            [nzXs]="24"
-            nzFor="insurers"
-            style="text-align: center">
-            Insurers:
+            Email:
           </nz-form-label>
 
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="insurerError">
-            <nz-select
-              formControlName="insurers"
-              name="insurers"
-              nzPlaceHolder="Select Insurer"
-              nzMode="multiple">
-              <nz-option
-                *ngFor="let o of insurers"
-                [nzLabel]="o.payer_id + ' - ' + o.name"
-                [nzValue]="o.id">
-              </nz-option>
-            </nz-select>
+            [nzErrorTip]="emailError">
+            <input 
+              nz-input 
+              formControlName="email" 
+            />
           </nz-form-control>
         </nz-form-item>
 
-        <ng-template #insurerError>
-          <span *ngIf="form.get('insurers')?.hasError('required')">
+        <ng-template #emailError>
+          <span *ngIf="form.get('email')?.hasError('required')">
             This field is required
           </span>
+          <span *ngIf="form.get('email')?.hasError('email')">
+            Please enter a valid email address
+          </span>
         </ng-template>
-      </div>
 
-      <div
-        nz-col
-        nzSpan="24"
-        *ngIf="extraForm?.type === 'PARTNER' && user_attr.rol != 'SUPPLIER'">
         <nz-form-item>
           <nz-form-label
             [nzSm]="8"
             [nzXs]="24"
-            nzFor="supplier"
+            nzFor="phone"
             style="text-align: center">
-            Supplier:
+            Phone:
           </nz-form-label>
 
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="supplierError">
+            [nzErrorTip]="phoneError">
+            <input 
+              nz-input 
+              type="tel" 
+              formControlName="phone" 
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <ng-template #phoneError>
+          <span *ngIf="form.get('phone')?.hasError('required')">
+            This field is required
+          </span>
+          <span *ngIf="form.get('phone')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
+        </ng-template>
+
+        <nz-form-item >
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="username"
+            style="text-align: center">
+            Username:
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="usernameError">
+            <input 
+              nz-input 
+              formControlName="username" 
+              name="username" 
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <ng-template #usernameError>
+          <span *ngIf="form.get('username')?.hasError('required')">
+            This field is required
+          </span>
+          <span *ngIf="form.get('username')?.hasError('pattern')">
+            This field cannot be empty or contain only spaces
+          </span>
+        </ng-template>
+
+        <nz-form-item *ngIf="!isUpdating">
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="type_user"
+            style="text-align: center">
+            User type:
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="typeUserError">
             <nz-select
-              formControlName="supplier"
-              name="supplier"
-              nzPlaceHolder="Select insurer">
-              <nz-option
-                *ngFor="let o of suppliers"
-                [nzLabel]="o.user.first_name + ' ' + o.user.last_name"
-                [nzValue]="o.id">
-              </nz-option>
+              formControlName="type_user"
+              name="type_user"
+              [nzOptions]="userTypeOptions"
+              nzPlaceHolder="Select user type"
+              (ngModelChange)="userTypeChange($event)">
             </nz-select>
           </nz-form-control>
         </nz-form-item>
 
-        <ng-template #supplierError>
-          <span *ngIf="form.get('supplier')?.hasError('required')">
+        <ng-template #typeUserError>
+          <span *ngIf="form.get('type_user')?.hasError('required')">
             This field is required
           </span>
         </ng-template>
-      </div>
+
+        <div nz-col nzSpan="24" *ngIf="isUpdating 
+          ? (dataDrawerCahe?.extra_data && user_type?.type === 'SUPPLIER')
+          : (extraForm?.type === 'SUPPLIER')">
+          <nz-form-item>
+            <nz-form-label
+              [nzSm]="8"
+              [nzXs]="24"
+              nzFor="number_license"
+              style="text-align: center">
+              Number license:
+            </nz-form-label>
+
+            <nz-form-control
+              [nzSm]="16" 
+              [nzXs]="24" 
+              [nzErrorTip]="licenceError">
+              <input
+                nz-input
+                name="number_license"
+                formControlName="number_license"
+              />
+            </nz-form-control>
+          </nz-form-item>
+
+          <ng-template #licenceError>
+            <span *ngIf="form.get('number_license')?.hasError('required')">
+              This field is required
+            </span>
+          </ng-template>
+        </div>
+
+        <div nz-col nzSpan="24" *ngIf="isUpdating 
+            ? (dataDrawerCahe?.extra_data && user_type?.type === 'SUPPLIER')
+            : (extraForm?.type === 'SUPPLIER')">
+          <nz-form-item>
+            <nz-form-label
+              [nzSm]="8"
+              [nzXs]="24"
+              nzFor="localities"
+              style="text-align: center">
+              Localities:
+            </nz-form-label>
+
+            <nz-form-control
+              [nzSm]="16"
+              [nzXs]="24"
+              [nzErrorTip]="localitiesError">
+              <nz-select
+                formControlName="localities"
+                name="localities"
+                nzPlaceHolder="Select locality"
+                nzMode="multiple">
+                <nz-option
+                  *ngFor="let o of localities"
+                  [nzLabel]="o.name"
+                  [nzValue]="o.id">
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+
+          <ng-template #localitiesError>
+            <span *ngIf="form.get('localities')?.hasError('required')">
+              This field is required
+            </span>
+          </ng-template>
+        </div>
+
+        <div nz-col nzSpan="24" *ngIf="isUpdating 
+          ? (dataDrawerCahe?.extra_data && user_type?.type === 'SUPPLIER')
+          : (extraForm?.type === 'SUPPLIER')">
+          <nz-form-item>
+            <nz-form-label
+              [nzSm]="8"
+              [nzXs]="24"
+              nzFor="insurers"
+              style="text-align: center">
+              Insurers:
+            </nz-form-label>
+
+            <nz-form-control 
+              [nzSm]="16" 
+              [nzXs]="24" 
+              [nzErrorTip]="insurerError">
+              <nz-select
+                formControlName="insurers"
+                name="insurers"
+                nzPlaceHolder="Select insurer"
+                nzMode="multiple">
+                <nz-option
+                  *ngFor="let o of insurers"
+                  [nzLabel]="o.payer_id + ' - ' + o.name"
+                  [nzValue]="o.id">
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+
+          <ng-template #insurerError>
+            <span *ngIf="form.get('insurers')?.hasError('required')">
+              This field is required
+            </span>
+          </ng-template>
+        </div>
+
+        <div nz-col nzSpan="24" *ngIf="isUpdating 
+          ? (dataDrawerCahe?.extra_data && user_type?.type === 'PARTNER' && userAttr.rol != 'SUPPLIER')
+          : (extraForm?.type === 'PARTNER' && userAttr.rol != 'SUPPLIER')">
+          <nz-form-item>
+            <nz-form-label
+              [nzSm]="8"
+              [nzXs]="24"
+              nzFor="supplier"
+              style="text-align: center">
+              Supplier:
+            </nz-form-label>
+
+            <nz-form-control 
+              [nzSm]="16" 
+              [nzXs]="24" 
+              [nzErrorTip]="supplierError">
+              <nz-select
+                formControlName="supplier"
+                name="supplier"
+                nzPlaceHolder="Select supplier">
+                <nz-option
+                  *ngFor="let o of suppliers"
+                  [nzLabel]="o.user.first_name + ' ' + o.user.last_name"
+                  [nzValue]="o.id">
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+
+          <ng-template #supplierError>
+            <span *ngIf="form.get('supplier')?.hasError('required')">
+              This field is required
+            </span>
+          </ng-template>
+        </div>
+      </form>
     </nz-spin>
-  </form>
+  </ng-container>
 
   <ng-template #footerTpl>
     <div style="display: flex; float: right">
@@ -481,249 +488,6 @@
         nz-button 
         nzType="primary" 
         (click)="submit()">
-        Save
-      </button>
-    </div>
-  </ng-template>
-</nz-drawer>
-
-
-<nz-drawer
-  [nzBodyStyle]="{ overflow: 'auto' }"
-  [nzMaskClosable]="false"
-  [nzClosable]="false"
-  [nzVisible]="isVisible"
-  nzPlacement="right"
-  nzTitle="Edit User"
-  [nzWidth]="720"
-  [nzFooter]="footerTpl2">
-  <ng-container *nzDrawerContent>
-    <nz-spin [nzSpinning]="drawerLoader">
-      <form nz-form *ngIf="tempUser">
-        <nz-form-item>
-          <nz-form-label
-            [nzSm]="8"
-            [nzXs]="24"
-            style="text-align: center"
-            nzFor="firstName">
-            First name
-          </nz-form-label>
-
-          <nz-form-control 
-            [nzSm]="16" 
-            [nzXs]="24">
-            <input
-              nz-input
-              [(ngModel)]="tempUser.first_name"
-              name="firstName"
-              id="firstName"
-            />
-          </nz-form-control>
-        </nz-form-item>
-
-        <nz-form-item>
-          <nz-form-label
-            [nzSm]="8"
-            [nzXs]="24"
-            style="text-align: center"
-            nzFor="lastName">
-            Last name
-          </nz-form-label>
-
-          <nz-form-control 
-            [nzSm]="16" 
-            [nzXs]="24">
-            <input
-              nz-input
-              [(ngModel)]="tempUser.last_name"
-              name="lastName"
-              id="lastName"
-            />
-          </nz-form-control>
-        </nz-form-item>
-
-        <nz-form-item>
-          <nz-form-label
-            [nzSm]="8"
-            [nzXs]="24"
-            style="text-align: center"
-            nzFor="email">
-            Email
-          </nz-form-label>
-
-          <nz-form-control 
-            [nzSm]="16" 
-            [nzXs]="24">
-            <input
-              nz-input
-              [(ngModel)]="tempUser.email"
-              name="email"
-              id="email"
-            />
-          </nz-form-control>
-        </nz-form-item>
-
-        <nz-form-item>
-          <nz-form-label
-            [nzSm]="8"
-            [nzXs]="24"
-            style="text-align: center"
-            nzFor="phone">
-            Phone
-          </nz-form-label>
-
-          <nz-form-control 
-            [nzSm]="16" 
-            [nzXs]="24">
-            <input
-              nz-input
-              [(ngModel)]="tempUser.phone"
-              name="phone"
-              id="phone"
-            />
-          </nz-form-control>
-        </nz-form-item>
-
-        <div nz-row [nzGutter]="16" *ngIf="tempUser.extra_data && user_type?.type == 'SUPPLIER'">
-          <div nz-col [nzSpan]="24">
-            <nz-form-item>
-              <nz-form-label
-                [nzSm]="8"
-                [nzXs]="24"
-                style="text-align: center"
-                nzFor="localities">
-                Localities
-              </nz-form-label>
-
-              <nz-form-control 
-                [nzSm]="16" 
-                [nzXs]="24">
-
-                <nz-select
-                  *ngIf="tempUser?.extra_data?.length > 0"
-                  [(ngModel)]="tempUser.localities"
-                  nzPlaceHolder="Select localities"
-                  name="localities"
-                  id="localities"
-                  nzMode="multiple"
-                  style="width: 100%; border-radius: 6px">
-                  <nz-option
-                    *ngFor="let o of localities"
-                    [nzLabel]="o.name"
-                    [nzValue]="o.id">
-                  </nz-option>
-                </nz-select>
-              </nz-form-control>
-            </nz-form-item>
-          </div>
-        </div>
-
-        <div nz-row [nzGutter]="16" *ngIf="tempUser.extra_data && user_type.type == 'SUPPLIER'">
-          <div nz-col [nzSpan]="24">
-            <nz-form-item>
-              <nz-form-label
-                [nzSm]="8"
-                [nzXs]="24"
-                style="text-align: center"
-                nzFor="license_number">
-                License Number
-              </nz-form-label>
-
-              <nz-form-control 
-                [nzSm]="16" 
-                [nzXs]="24">
-                <input
-                  *ngIf="tempUser?.extra_data?.length > 0"
-                  name="license_number"
-                  id="license_number"
-                  nz-input
-                  [(ngModel)]="tempUser.extra_data[0].license_number"
-                  placeholder="Enter license number"
-                />
-              </nz-form-control>
-            </nz-form-item>
-          </div>
-        </div>
-
-        <div nz-row [nzGutter]="16" *ngIf="tempUser.extra_data && user_type.type == 'SUPPLIER'">
-          <div nz-col [nzSpan]="24">
-            <nz-form-item>
-              <nz-form-label 
-                [nzSm]="8" 
-                style="text-align: center" 
-                [nzXs]="24">
-                Insurers
-              </nz-form-label>
-
-              <nz-form-control 
-                [nzSm]="16" 
-                [nzXs]="24">
-
-                <nz-select
-                  *ngIf="tempUser?.extra_data?.length > 0"
-                  name="insurers"
-                  nzMode="multiple"
-                  [(ngModel)]="tempUser.insurers"
-                  nzPlaceHolder="Select insurers"
-                  style="width: 100%; border-radius: 6px">
-                  <nz-option
-                    *ngFor="let o of insurers"
-                    [nzLabel]="o.payer_id + ' - ' + o.name"
-                    [nzValue]="o.id">
-                  </nz-option>
-                </nz-select>
-              </nz-form-control>
-            </nz-form-item>
-          </div>
-        </div>
-
-        <div nz-row [nzGutter]="16" *ngIf="tempUser.extra_data && user_type.type == 'PARTNER' && user_attr.rol != 'SUPPLIER'">
-          <div nz-col [nzSpan]="24">
-            <nz-form-item>
-              <nz-form-label 
-                [nzSm]="8" 
-                style="text-align: center" 
-                [nzXs]="24">
-                Supplier
-              </nz-form-label>
-
-              <nz-form-control 
-                [nzSm]="16" 
-                [nzXs]="24">
-
-                <nz-select
-                  *ngIf="tempUser?.extra_data?.length > 0"
-                  name="supplier"
-                  [(ngModel)]="tempUser.extra_data[0].supplier_id"
-                  nzPlaceHolder="Select supplier"
-                  style="width: 100%; border-radius: 6px">
-                  <nz-option
-                    *ngFor="let o of suppliers"
-                    [nzLabel]="o.user.first_name + ' ' + o.user.last_name"
-                    [nzValue]="o.id">
-                  </nz-option>
-                </nz-select>
-              </nz-form-control>
-            </nz-form-item>
-          </div>
-        </div>
-      </form>
-    </nz-spin>
-  </ng-container>
-
-  <ng-template #footerTpl2>
-    <div style="display: flex; float: right">
-      <button 
-        nz-button 
-        style="margin-right: 8px" 
-        (click)="closeDrawerEdit()">
-        Close
-      </button>
-
-      <button 
-        nz-button 
-        nzType="primary" 
-        (click)="submit2()">
         Save
       </button>
     </div>
