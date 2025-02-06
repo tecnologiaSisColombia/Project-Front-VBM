@@ -114,6 +114,10 @@ export class UserManagementComponent implements OnInit {
       localities: [null],
       supplier: [null],
       insurers: [null],
+      address: [null],
+      city: [null],
+      state: [null],
+      postal_code: [null],
       number_license: [''],
     });
     this.searchNameSubject
@@ -146,23 +150,27 @@ export class UserManagementComponent implements OnInit {
     this.isUpdating = true;
     this.drawerTitle = 'Edit User';
     this.dataDrawerCahe = data;
+    
     this.form.patchValue({ ...data });
 
     if (data.extra_data && data.extra_data.length > 0) {
       this.form.patchValue({
         number_license: data.extra_data[0].license_number,
-        supplier: data.extra_data[0].supplier_id
+        supplier: data.extra_data[0].supplier_id,
+        address: data.extra_data[0].address,
+        city: data.extra_data[0].city,
+        state: data.extra_data[0].state,
+        postal_code: data.extra_data[0].postal_code
       });
     }
-    
-    const selectedUserType = this.userTypeOptions.find(
-      (e) => e.id === this.dataDrawerCahe.user_type
-    );
+
+    const selectedUserType = this.userTypeOptions.find(e => e.id === this.dataDrawerCahe.user_type);
 
     if (selectedUserType) {
       const userType = selectedUserType.type;
       const fieldsToClear = this.fieldsToClearMap[userType] || this.fieldsToClearMap['MASTER'];
 
+      // Elimina validaciones de campos que deben limpiarse
       fieldsToClear.forEach(field => {
         const control = this.form.get(field);
         if (control) {
@@ -170,15 +178,33 @@ export class UserManagementComponent implements OnInit {
           control.updateValueAndValidity();
         }
       });
+
+      const controls = {
+        SUPPLIER: ['number_license', 'localities', 'insurers', 'address', 'city', 'state'],
+        PARTNER: ['supplier'],
+      };
+
+      const requiredWithPattern = ['address', 'city', 'state', 'number_license'];
+
+      Object.entries(controls).forEach(([key, controlNames]) => {
+        const isActive = userType === key;
+        controlNames.forEach((control) => {
+          if (isActive) {
+            const validators = requiredWithPattern.includes(control)
+              ? [Validators.required, Validators.pattern(/^(?!\s*$).+/)]
+              : [Validators.required];
+            this.form.get(control)?.setValidators(validators);
+          } else {
+            this.form.get(control)?.clearValidators();
+          }
+          this.form.get(control)?.updateValueAndValidity();
+        });
+      });
     }
 
-    if (this.dataDrawerCahe.extra_data?.length > 0 && this.dataDrawerCahe.user_type) {
-      this.user_type =
-        this.userTypeOptions.find((e) => e.id == this.dataDrawerCahe.user_type) || '';
-    } else {
-      this.user_type = { id: 1, type: 'MASTER' };
-    }
+    this.user_type = this.userTypeOptions.find(e => e.id == this.dataDrawerCahe.user_type) || { id: 1, type: 'MASTER' };
   }
+
 
   submit(): void {
     if (!this.form.valid) {
@@ -226,9 +252,11 @@ export class UserManagementComponent implements OnInit {
     const selectedType = this.userTypeOptions.find((e) => e.value === userType);
 
     const controls = {
-      SUPPLIER: ['number_license', 'localities', 'insurers'],
+      SUPPLIER: ['number_license', 'localities', 'insurers', 'address', 'city', 'state'],
       PARTNER: ['supplier'],
     };
+
+    const requiredWithPattern = ['address', 'city', 'state', 'number_license'];
 
     const resetControls = () => {
       Object.values(controls)
@@ -243,7 +271,14 @@ export class UserManagementComponent implements OnInit {
       Object.entries(controls).forEach(([key, controlNames]) => {
         const isActive = type === key;
         controlNames.forEach((control) => {
-          this.form.get(control)?.setValidators(isActive ? [Validators.required] : null);
+          if (isActive) {
+            const validators = requiredWithPattern.includes(control)
+              ? [Validators.required, Validators.pattern(/^(?!\s*$).+/)]
+              : [Validators.required];
+            this.form.get(control)?.setValidators(validators);
+          } else {
+            this.form.get(control)?.clearValidators();
+          }
           this.form.get(control)?.updateValueAndValidity();
         });
       });
@@ -258,7 +293,6 @@ export class UserManagementComponent implements OnInit {
     this.extraForm = selectedType;
 
     resetControls();
-
     applyValidation(this.extraForm.type);
   }
 

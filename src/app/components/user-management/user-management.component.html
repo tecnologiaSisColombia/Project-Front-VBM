@@ -272,7 +272,7 @@
           </span>
         </ng-template>
 
-        <nz-form-item >
+        <nz-form-item *ngIf="!isUpdating">
           <nz-form-label
             [nzSm]="8"
             [nzXs]="24"
@@ -288,7 +288,7 @@
             <input 
               nz-input 
               formControlName="username" 
-              name="username" 
+              name="username"
             />
           </nz-form-control>
         </nz-form-item>
@@ -358,6 +358,9 @@
           <ng-template #licenceError>
             <span *ngIf="form.get('number_license')?.hasError('required')">
               This field is required
+            </span>
+            <span *ngIf="form.get('number_license')?.hasError('pattern')">
+              This field cannot be empty or contain only spaces
             </span>
           </ng-template>
         </div>
@@ -434,6 +437,132 @@
               This field is required
             </span>
           </ng-template>
+        </div>
+
+        <div nz-col nzSpan="24" *ngIf="isUpdating 
+          ? (dataDrawerCahe?.extra_data && user_type?.type === 'SUPPLIER')
+          : (extraForm?.type === 'SUPPLIER')">
+          <nz-form-item>
+            <nz-form-label
+              [nzSm]="8"
+              [nzXs]="24"
+              nzFor="address"
+              style="text-align: center">
+              Address:
+            </nz-form-label>
+
+            <nz-form-control
+              [nzSm]="16" 
+              [nzXs]="24" 
+              [nzErrorTip]="addressError">
+              <input
+                nz-input
+                name="address"
+                formControlName="address"
+              />
+            </nz-form-control>
+          </nz-form-item>
+
+          <ng-template #addressError>
+            <span *ngIf="form.get('address')?.hasError('required')">
+              This field is required
+            </span>
+            <span *ngIf="form.get('address')?.hasError('pattern')">
+              This field cannot be empty or contain only spaces
+            </span>
+          </ng-template>
+        </div>
+
+        <div nz-col nzSpan="24" *ngIf="isUpdating 
+          ? (dataDrawerCahe?.extra_data && user_type?.type === 'SUPPLIER')
+          : (extraForm?.type === 'SUPPLIER')">
+          <nz-form-item>
+            <nz-form-label
+              [nzSm]="8"
+              [nzXs]="24"
+              nzFor="city"
+              style="text-align: center">
+              City:
+            </nz-form-label>
+
+            <nz-form-control
+              [nzSm]="16" 
+              [nzXs]="24" 
+              [nzErrorTip]="cityError">
+              <input
+                nz-input
+                name="city"
+                formControlName="city"
+              />
+            </nz-form-control>
+          </nz-form-item>
+
+          <ng-template #cityError>
+            <span *ngIf="form.get('city')?.hasError('required')">
+              This field is required
+            </span>
+            <span *ngIf="form.get('city')?.hasError('pattern')">
+              This field cannot be empty or contain only spaces
+            </span>
+          </ng-template>
+        </div>
+        
+        <div nz-col nzSpan="24" *ngIf="isUpdating 
+          ? (dataDrawerCahe?.extra_data && user_type?.type === 'SUPPLIER')
+          : (extraForm?.type === 'SUPPLIER')">
+          <nz-form-item>
+            <nz-form-label
+              [nzSm]="8"
+              [nzXs]="24"
+              nzFor="state"
+              style="text-align: center">
+              State:
+            </nz-form-label>
+
+            <nz-form-control
+              [nzSm]="16" 
+              [nzXs]="24" 
+              [nzErrorTip]="stateError">
+              <input
+                nz-input
+                name="state"
+                formControlName="state"
+              />
+            </nz-form-control>
+          </nz-form-item>
+
+          <ng-template #stateError>
+            <span *ngIf="form.get('state')?.hasError('required')">
+              This field is required
+            </span>
+            <span *ngIf="form.get('state')?.hasError('pattern')">
+              This field cannot be empty or contain only spaces
+            </span>
+          </ng-template>
+        </div>
+
+        <div nz-col nzSpan="24" *ngIf="isUpdating 
+          ? (dataDrawerCahe?.extra_data && user_type?.type === 'SUPPLIER')
+          : (extraForm?.type === 'SUPPLIER')">
+          <nz-form-item>
+            <nz-form-label
+              [nzSm]="8"
+              [nzXs]="24"
+              nzFor="postal_code"
+              style="text-align: center">
+              Postal code:
+            </nz-form-label>
+
+            <nz-form-control
+              [nzSm]="16" 
+              [nzXs]="24" >
+              <input
+                nz-input
+                name="postal_code"
+                formControlName="postal_code"
+              />
+            </nz-form-control>
+          </nz-form-item>
         </div>
 
         <div nz-col nzSpan="24" *ngIf="isUpdating 
