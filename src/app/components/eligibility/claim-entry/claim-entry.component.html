@@ -140,7 +140,7 @@
     <br /><br />
 
     <div class="table-container">
-        <b> Service(s): {{ claimData.patientName | uppercase }} </b>
+        <b> Service(s): {{ claimData.patientName | uppercase }} {{ currentTime }} </b>
 
         <br /><br />
         
@@ -338,27 +338,32 @@
     </ng-template>
 </nz-card>
 
-<!-- 
-<nz-modal [nzAutofocus]="null" [(nzVisible)]="isPreviewVisible" [nzClosable]="false" nzTitle="Preview Claim"
-    (nzOnCancel)="closePreview()" (nzOnOk)="closePreview()" nzMaskClosable="false" nzWidth="75%">
 
+<nz-modal 
+    [nzAutofocus]="null" 
+    [(nzVisible)]="isPreviewVisible" 
+    [nzClosable]="false" 
+    (nzOnCancel)="closePreview()" 
+    (nzOnOk)="closePreview()" 
+    nzMaskClosable="false" 
+    nzWidth="80%">
     <ng-container *nzModalContent>
-        <nz-card nzTitle="Unsubmitted Claim" [nzBordered]="true" class="preview-card">
+         <nz-card nzTitle="UNSUBMITTED CLAIM" [nzBordered]="true" class="preview-card">
             <div class="section">
                 <nz-row [nzGutter]="16">
                     <nz-col [nzSpan]="8">
                         <h3 style="font-weight: bold;">2. Patient's Name:</h3>
-                        <p style="font-size: 16px;">{{ patientName }}</p>
+                        <p style="font-size: 16px;">{{ claimData.patientName }}</p>
                     </nz-col>
 
                     <nz-col [nzSpan]="8">
                         <h3 style="font-weight: bold;">3. Patient's BirthDate:</h3>
-                        <p style="font-size: 16px;">{{ birthDate }}</p>
+                        <p style="font-size: 16px;">{{ claimData.birthDate }}</p>
                     </nz-col>
 
                     <nz-col [nzSpan]="8">
                         <h3 style="font-weight: bold;">4. Insured's Name:</h3>
-                        <p style="font-size: 16px;"></p>
+                        <p style="font-size: 16px;">{{ claimData.insurer}}</p>
                     </nz-col>
                 </nz-row>
 
@@ -367,12 +372,12 @@
                 <nz-row [nzGutter]="16">
                     <nz-col [nzSpan]="8">
                         <h3 style="font-weight: bold;">5. Patient's Address:</h3>
-                        <p style="font-size: 16px;">{{ addressPatient }}</p>
+                        <p style="font-size: 16px;">{{ claimData.addressPatient }}</p>
                     </nz-col>
 
                     <nz-col [nzSpan]="8" [nzOffset]="8">
-                        <h3 style="font-weight: bold;">6. Insured's Address:</h3>
-                        <p style="font-size: 16px;"></p>
+                        <h3 style="font-weight: bold;">7. Insured's Address:</h3>
+                        <p style="font-size: 16px;">{{ claimData.address_insurer }}</p>
                     </nz-col>
                 </nz-row>
 
@@ -381,18 +386,22 @@
                 <nz-row [nzGutter]="16">
                     <nz-col [nzSpan]="6">
                         <h3 style="font-weight: bold;">City:</h3>
+                        <p style="font-size: 16px;">{{ claimData.city_patient }}</p>
                     </nz-col>
 
                     <nz-col [nzSpan]="6">
                         <h3 style="font-weight: bold;">State:</h3>
+                        <p style="font-size: 16px;">{{ claimData.state_patient }}</p>
                     </nz-col>
 
                     <nz-col [nzSpan]="6">
                         <h3 style="font-weight: bold;">City:</h3>
+                        <p style="font-size: 16px;">{{ claimData.city_supplier }}</p>
                     </nz-col>
 
                     <nz-col [nzSpan]="6">
                         <h3 style="font-weight: bold;">State:</h3>
+                        <p style="font-size: 16px;">{{ claimData.state_supplier }}</p>
                     </nz-col>
                 </nz-row>
 
@@ -401,32 +410,36 @@
                 <nz-row [nzGutter]="16">
                     <nz-col [nzSpan]="6">
                         <h3 style="font-weight: bold;">Zip:</h3>
+                        <p style="font-size: 16px;">{{ claimData.postal_code_patient }}</p>
                     </nz-col>
 
                     <nz-col [nzSpan]="6">
                         <h3 style="font-weight: bold;">Phone:</h3>
+                        <p style="font-size: 16px;">{{ claimData.phone_patient }}</p>
                     </nz-col>
 
                     <nz-col [nzSpan]="6">
                         <h3 style="font-weight: bold;">Zip Code:</h3>
+                        <p style="font-size: 16px;">{{ claimData.postal_code_supplier }}</p>
                     </nz-col>
 
                     <nz-col [nzSpan]="6">
                         <h3 style="font-weight: bold;">Phone:</h3>
+                        <p style="font-size: 16px;">{{ claimData.phone_supplier }}</p>
                     </nz-col>
                 </nz-row>
 
                 <nz-divider></nz-divider>
-
+                
                 <nz-row [nzGutter]="16">
-                    <nz-col [nzSpan]="12">
-                        <h3 style="font-weight: bold;">Physician's Name:</h3>
+                    <nz-col [nzSpan]="8">
+                        <h3 style="font-weight: bold;">11. Insured's Policy Group Or Feca #:</h3>
+                        <p style="font-size: 16px;">{{ claimData.plan_contract }}</p>
                     </nz-col>
 
-                    <nz-col [nzSpan]="12">
-                        <h3 style="font-weight: bold;">11. Insured's Policy Group Or Feca #:</h3>
-                        <h3 style="font-weight: bold;">a. Insured's Dob:</h3>
+                    <nz-col [nzSpan]="8" [nzOffset]="8">
                         <h3 style="font-weight: bold;">c. Insurance Plan / Program Name:</h3>
+                        <p style="font-size: 16px;">{{ claimData.plan_name }} - Group {{claimData.group}}</p>
                     </nz-col>
                 </nz-row>
 
@@ -435,29 +448,31 @@
                 <nz-row [nzGutter]="16">
                     <nz-col [nzSpan]="24">
                         <h3 style="font-weight: bold;">19.Reserved For Local Use</h3>
+                        <p [innerText]="getObservationValue()"></p>
                     </nz-col>
                 </nz-row>
 
                 <nz-divider></nz-divider>
 
                 <nz-row [nzGutter]="16">
-                    <nz-col [nzSpan]="12">
+                    <nz-col [nzSpan]="8">
                         <h3 style="font-weight: bold;">21. Diagnosis or Nature Of Illness Or Injury</h3>
-                        <h3 style="font-weight: bold;">(RELATE Items below to 24E By LINE)</h3>
+                        <h3>(RELATE Items below to 24E By LINE)</h3>
+                        <ul>
+                            <li *ngFor="let diagnosis of selectedDiagnosis; let i = index">
+                                {{ getOrdinalSuffix(i + 1) }} {{ diagnosis.code }} - {{ diagnosis.description }}
+                            </li>
+                        </ul>
                     </nz-col>
 
-                    <nz-col [nzSpan]="12">
-                        <p><b>DIAGNOSIS CODE</b></p>
+                    <nz-col [nzSpan]="8" [nzOffset]="8" *ngIf="claimData.auth == '1'">
+                        <h3 style="font-weight: bold;">23. Prior Auth #</h3>
+                        <p>{{ getAuthValue() }}</p>
                     </nz-col>
                 </nz-row>
 
-                <ul>
-                    <li *ngFor="let diagnosis of selectedDiagnosis">
-                        {{ diagnosis.description }}
-                    </li>
-                </ul>
-                
-                <table>
+            
+                <!-- <table>
                     <thead>
                         <tr>
                         <th>Date Initial</th>
@@ -480,8 +495,8 @@
                         <td>{{ row.units }}</td>
                         </tr>
                     </tbody>
-                </table>
+                </table> -->
             </div>
         </nz-card>
     </ng-container>
-</nz-modal> -->
+</nz-modal>

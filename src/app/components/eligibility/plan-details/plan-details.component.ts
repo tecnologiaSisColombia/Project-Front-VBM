@@ -44,14 +44,7 @@ export class PlanDetailsComponent {
 
     updateCurrentTime() {
         const now = new Date();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const year = now.getFullYear();
-        const hours = now.getHours() % 12 || 12;
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
-
-        this.currentTime = `${month}/${day}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+        this.currentTime = now.toLocaleString('en-US', { hour12: true });
     }
+
 }

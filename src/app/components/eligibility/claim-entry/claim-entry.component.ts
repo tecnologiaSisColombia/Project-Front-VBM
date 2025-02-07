@@ -46,9 +46,22 @@ export class ClaimEntryComponent {
         validFrom: string;
         validThru: string;
         birthDate: string;
+        city_patient: string;
+        state_patient: string;
+        phone_patient: string;
+        postal_code_patient: string;
+        city_supplier: string;
+        state_supplier: string;
+        postal_code_supplier: string;
+        phone_supplier: string;
+        plan_contract: string;
+        plan_name: string;
+        group: string;
         orderringNpi: string;
         referingNpi: string;
         auth: string;
+        insurer: string;
+        address_insurer: string;
         modifiers: string;
         addressPatient: string;
         primaryPlanName: string;
@@ -92,6 +105,7 @@ export class ClaimEntryComponent {
     diagnosisOptions: { label: string; value: number }[] = [];
     modifiersOptions: { label: string; value: number }[] = [];
     isPreviewVisible = false;
+    currentTime: string = '';
 
     constructor(
         private msgService: NzMessageService,
@@ -106,6 +120,7 @@ export class ClaimEntryComponent {
         this.getLocalities();
         this.getDiagnosis();
         this.getModifiers();
+        this.updateCurrentTime();
         this.selectedDiagnosis = [
             { code: null, description: null },
             { code: null, description: null },
@@ -264,6 +279,21 @@ export class ClaimEntryComponent {
 
     closePreview(): void {
         this.isPreviewVisible = false;
+    }
+
+    updateCurrentTime() {
+        const now = new Date();
+        this.currentTime = now.toLocaleString('en-US', { hour12: true });
+    }
+
+    getObservationValue(): string {
+        const value = this.accountFields.find(field => field.id === 'observations')?.value;
+        return value !== undefined && value !== null ? String(value) : '';
+    }
+
+    getAuthValue(): string {
+        const authField = this.accountFields.find(field => field.id === 'auth');
+        return authField ? String(authField.value || '') : 'N/A';
     }
 
     previewClaim(): void {
