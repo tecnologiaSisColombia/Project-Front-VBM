@@ -59,6 +59,12 @@ import { finalize } from 'rxjs/operators';
 export class EligibilityComponent {
   isDataLoading = false;
   exportLoader = false;
+  uploading = false;
+  isPrinting = false;
+  isVisibleModalDetails = false;
+  isVisibleModalMember = false;
+  isVisibleModalClaim = false;
+  isVisibleModalUpload = false;
   dataToDisplay: any[] = [];
   num_pages = 1;
   count_records = 0;
@@ -67,33 +73,28 @@ export class EligibilityComponent {
   firstSearch: any = null;
   lastSearch: any = null;
   suscriberSearch: any = null;
-  isVisibleModalDetails = false;
-  isVisibleModalMember = false;
-  isVisibleModalClaim = false;
-  isVisibleModalUpload = false;
-  selectedPatientName: string = '';
-  selectedValidFrom: string = '';
-  selectedValidThru: string = '';
-  selectedBirthDate: string = '';
-  selectedOrderringNpi: string = '';
-  selectedReferingNpi: string = '';
-  selectedAuth: string = '';
-  selectedModifiers: string = '';
-  selectedPrimaryPlanName: string = '';
-  selectedVisualTestMedicare: string = '';
-  selectedVisionElements: string = '';
-  isPrinting = false;
   selectedFile: File | null = null;
-  uploading = false;
-  selectedAddressPatient: string = '';
   [key: string]: any;
   searchFields = [
     { placeholder: 'First Name...', model: 'firstSearch', key: 'first_name' },
     { placeholder: 'Last Name...', model: 'lastSearch', key: 'last_name' },
     { placeholder: 'Suscriber Id...', model: 'suscriberSearch', key: 'suscriber_id' },
   ];
+  selectedClaim: any = {
+    patientName: '',
+    validFrom: '',
+    validThru: '',
+    birthDate: '',
+    orderringNpi: '',
+    referingNpi: '',
+    auth: '',
+    modifiers: '',
+    addressPatient: '',
+    primaryPlanName: '',
+    visualTestMedicare: '',
+    visionElements: ''
+  };
   private searchNameSubject = new Subject<{ type: string; value: string }>();
-  @ViewChild('memberContent') memberContent!: ElementRef;
   @ViewChild(PlanDetailsComponent, { static: false }) planDetailsComponent!: PlanDetailsComponent;
 
   constructor(
@@ -146,87 +147,14 @@ export class EligibilityComponent {
       });
   }
 
-  search(value: string, type: string) {
-    this.isDataLoading = true;
-    this.searchNameSubject.next({ type, value });
-  }
-
-  openModalClaim(rowData: any): void {
-    this.selectedPatientName = `${rowData.last_name} ${rowData.first_name}`;
-    this.selectedValidFrom = rowData.effective;
-    this.selectedValidThru = rowData.terminates;
-    this.selectedBirthDate = rowData.birth_date;
-    this.selectedOrderringNpi = rowData.insurer_data.orderring_npi;
-    this.selectedReferingNpi = rowData.insurer_data.refering_npi;
-    this.selectedAuth = rowData.insurer_data.auth;
-    this.selectedModifiers = rowData.insurer_data.modifiers;
-    this.selectedAddressPatient = `${rowData.primary_address} ${rowData.address_1}`;
-    this.isVisibleModalClaim = true;
-  }
-
-  cancelModalClaim(): void {
-    this.isVisibleModalClaim = false;
-  }
-
-  okModalClaim(): void {
-    this.isVisibleModalClaim = false;
-  }
-
-  cancelModalDetails(): void {
-    this.isVisibleModalDetails = false;
-  }
-
-  okModalDetails(): void {
-    this.cancelModalDetails();
-  }
-
-  openModalDetails(rowData: any): void {
-    this.selectedPatientName = `${rowData.last_name} ${rowData.middle_initial} ${rowData.first_name}`;
-    this.selectedPrimaryPlanName = `${rowData.primary_insure_plan_name}`;
-    this.selectedVisualTestMedicare = `${rowData.subplan_data.visual_test_medicare}`;
-    this.selectedVisionElements = `${rowData.subplan_data.vision_elements}`;
-    this.isVisibleModalDetails = true;
-  }
-
-  CancelModalMember(): void {
-    this.isVisibleModalMember = false;
-  }
-
-  openModalMember(): void {
-    this.isVisibleModalMember = true;
-  }
-
-  OkModalMember(): void {
-    this.CancelModalMember();
-  }
-
-  onFileChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-
-      const fileType = file.type.toLowerCase();
-      const fileName = file.name.toLowerCase();
-
-      if (fileType === 'application/zip' || fileName.endsWith('.zip')) {
-        this.selectedFile = file;
-      } else {
-        this.msgService.warning('Only files with .zip extension are allowed');
-        this.selectedFile = null;
-      }
-    } else {
-      this.selectedFile = null;
-    }
-  }
-
-  handleUpload(): void {
+  eligibilityUpload(): void {
     if (!this.selectedFile) return;
 
     const insurerPayerId = this.dataToDisplay[0].insurer_data.payer_id;
     const insurerId = this.dataToDisplay[0].insurer_data.id;
 
     const formData = new FormData();
+
     formData.append('file', this.selectedFile);
     formData.append('payer_id', insurerPayerId);
     formData.append('insurer_id', insurerId);
@@ -249,21 +177,24 @@ export class EligibilityComponent {
       });
   }
 
-  cancelModalUpload(): void {
-    this.isVisibleModalUpload = false;
-    this.selectedFile = null;
-    this.uploading = false;
-  }
+  onFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
 
-  okUploadFile(): void {
-    this.isVisibleModalUpload = false;
-    this.uploading = false;
-    this.selectedFile = null;
-  }
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
 
-  openModalUpload(): void {
-    this.isVisibleModalUpload = true;
-    this.uploading = false;
+      const fileType = file.type.toLowerCase();
+      const fileName = file.name.toLowerCase();
+
+      if (fileType === 'application/zip' || fileName.endsWith('.zip')) {
+        this.selectedFile = file;
+      } else {
+        this.msgService.warning('Only files with .zip extension');
+        this.selectedFile = null;
+      }
+    } else {
+      this.selectedFile = null;
+    }
   }
 
   pageChange(event: number) {
@@ -282,11 +213,93 @@ export class EligibilityComponent {
     this.getInitData();
   }
 
+  search(value: string, type: string) {
+    this.isDataLoading = true;
+    this.searchNameSubject.next({ type, value });
+  }
+
   isWithinRange(effective: string, terminates: string): boolean {
-    const currentDate = new Date();
-    const effectiveDate = new Date(effective);
-    const terminatesDate = new Date(terminates);
-    return currentDate >= effectiveDate && currentDate <= terminatesDate;
+    const now = new Date();
+    return now >= new Date(effective) && now <= new Date(terminates);
+  }
+
+  cancelOkModalUpload(): void {
+    this.isVisibleModalUpload = false;
+    this.selectedFile = null;
+    this.uploading = false;
+  }
+
+  openModalUpload(): void {
+    this.isVisibleModalUpload = true;
+    this.uploading = false;
+  }
+
+  cancelOkModalClaim(): void {
+    this.isVisibleModalClaim = false;
+  }
+
+  cancelOkModalDetails(): void {
+    this.isVisibleModalDetails = false;
+  }
+
+  CancelOkModalMember(): void {
+    this.isVisibleModalMember = false;
+  }
+
+  openModalMember(): void {
+    this.isVisibleModalMember = true;
+  }
+
+  openModalClaim(rowData: any): void {
+    this.selectedClaim = {
+      patientName: `${rowData?.last_name ?? ''} ${rowData?.first_name ?? ''}`,
+      validFrom: rowData?.effective ?? '',
+      validThru: rowData?.terminates ?? '',
+      birthDate: rowData?.birth_date ?? '',
+      orderringNpi: rowData?.insurer_data?.orderring_npi ?? '',
+      referingNpi: rowData?.insurer_data?.refering_npi ?? '',
+      auth: rowData?.insurer_data?.auth ?? '',
+      modifiers: rowData?.insurer_data?.modifiers ?? '',
+      addressPatient: `${rowData?.primary_address ?? ''} ${rowData?.address_1 ?? ''}`.trim(),
+      primaryPlanName: rowData?.primary_insure_plan_name ?? '',
+      visualTestMedicare: rowData.subplan_data.visual_test_medicare ?? '',
+      visionElements: rowData.subplan_data.vision_elements ?? ''
+    };
+    this.isVisibleModalClaim = true;
+  }
+
+  openModalDetails(rowData: any): void {
+    this.selectedClaim = {
+      patientName: `${rowData?.last_name ?? ''} ${rowData?.first_name ?? ''}`,
+      primaryPlanName: rowData?.primary_insure_plan_name ?? '',
+      visualTestMedicare: rowData.subplan_data.visual_test_medicare ?? '',
+      visionElements: rowData.subplan_data.vision_elements ?? ''
+    }
+    this.isVisibleModalDetails = true;
+  }
+
+  printContentDetails() {
+    const content = this.planDetailsComponent.getChildContent()?.nativeElement;
+
+    if (!content) return;
+
+    this.isPrinting = true;
+
+    html2canvas(content, { scale: 4, logging: false, useCORS: true, backgroundColor: null })
+      .then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+        pdf.addImage(imgData, 'PNG', 0, 10, pdfWidth, pdfHeight, '', 'FAST');
+        pdf.save('details.pdf');
+        this.msgService.success('Export completed successfully');
+      })
+      .catch(error => this.msgService.error(JSON.stringify(error)))
+      .finally(() => {
+        this.isPrinting = false;
+      });
   }
 
   exportBenefits(): void {
@@ -360,28 +373,6 @@ export class EligibilityComponent {
       });
   }
 
-  printContentDetails() {
-    const content = this.planDetailsComponent.getChildContent()?.nativeElement;
-    if (!content) return;
-
-    this.isPrinting = true;
-
-    html2canvas(content, { scale: 4, logging: false, useCORS: true, backgroundColor: null })
-      .then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-        pdf.addImage(imgData, 'PNG', 0, 10, pdfWidth, pdfHeight, '', 'FAST');
-        pdf.save('details.pdf');
-        this.msgService.success('Export completed successfully');
-      })
-      .catch(error => this.msgService.error(JSON.stringify(error)))
-      .finally(() => {
-        this.isPrinting = false;
-      });
-  }
 
   printContentMember(): void {
 

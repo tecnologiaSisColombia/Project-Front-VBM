@@ -22,10 +22,12 @@ import { Input } from '@angular/core';
     styleUrls: ['./plan-details.component.css']
 })
 export class PlanDetailsComponent {
-    @Input() patientName: string = '';
-    @Input() primaryPlanName: string = '';
-    @Input() visualTestMedicare: string = '';
-    @Input() visionElements: string = '';
+    @Input() claimData!: {
+        patientName: string;
+        primaryPlanName: string;
+        visualTestMedicare: string;
+        visionElements: string;
+    };
     @ViewChild('childContent', { static: false }) childContent!: ElementRef;
     currentTime: string = '';
 

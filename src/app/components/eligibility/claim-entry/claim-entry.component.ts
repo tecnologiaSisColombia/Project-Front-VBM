@@ -41,26 +41,20 @@ import { Input } from '@angular/core';
     styleUrls: ['./claim-entry.component.css']
 })
 export class ClaimEntryComponent {
-    @Input() patientName: string = '';
-    @Input() serviceValidFrom: string = '';
-    @Input() serviceValidThru: string = '';
-    @Input() birthDate: string = '';
-    @Input() addressPatient: string = '';
-    @Input() orderringNpi: string = '';
-    @Input() referingNpi: string = '';
-    @Input() modifiers: string = '';
-    @Input() auth: string = ''; 
-    locations: any[] = [];
-    selectedLocation: any = null;
-    localities: any[] = [{ id: 'N/A', name: 'N/A' }];
-    selectedLocality: any = 'N/A';
-    selectedMemberHave: any = 'no';
-    diagnosis: any[] = [];
-    modifiersInput: any[] = [];
-    selectedDiagnosis: { code: any; description: any }[] = [];
-    diagnosisOptions: { label: string; value: number }[] = [];
-    modifiersOptions: { label: string; value: number }[] = [];
-    isPreviewVisible = false;
+    @Input() claimData!: {
+        patientName: string;
+        validFrom: string;
+        validThru: string;
+        birthDate: string;
+        orderringNpi: string;
+        referingNpi: string;
+        auth: string;
+        modifiers: string;
+        addressPatient: string;
+        primaryPlanName: string;
+        visualTestMedicare: string;
+        visionElements: string;
+    };
     accountFields = [
         { id: 'observations', label: 'Reserved for local use:' },
         { id: 'p_account', label: 'Patient account:' },
@@ -87,6 +81,17 @@ export class ClaimEntryComponent {
             refering_npi: null
         },
     ];
+    locations: any[] = [];
+    selectedLocation: any = null;
+    localities: any[] = [{ id: 'N/A', name: 'N/A' }];
+    selectedLocality: any = 'N/A';
+    selectedMemberHave: any = 'no';
+    diagnosis: any[] = [];
+    modifiersInput: any[] = [];
+    selectedDiagnosis: { code: any; description: any }[] = [];
+    diagnosisOptions: { label: string; value: number }[] = [];
+    modifiersOptions: { label: string; value: number }[] = [];
+    isPreviewVisible = false;
 
     constructor(
         private msgService: NzMessageService,
@@ -94,8 +99,7 @@ export class ClaimEntryComponent {
         private localityService: LocalityService,
         private diagnosisService: DiagnosisService,
         private modifiersService: ModifiersService
-    ) {
-    }
+    ) { }
 
     ngOnInit(): void {
         this.getLocations();
@@ -108,108 +112,68 @@ export class ClaimEntryComponent {
             { code: null, description: null },
             { code: null, description: null },
         ];
-        console.log(this.auth)
-    }
-
-    onLocationChange(): void {
-        if (this.selectedLocation) {
-            this.rows.forEach(row => {
-                row.tos = this.selectedLocation;
-            });
-        }
-    }
-
-    previewClaim(): void {
-        for (const row of this.rows) {
-            if (row.dateInitial && row.dateFinal && row.dateFinal < row.dateInitial) {
-                this.msgService.warning('The final date cannot be earlier than the initial date');
-                return;
-            }
-        }
-        this.isPreviewVisible = true;
-    }
-
-    closePreview(): void {
-        this.isPreviewVisible = false;
     }
 
     getLocations(): void {
-        this.locationService.get({}, null, null, true).subscribe({
-            next: (res: any) => {
-                this.locations = res;
-            },
-            error: (err) => {
-                this.msgService.error(JSON.stringify(err.error));
-            },
-        });
+        this.locationService.get({}, null, null, true)
+            .subscribe({
+                next: (res: any) => {
+                    this.locations = res;
+                },
+                error: (err) => {
+                    this.msgService.error(JSON.stringify(err.error));
+                },
+            });
     }
 
     getLocalities(): void {
-        this.localityService.get({}, null, null, true).subscribe({
-            next: (res: any) => {
-                this.localities = [{ id: 'N/A', name: 'N/A' }, ...res];
-            },
-            error: (err) => {
-                this.msgService.error(JSON.stringify(err.error));
-            },
-        });
+        this.localityService.get({}, null, null, true)
+            .subscribe({
+                next: (res: any) => {
+                    this.localities = [{ id: 'N/A', name: 'N/A' }, ...res];
+                },
+                error: (err) => {
+                    this.msgService.error(JSON.stringify(err.error));
+                },
+            });
     }
 
     getDiagnosis(): void {
-        this.diagnosisService.get({}, null, null, true).subscribe({
-            next: (res: any) => {
-                this.diagnosis = res;
-                this.diagnosisOptions = this.diagnosis.map(d => ({
-                    value: d.code,
-                    label: `${d.code} - ${d.description}`,
-                }));
-            },
-            error: (err) => {
-                this.msgService.error(JSON.stringify(err.error));
-            },
-        });
+        this.diagnosisService.get({}, null, null, true)
+            .subscribe({
+                next: (res: any) => {
+                    this.diagnosis = res;
+                    this.diagnosisOptions = this.diagnosis.map(d => ({
+                        value: d.code,
+                        label: `${d.code} - ${d.description}`,
+                    }));
+                },
+                error: (err) => {
+                    this.msgService.error(JSON.stringify(err.error));
+                },
+            });
     }
 
     getModifiers(): void {
-        this.modifiersService.get({}, null, null, true).subscribe({
-            next: (res: any) => {
-                this.modifiersInput = res;
-                this.modifiersOptions = this.modifiersInput.map(d => ({
-                    value: d.code,
-                    label: `${d.code}`,
-                }));
-            },
-            error: (err) => {
-                this.msgService.error(JSON.stringify(err.error));
-            },
-        });
-    }
-
-    addDiagnosis(): void {
-        if (this.selectedDiagnosis.length < 12) {
-            this.selectedDiagnosis.push(
-                {
-                    code: this.selectedDiagnosis.length + 1,
-                    description: null
-                });
-        }
-    }
-
-    removeDiagnosis(index: number): void {
-        if (this.selectedDiagnosis.length > 2) {
-            this.selectedDiagnosis.splice(index, 1);
-        }
+        this.modifiersService.get({}, null, null, true)
+            .subscribe({
+                next: (res: any) => {
+                    this.modifiersInput = res;
+                    this.modifiersOptions = this.modifiersInput.map(d => ({
+                        value: d.code,
+                        label: `${d.code}`,
+                    }));
+                },
+                error: (err) => {
+                    this.msgService.error(JSON.stringify(err.error));
+                },
+            });
     }
 
     getOrdinalSuffix(index: number): string {
         const suffixes = ['th', 'st', 'nd', 'rd'];
         const value = index % 100;
         return index + (suffixes[(value - 20) % 10] || suffixes[value] || suffixes[0]);
-    }
-
-    calculateTotalCharges(): void {
-        const total = this.rows.reduce((sum, row) => sum + (row.charges || 0), 0);
-        this.accountFields.find(field => field.id === 'charge')!.value = total;
     }
 
     addRow(): void {
@@ -267,5 +231,48 @@ export class ClaimEntryComponent {
             refering_npi: null
         };
         this.calculateTotalCharges();
+    }
+
+    calculateTotalCharges(): void {
+        const total = this.rows.reduce((sum, row) => sum + (row.charges || 0), 0);
+        this.accountFields.find(field => field.id === 'charge')!.value = total;
+    }
+
+    addDiagnosis(): void {
+        if (this.selectedDiagnosis.length < 12) {
+            this.selectedDiagnosis.push(
+                {
+                    code: this.selectedDiagnosis.length + 1,
+                    description: null
+                });
+        }
+    }
+
+    removeDiagnosis(index: number): void {
+        if (this.selectedDiagnosis.length > 2) {
+            this.selectedDiagnosis.splice(index, 1);
+        }
+    }
+
+    onLocationChange(): void {
+        if (this.selectedLocation) {
+            this.rows.forEach(row => {
+                row.tos = this.selectedLocation;
+            });
+        }
+    }
+
+    closePreview(): void {
+        this.isPreviewVisible = false;
+    }
+
+    previewClaim(): void {
+        for (const row of this.rows) {
+            if (row.dateInitial && row.dateFinal && row.dateFinal < row.dateInitial) {
+                this.msgService.warning('The final date cannot be earlier than the initial date');
+                return;
+            }
+        }
+        this.isPreviewVisible = true;
     }
 }
