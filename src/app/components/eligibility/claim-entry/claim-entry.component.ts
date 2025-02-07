@@ -18,6 +18,7 @@ import { DiagnosisService } from 'app/services/config/diagnosis.service';
 import { ModifiersService } from 'app/services/config/modifiers.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Input } from '@angular/core';
+import { ClaimPreviewComponent } from './claim-preview/claim-preview.component';
 
 @Component({
     selector: 'app-claim-entry',
@@ -35,7 +36,8 @@ import { Input } from '@angular/core';
         NzTableModule,
         NzInputModule,
         NzSelectModule,
-        FormsModule
+        FormsModule,
+        ClaimPreviewComponent
     ],
     templateUrl: './claim-entry.component.html',
     styleUrls: ['./claim-entry.component.css']
@@ -54,6 +56,7 @@ export class ClaimEntryComponent {
         state_supplier: string;
         postal_code_supplier: string;
         phone_supplier: string;
+        address_supplier: string;
         plan_contract: string;
         plan_name: string;
         group: string;
@@ -253,6 +256,13 @@ export class ClaimEntryComponent {
         this.accountFields.find(field => field.id === 'charge')!.value = total;
     }
 
+    formatDate(row: any, field: string): void {
+        if (row[field]) {
+            const date = new Date(row[field]);
+            row[field] = `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}/${date.getFullYear()}`;
+        }
+    }
+
     addDiagnosis(): void {
         if (this.selectedDiagnosis.length < 12) {
             this.selectedDiagnosis.push(
@@ -277,23 +287,9 @@ export class ClaimEntryComponent {
         }
     }
 
-    closePreview(): void {
-        this.isPreviewVisible = false;
-    }
-
     updateCurrentTime() {
         const now = new Date();
         this.currentTime = now.toLocaleString('en-US', { hour12: true });
-    }
-
-    getObservationValue(): string {
-        const value = this.accountFields.find(field => field.id === 'observations')?.value;
-        return value !== undefined && value !== null ? String(value) : '';
-    }
-
-    getAuthValue(): string {
-        const authField = this.accountFields.find(field => field.id === 'auth');
-        return authField ? String(authField.value || '') : 'N/A';
     }
 
     previewClaim(): void {
@@ -304,5 +300,6 @@ export class ClaimEntryComponent {
             }
         }
         this.isPreviewVisible = true;
+
     }
 }

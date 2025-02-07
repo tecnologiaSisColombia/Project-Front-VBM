@@ -151,8 +151,8 @@
             [nzFrontPagination]="false">
             <thead>
                 <tr>
-                    <th nzWidth="12.09%">Date Initial</th>
-                    <th nzWidth="12.09%">Date Final</th>
+                    <th nzWidth="12.09%">From</th>
+                    <th nzWidth="12.09%">To</th>
                     <th nzWidth="7.09%">Tos</th>
                     <th nzWidth="9.09%">Cpt</th>
                     <th *ngIf="claimData.modifiers == '1'" nzWidth="9.09%">Modifiers</th>
@@ -169,13 +169,15 @@
                     <td>
                         <nz-date-picker 
                             nzFormat="MM/dd/yyyy" 
-                            [(ngModel)]="row.dateInitial">
+                            [(ngModel)]="row.dateInitial"
+                            (ngModelChange)="formatDate(row, 'dateInitial')">
                         </nz-date-picker>
                     </td>
                     <td>
                         <nz-date-picker 
                             nzFormat="MM/dd/yyyy" 
-                            [(ngModel)]="row.dateFinal">
+                            [(ngModel)]="row.dateFinal"
+                            (ngModelChange)="formatDate(row, 'dateFinal')">
                         </nz-date-picker>
                     </td>
                     <td>
@@ -335,168 +337,13 @@
             (click)="previewClaim()">
             Preview claim
         </button>
+
+        <app-claim-preview 
+            [isPreviewVisible]="isPreviewVisible" 
+            [claimData]="claimData" 
+            [selectedDiagnosis]="selectedDiagnosis"
+            [rows]="rows"
+            (closePreviewEvent)="isPreviewVisible = false">
+        </app-claim-preview>
     </ng-template>
 </nz-card>
-
-
-<nz-modal 
-    [nzAutofocus]="null" 
-    [(nzVisible)]="isPreviewVisible" 
-    [nzClosable]="false" 
-    (nzOnCancel)="closePreview()" 
-    (nzOnOk)="closePreview()" 
-    nzMaskClosable="false" 
-    nzWidth="80%">
-    <ng-container *nzModalContent>
-         <nz-card nzTitle="UNSUBMITTED CLAIM" [nzBordered]="true" class="preview-card">
-            <div class="section">
-                <nz-row [nzGutter]="16">
-                    <nz-col [nzSpan]="8">
-                        <h3 style="font-weight: bold;">2. Patient's Name:</h3>
-                        <p style="font-size: 16px;">{{ claimData.patientName }}</p>
-                    </nz-col>
-
-                    <nz-col [nzSpan]="8">
-                        <h3 style="font-weight: bold;">3. Patient's BirthDate:</h3>
-                        <p style="font-size: 16px;">{{ claimData.birthDate }}</p>
-                    </nz-col>
-
-                    <nz-col [nzSpan]="8">
-                        <h3 style="font-weight: bold;">4. Insured's Name:</h3>
-                        <p style="font-size: 16px;">{{ claimData.insurer}}</p>
-                    </nz-col>
-                </nz-row>
-
-                <nz-divider></nz-divider>
-
-                <nz-row [nzGutter]="16">
-                    <nz-col [nzSpan]="8">
-                        <h3 style="font-weight: bold;">5. Patient's Address:</h3>
-                        <p style="font-size: 16px;">{{ claimData.addressPatient }}</p>
-                    </nz-col>
-
-                    <nz-col [nzSpan]="8" [nzOffset]="8">
-                        <h3 style="font-weight: bold;">7. Insured's Address:</h3>
-                        <p style="font-size: 16px;">{{ claimData.address_insurer }}</p>
-                    </nz-col>
-                </nz-row>
-
-                <nz-divider></nz-divider>
-
-                <nz-row [nzGutter]="16">
-                    <nz-col [nzSpan]="6">
-                        <h3 style="font-weight: bold;">City:</h3>
-                        <p style="font-size: 16px;">{{ claimData.city_patient }}</p>
-                    </nz-col>
-
-                    <nz-col [nzSpan]="6">
-                        <h3 style="font-weight: bold;">State:</h3>
-                        <p style="font-size: 16px;">{{ claimData.state_patient }}</p>
-                    </nz-col>
-
-                    <nz-col [nzSpan]="6">
-                        <h3 style="font-weight: bold;">City:</h3>
-                        <p style="font-size: 16px;">{{ claimData.city_supplier }}</p>
-                    </nz-col>
-
-                    <nz-col [nzSpan]="6">
-                        <h3 style="font-weight: bold;">State:</h3>
-                        <p style="font-size: 16px;">{{ claimData.state_supplier }}</p>
-                    </nz-col>
-                </nz-row>
-
-                <nz-divider></nz-divider>
-
-                <nz-row [nzGutter]="16">
-                    <nz-col [nzSpan]="6">
-                        <h3 style="font-weight: bold;">Zip:</h3>
-                        <p style="font-size: 16px;">{{ claimData.postal_code_patient }}</p>
-                    </nz-col>
-
-                    <nz-col [nzSpan]="6">
-                        <h3 style="font-weight: bold;">Phone:</h3>
-                        <p style="font-size: 16px;">{{ claimData.phone_patient }}</p>
-                    </nz-col>
-
-                    <nz-col [nzSpan]="6">
-                        <h3 style="font-weight: bold;">Zip Code:</h3>
-                        <p style="font-size: 16px;">{{ claimData.postal_code_supplier }}</p>
-                    </nz-col>
-
-                    <nz-col [nzSpan]="6">
-                        <h3 style="font-weight: bold;">Phone:</h3>
-                        <p style="font-size: 16px;">{{ claimData.phone_supplier }}</p>
-                    </nz-col>
-                </nz-row>
-
-                <nz-divider></nz-divider>
-                
-                <nz-row [nzGutter]="16">
-                    <nz-col [nzSpan]="8">
-                        <h3 style="font-weight: bold;">11. Insured's Policy Group Or Feca #:</h3>
-                        <p style="font-size: 16px;">{{ claimData.plan_contract }}</p>
-                    </nz-col>
-
-                    <nz-col [nzSpan]="8" [nzOffset]="8">
-                        <h3 style="font-weight: bold;">c. Insurance Plan / Program Name:</h3>
-                        <p style="font-size: 16px;">{{ claimData.plan_name }} - Group {{claimData.group}}</p>
-                    </nz-col>
-                </nz-row>
-
-                <nz-divider></nz-divider>
-
-                <nz-row [nzGutter]="16">
-                    <nz-col [nzSpan]="24">
-                        <h3 style="font-weight: bold;">19.Reserved For Local Use</h3>
-                        <p [innerText]="getObservationValue()"></p>
-                    </nz-col>
-                </nz-row>
-
-                <nz-divider></nz-divider>
-
-                <nz-row [nzGutter]="16">
-                    <nz-col [nzSpan]="8">
-                        <h3 style="font-weight: bold;">21. Diagnosis or Nature Of Illness Or Injury</h3>
-                        <h3>(RELATE Items below to 24E By LINE)</h3>
-                        <ul>
-                            <li *ngFor="let diagnosis of selectedDiagnosis; let i = index">
-                                {{ getOrdinalSuffix(i + 1) }} {{ diagnosis.code }} - {{ diagnosis.description }}
-                            </li>
-                        </ul>
-                    </nz-col>
-
-                    <nz-col [nzSpan]="8" [nzOffset]="8" *ngIf="claimData.auth == '1'">
-                        <h3 style="font-weight: bold;">23. Prior Auth #</h3>
-                        <p>{{ getAuthValue() }}</p>
-                    </nz-col>
-                </nz-row>
-
-            
-                <!-- <table>
-                    <thead>
-                        <tr>
-                        <th>Date Initial</th>
-                        <th>Date Final</th>
-                        <th>TOS</th>
-                        <th>CPT</th>
-                        <th>Diagnosis Pointer</th>
-                        <th>Charges</th>
-                        <th>Units</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let row of rows">
-                        <td>{{ row.dateInitial | date: 'MM/dd/yyyy' }}</td>
-                        <td>{{ row.dateFinal | date: 'MM/dd/yyyy' }}</td>
-                        <td>{{ row.tos }}</td>
-                        <td>{{ row.cpt }}</td>
-                        <td>{{ row.diagnosisPointer }}</td>
-                        <td>{{ row.charges }}</td>
-                        <td>{{ row.units }}</td>
-                        </tr>
-                    </tbody>
-                </table> -->
-            </div>
-        </nz-card>
-    </ng-container>
-</nz-modal>

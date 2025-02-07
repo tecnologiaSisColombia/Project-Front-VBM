@@ -1,0 +1,15 @@
+nz-table th,
+nz-table td {
+    text-align: center;
+    padding: 10px;
+    white-space: nowrap;
+}
+
+.table-container {
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+nz-table {
+    min-width: 1000px;
+}

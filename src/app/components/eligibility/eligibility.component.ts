@@ -93,6 +93,7 @@ export class EligibilityComponent {
     phone_supplier: '',
     postal_code_patient: '',
     postal_code_supplier: '',
+    address_supplier: '',
     group: '',
     plan_contract: '',
     insurer: '',
@@ -274,6 +275,7 @@ export class EligibilityComponent {
       phone_patient: rowData?.primary_phone ?? '',
       postal_code_patient: rowData?.postal_code ?? '',
       postal_code_supplier: rowData?.suppliers[0].postal_code ?? '',
+      address_supplier: rowData?.suppliers[0].address ?? '',
       orderringNpi: rowData?.insurer_data?.orderring_npi ?? '',
       referingNpi: rowData?.insurer_data?.refering_npi ?? '',
       auth: rowData?.insurer_data?.auth ?? '',
@@ -291,7 +293,6 @@ export class EligibilityComponent {
       group: rowData.subplan_data.group ?? '',
       visionElements: rowData.subplan_data.vision_elements ?? ''
     };
-    console.log(rowData.subplan_data.plan_data.name)
     this.isVisibleModalClaim = true;
   }
 
