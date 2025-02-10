@@ -1,165 +1,101 @@
 <nz-modal 
-    [nzAutofocus]="null" 
-    [(nzVisible)]="isPreviewVisible" 
-    [nzClosable]="false" 
-    (nzOnCancel)="closePreview()"
-    (nzOnOk)="closePreview()" 
-    nzMaskClosable="false" 
-    nzWidth="70%">
-    <ng-container *nzModalContent>
-        <nz-card nzTitle="UNSUBMITTED CLAIM" [nzBordered]="true" class="preview-card">
-            <ng-container>
-                <nz-row [nzGutter]="16">
-                    <ng-container *ngFor="let field of claimFields.slice(0, 3)">
-                        <nz-col [nzSpan]="8">
-                            <h3 style="font-weight: bold;">{{ field.label }}</h3>
-                            <p style="font-size: 16px;">{{ field.value }}</p>
-                        </nz-col>
-                    </ng-container>
-                </nz-row>
-
-                <nz-divider></nz-divider>
-
-                <nz-row [nzGutter]="16">
-                    <ng-container *ngFor="let field of claimFields.slice(3, 5); let i = index">
-                        <nz-col [nzSpan]="8" [nzOffset]="i === 1 ? 8 : 0">
-                            <h3 style="font-weight: bold;">{{ field.label }}</h3>
-                            <p style="font-size: 16px;">{{ field.value }}</p>
-                        </nz-col>
-                    </ng-container>
-                </nz-row>
-
-                <nz-divider></nz-divider>
-
-                <nz-row [nzGutter]="16">
-                    <ng-container *ngFor="let field of claimFields.slice(5, 9)">
-                        <nz-col [nzSpan]="6">
-                            <h3 style="font-weight: bold;">{{ field.label }}</h3>
-                            <p style="font-size: 16px;">{{ field.value }}</p>
-                        </nz-col>
-                    </ng-container>
-                </nz-row>
-
-                <nz-divider></nz-divider>
-
-                <nz-row [nzGutter]="16">
-                    <ng-container *ngFor="let field of claimFields.slice(9, 13)">
-                        <nz-col [nzSpan]="6">
-                            <h3 style="font-weight: bold;">{{ field.label }}</h3>
-                            <p style="font-size: 16px;">{{ field.value }}</p>
-                        </nz-col>
-                    </ng-container>
-                </nz-row>
-
-                <nz-divider></nz-divider>
-
-                <nz-row [nzGutter]="16">
-                    <ng-container *ngFor="let field of claimFields.slice(13, 15); let i = index">
-                        <nz-col [nzSpan]="8" [nzOffset]="(i === 1 || i === 2) ? 8 : 0">
-                            <h3 style="font-weight: bold;">{{ field.label }}</h3>
-                            <p style="font-size: 16px;">{{ field.value }}</p>
-                        </nz-col>
-                    </ng-container>
-                </nz-row>
-
-                <nz-divider></nz-divider>
-
-                <nz-row [nzGutter]="16">
-                    <ng-container *ngFor="let field of claimFields.slice(15, 16)">
-                        <nz-col [nzSpan]="24">
-                            <h3 style="font-weight: bold;">{{ field.label }}</h3>
-                            <p style="font-size: 16px;">{{ field.value }}</p>
-                        </nz-col>
-                    </ng-container>
-                </nz-row>
-
-                <nz-divider></nz-divider>
-
-                <nz-row [nzGutter]="16">
-                    <ng-container *ngFor="let field of claimFields.slice(16, 18)">
-                        <nz-col [nzSpan]="field.type === 'list' ? 18 : 6">
-                            <h3 style="font-weight: bold;">{{ field.label }}</h3>
-                            <ng-container *ngIf="field.type === 'list'; else normalField">
-                                <ul>
-                                    <li *ngFor="let diagnosis of field.value; let i = index">
-                                        {{ getOrdinalSuffix(i + 1) }} {{ diagnosis.code }} - {{ diagnosis.description }}
-                                    </li>
-                                </ul>
-                            </ng-container>
-
-                            <ng-template #normalField>
-                                <p>{{ field.value }}</p>
-                            </ng-template>
-                        </nz-col>
-                    </ng-container>
-                </nz-row>
-            </ng-container>
-
-            <nz-divider></nz-divider>
-
-            <nz-row>
-                <h3 style="font-weight: bold;">Date(s) Of Service</h3>
-                <nz-col [nzSpan]="24">
-                    <div class="table-container">
-                        <nz-table 
-                            [nzBordered]="true" 
-                            [nzSize]="'small'" 
-                            [nzData]="rows" 
-                            [nzShowPagination]="false">
-                            <thead>
-                                <tr>
-                                    <th nzWidth="10%">From</th>
-                                    <th nzWidth="10%">To</th>
-                                    <th nzWidth="10%">Pos</th>
-                                    <th nzWidth="10%">Tos</th>
-                                    <th nzWidth="10%">Cpt</th>
-                                    <th nzWidth="10%">Mod</th>
-                                    <th nzWidth="10%">Diag</th>
-                                    <th nzWidth="10%">Charges</th>
-                                    <th nzWidth="10%">Units</th>
-                                    <th *ngIf="claimData?.referingNpi == '1'" nzWidth="10%">Referring provider</th>
-                                    <th *ngIf="claimData?.orderringNpi == '1'" nzWidth="10%">Ordering provider</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let row of rows">
-                                    <td>{{ row.dateInitial }}</td>
-                                    <td>{{ row.dateFinal }}</td>
-                                    <td>{{ row.pos }}</td>
-                                    <td>{{ row.tos }}</td>
-                                    <td>{{ row.cpt }}</td>
-                                    <td>{{ row.mod }}</td>
-                                    <td>{{ row.diagnosisPointer }}</td>
-                                    <td>{{ row.charges }}</td>
-                                    <td>{{ row.units }}</td>
-                                    <td *ngIf="claimData?.referingNpi == '1'">{{ row.refering_npi }}</td>
-                                    <td *ngIf="claimData?.orderringNpi == '1'">{{ row.ordering_npi }}</td>
-                                </tr>
-                            </tbody>
-                        </nz-table>
-                    </div>
-                </nz-col>
-            </nz-row>
-
-            <nz-divider></nz-divider>
-
+  [nzAutofocus]="null" 
+  [(nzVisible)]="isPreviewVisible" 
+  nzWidth="65%" 
+  nzMaskClosable="false" 
+  [nzClosable]="false" 
+  (nzOnCancel)="closePreview()" 
+  (nzOnOk)="closePreview()">
+  <ng-container *nzModalContent>
+    <nz-card nzTitle="UNSUBMITTED CLAIM" nzBordered class="preview-card">
+        <ng-container *ngFor="let group of [
+          claimFields.slice(0, 3),
+          claimFields.slice(3, 5),
+          claimFields.slice(5, 9),
+          claimFields.slice(9, 13),
+          claimFields.slice(13, 15),
+          claimFields.slice(15, 16),
+          claimFields.slice(16, 18)]">
             <nz-row [nzGutter]="16">
-                <nz-col *ngFor="let field of accountFieldsRows.slice(0, 3)" [nzSpan]="8">
+                <nz-col 
+                    *ngFor="let field of group" 
+                    [nzSpan]="24 / group.length">
+
                     <h3 style="font-weight: bold;">{{ field.label }}</h3>
-                    <p style="font-size: 16px;">{{ field.value }}</p>
+
+                    <ng-container 
+                        *ngIf="field.type === 'list'; else normalField">
+                        <ul>
+                            <li *ngFor="let diagnosis of field.value; let i = index">
+                            {{ getOrdinalSuffix(i + 1) }} {{ diagnosis.code }} - {{ diagnosis.description }}
+                            </li>
+                        </ul>
+                    </ng-container>
+
+                    <ng-template #normalField>
+                        <p style="font-size: 16px;">{{ field.value }}</p>
+                    </ng-template>
                 </nz-col>
             </nz-row>
-            
             <nz-divider></nz-divider>
-            
-            <nz-row [nzGutter]="16">
-                <ng-container *ngFor="let field of accountFieldsRows.slice(3, 7); let i = index">
-                    <nz-col [nzSpan]="8" [nzOffset]="i === 1 ? 8 : 0">
+        </ng-container>
+
+        <h3 style="font-weight: bold;">Date(s) Of Service</h3>
+
+        <div class="table-container">
+            <nz-table 
+                nzBordered 
+                nzSize="small" 
+                [nzData]="rows" 
+                [nzShowPagination]="false">
+                <thead>
+                    <tr>
+                        <th nzWidth="10%">From</th>
+                        <th nzWidth="10%">To</th>
+                        <th nzWidth="10%">Pos</th>
+                        <th nzWidth="10%">Tos</th>
+                        <th nzWidth="10%">Cpt</th>
+                        <th nzWidth="10%">Mod</th>
+                        <th nzWidth="10%">Diag</th>
+                        <th nzWidth="10%">Charges</th>
+                        <th nzWidth="10%">Units</th>
+                        <th *ngIf="claimData?.referingNpi === 1" nzWidth="10%">Referring</th>
+                        <th *ngIf="claimData?.orderringNpi === 1" nzWidth="10%">Ordering</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let row of rows">
+                        <td>{{ row.dateInitial }}</td>
+                        <td>{{ row.dateFinal }}</td>
+                        <td>{{ row.pos }}</td>
+                        <td>{{ row.tos }}</td>
+                        <td>{{ row.cpt }}</td>
+                        <td>{{ row.mod }}</td>
+                        <td>{{ row.diagnosisPointer }}</td>
+                        <td>{{ row.charges }}</td>
+                        <td>{{ row.units }}</td>
+                        <td *ngIf="claimData?.referingNpi === 1">{{ row.refering_npi }}</td>
+                        <td *ngIf="claimData?.orderringNpi === 1">{{ row.ordering_npi }}</td>
+                    </tr>
+                </tbody>
+            </nz-table>
+        </div>
+
+        <nz-divider></nz-divider>
+
+        <ng-container *ngFor="let group of [
+            accountFieldsRows.slice(0, 3),
+            accountFieldsRows.slice(3)]">
+                <nz-row [nzGutter]="16">
+                    <nz-col *ngFor="let field of group" [nzSpan]="24 / group.length">
                         <h3 style="font-weight: bold;">{{ field.label }}</h3>
                         <p style="font-size: 16px;">{{ field.value }}</p>
                     </nz-col>
-                </ng-container>
-            </nz-row>            
-        </nz-card>
-    </ng-container>
+                </nz-row> 
+                
+        <nz-divider></nz-divider>
+
+      </ng-container>
+    </nz-card>
+  </ng-container>
 </nz-modal>

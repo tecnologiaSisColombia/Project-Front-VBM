@@ -72,9 +72,9 @@ export class ClaimEntryComponent {
         visionElements: string;
     };
     accountFields = [
-        { id: 'observations', label: 'Reserved for local use:' },
-        { id: 'p_account', label: 'Patient account:' },
-        { id: 'auth', label: 'Auth:' },
+        { id: 'observations', label: 'Reserved for local use:', value: '' },
+        { id: 'p_account', label: 'Patient account:', value: '' },
+        { id: 'auth', label: 'Auth:', value: '' },
         { id: 'charge', label: 'Total charge:', value: 0 },
         { id: 'paid', label: 'Paid:', value: 0 },
         { id: 'balance', label: 'Balance:', value: 0 },
@@ -109,6 +109,8 @@ export class ClaimEntryComponent {
     modifiersOptions: { label: string; value: number }[] = [];
     isPreviewVisible = false;
     currentTime: string = '';
+    totalCharges = 0;
+    private updateTimeout: any;
 
     constructor(
         private msgService: NzMessageService,
@@ -190,8 +192,7 @@ export class ClaimEntryComponent {
 
     getOrdinalSuffix(index: number): string {
         const suffixes = ['th', 'st', 'nd', 'rd'];
-        const value = index % 100;
-        return index + (suffixes[(value - 20) % 10] || suffixes[value] || suffixes[0]);
+        return index + (suffixes[(index % 100 - 20) % 10] || suffixes[index % 100] || 'th');
     }
 
     addRow(): void {
@@ -252,8 +253,11 @@ export class ClaimEntryComponent {
     }
 
     calculateTotalCharges(): void {
-        const total = this.rows.reduce((sum, row) => sum + (row.charges || 0), 0);
-        this.accountFields.find(field => field.id === 'charge')!.value = total;
+        this.totalCharges = this.rows.reduce((sum, row) => sum + (+(row.charges ?? 0)), 0);
+
+        this.accountFields = this.accountFields.map(field =>
+            field.id === 'charge' ? { ...field, value: this.totalCharges } : field
+        );
     }
 
     formatDate(row: any, field: string): void {
@@ -292,6 +296,16 @@ export class ClaimEntryComponent {
         this.currentTime = now.toLocaleString('en-US', { hour12: true });
     }
 
+    updateFieldValue(index: number, value: any): void {
+        clearTimeout(this.updateTimeout);
+
+        this.accountFields[index].value = value;
+
+        this.updateTimeout = setTimeout(() => {
+            this.accountFields = [...this.accountFields];
+        }, 200);
+    }
+
     previewClaim(): void {
         for (const row of this.rows) {
             if (row.dateInitial && row.dateFinal && row.dateFinal < row.dateInitial) {
@@ -300,6 +314,5 @@ export class ClaimEntryComponent {
             }
         }
         this.isPreviewVisible = true;
-
     }
 }

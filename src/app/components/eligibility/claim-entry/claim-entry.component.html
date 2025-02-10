@@ -155,7 +155,7 @@
                     <th nzWidth="12.09%">To</th>
                     <th nzWidth="7.09%">Tos</th>
                     <th nzWidth="9.09%">Cpt</th>
-                    <th *ngIf="claimData.modifiers == '1'" nzWidth="9.09%">Modifiers</th>
+                    <th *ngIf="claimData.modifiers === '1'" nzWidth="9.09%">Modifiers</th>
                     <th nzWidth="7.09%">Diagnosis pointer</th>
                     <th nzWidth="9.09%">Charges</th>
                     <th nzWidth="7.09%">Units</th>
@@ -221,6 +221,7 @@
                         <input 
                             nz-input 
                             type="number" 
+                            name="charge{{i}}"
                             [(ngModel)]="row.charges" 
                             (ngModelChange)="calculateTotalCharges()" 
                         />
@@ -312,13 +313,13 @@
                             [nzSm]="16" 
                             [nzXs]="24">
                             <input 
-                                nz-input 
-                                [id]="field.id" 
-                                [value]="field.value || ''" 
-                                [readonly]="field.id === 'charge' || field.id === 'balance'"
-                                [type]="['charge', 'paid', 'balance'].includes(field.id) ? 'number' : 'text'" 
-                                [(ngModel)]="field.value"
-                            />                        
+                            nz-input 
+                            [id]="field.id" 
+                            [(ngModel)]="field.value"
+                            [readonly]="field.id === 'charge' || field.id === 'balance'"
+                            [type]="['charge', 'paid', 'balance'].includes(field.id) ? 'number' : 'text'" 
+                            (ngModelChange)="updateFieldValue(i, $event)"
+                        />                                           
                         </nz-form-control>
                     </nz-form-item>
                     <br>
@@ -342,6 +343,7 @@
             [isPreviewVisible]="isPreviewVisible" 
             [claimData]="claimData" 
             [selectedDiagnosis]="selectedDiagnosis"
+            [accountFields]="accountFields"
             [rows]="rows"
             (closePreviewEvent)="isPreviewVisible = false">
         </app-claim-preview>
