@@ -164,7 +164,7 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="first_nameError">
+            [nzErrorTip]="errorTemplate">
             <input 
               nz-input 
               formControlName="first_name" 
@@ -172,15 +172,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #first_nameError>
-          <span *ngIf="form.get('first_name')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('first_name')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
 
         <nz-form-item>
           <nz-form-label
@@ -194,7 +185,7 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="last_nameError">
+            [nzErrorTip]="errorTemplate">
             <input 
               nz-input 
               formControlName="last_name" 
@@ -202,15 +193,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #last_nameError>
-          <span *ngIf="form.get('last_name')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('last_name')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
 
         <nz-form-item>
           <nz-form-label
@@ -224,7 +206,7 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="license_numberError">
+            [nzErrorTip]="errorTemplate">
             <input
               nz-input
               formControlName="license_number"
@@ -232,15 +214,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #license_numberError>
-          <span *ngIf="form.get('license_number')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('license_number')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
 
         <nz-form-item>
           <nz-form-label
@@ -254,7 +227,7 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="emailError">
+            [nzErrorTip]="errorTemplate">
             <input 
               nz-input 
               type="email" 
@@ -263,15 +236,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #emailError>
-          <span *ngIf="form.get('email')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('email')?.hasError('email')">
-            Please enter a valid email address
-          </span>
-        </ng-template>
 
         <nz-form-item>
           <nz-form-label
@@ -285,7 +249,7 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="phoneError">
+            [nzErrorTip]="errorTemplate">
             <input 
               nz-input 
               formControlName="phone" 
@@ -293,15 +257,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #phoneError>
-          <span *ngIf="form.get('phone')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('phone')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
 
         <nz-form-item *ngIf="userAttr.rol != 'SUPPLIER'">
           <nz-form-label
@@ -315,7 +270,7 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="supplierError">
+            [nzErrorTip]="errorTemplate">
             <nz-select
               formControlName="supplier"
               nzPlaceHolder="Select Supplier"
@@ -330,9 +285,9 @@
           </nz-form-control>
         </nz-form-item>
 
-        <ng-template #supplierError>
-          <span *ngIf="form.get('supplier')?.hasError('required')">
-            This field is required
+        <ng-template #errorTemplate let-control>
+          <span *ngIf="control && getErrorMessage(control)">
+            {{ getErrorMessage(control) }}
           </span>
         </ng-template>
       </form>

@@ -173,7 +173,7 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="nameError">
+            [nzErrorTip]="errorTemplate">
             <input 
               nz-input 
               formControlName="name" 
@@ -181,15 +181,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #nameError>
-          <span *ngIf="form.get('name')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('name')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
 
         <nz-form-item>
           <nz-form-label
@@ -203,7 +194,7 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="groupError">
+            [nzErrorTip]="errorTemplate">
             <input 
               nz-input 
               formControlName="group" 
@@ -211,15 +202,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #groupError>
-          <span *ngIf="form.get('group')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('group')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
 
         <nz-form-item>
           <nz-form-label
@@ -233,7 +215,7 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="contractError">
+            [nzErrorTip]="errorTemplate">
             <input
               nz-input
               formControlName="plan_contract"
@@ -241,15 +223,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #contractError>
-          <span *ngIf="form.get('plan_contract')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('plan_contract')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
 
         <nz-form-item>
           <nz-form-label
@@ -263,15 +236,21 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required">
+            [nzErrorTip]="errorTemplate">
             <nz-select
               nzShowSearch
               nzAllowClear
               id="pds"
               nzPlaceHolder="Select an PDS"
               formControlName="pds">
-              <nz-option nzLabel="Yes" [nzValue]="1"></nz-option>
-              <nz-option nzLabel="No" [nzValue]="2"></nz-option>
+              <nz-option 
+                nzLabel="Yes" 
+                [nzValue]="1">
+              </nz-option>
+              <nz-option 
+                nzLabel="No" 
+                [nzValue]="2">
+              </nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -288,7 +267,7 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required">
+            [nzErrorTip]="errorTemplate">
             <input
               nz-input
               type="number"
@@ -310,7 +289,7 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required">
+            [nzErrorTip]="errorTemplate">
             <input
               nz-input
               type="number"
@@ -332,7 +311,7 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required">
+            [nzErrorTip]="errorTemplate">
             <input
               nz-input
               type="number"
@@ -353,8 +332,7 @@
 
           <nz-form-control
             [nzSm]="16"
-            [nzXs]="24"
-            nzErrorTip="This field is required">
+            [nzXs]="24">
             <input
               nz-input
               type="text"
@@ -376,7 +354,7 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required">
+            [nzErrorTip]="errorTemplate">
             <input
               nz-input
               type="number"
@@ -397,8 +375,7 @@
 
           <nz-form-control
             [nzSm]="16"
-            [nzXs]="24"
-            nzErrorTip="This field is required">
+            [nzXs]="24">
             <input
               nz-input
               type="text"
@@ -407,6 +384,12 @@
             />
           </nz-form-control>
         </nz-form-item>
+
+        <ng-template #errorTemplate let-control>
+          <span *ngIf="control && getErrorMessage(control)">
+            {{ getErrorMessage(control) }}
+          </span>
+        </ng-template>
       </form>
     </nz-spin>
   </ng-container>

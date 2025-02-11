@@ -16,7 +16,6 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzCardModule } from 'ng-zorro-antd/card';
-import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-change-password',
@@ -50,7 +49,7 @@ export class ChangePasswordComponent implements OnInit {
   ) {
     this.form = this.fb.group(
       {
-        new_password: ['', [Validators.required, Validators.minLength(8)]],
+        new_password: ['', [Validators.required]],
         confirmPassword: [''],
       },
       { validators: this.passwordsMatchValidator }

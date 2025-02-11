@@ -163,7 +163,7 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="codeError">
+            [nzErrorTip]="errorTemplate">
             <input 
               nz-input 
               formControlName="code" 
@@ -171,15 +171,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #codeError>
-          <span *ngIf="form.get('code')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('code')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
 
         <nz-form-item>
           <nz-form-label
@@ -193,7 +184,7 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="descriptionError">
+            [nzErrorTip]="errorTemplate">
             <input 
               nz-input 
               formControlName="description" 
@@ -201,15 +192,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #descriptionError>
-          <span *ngIf="form.get('description')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('description')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
 
         <nz-form-item>
           <nz-form-label
@@ -223,7 +205,7 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="valueError">
+            [nzErrorTip]="errorTemplate">
             <input 
               nz-input 
               formControlName="value" 
@@ -232,12 +214,9 @@
           </nz-form-control>
         </nz-form-item>
 
-        <ng-template #valueError>
-          <span *ngIf="form.get('value')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('value')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
+        <ng-template #errorTemplate let-control>
+          <span *ngIf="control && getErrorMessage(control)">
+            {{ getErrorMessage(control) }}
           </span>
         </ng-template>
       </form>

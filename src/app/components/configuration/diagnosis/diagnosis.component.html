@@ -158,7 +158,7 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="codeError">
+            [nzErrorTip]="errorTemplate">
             <input 
               nz-input 
               formControlName="code" 
@@ -166,15 +166,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #codeError>
-          <span *ngIf="form.get('code')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('code')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
 
         <nz-form-item>
           <nz-form-label
@@ -188,7 +179,7 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="descriptionError">
+            [nzErrorTip]="errorTemplate">
             <input 
               nz-input 
               formControlName="description" 
@@ -197,14 +188,11 @@
           </nz-form-control>
         </nz-form-item>
 
-        <ng-template #descriptionError>
-          <span *ngIf="form.get('description')?.hasError('required')">
-            This field is required
+        <ng-template #errorTemplate let-control>
+          <span *ngIf="control && getErrorMessage(control)">
+            {{ getErrorMessage(control) }}
           </span>
-          <span *ngIf="form.get('description')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
+        </ng-template>        
       </form>
     </nz-spin>
   </ng-container>

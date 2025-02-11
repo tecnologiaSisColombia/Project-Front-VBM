@@ -6,6 +6,7 @@ import {
   UntypedFormBuilder,
   UntypedFormGroup,
   Validators,
+  AbstractControl
 } from '@angular/forms';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
@@ -286,6 +287,16 @@ export class PlansComponent implements OnInit {
     this.page_size = pageSize;
     this.page = 1;
     this.getInitData();
+  }
+
+  getErrorMessage(control: AbstractControl | null): string | null {
+    if (!control || !control.errors) return null;
+
+    if (control.hasError('required')) return 'This field is required';
+
+    if (control.hasError('pattern')) return 'This field cannot be empty';
+
+    return null;
   }
 
   exportCoverages(): void {

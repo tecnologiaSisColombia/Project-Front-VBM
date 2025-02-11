@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,  } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
   Validators,
-  ReactiveFormsModule
+  ReactiveFormsModule,
+  AbstractControl
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
@@ -120,6 +121,16 @@ export class LoginComponent implements OnInit {
           }
         },
       });
+  }
+
+  getErrorMessage(control: AbstractControl | null): string | null {
+    if (!control || !control.errors) return null;
+
+    if (control.hasError('required')) return 'This field is required';
+
+    if (control.hasError('pattern')) return 'This field cannot be empty';
+
+    return null;
   }
 
   togglePasswordVisibility(): void {

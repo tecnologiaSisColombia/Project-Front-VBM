@@ -6,6 +6,7 @@ import {
   UntypedFormBuilder,
   UntypedFormGroup,
   Validators,
+  AbstractControl
 } from '@angular/forms';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
@@ -241,6 +242,16 @@ export class LocalitiesComponent implements OnInit {
   setPagination(count: number) {
     this.count_records = count;
     this.num_pages = Math.ceil(count / this.page_size);
+  }
+
+  getErrorMessage(control: AbstractControl | null): string | null {
+    if (!control || !control.errors) return null;
+
+    if (control.hasError('required')) return 'This field is required';
+
+    if (control.hasError('pattern')) return 'This field cannot be empty';
+
+    return null;
   }
 
   exportLocalities(): void {

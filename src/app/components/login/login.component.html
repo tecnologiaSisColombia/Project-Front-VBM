@@ -14,7 +14,8 @@
       <h5>Sign in to your account</h5>
 
       <nz-form-item>
-        <nz-form-control [nzErrorTip]="usernameErrorTpl">
+        <nz-form-control 
+          [nzErrorTip]="errorTemplate">
           <nz-input-group [nzPrefix]="prefixUserIcon">
             <input 
               nz-input 
@@ -31,22 +32,16 @@
               nzType="user" 
               nzTheme="outline">
             </i>
-          </ng-template>
-
-          <ng-template #usernameErrorTpl>
-            <span *ngIf="loginForm.get('username')?.hasError('required')">
-              This field is required
-            </span>
-            <span *ngIf="loginForm.get('username')?.hasError('pattern')">
-              This field cannot be empty or contain only spaces
-            </span>
-          </ng-template>          
+          </ng-template>        
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-control [nzErrorTip]="passwordErrorTpl">
-          <nz-input-group [nzPrefix]="prefixLockIcon"[nzSuffix]="suffixPasswordIcon">
+        <nz-form-control 
+          [nzErrorTip]="errorTemplate">
+          <nz-input-group 
+            [nzPrefix]="prefixLockIcon"
+            [nzSuffix]="suffixPasswordIcon">
             <input 
               nz-input 
               [type]="showPassword ? 'text' : 'password'"
@@ -74,18 +69,15 @@
               style="cursor: pointer">
             </i>
           </ng-template>  
-
-          <ng-template #passwordErrorTpl>
-            <span *ngIf="loginForm.get('password')?.hasError('required')">
-              This field is required
-            </span>
-            <span *ngIf="loginForm.get('password')?.hasError('pattern')">
-              This field cannot be empty or contain only spaces
-            </span>
-          </ng-template>
         </nz-form-control>
       </nz-form-item>
 
+      <ng-template #errorTemplate let-control>
+        <span *ngIf="control && getErrorMessage(control)">
+          {{ getErrorMessage(control) }}
+        </span>
+      </ng-template>
+      
       <div class="text-right">
         <a 
           routerLink="/reset_password" 

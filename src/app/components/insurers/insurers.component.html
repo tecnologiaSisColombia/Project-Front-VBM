@@ -182,7 +182,7 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="nameError">
+            [nzErrorTip]="errorTemplate">
             <input
               nz-input
               formControlName="name"
@@ -191,15 +191,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #nameError>
-          <span *ngIf="form.get('name')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('name')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
 
         <nz-form-item>
           <nz-form-label 
@@ -213,7 +204,7 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24"
-            [nzErrorTip]="servicesError">
+            [nzErrorTip]="errorTemplate">
             <nz-select
               formControlName="services"
               name="services"
@@ -228,12 +219,6 @@
           </nz-form-control>
         </nz-form-item>
 
-        <ng-template #servicesError>
-          <span *ngIf="form.get('services')?.hasError('required')">
-            This field is required
-          </span>
-        </ng-template>
-
         <nz-form-item>
           <nz-form-label 
             [nzSm]="8" 
@@ -246,7 +231,7 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24"
-            [nzErrorTip]="productsError">
+            [nzErrorTip]="errorTemplate">
             <nz-select
               formControlName="products"
               name="products"
@@ -260,12 +245,6 @@
             </nz-select>
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #productsError>
-          <span *ngIf="form.get('products')?.hasError('required')">
-            This field is required
-          </span>
-        </ng-template>
 
         <nz-form-item>
           <nz-form-label 
@@ -301,7 +280,7 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="logo_descriptionError">
+            [nzErrorTip]="errorTemplate">
             <input
               nz-input
               formControlName="logo_description"
@@ -309,15 +288,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #logo_descriptionError>
-          <span *ngIf="form.get('logo_description')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('logo_description')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
 
         <nz-form-item>
           <nz-form-label 
@@ -331,7 +301,7 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="addressError">
+            [nzErrorTip]="errorTemplate">
             <input 
               nz-input 
               formControlName="address" 
@@ -339,15 +309,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #addressError>
-          <span *ngIf="form.get('address')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('address')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
 
         <nz-form-item>
           <nz-form-label 
@@ -361,7 +322,7 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="phoneError">
+            [nzErrorTip]="errorTemplate">
             <input 
               nz-input 
               formControlName="phone" 
@@ -369,15 +330,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #phoneError>
-          <span *ngIf="form.get('phone')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('phone')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
 
         <nz-form-item>
           <nz-form-label 
@@ -391,7 +343,7 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="payerError">
+            [nzErrorTip]="errorTemplate">
             <input 
               nz-input 
               formControlName="payer_id" 
@@ -399,15 +351,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #payerError>
-          <span *ngIf="form.get('payer_id')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('payer_id')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
 
         <nz-form-item>
           <nz-form-label
@@ -421,15 +364,21 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required">
+            [nzErrorTip]="errorTemplate">
             <nz-select
               nzShowSearch
               nzAllowClear
               id="modifiers"
               nzPlaceHolder="Select an Modifiers"
               formControlName="modifiers">
-              <nz-option nzLabel="Yes" [nzValue]="1"></nz-option>
-              <nz-option nzLabel="No" [nzValue]="2"></nz-option>
+              <nz-option 
+                nzLabel="Yes" 
+                [nzValue]="1">
+              </nz-option>
+              <nz-option 
+                nzLabel="No" 
+                [nzValue]="2">
+              </nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -446,15 +395,21 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required">
+            [nzErrorTip]="errorTemplate">
             <nz-select
               nzShowSearch
               nzAllowClear
               id="orderring_npi"
               nzPlaceHolder="Select an Orderring NPI"
               formControlName="orderring_npi">
-              <nz-option nzLabel="Yes" [nzValue]="1"></nz-option>
-              <nz-option nzLabel="No" [nzValue]="2"></nz-option>
+              <nz-option 
+                nzLabel="Yes" 
+                [nzValue]="1">
+              </nz-option>
+              <nz-option 
+                nzLabel="No" 
+                [nzValue]="2">
+              </nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -471,15 +426,21 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required">
+            [nzErrorTip]="errorTemplate">
             <nz-select
               nzShowSearch
               nzAllowClear
               id="refering_npi"
               nzPlaceHolder="Select an Refering NPI"
               formControlName="refering_npi">
-              <nz-option nzLabel="Yes" [nzValue]="1"></nz-option>
-              <nz-option nzLabel="No" [nzValue]="2"></nz-option>
+              <nz-option 
+                nzLabel="Yes" 
+                [nzValue]="1">
+              </nz-option>
+              <nz-option 
+                nzLabel="No" 
+                [nzValue]="2">
+              </nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -496,18 +457,30 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required">
+            [nzErrorTip]="errorTemplate">
             <nz-select
               nzShowSearch
               nzAllowClear
               id="auth"
               nzPlaceHolder="Select auth"
               formControlName="auth">
-              <nz-option nzLabel="Yes" [nzValue]="1"></nz-option>
-              <nz-option nzLabel="No" [nzValue]="2"></nz-option>
+              <nz-option 
+                nzLabel="Yes" 
+                [nzValue]="1">
+              </nz-option>
+              <nz-option 
+                nzLabel="No" 
+                [nzValue]="2">
+              </nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
+
+        <ng-template #errorTemplate let-control>
+          <span *ngIf="control && getErrorMessage(control)">
+            {{ getErrorMessage(control) }}
+          </span>
+        </ng-template>
       </form>
     </nz-spin>
   </ng-container>

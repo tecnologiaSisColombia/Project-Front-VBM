@@ -165,23 +165,14 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="firstNameError">
+            [nzErrorTip]="errorTemplate">
             <input 
               nz-input 
               formControlName="first_name" 
               name="first_name" 
             />
-            </nz-form-control>
+          </nz-form-control>
         </nz-form-item>
-
-        <ng-template #firstNameError>
-          <span *ngIf="form.get('first_name')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('first_name')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
 
         <nz-form-item>
           <nz-form-label
@@ -195,7 +186,7 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="lastNameError">
+            [nzErrorTip]="errorTemplate">
             <input 
               nz-input 
               formControlName="last_name" 
@@ -203,15 +194,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #lastNameError>
-          <span *ngIf="form.get('last_name')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('last_name')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
 
         <nz-form-item>
           <nz-form-label
@@ -225,22 +207,13 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="emailError">
+            [nzErrorTip]="errorTemplate">
             <input 
               nz-input 
               formControlName="email" 
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #emailError>
-          <span *ngIf="form.get('email')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('email')?.hasError('email')">
-            Please enter a valid email address
-          </span>
-        </ng-template>
 
         <nz-form-item>
           <nz-form-label
@@ -254,7 +227,7 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="phoneError">
+            [nzErrorTip]="errorTemplate">
             <input 
               nz-input 
               type="tel" 
@@ -262,15 +235,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #phoneError>
-          <span *ngIf="form.get('phone')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('phone')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
 
         <nz-form-item *ngIf="!isUpdating">
           <nz-form-label
@@ -284,7 +248,7 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="usernameError">
+            [nzErrorTip]="errorTemplate">
             <input 
               nz-input 
               formControlName="username" 
@@ -292,15 +256,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #usernameError>
-          <span *ngIf="form.get('username')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('username')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
 
         <nz-form-item *ngIf="!isUpdating">
           <nz-form-label
@@ -314,7 +269,7 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="typeUserError">
+            [nzErrorTip]="errorTemplate">
             <nz-select
               formControlName="type_user"
               name="type_user"
@@ -324,12 +279,6 @@
             </nz-select>
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #typeUserError>
-          <span *ngIf="form.get('type_user')?.hasError('required')">
-            This field is required
-          </span>
-        </ng-template>
 
         <div nz-col nzSpan="24" *ngIf="isUpdating 
           ? (dataDrawerCahe?.extra_data && user_type?.type === 'SUPPLIER')
@@ -346,7 +295,7 @@
             <nz-form-control
               [nzSm]="16" 
               [nzXs]="24" 
-              [nzErrorTip]="licenceError">
+              [nzErrorTip]="errorTemplate">
               <input
                 nz-input
                 name="number_license"
@@ -354,15 +303,6 @@
               />
             </nz-form-control>
           </nz-form-item>
-
-          <ng-template #licenceError>
-            <span *ngIf="form.get('number_license')?.hasError('required')">
-              This field is required
-            </span>
-            <span *ngIf="form.get('number_license')?.hasError('pattern')">
-              This field cannot be empty or contain only spaces
-            </span>
-          </ng-template>
         </div>
 
         <div nz-col nzSpan="24" *ngIf="isUpdating 
@@ -380,7 +320,7 @@
             <nz-form-control
               [nzSm]="16"
               [nzXs]="24"
-              [nzErrorTip]="localitiesError">
+              [nzErrorTip]="errorTemplate">
               <nz-select
                 formControlName="localities"
                 name="localities"
@@ -394,12 +334,6 @@
               </nz-select>
             </nz-form-control>
           </nz-form-item>
-
-          <ng-template #localitiesError>
-            <span *ngIf="form.get('localities')?.hasError('required')">
-              This field is required
-            </span>
-          </ng-template>
         </div>
 
         <div nz-col nzSpan="24" *ngIf="isUpdating 
@@ -417,7 +351,7 @@
             <nz-form-control 
               [nzSm]="16" 
               [nzXs]="24" 
-              [nzErrorTip]="insurerError">
+              [nzErrorTip]="errorTemplate">
               <nz-select
                 formControlName="insurers"
                 name="insurers"
@@ -431,12 +365,6 @@
               </nz-select>
             </nz-form-control>
           </nz-form-item>
-
-          <ng-template #insurerError>
-            <span *ngIf="form.get('insurers')?.hasError('required')">
-              This field is required
-            </span>
-          </ng-template>
         </div>
 
         <div nz-col nzSpan="24" *ngIf="isUpdating 
@@ -454,7 +382,7 @@
             <nz-form-control
               [nzSm]="16" 
               [nzXs]="24" 
-              [nzErrorTip]="addressError">
+              [nzErrorTip]="errorTemplate">
               <input
                 nz-input
                 name="address"
@@ -462,15 +390,6 @@
               />
             </nz-form-control>
           </nz-form-item>
-
-          <ng-template #addressError>
-            <span *ngIf="form.get('address')?.hasError('required')">
-              This field is required
-            </span>
-            <span *ngIf="form.get('address')?.hasError('pattern')">
-              This field cannot be empty or contain only spaces
-            </span>
-          </ng-template>
         </div>
 
         <div nz-col nzSpan="24" *ngIf="isUpdating 
@@ -488,7 +407,7 @@
             <nz-form-control
               [nzSm]="16" 
               [nzXs]="24" 
-              [nzErrorTip]="cityError">
+              [nzErrorTip]="errorTemplate">
               <input
                 nz-input
                 name="city"
@@ -496,15 +415,6 @@
               />
             </nz-form-control>
           </nz-form-item>
-
-          <ng-template #cityError>
-            <span *ngIf="form.get('city')?.hasError('required')">
-              This field is required
-            </span>
-            <span *ngIf="form.get('city')?.hasError('pattern')">
-              This field cannot be empty or contain only spaces
-            </span>
-          </ng-template>
         </div>
         
         <div nz-col nzSpan="24" *ngIf="isUpdating 
@@ -522,7 +432,7 @@
             <nz-form-control
               [nzSm]="16" 
               [nzXs]="24" 
-              [nzErrorTip]="stateError">
+              [nzErrorTip]="errorTemplate">
               <input
                 nz-input
                 name="state"
@@ -530,15 +440,6 @@
               />
             </nz-form-control>
           </nz-form-item>
-
-          <ng-template #stateError>
-            <span *ngIf="form.get('state')?.hasError('required')">
-              This field is required
-            </span>
-            <span *ngIf="form.get('state')?.hasError('pattern')">
-              This field cannot be empty or contain only spaces
-            </span>
-          </ng-template>
         </div>
 
         <div nz-col nzSpan="24" *ngIf="isUpdating 
@@ -580,7 +481,7 @@
             <nz-form-control 
               [nzSm]="16" 
               [nzXs]="24" 
-              [nzErrorTip]="supplierError">
+              [nzErrorTip]="errorTemplate">
               <nz-select
                 formControlName="supplier"
                 name="supplier"
@@ -593,13 +494,13 @@
               </nz-select>
             </nz-form-control>
           </nz-form-item>
-
-          <ng-template #supplierError>
-            <span *ngIf="form.get('supplier')?.hasError('required')">
-              This field is required
-            </span>
-          </ng-template>
         </div>
+
+        <ng-template #errorTemplate let-control>
+          <span *ngIf="control && getErrorMessage(control)">
+            {{ getErrorMessage(control) }}
+          </span>
+        </ng-template>
       </form>
     </nz-spin>
   </ng-container>

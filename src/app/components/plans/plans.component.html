@@ -171,7 +171,7 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="nameError">
+            [nzErrorTip]="errorTemplate">
             <input
               nz-input
               formControlName="name"
@@ -179,15 +179,6 @@
             />
           </nz-form-control>
         </nz-form-item>
-
-        <ng-template #nameError>
-          <span *ngIf="form.get('name')?.hasError('required')">
-            This field is required
-          </span>
-          <span *ngIf="form.get('name')?.hasError('pattern')">
-            This field cannot be empty or contain only spaces
-          </span>
-        </ng-template>
 
         <nz-form-item>
           <nz-form-label
@@ -201,12 +192,12 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            nzErrorTip="This field is required">
+            [nzErrorTip]="errorTemplate">
             <nz-select
               nzShowSearch
               nzAllowClear
               id="insurer"
-              nzPlaceHolder="Select an Insurer"
+              nzPlaceHolder="Select Insurer"
               formControlName="insurer">
               <nz-option
                 *ngFor="let o of insurers"
@@ -216,6 +207,12 @@
             </nz-select>
           </nz-form-control>
         </nz-form-item>
+
+        <ng-template #errorTemplate let-control>
+          <span *ngIf="control && getErrorMessage(control)">
+            {{ getErrorMessage(control) }}
+          </span>
+        </ng-template>
       </form>
     </nz-spin>
   </ng-container>
