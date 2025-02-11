@@ -23,7 +23,6 @@ import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { ServicesService } from 'app/services/config/services.service';
-import { NzSelectModule } from 'ng-zorro-antd/select';
 import * as XLSX from 'xlsx';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { finalize } from 'rxjs/operators';
@@ -46,7 +45,6 @@ import { finalize } from 'rxjs/operators';
     NzSpinModule,
     CommonModule,
     NzSwitchModule,
-    NzSelectModule,
     NzEmptyModule
   ],
   templateUrl: './services.component.html',

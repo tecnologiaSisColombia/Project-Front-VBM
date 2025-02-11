@@ -153,35 +153,14 @@
   [(nzVisible)]="isVisibleModalMember"
   nzTitle="Electronic Health Record for Member"
   nzWidth="1100px"
+  (nzOnCancel)="CancelOkModalMember()"
+  (nzOnOk)="CancelOkModalMember()"
   [nzClosable]="false"
   nzMaskClosable="false">
-
+  
   <ng-container *nzModalContent>
     <app-member>
     </app-member>
-  </ng-container>
-
-  <ng-container *nzModalFooter>
-    <button 
-      nz-button 
-      (click)="CancelOkModalMember()">
-      Cancel
-    </button>
-
-    <button 
-      nz-button 
-      nzType="primary" 
-      (click)="CancelOkModalMember()">
-      OK
-    </button>
-
-    <button 
-      nz-button 
-      nzType="primary" 
-      [ngStyle]="{'background-color': '#FF5733', 'border-color': '#FF5733'}" 
-      (click)="printContentMember()">
-      Print Page
-    </button>
   </ng-container>
 </nz-modal>
 
@@ -227,6 +206,8 @@
   [nzAutofocus]="null"
   [(nzVisible)]="isVisibleModalClaim"
   nzWidth="97%"
+  (nzOnCancel)="cancelOkModalClaim()"
+  (nzOnOk)="cancelOkModalClaim()"
   [nzClosable]="false"
   nzMaskClosable="false">
 
@@ -234,21 +215,6 @@
     <app-claim-entry 
       [claimData]="selectedClaim">
     </app-claim-entry>
-  </ng-container>
-
-  <ng-container *nzModalFooter>
-    <button 
-      nz-button 
-      (click)="cancelOkModalClaim()">
-      Cancel
-    </button>
-
-    <button 
-      nz-button 
-      nzType="primary" 
-      (click)="cancelOkModalClaim()">
-      Ok
-    </button>
   </ng-container>
 </nz-modal>
 

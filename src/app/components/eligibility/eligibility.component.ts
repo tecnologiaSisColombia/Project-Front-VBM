@@ -1,10 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
-import { NzDrawerModule } from 'ng-zorro-antd/drawer';
-import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
@@ -13,7 +11,6 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { debounceTime, Subject } from 'rxjs';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import { NzSelectModule } from 'ng-zorro-antd/select';
 import { FormsModule } from '@angular/forms';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { MemberComponent } from './member/member.component';
@@ -33,18 +30,15 @@ import { finalize } from 'rxjs/operators';
   standalone: true,
   imports: [
     NzBreadCrumbModule,
-    NzFormModule,
     NzButtonComponent,
     NzTableModule,
     NzPaginationModule,
     NzDividerModule,
     NzInputModule,
     NzIconModule,
-    NzDrawerModule,
     NzSpinModule,
     CommonModule,
     NzSwitchModule,
-    NzSelectModule,
     FormsModule,
     NzModalModule,
     MemberComponent,

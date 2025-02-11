@@ -12,7 +12,6 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzTableModule } from 'ng-zorro-antd/table';
-import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -46,7 +45,6 @@ import { finalize } from 'rxjs/operators';
     NzInputModule,
     NzTableModule,
     NzSelectModule,
-    NzTagModule,
     NzDrawerModule,
     NzBreadCrumbModule,
     NzSwitchModule,

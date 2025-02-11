@@ -158,11 +158,9 @@
 </div>
 
 <nz-drawer
-  [nzBodyStyle]="{ overflow: 'auto' }"
   [nzMaskClosable]="false"
   [nzClosable]="false"
   [nzVisible]="visible"
-  nzPlacement="right"
   [nzTitle]="drawerTitle"
   (nzOnClose)="closeDrawer()"
   [nzWidth]="720"
@@ -511,7 +509,6 @@
   (nzOnCancel)="handleCancelCatalog()"
   (nzOnOk)="handleOkCatalog()"
   [nzMaskClosable]="false">
-
   <ng-container *nzModalContent>
     <h3>Services</h3>
     <nz-table 

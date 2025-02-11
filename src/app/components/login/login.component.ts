@@ -9,8 +9,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { LoginService } from '../../services/login/login.service';
-import { AuthService } from '../../services/auth/auth.service';
+import { LoginService } from 'app/services/login/login.service';
+import { AuthService } from 'app/services/auth/auth.service';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzFormModule } from 'ng-zorro-antd/form';

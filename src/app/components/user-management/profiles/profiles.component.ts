@@ -14,7 +14,6 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { ProfileService } from 'app/services/user-management/profile/profile.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import * as XLSX from 'xlsx';
@@ -42,7 +41,6 @@ import { finalize } from 'rxjs/operators';
     NzSpinModule,
     CommonModule,
     NzSwitchModule,
-    NzDropDownModule,
     NzModalModule,
     NzSelectModule,
     NzEmptyModule

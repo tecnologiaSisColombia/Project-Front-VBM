@@ -7,9 +7,9 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LoginService } from '../../services/login/login.service';
+import { LoginService } from 'app/services/login/login.service';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../services/auth/auth.service';
+import { AuthService } from 'app/services/auth/auth.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzInputModule } from 'ng-zorro-antd/input';
@@ -74,7 +74,7 @@ export class ChangePasswordComponent implements OnInit {
     return isValid ? null : { mismatch: true };
   }
 
-  changePassword(): void {
+  submit(): void {
     const challenge = localStorage.getItem('auth_challenge');
 
     this.isDataLoading = true;

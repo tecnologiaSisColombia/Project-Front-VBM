@@ -22,7 +22,6 @@ import { debounceTime, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import { NzSelectModule } from 'ng-zorro-antd/select';
 import * as XLSX from 'xlsx';
 import { DiagnosisService } from 'app/services/config/diagnosis.service';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
@@ -46,7 +45,6 @@ import { finalize } from 'rxjs/operators';
     NzSpinModule,
     CommonModule,
     NzSwitchModule,
-    NzSelectModule,
     NzEmptyModule,
   ],
   templateUrl: './diagnosis.component.html',

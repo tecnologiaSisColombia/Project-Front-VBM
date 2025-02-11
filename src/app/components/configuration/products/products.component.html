@@ -136,16 +136,13 @@
 </div>
 
 <nz-drawer
-  [nzBodyStyle]="{ overflow: 'auto' }"
   [nzMaskClosable]="false"
   [nzClosable]="false"
   [nzVisible]="visible"
-  nzPlacement="right"
   [nzTitle]="drawerTitle"
   (nzOnClose)="closeDrawer()"
   [nzWidth]="720"
   [nzFooter]="footerTpl">
-
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="drawerLoader">
       <form nz-form [formGroup]="form" (ngSubmit)="submit()">
