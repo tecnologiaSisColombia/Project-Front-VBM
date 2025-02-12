@@ -11,10 +11,6 @@ export class S3Service {
     
     constructor(private http: HttpClient) { }
 
-    uploadLogo(data: any): Observable<{ url: string }> {
-        return this.http.post<{ url: string }>(`${this.hostname}s3/upload_logo`, data);
-    }
-
     uploadEligibility(data: any): Observable<{ url: string }> {
         return this.http.post<{ url: string }>(`${this.hostname}s3/upload_eligibility`, data);
     }

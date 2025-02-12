@@ -49,7 +49,12 @@ export class ChangePasswordComponent implements OnInit {
   ) {
     this.form = this.fb.group(
       {
-        new_password: ['', [Validators.required]],
+        new_password: ['', 
+          [
+            Validators.required, 
+            Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\W)[a-zA-Z\d\W]{8,}$/)
+          ]
+        ],
         confirmPassword: [''],
       },
       { validators: this.passwordsMatchValidator }

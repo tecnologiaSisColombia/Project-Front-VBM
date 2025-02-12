@@ -23,7 +23,6 @@ import { debounceTime, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import { S3Service } from 'app/services/upload-s3/upload-s3.service';
 import * as XLSX from 'xlsx';
 import { ProductsService } from 'app/services/config/products.service';
 import { ServicesService } from 'app/services/config/services.service';
@@ -92,15 +91,12 @@ export class InsurersComponent implements OnInit {
     private fb: UntypedFormBuilder,
     private insurerService: InsurersService,
     private msgService: NzMessageService,
-    private s3Service: S3Service,
     private productService: ProductsService,
     private serviceService: ServicesService
   ) {
     this.form = this.fb.group({
       services: [null, [Validators.required]],
       products: [null, [Validators.required]],
-      logo: [null],
-      logo_description: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       payer_id: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       phone: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       address: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
@@ -266,85 +262,37 @@ export class InsurersComponent implements OnInit {
       });
   }
 
-  onFileChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      const validFileTypes = ['image/jpeg', 'image/png'];
-
-      if (!validFileTypes.includes(file.type)) {
-        this.msgService.warning('Only JPG and PNG files');
-        this.form.patchValue({ logo: null });
-        return;
-      }
-
-      this.form.patchValue({ logo: file });
-      this.form.get('logo')?.updateValueAndValidity();
-    }
-  }
-
   submit(): void {
     if (!this.form.valid) {
       Object.values(this.form.controls).forEach((control) => {
-        control.markAsDirty();
-        control.updateValueAndValidity({ onlySelf: true });
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
       });
       return;
     }
 
+    if (this.isUpdating) {
+      return this.update(this.dataDrawerCahe.id, this.form.value);
+    }
+
     this.drawerLoader = true;
 
-    const formData = this.form.value;
-
-    if (!formData.logo) {
-      formData.logo = this.isUpdating ? this.dataDrawerCahe.logo : 'None';
-    }
-
-    const logoFile = this.form.get('logo')?.value;
-
-    if (logoFile instanceof File) {
-      const uploadData = new FormData();
-      uploadData.append('name', formData.name);
-      uploadData.append('logo', logoFile);
-
-      this.s3Service.uploadLogo(uploadData)
-        .pipe(finalize(() => {
-          this.drawerLoader = false;
-        }))
-        .subscribe({
-          next: (response: any) => {
-            formData.logo = response.url;
-            this.saveOrUpdate(formData);
-          },
-          error: (error: any) => {
-            this.msgService.error(JSON.stringify(error.error));
-          },
-        });
-    } else {
-      this.saveOrUpdate(formData);
-    }
-  }
-
-  private saveOrUpdate(formData: any): void {
-    if (this.isUpdating) {
-      this.update(this.dataDrawerCahe.id, formData);
-    } else {
-      this.insurerService.createInsurer(formData)
-        .pipe(finalize(() => {
-          this.drawerLoader = false;
-        }))
-        .subscribe({
-          next: () => {
-            this.msgService.success('Insurer created successfully');
-            this.getInitData();
-            this.closeDrawer();
-          },
-          error: (error) => {
-            this.msgService.error(JSON.stringify(error.error));
-          },
-        });
-    }
+    this.insurerService.createInsurer(this.form.value)
+      .pipe(finalize(() => {
+        this.drawerLoader = false;
+      }))
+      .subscribe({
+        next: () => {
+          this.msgService.success('Insurer created successfully');
+          this.getInitData();
+          this.closeDrawer();
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 
   changeStatus(id: number, data: any): void {
@@ -397,6 +345,14 @@ export class InsurersComponent implements OnInit {
     if (control.hasError('pattern')) return 'This field cannot be empty';
 
     return null;
+  }
+
+  selectChange(type: 'services' | 'products', selectedValues: any[]): void {
+    if (selectedValues.includes('ALL')) {
+      const allValues = this[type].map((o: any) => o.id);
+      const isAllSelected = selectedValues.length === allValues.length + 1;
+      this.form.controls[type].setValue(isAllSelected ? [] : allValues);
+    }
   }
 
   exporInsurers(): void {

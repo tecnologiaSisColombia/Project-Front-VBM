@@ -34,7 +34,7 @@ import { NzCardModule } from 'ng-zorro-antd/card';
   styleUrls: ['./login.component.css', '/src/animations/styles.css'],
 })
 export class LoginComponent implements OnInit {
-  loginForm: FormGroup;
+  form: FormGroup;
   isDataLoading: boolean = false;
   showPassword: boolean = false;
 
@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private msg: NzMessageService
   ) {
-    this.loginForm = this.fb.group({
+    this.form = this.fb.group({
       username: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       password: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
     });
@@ -53,9 +53,9 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void { }
 
-  signIn(): void {
-    if (!this.loginForm.valid) {
-      Object.values(this.loginForm.controls).forEach(control => {
+  submit(): void {
+    if (!this.form.valid) {
+      Object.values(this.form.controls).forEach(control => {
         if (control.invalid) {
           control.markAsDirty();
           control.updateValueAndValidity({ onlySelf: true });
@@ -65,7 +65,7 @@ export class LoginComponent implements OnInit {
 
     this.isDataLoading = true;
 
-    this.loginService.signIn(this.loginForm.value)
+    this.loginService.signIn(this.form.value)
       .subscribe({
         next: (res: any) => {
           const getAttr = (name: string) => {
@@ -93,13 +93,13 @@ export class LoginComponent implements OnInit {
               route: '/change_password',
               queryParams: {
                 session: err.error.error.session,
-                username: this.loginForm.get('username')?.value,
+                username: this.form.get('username')?.value,
               },
             },
             NewPasswordDays: {
               route: '/change_password',
               queryParams: {
-                username: this.loginForm.get('username')?.value,
+                username: this.form.get('username')?.value,
               },
             },
           };

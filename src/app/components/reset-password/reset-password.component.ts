@@ -75,8 +75,11 @@ export class ResetPasswordComponent {
 
           this.resetForm.get('confirmation_code')?.updateValueAndValidity();
 
-          this.resetForm.get('new_password')?.setValidators([Validators.required]);
-
+          this.resetForm.get('new_password')?.setValidators([
+            Validators.required,
+            Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\W)[a-zA-Z\d\W]{8,}$/)
+          ]);
+          
           this.resetForm.get('new_password')?.updateValueAndValidity();
 
           this.msg.success('Reset request sent successfully');

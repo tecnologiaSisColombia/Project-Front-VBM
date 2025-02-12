@@ -71,6 +71,7 @@
         <th>Email</th>
         <th>Phone</th>
         <th>License number</th>
+        <th>Npi</th>
         <th>Created</th>
         <th>Action</th>
       </tr>
@@ -82,6 +83,7 @@
         <td>{{ data.email }}</td>
         <td>{{ data.phone }}</td>
         <td>{{ data.license_number }}</td>
+        <td>{{ data.npi }}</td>
         <td>{{ data.created | date }}</td>
         <td>
           <a>
@@ -209,6 +211,27 @@
               nz-input
               formControlName="license_number"
               id="license_number"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="npi"
+            style="text-align: center">
+            Npi
+          </nz-form-label>
+
+          <nz-form-control
+            [nzSm]="16"
+            [nzXs]="24"
+            [nzErrorTip]="errorTemplate">
+            <input 
+              nz-input 
+              formControlName="npi" 
+              id="npi" 
             />
           </nz-form-control>
         </nz-form-item>

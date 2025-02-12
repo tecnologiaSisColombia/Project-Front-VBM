@@ -304,6 +304,31 @@
         </div>
 
         <div nz-col nzSpan="24" *ngIf="isUpdating 
+          ? (dataDrawerCahe?.extra_data && user_type?.type === 'SUPPLIER')
+          : (extraForm?.type === 'SUPPLIER')">
+          <nz-form-item>
+            <nz-form-label
+              [nzSm]="8"
+              [nzXs]="24"
+              nzFor="npi"
+              style="text-align: center">
+              Npi:
+            </nz-form-label>
+
+            <nz-form-control
+              [nzSm]="16" 
+              [nzXs]="24" 
+              [nzErrorTip]="errorTemplate">
+              <input
+                nz-input
+                name="npi"
+                formControlName="npi"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col nzSpan="24" *ngIf="isUpdating 
             ? (dataDrawerCahe?.extra_data && user_type?.type === 'SUPPLIER')
             : (extraForm?.type === 'SUPPLIER')">
           <nz-form-item>

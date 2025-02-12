@@ -87,6 +87,7 @@ export class DoctorComponent {
   ) {
     this.form = this.fb.group({
       license_number: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      npi: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       email: [null, [Validators.required, Validators.email]],
       phone: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       last_name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],

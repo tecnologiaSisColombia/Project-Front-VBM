@@ -193,30 +193,35 @@
         <nz-form-item>
           <nz-form-label 
             [nzSm]="8" 
-            [nzXs]="24"
-            style="text-align: center"
+            [nzXs]="24" 
+            style="text-align: center" 
             nzFor="services">
             Services
           </nz-form-label>
-
+        
           <nz-form-control 
             [nzSm]="16" 
-            [nzXs]="24"
+            [nzXs]="24" 
             [nzErrorTip]="errorTemplate">
             <nz-select
               formControlName="services"
               name="services"
               nzPlaceHolder="Select Services"
-              nzMode="multiple">
-              <nz-option
-                *ngFor="let o of services"
-                [nzLabel]="o.code + ' - ' + o.description"
-                [nzValue]="o.id">
+              nzMode="multiple"
+              (ngModelChange)="selectChange('services', $event)">
+              <nz-option 
+                nzLabel="Select All / None" 
+                [nzValue]="'ALL'">
+              </nz-option>
+              
+              <nz-option 
+                *ngFor="let o of services" 
+                [nzLabel]="o.code + ' - ' + o.description" [nzValue]="o.id">
               </nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
-
+        
         <nz-form-item>
           <nz-form-label 
             [nzSm]="8" 
@@ -234,56 +239,19 @@
               formControlName="products"
               name="products"
               nzPlaceHolder="Select Products"
-              nzMode="multiple">
+              nzMode="multiple"
+              (ngModelChange)="selectChange('products', $event)">
+              <nz-option 
+                nzLabel="Select All / None" 
+                [nzValue]="'ALL'">
+              </nz-option>
+
               <nz-option
                 *ngFor="let o of products"
                 [nzLabel]="o.code + ' - ' + o.description"
                 [nzValue]="o.id">
               </nz-option>
             </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-
-        <nz-form-item>
-          <nz-form-label 
-            [nzSm]="8" 
-            [nzXs]="24" 
-            style="text-align: center"
-            nzFor="logo">
-            Logo
-          </nz-form-label>
-
-          <nz-form-control 
-            [nzSm]="16" 
-            [nzXs]="24">
-            <input
-              type="file"
-              nz-input
-              accept="image/*"
-              id="logo"
-              (change)="onFileChange($event)"
-            />
-          </nz-form-control>
-        </nz-form-item>
-
-        <nz-form-item>
-          <nz-form-label 
-            [nzSm]="8" 
-            [nzXs]="24" 
-            style="text-align: center"
-            nzFor="logo_description">
-            Logo description
-          </nz-form-label>
-
-          <nz-form-control
-            [nzSm]="16"
-            [nzXs]="24"
-            [nzErrorTip]="errorTemplate">
-            <input
-              nz-input
-              formControlName="logo_description"
-              id="logo_description"
-            />
           </nz-form-control>
         </nz-form-item>
 
@@ -508,6 +476,7 @@
   nzTitle="Products and Services"
   (nzOnCancel)="handleCancelCatalog()"
   (nzOnOk)="handleOkCatalog()"
+  [nzWidth]="720"
   [nzMaskClosable]="false">
   <ng-container *nzModalContent>
     <h3>Services</h3>

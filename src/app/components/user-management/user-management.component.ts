@@ -118,6 +118,7 @@ export class UserManagementComponent implements OnInit {
       state: [null],
       postal_code: [null],
       number_license: [''],
+      npi: [''],
     });
     this.searchNameSubject
       .pipe(debounceTime(1000))
@@ -155,6 +156,7 @@ export class UserManagementComponent implements OnInit {
     if (data.extra_data && data.extra_data.length > 0) {
       this.form.patchValue({
         number_license: data.extra_data[0].license_number,
+        npi: data.extra_data[0].npi,
         supplier: data.extra_data[0].supplier_id,
         address: data.extra_data[0].address,
         city: data.extra_data[0].city,
@@ -169,7 +171,6 @@ export class UserManagementComponent implements OnInit {
       const userType = selectedUserType.type;
       const fieldsToClear = this.fieldsToClearMap[userType] || this.fieldsToClearMap['MASTER'];
 
-      // Elimina validaciones de campos que deben limpiarse
       fieldsToClear.forEach(field => {
         const control = this.form.get(field);
         if (control) {
@@ -179,11 +180,11 @@ export class UserManagementComponent implements OnInit {
       });
 
       const controls = {
-        SUPPLIER: ['number_license', 'localities', 'insurers', 'address', 'city', 'state'],
+        SUPPLIER: ['number_license', 'localities', 'insurers', 'address', 'city', 'state', 'npi'],
         PARTNER: ['supplier'],
       };
 
-      const requiredWithPattern = ['address', 'city', 'state', 'number_license'];
+      const requiredWithPattern = ['address', 'city', 'state', 'number_license', 'npi'];
 
       Object.entries(controls).forEach(([key, controlNames]) => {
         const isActive = userType === key;
@@ -251,11 +252,11 @@ export class UserManagementComponent implements OnInit {
     const selectedType = this.userTypeOptions.find((e) => e.value === userType);
 
     const controls = {
-      SUPPLIER: ['number_license', 'localities', 'insurers', 'address', 'city', 'state'],
+      SUPPLIER: ['number_license', 'localities', 'insurers', 'address', 'city', 'state', 'npi'],
       PARTNER: ['supplier'],
     };
 
-    const requiredWithPattern = ['address', 'city', 'state', 'number_license'];
+    const requiredWithPattern = ['address', 'city', 'state', 'number_license', 'npi'];
 
     const resetControls = () => {
       Object.values(controls)
