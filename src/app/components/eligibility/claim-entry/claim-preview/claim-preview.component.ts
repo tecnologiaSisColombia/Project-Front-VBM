@@ -65,6 +65,7 @@ export class ClaimPreviewComponent implements OnInit, OnChanges {
     const auth = this.getAccountFieldValue('auth');
     const totalCharge = this.getAccountFieldValue('charge');
     const paid = this.getAccountFieldValue('paid');
+    const balance = this.getAccountFieldValue('balance');
 
     this.claimFields = [
       { label: "2. Patient's Name", value: this.claimData?.patientName },
@@ -84,13 +85,16 @@ export class ClaimPreviewComponent implements OnInit, OnChanges {
       { label: "Insurance Plan / Program Name", value: `${this.claimData?.plan_name} - Group ${this.claimData?.group}` },
       { label: "19. Reserved For Local Use", value: observation },
       { label: "21. Diagnosis or Nature Of Illness Or Injury", type: "list", value: this.selectedDiagnosis },
-      { label: "Prior Auth#", value: auth }
     ];
 
+    if (this.claimData?.auth === 1) {
+      this.claimFields.push({ label: "Prior Auth#", value: auth });
+    }
+
     this.accountFieldsRows = [
-      { label: "Total charge", value: totalCharge },
-      { label: "Paid", value: paid },
-      { label: "Balance due", value: '' },
+      { label: "Total charge", value: `$ ${totalCharge}` },
+      { label: "Paid", value: `$ ${paid}` },
+      { label: "Balance", value: `$ ${balance}` },
       { label: "32. Facility address", value: '' },
       { label: "33. Billing address", value: this.claimData?.address_supplier }
     ];

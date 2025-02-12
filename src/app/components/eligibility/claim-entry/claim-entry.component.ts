@@ -236,6 +236,18 @@ export class ClaimEntryComponent {
         this.calculateTotalCharges();
     }
 
+    calculateBalance(): void {
+        const paid = Number(this.accountFields.find(field => field.id === 'paid')?.value || 0);
+        const balance = this.totalCharges - paid;
+
+        this.accountFields = this.accountFields.map(field => {
+            if (field.id === 'balance') {
+                return { ...field, value: balance };
+            }
+            return field;
+        });
+    }
+
     resetRow(index: number): void {
         this.rows[index] = {
             dateInitial: null,
@@ -258,6 +270,9 @@ export class ClaimEntryComponent {
         this.accountFields = this.accountFields.map(field =>
             field.id === 'charge' ? { ...field, value: this.totalCharges } : field
         );
+
+        this.calculateBalance();
+
     }
 
     formatDate(row: any, field: string): void {
@@ -300,6 +315,10 @@ export class ClaimEntryComponent {
         clearTimeout(this.updateTimeout);
 
         this.accountFields[index].value = value;
+
+        if (this.accountFields[index].id === 'charge' || this.accountFields[index].id === 'paid') {
+            this.calculateBalance();
+        }
 
         this.updateTimeout = setTimeout(() => {
             this.accountFields = [...this.accountFields];

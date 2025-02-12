@@ -9,17 +9,15 @@
   <ng-container *nzModalContent>
     <nz-card nzTitle="UNSUBMITTED CLAIM" nzBordered class="preview-card">
         <ng-container *ngFor="let group of [
-          claimFields.slice(0, 3),
-          claimFields.slice(3, 5),
-          claimFields.slice(5, 9),
-          claimFields.slice(9, 13),
-          claimFields.slice(13, 15),
-          claimFields.slice(15, 16),
-          claimFields.slice(16, 18)]">
+            claimFields.slice(0, 3),
+            claimFields.slice(3, 5),
+            claimFields.slice(5, 9),
+            claimFields.slice(9, 13),
+            claimFields.slice(13, 15),
+            claimFields.slice(15, 16),
+            claimFields.slice(16, 18)]">
             <nz-row [nzGutter]="16">
-                <nz-col 
-                    *ngFor="let field of group" 
-                    [nzSpan]="24 / group.length">
+                <nz-col *ngFor="let field of group" [nzSpan]="24 / group.length">
 
                     <h3 style="font-weight: bold;">{{ field.label }}</h3>
 
@@ -92,10 +90,8 @@
                         <p style="font-size: 16px;">{{ field.value }}</p>
                     </nz-col>
                 </nz-row> 
-                
-        <nz-divider></nz-divider>
-
-      </ng-container>
+            <nz-divider></nz-divider>
+        </ng-container>
     </nz-card>
   </ng-container>
 </nz-modal>

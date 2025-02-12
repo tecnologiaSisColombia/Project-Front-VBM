@@ -276,7 +276,7 @@ export class EligibilityComponent {
       insurer: rowData?.insurer_data?.name ?? '',
       address_insurer: rowData?.insurer_data?.address ?? '',
       city_supplier: rowData?.suppliers[0].city ?? '',
-      phone_supplier: rowData?.suppliers[0].phone ?? '',
+      phone_supplier: rowData?.suppliers[0].user.phone ?? '',
       state_supplier: rowData?.suppliers[0].state ?? '',
       modifiers: rowData?.insurer_data?.modifiers ?? '',
       plan_name: rowData?.subplan_data?.plan_data.name ?? '',

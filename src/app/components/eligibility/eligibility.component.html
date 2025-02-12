@@ -157,7 +157,6 @@
   (nzOnOk)="CancelOkModalMember()"
   [nzClosable]="false"
   nzMaskClosable="false">
-  
   <ng-container *nzModalContent>
     <app-member>
     </app-member>
@@ -170,7 +169,6 @@
   nzWidth="1000px"
   [nzClosable]="false"
   nzMaskClosable="false">
-
   <ng-container *nzModalContent>
     <app-plan-details
       [claimData]="selectedClaim">
@@ -210,7 +208,6 @@
   (nzOnOk)="cancelOkModalClaim()"
   [nzClosable]="false"
   nzMaskClosable="false">
-
   <ng-container *nzModalContent>
     <app-claim-entry 
       [claimData]="selectedClaim">
@@ -229,7 +226,6 @@
     <div class="modal-content-wrapper">
       <h3 class="modal-title">Start Eligibility Process</h3>
       <div class="modal-body">
-        <!-- <h4 style="color: red;">Only files with .zip extension are allowed</h4> -->
         <a href="assets/example.csv">Download Example of Eligibility to Upload</a>
         <input 
           type="file" 
