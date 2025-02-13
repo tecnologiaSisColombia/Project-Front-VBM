@@ -254,6 +254,11 @@ export class LocalitiesComponent implements OnInit {
     return null;
   }
 
+  hasFeedback(controlName: string): boolean {
+    const control = this.form.get(controlName);
+    return control?.invalid && (control.dirty || control.touched) ? true : false;
+  }
+
   exportLocalities(): void {
     this.localitiesService
       .get({}, null, null, true)

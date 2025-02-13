@@ -19,7 +19,9 @@
       <h5>Sign in to your account</h5>
 
       <nz-form-item>
-        <nz-form-control [nzErrorTip]="errorTemplate">
+        <nz-form-control 
+          [nzErrorTip]="errorTemplate"  
+          [nzHasFeedback]="hasFeedback('username')">
           <nz-input-group nzPrefixIcon="user">
             <input 
               type="text" 
@@ -33,7 +35,9 @@
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-control [nzErrorTip]="errorTemplate">
+        <nz-form-control 
+          [nzErrorTip]="errorTemplate"
+          [nzHasFeedback]="hasFeedback('password')">
           <nz-input-group nzPrefixIcon="lock" nzSuffix>
             <input 
               [type]="showPassword ? 'text' : 'password'" 

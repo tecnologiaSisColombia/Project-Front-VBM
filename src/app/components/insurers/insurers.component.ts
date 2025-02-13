@@ -355,6 +355,11 @@ export class InsurersComponent implements OnInit {
     }
   }
 
+  hasFeedback(controlName: string): boolean {
+    const control = this.form.get(controlName);
+    return control?.invalid && (control.dirty || control.touched) ? true : false;
+  }
+
   exporInsurers(): void {
     this.insurerService.getInsurers({}, null, null, true)
       .pipe(finalize(() => {

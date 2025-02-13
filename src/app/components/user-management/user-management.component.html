@@ -273,6 +273,8 @@
               name="type_user"
               [nzOptions]="userTypeOptions"
               nzPlaceHolder="Select user type"
+              nzShowSearch
+              nzAllowClear
               (ngModelChange)="userTypeChange($event)">
             </nz-select>
           </nz-form-control>
@@ -348,6 +350,8 @@
                 formControlName="localities"
                 name="localities"
                 nzPlaceHolder="Select locality"
+                nzShowSearch
+                nzAllowClear
                 nzMode="multiple">
                 <nz-option
                   *ngFor="let o of localities"
@@ -379,6 +383,8 @@
                 formControlName="insurers"
                 name="insurers"
                 nzPlaceHolder="Select insurer"
+                nzShowSearch
+                nzAllowClear
                 nzMode="multiple">
                 <nz-option
                   *ngFor="let o of insurers"
@@ -508,6 +514,8 @@
               <nz-select
                 formControlName="supplier"
                 name="supplier"
+                nzShowSearch
+                nzAllowClear
                 nzPlaceHolder="Select supplier">
                 <nz-option
                   *ngFor="let o of suppliers"

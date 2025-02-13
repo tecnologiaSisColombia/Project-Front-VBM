@@ -168,7 +168,8 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('name')">
             <input
               nz-input
               formControlName="name"
@@ -189,7 +190,8 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('insurer')">
             <nz-select
               nzShowSearch
               nzAllowClear

@@ -160,7 +160,8 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('code')">
             <input 
               nz-input 
               formControlName="code" 
@@ -181,7 +182,8 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('description')">
             <input 
               nz-input 
               formControlName="description" 
@@ -202,7 +204,8 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('value')">
             <input 
               nz-input 
               formControlName="value" 

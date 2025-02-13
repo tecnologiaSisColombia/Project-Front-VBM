@@ -180,7 +180,8 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('name')">
             <input
               nz-input
               formControlName="name"
@@ -202,7 +203,8 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('services')">
             <nz-select
               formControlName="services"
               name="services"
@@ -234,7 +236,8 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24"
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('products')">
             <nz-select
               formControlName="products"
               name="products"
@@ -267,7 +270,8 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('address')">
             <input 
               nz-input 
               formControlName="address" 
@@ -288,7 +292,8 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('phone')">
             <input 
               nz-input 
               formControlName="phone" 
@@ -309,7 +314,8 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('payer_id')">
             <input 
               nz-input 
               formControlName="payer_id" 
@@ -330,12 +336,13 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('modifiers')">
             <nz-select
               nzShowSearch
               nzAllowClear
               id="modifiers"
-              nzPlaceHolder="Select an Modifiers"
+              nzPlaceHolder="Select Modifiers"
               formControlName="modifiers">
               <nz-option 
                 nzLabel="Yes" 
@@ -361,12 +368,13 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('orderring_npi')">
             <nz-select
               nzShowSearch
               nzAllowClear
               id="orderring_npi"
-              nzPlaceHolder="Select an Orderring NPI"
+              nzPlaceHolder="Select Orderring NPI"
               formControlName="orderring_npi">
               <nz-option 
                 nzLabel="Yes" 
@@ -392,12 +400,13 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('refering_npi')">
             <nz-select
               nzShowSearch
               nzAllowClear
               id="refering_npi"
-              nzPlaceHolder="Select an Refering NPI"
+              nzPlaceHolder="Select Refering NPI"
               formControlName="refering_npi">
               <nz-option 
                 nzLabel="Yes" 
@@ -423,12 +432,13 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('auth')">
             <nz-select
               nzShowSearch
               nzAllowClear
               id="auth"
-              nzPlaceHolder="Select auth"
+              nzPlaceHolder="Select Auth"
               formControlName="auth">
               <nz-option 
                 nzLabel="Yes" 
@@ -476,7 +486,7 @@
   nzTitle="Products and Services"
   (nzOnCancel)="handleCancelCatalog()"
   (nzOnOk)="handleOkCatalog()"
-  [nzWidth]="720"
+  [nzWidth]="800"
   [nzMaskClosable]="false">
   <ng-container *nzModalContent>
     <h3>Services</h3>

@@ -164,7 +164,8 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('first_name')">
             <input 
               nz-input 
               formControlName="first_name" 
@@ -185,7 +186,8 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('last_name')">
             <input 
               nz-input 
               formControlName="last_name" 
@@ -206,7 +208,8 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('license_number')">
             <input
               nz-input
               formControlName="license_number"
@@ -227,7 +230,8 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('npi')">
             <input 
               nz-input 
               formControlName="npi" 
@@ -248,7 +252,8 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('email')">
             <input 
               nz-input 
               type="email" 
@@ -270,7 +275,8 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('phone')">
             <input 
               nz-input 
               formControlName="phone" 
@@ -291,12 +297,14 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('supplier')">
             <nz-select
               formControlName="supplier"
               nzPlaceHolder="Select Supplier"
               style="width: 100%; border-radius: 6px"
-              nzAllowClear>
+              nzAllowClear
+              nzShowSearch>
               <nz-option
                 *ngFor="let o of suppliers"
                 [nzLabel]="o.user.first_name + ' ' + o.user.last_name"

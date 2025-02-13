@@ -299,6 +299,11 @@ export class PlansComponent implements OnInit {
     return null;
   }
 
+  hasFeedback(controlName: string): boolean {
+    const control = this.form.get(controlName);
+    return control?.invalid && (control.dirty || control.touched) ? true : false;
+  }
+
   exportCoverages(): void {
     this.planService
       .getPlans({}, null, null, true)

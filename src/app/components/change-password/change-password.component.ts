@@ -5,6 +5,7 @@ import {
   Validators,
   ValidationErrors,
   ReactiveFormsModule,
+  AbstractControl
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoginService } from 'app/services/login/login.service';
@@ -49,13 +50,13 @@ export class ChangePasswordComponent implements OnInit {
   ) {
     this.form = this.fb.group(
       {
-        new_password: ['', 
+        new_password: ['',
           [
-            Validators.required, 
+            Validators.required,
             Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\W)[a-zA-Z\d\W]{8,}$/)
           ]
         ],
-        confirmPassword: [''],
+        confirm_password: [''],
       },
       { validators: this.passwordsMatchValidator }
     );
@@ -73,7 +74,7 @@ export class ChangePasswordComponent implements OnInit {
 
   private passwordsMatchValidator(group: FormGroup): ValidationErrors | null {
     const newPass = group.get('new_password')?.value;
-    const confirmCtrl = group.get('confirmPassword');
+    const confirmCtrl = group.get('confirm_password');
     const isValid = newPass === confirmCtrl?.value;
     confirmCtrl?.setErrors(isValid ? null : { mismatch: true });
     return isValid ? null : { mismatch: true };
@@ -122,5 +123,22 @@ export class ChangePasswordComponent implements OnInit {
         this.msg.error(JSON.stringify(error?.error?.error?.message));
       },
     });
+  }
+
+  getErrorMessage(control: AbstractControl | null): string | null {
+    if (!control || !control.errors) return null;
+
+    if (control.hasError('required')) return 'This field is required';
+
+    if (control.hasError('pattern')) return 'Must be at least 8 chars, include uppercase, lowercase, and a symbol';
+
+    if (control.hasError('mismatch')) return 'Passwords do not match';
+
+    return null;
+  }
+
+  hasFeedback(controlName: string): boolean {
+    const control = this.form.get(controlName);
+    return control?.invalid && (control.dirty || control.touched) ? true : false;
   }
 }

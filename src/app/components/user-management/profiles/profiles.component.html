@@ -193,6 +193,8 @@
             [nzErrorTip]="typeError">
             <nz-select 
               formControlName="type" 
+              nzShowSearch
+              nzAllowClear
               nzPlaceHolder="Select type">
               <nz-option
                 *ngFor="let o of types_users"
@@ -285,7 +287,9 @@
             [nzXs]="24" 
             [nzErrorTip]="typeError">
             <nz-select 
-              formControlName="type" 
+              formControlName="type"
+              nzShowSearch
+              nzAllowClear
               nzPlaceHolder="Select type">
               <nz-option
                 *ngFor="let o of types_users"

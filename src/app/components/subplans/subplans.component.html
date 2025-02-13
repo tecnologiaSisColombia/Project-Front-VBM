@@ -171,7 +171,8 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('name')">
             <input 
               nz-input 
               formControlName="name" 
@@ -192,7 +193,8 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('group')">
             <input 
               nz-input 
               formControlName="group" 
@@ -213,7 +215,8 @@
           <nz-form-control 
             [nzSm]="16" 
             [nzXs]="24" 
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('plan_contract')">
             <input
               nz-input
               formControlName="plan_contract"
@@ -234,12 +237,13 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('pds')">
             <nz-select
               nzShowSearch
               nzAllowClear
               id="pds"
-              nzPlaceHolder="Select an PDS"
+              nzPlaceHolder="Select PDS"
               formControlName="pds">
               <nz-option 
                 nzLabel="Yes" 
@@ -265,7 +269,8 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('visual_test_medicare')">
             <input
               nz-input
               type="number"
@@ -287,7 +292,8 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('visual_surgery_medicare')">
             <input
               nz-input
               type="number"
@@ -309,7 +315,8 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('routine_visual_test')">
             <input
               nz-input
               type="number"
@@ -352,7 +359,8 @@
           <nz-form-control
             [nzSm]="16"
             [nzXs]="24"
-            [nzErrorTip]="errorTemplate">
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('vision_elements')">
             <input
               nz-input
               type="number"

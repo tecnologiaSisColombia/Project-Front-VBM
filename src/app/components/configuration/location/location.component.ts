@@ -267,6 +267,11 @@ export class LocationComponent {
     return null;
   }
 
+  hasFeedback(controlName: string): boolean {
+    const control = this.form.get(controlName);
+    return control?.invalid && (control.dirty || control.touched) ? true : false;
+  }
+
   exportLocation(): void {
     this.locationService.get({}, null, null, true)
       .pipe(finalize(() => {

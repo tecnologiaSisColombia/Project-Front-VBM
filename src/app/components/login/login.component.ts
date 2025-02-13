@@ -1,4 +1,4 @@
-import { Component, OnInit,  } from '@angular/core';
+import { Component, OnInit, } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -131,6 +131,11 @@ export class LoginComponent implements OnInit {
     if (control.hasError('pattern')) return 'This field cannot be empty';
 
     return null;
+  }
+
+  hasFeedback(controlName: string): boolean {
+    const control = this.form.get(controlName);
+    return control?.invalid && (control.dirty || control.touched) ? true : false;
   }
 
   togglePasswordVisibility(): void {
