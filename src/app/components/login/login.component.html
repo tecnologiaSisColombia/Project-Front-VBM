@@ -74,18 +74,14 @@
         </div>
       </div>
 
-      <nz-form-item>
-        <nz-form-control>
-          <button 
-            nz-button 
-            nzType="primary" 
-            class="login-form-button"
-            [nzLoading]="isDataLoading"
-            [disabled]="form.invalid || isDataLoading">
-            Sign in
-          </button>
-        </nz-form-control>
-      </nz-form-item>
+      <button 
+        nz-button 
+        nzType="primary" 
+        class="login-form-button"
+        [nzLoading]="isDataLoading"
+        [disabled]="form.invalid || isDataLoading">
+        Sign in
+      </button>
     </form>
   </nz-card>
 </div>

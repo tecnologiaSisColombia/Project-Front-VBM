@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ResetPasswordService } from 'app/services/reset-password/reset-password.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -30,7 +30,7 @@ import { finalize } from 'rxjs/operators';
   styleUrls: ['./reset-password.component.css', '/src/animations/styles.css']
 })
 export class ResetPasswordComponent {
-  resetForm: FormGroup;
+  form: FormGroup;
   isDataLoading = false;
   resetStep: 'request' | 'confirm' = 'request';
   passwordVisible = false;
@@ -41,7 +41,7 @@ export class ResetPasswordComponent {
     private router: Router,
     private msg: NzMessageService
   ) {
-    this.resetForm = this.fb.group({
+    this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       confirmation_code: [''],
       new_password: ['']
@@ -49,8 +49,8 @@ export class ResetPasswordComponent {
   }
 
   requestReset(): void {
-    if (this.resetForm.invalid) {
-      Object.values(this.resetForm.controls).forEach(control => {
+    if (this.form.invalid) {
+      Object.values(this.form.controls).forEach(control => {
         if (control.invalid) {
           control.markAsDirty();
           control.updateValueAndValidity({ onlySelf: true });
@@ -61,7 +61,7 @@ export class ResetPasswordComponent {
 
     this.isDataLoading = true;
 
-    const email = this.resetForm.get('email')?.value;
+    const email = this.form.get('email')?.value;
 
     this.resetPasswordService.requestReset(email)
       .pipe(finalize(() => {
@@ -71,16 +71,16 @@ export class ResetPasswordComponent {
         next: () => {
           this.resetStep = 'confirm';
 
-          this.resetForm.get('confirmation_code')?.setValidators([Validators.required]);
+          this.form.get('confirmation_code')?.setValidators([Validators.required]);
 
-          this.resetForm.get('confirmation_code')?.updateValueAndValidity();
+          this.form.get('confirmation_code')?.updateValueAndValidity();
 
-          this.resetForm.get('new_password')?.setValidators([
+          this.form.get('new_password')?.setValidators([
             Validators.required,
             Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\W)[a-zA-Z\d\W]{8,}$/)
           ]);
-          
-          this.resetForm.get('new_password')?.updateValueAndValidity();
+
+          this.form.get('new_password')?.updateValueAndValidity();
 
           this.msg.success('Reset request sent successfully');
         },
@@ -93,7 +93,7 @@ export class ResetPasswordComponent {
   resendCode(): void {
     this.isDataLoading = true;
 
-    const email = this.resetForm.get('email')?.value;
+    const email = this.form.get('email')?.value;
 
     this.resetPasswordService.resendConfirmationCode(email)
       .pipe(finalize(() => {
@@ -113,19 +113,19 @@ export class ResetPasswordComponent {
   confirmResetPassword(): void {
     this.isDataLoading = true;
 
-    this.resetPasswordService.confirmResetPassword(this.resetForm.value)
+    this.resetPasswordService.confirmResetPassword(this.form.value)
       .pipe(finalize(() => {
         this.isDataLoading = false;
       }))
       .subscribe({
         next: () => {
-          this.resetForm.reset();
+          this.form.reset();
 
-          this.resetForm.get('confirmation_code')?.clearValidators();
-          
-          this.resetForm.get('new_password')?.clearValidators();
+          this.form.get('confirmation_code')?.clearValidators();
 
-          this.resetForm.updateValueAndValidity();
+          this.form.get('new_password')?.clearValidators();
+
+          this.form.updateValueAndValidity();
 
           this.msg.success('Password reset successfully');
 
@@ -135,6 +135,23 @@ export class ResetPasswordComponent {
           this.msg.error(JSON.stringify(error?.error?.error?.message));
         },
       });
+  }
+
+  getErrorMessage(control: AbstractControl | null): string | null {
+    if (!control || !control.errors) return null;
+
+    if (control.hasError('required')) return 'This field is required';
+
+    if (control.hasError('pattern')) return 'Must be at least 8 chars, include uppercase, lowercase, and a symbol';
+
+    if (control.hasError('email')) return 'Please enter a valid email address';
+
+    return null;
+  }
+
+  hasFeedback(controlName: string): boolean {
+    const control = this.form.get(controlName);
+    return control?.invalid && (control.dirty || control.touched) ? true : false;
   }
 
   togglePasswordVisibility(): void {
