@@ -8,14 +8,8 @@
   </div>
 
   <div class="btn-container">
-    <button 
-      nz-button 
-      nzType="primary" 
-      (click)="openDrawer()">
-      <i 
-        nz-icon 
-        nzType="user"> 
-      </i>
+    <button nz-button nzType="primary" (click)="openDrawer()">
+      <i nz-icon nzType="user"> </i>
       Create User
     </button>
 
@@ -23,13 +17,15 @@
       nz-button
       [style.background-color]="'#00a651'"
       [style.color]="'white'"
-      (click)="exportUsers()">
-      <i 
-        nz-icon 
-        [nzType]="exportLoader ? 'loading' : 'download'" 
-        nzTheme="outline">
+      (click)="exportUsers()"
+    >
+      <i
+        nz-icon
+        [nzType]="exportLoader ? 'loading' : 'download'"
+        nzTheme="outline"
+      >
       </i>
-      {{ exportLoader ? 'Exporting...' : 'Export Users' }}
+      {{ exportLoader ? "Exporting..." : "Export Users" }}
     </button>
   </div>
 </div>
@@ -38,7 +34,8 @@
   <div class="table-filters">
     <nz-input-group
       *ngFor="let field of searchFields"
-      [nzSuffix]="suffixIconSearch">
+      [nzSuffix]="suffixIconSearch"
+    >
       <input
         type="text"
         nz-input
@@ -48,10 +45,7 @@
       />
 
       <ng-template #suffixIconSearch>
-        <span 
-          nz-icon 
-          nzType="search"> 
-        </span>
+        <span nz-icon nzType="search"> </span>
       </ng-template>
     </nz-input-group>
   </div>
@@ -61,7 +55,8 @@
     [nzData]="dataToDisplay"
     [nzFrontPagination]="false"
     [nzNoResult]="noDataTemplate"
-    [nzLoading]="isDataLoading">
+    [nzLoading]="isDataLoading"
+  >
     <thead>
       <tr>
         <th>Rol</th>
@@ -76,7 +71,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let data of basicTable.data">
-        <td>{{ mapRole(data.user_type) }} </td>
+        <td>{{ mapRole(data.user_type) }}</td>
         <td>{{ data.username }}</td>
         <td>{{ data.first_name }}</td>
         <td>{{ data.last_name }}</td>
@@ -87,8 +82,11 @@
           <a>
             <nz-switch
               [(ngModel)]="data.is_active"
-              (ngModelChange)="changeStatus(data.username, data.id, data.is_active)"
-              [nzSize]="'small'">
+              (ngModelChange)="
+                changeStatus(data.username, data.id, data.is_active)
+              "
+              [nzSize]="'small'"
+            >
             </nz-switch>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
@@ -98,7 +96,8 @@
               nz-icon
               nzType="edit"
               nzTheme="outline"
-              (click)="openEditDrawer(data)">
+              (click)="openEditDrawer(data)"
+            >
             </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
@@ -108,7 +107,8 @@
               nz-icon
               nzType="delete"
               nzTheme="outline"
-              (click)="delete(data.username, data.id)">
+              (click)="delete(data.username, data.id)"
+            >
             </span>
           </a>
         </td>
@@ -119,11 +119,10 @@
   <ng-template #noDataTemplate>
     <nz-empty
       nzNotFoundImage="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-      [nzNotFoundContent]="contentTpl">
+      [nzNotFoundContent]="contentTpl"
+    >
       <ng-template #contentTpl>
-        <span> 
-          No records found 
-        </span>
+        <span> No records found </span>
       </ng-template>
     </nz-empty>
   </ng-template>
@@ -136,7 +135,8 @@
     (nzPageIndexChange)="pageChange($event)"
     (nzPageSizeChange)="pageSizeChange($event)"
     [nzShowSizeChanger]="true"
-    nzShowQuickJumper>
+    nzShowQuickJumper
+  >
   </nz-pagination>
 </div>
 
@@ -147,7 +147,8 @@
   [nzTitle]="drawerTitle"
   (nzOnClose)="closeDrawer()"
   [nzWidth]="720"
-  [nzFooter]="footerTpl">
+  [nzFooter]="footerTpl"
+>
   <ng-container *nzDrawerContent>
     <nz-spin [nzSpinning]="drawerLoader">
       <form nz-form [formGroup]="form" (ngSubmit)="submit()">
@@ -156,19 +157,13 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="first_name"
-            style="text-align: center">
-            First name:
+            style="text-align: center"
+          >
+            First name
           </nz-form-label>
 
-          <nz-form-control 
-            [nzSm]="16" 
-            [nzXs]="24" 
-            [nzErrorTip]="errorTemplate">
-            <input 
-              nz-input 
-              formControlName="first_name" 
-              name="first_name" 
-            />
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="errorTemplate">
+            <input nz-input formControlName="first_name" name="first_name" />
           </nz-form-control>
         </nz-form-item>
 
@@ -177,19 +172,13 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="last_name"
-            style="text-align: center">
-            Last name:
+            style="text-align: center"
+          >
+            Last name
           </nz-form-label>
 
-          <nz-form-control 
-            [nzSm]="16" 
-            [nzXs]="24" 
-            [nzErrorTip]="errorTemplate">
-            <input 
-              nz-input 
-              formControlName="last_name" 
-              name="last_name" 
-            />
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="errorTemplate">
+            <input nz-input formControlName="last_name" name="last_name" />
           </nz-form-control>
         </nz-form-item>
 
@@ -198,18 +187,13 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="email"
-            style="text-align: center">
-            Email:
+            style="text-align: center"
+          >
+            Email
           </nz-form-label>
 
-          <nz-form-control 
-            [nzSm]="16" 
-            [nzXs]="24" 
-            [nzErrorTip]="errorTemplate">
-            <input 
-              nz-input 
-              formControlName="email" 
-            />
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="errorTemplate">
+            <input nz-input formControlName="email" />
           </nz-form-control>
         </nz-form-item>
 
@@ -218,19 +202,13 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="phone"
-            style="text-align: center">
-            Phone:
+            style="text-align: center"
+          >
+            Phone
           </nz-form-label>
 
-          <nz-form-control 
-            [nzSm]="16" 
-            [nzXs]="24" 
-            [nzErrorTip]="errorTemplate">
-            <input 
-              nz-input 
-              type="tel" 
-              formControlName="phone" 
-            />
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="errorTemplate">
+            <input nz-input type="tel" formControlName="phone" />
           </nz-form-control>
         </nz-form-item>
 
@@ -239,19 +217,13 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="username"
-            style="text-align: center">
-            Username:
+            style="text-align: center"
+          >
+            Username
           </nz-form-label>
 
-          <nz-form-control 
-            [nzSm]="16" 
-            [nzXs]="24" 
-            [nzErrorTip]="errorTemplate">
-            <input 
-              nz-input 
-              formControlName="username" 
-              name="username"
-            />
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="errorTemplate">
+            <input nz-input formControlName="username" name="username" />
           </nz-form-control>
         </nz-form-item>
 
@@ -260,14 +232,12 @@
             [nzSm]="8"
             [nzXs]="24"
             nzFor="type_user"
-            style="text-align: center">
-            User type:
+            style="text-align: center"
+          >
+            User type
           </nz-form-label>
 
-          <nz-form-control 
-            [nzSm]="16" 
-            [nzXs]="24" 
-            [nzErrorTip]="errorTemplate">
+          <nz-form-control [nzSm]="16" [nzXs]="24" [nzErrorTip]="errorTemplate">
             <nz-select
               formControlName="type_user"
               name="type_user"
@@ -275,27 +245,36 @@
               nzPlaceHolder="Select user type"
               nzShowSearch
               nzAllowClear
-              (ngModelChange)="userTypeChange($event)">
+              (ngModelChange)="userTypeChange($event)"
+            >
             </nz-select>
           </nz-form-control>
         </nz-form-item>
 
-        <div nz-col nzSpan="24" *ngIf="isUpdating 
-          ? (dataDrawerCahe?.extra_data && user_type?.type === 'SUPPLIER')
-          : (extraForm?.type === 'SUPPLIER')">
+        <div
+          nz-col
+          nzSpan="24"
+          *ngIf="
+            isUpdating
+              ? dataDrawerCahe?.extra_data && user_type?.code_type === 2
+              : extraForm?.code_type === 2
+          "
+        >
           <nz-form-item>
             <nz-form-label
               [nzSm]="8"
               [nzXs]="24"
               nzFor="number_license"
-              style="text-align: center">
-              Number license:
+              style="text-align: center"
+            >
+              Number license
             </nz-form-label>
 
             <nz-form-control
-              [nzSm]="16" 
-              [nzXs]="24" 
-              [nzErrorTip]="errorTemplate">
+              [nzSm]="16"
+              [nzXs]="24"
+              [nzErrorTip]="errorTemplate"
+            >
               <input
                 nz-input
                 name="number_license"
@@ -305,187 +284,228 @@
           </nz-form-item>
         </div>
 
-        <div nz-col nzSpan="24" *ngIf="isUpdating 
-          ? (dataDrawerCahe?.extra_data && user_type?.type === 'SUPPLIER')
-          : (extraForm?.type === 'SUPPLIER')">
+        <div
+          nz-col
+          nzSpan="24"
+          *ngIf="
+            isUpdating
+              ? dataDrawerCahe?.extra_data && user_type?.code_type === 2
+              : extraForm?.code_type === 2
+          "
+        >
           <nz-form-item>
             <nz-form-label
               [nzSm]="8"
               [nzXs]="24"
               nzFor="npi"
-              style="text-align: center">
-              Npi:
-            </nz-form-label>
-
-            <nz-form-control
-              [nzSm]="16" 
-              [nzXs]="24" 
-              [nzErrorTip]="errorTemplate">
-              <input
-                nz-input
-                name="npi"
-                formControlName="npi"
-              />
-            </nz-form-control>
-          </nz-form-item>
-        </div>
-
-        <div nz-col nzSpan="24" *ngIf="isUpdating 
-            ? (dataDrawerCahe?.extra_data && user_type?.type === 'SUPPLIER')
-            : (extraForm?.type === 'SUPPLIER')">
-          <nz-form-item>
-            <nz-form-label
-              [nzSm]="8"
-              [nzXs]="24"
-              nzFor="localities"
-              style="text-align: center">
-              Localities:
+              style="text-align: center"
+            >
+              Npi
             </nz-form-label>
 
             <nz-form-control
               [nzSm]="16"
               [nzXs]="24"
-              [nzErrorTip]="errorTemplate">
+              [nzErrorTip]="errorTemplate"
+            >
+              <input nz-input name="npi" formControlName="npi" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div
+          nz-col
+          nzSpan="24"
+          *ngIf="
+            isUpdating
+              ? dataDrawerCahe?.extra_data && user_type?.code_type === 2
+              : extraForm?.code_type === 2
+          "
+        >
+          <nz-form-item>
+            <nz-form-label
+              [nzSm]="8"
+              [nzXs]="24"
+              nzFor="localities"
+              style="text-align: center"
+            >
+              Localities
+            </nz-form-label>
+
+            <nz-form-control
+              [nzSm]="16"
+              [nzXs]="24"
+              [nzErrorTip]="errorTemplate"
+            >
               <nz-select
                 formControlName="localities"
                 name="localities"
                 nzPlaceHolder="Select locality"
                 nzShowSearch
                 nzAllowClear
-                nzMode="multiple">
+                nzMode="multiple"
+              >
                 <nz-option
                   *ngFor="let o of localities"
                   [nzLabel]="o.name"
-                  [nzValue]="o.id">
+                  [nzValue]="o.id"
+                >
                 </nz-option>
               </nz-select>
             </nz-form-control>
           </nz-form-item>
         </div>
 
-        <div nz-col nzSpan="24" *ngIf="isUpdating 
-          ? (dataDrawerCahe?.extra_data && user_type?.type === 'SUPPLIER')
-          : (extraForm?.type === 'SUPPLIER')">
+        <div
+          nz-col
+          nzSpan="24"
+          *ngIf="
+            isUpdating
+              ? dataDrawerCahe?.extra_data && user_type?.code_type === 2
+              : extraForm?.code_type === 2
+          "
+        >
           <nz-form-item>
             <nz-form-label
               [nzSm]="8"
               [nzXs]="24"
               nzFor="insurers"
-              style="text-align: center">
-              Insurers:
+              style="text-align: center"
+            >
+              Insurers
             </nz-form-label>
 
-            <nz-form-control 
-              [nzSm]="16" 
-              [nzXs]="24" 
-              [nzErrorTip]="errorTemplate">
+            <nz-form-control
+              [nzSm]="16"
+              [nzXs]="24"
+              [nzErrorTip]="errorTemplate"
+            >
               <nz-select
                 formControlName="insurers"
                 name="insurers"
                 nzPlaceHolder="Select insurer"
                 nzShowSearch
                 nzAllowClear
-                nzMode="multiple">
+                nzMode="multiple"
+              >
                 <nz-option
                   *ngFor="let o of insurers"
                   [nzLabel]="o.payer_id + ' - ' + o.name"
-                  [nzValue]="o.id">
+                  [nzValue]="o.id"
+                >
                 </nz-option>
               </nz-select>
             </nz-form-control>
           </nz-form-item>
         </div>
 
-        <div nz-col nzSpan="24" *ngIf="isUpdating 
-          ? (dataDrawerCahe?.extra_data && user_type?.type === 'SUPPLIER')
-          : (extraForm?.type === 'SUPPLIER')">
+        <div
+          nz-col
+          nzSpan="24"
+          *ngIf="
+            isUpdating
+              ? dataDrawerCahe?.extra_data && user_type?.code_type === 2
+              : extraForm?.code_type === 2
+          "
+        >
           <nz-form-item>
             <nz-form-label
               [nzSm]="8"
               [nzXs]="24"
               nzFor="address"
-              style="text-align: center">
-              Address:
+              style="text-align: center"
+            >
+              Address
             </nz-form-label>
 
             <nz-form-control
-              [nzSm]="16" 
-              [nzXs]="24" 
-              [nzErrorTip]="errorTemplate">
-              <input
-                nz-input
-                name="address"
-                formControlName="address"
-              />
+              [nzSm]="16"
+              [nzXs]="24"
+              [nzErrorTip]="errorTemplate"
+            >
+              <input nz-input name="address" formControlName="address" />
             </nz-form-control>
           </nz-form-item>
         </div>
 
-        <div nz-col nzSpan="24" *ngIf="isUpdating 
-          ? (dataDrawerCahe?.extra_data && user_type?.type === 'SUPPLIER')
-          : (extraForm?.type === 'SUPPLIER')">
+        <div
+          nz-col
+          nzSpan="24"
+          *ngIf="
+            isUpdating
+              ? dataDrawerCahe?.extra_data && user_type?.code_type === 2
+              : extraForm?.code_type === 2
+          "
+        >
           <nz-form-item>
             <nz-form-label
               [nzSm]="8"
               [nzXs]="24"
               nzFor="city"
-              style="text-align: center">
-              City:
+              style="text-align: center"
+            >
+              City
             </nz-form-label>
 
             <nz-form-control
-              [nzSm]="16" 
-              [nzXs]="24" 
-              [nzErrorTip]="errorTemplate">
-              <input
-                nz-input
-                name="city"
-                formControlName="city"
-              />
+              [nzSm]="16"
+              [nzXs]="24"
+              [nzErrorTip]="errorTemplate"
+            >
+              <input nz-input name="city" formControlName="city" />
             </nz-form-control>
           </nz-form-item>
         </div>
-        
-        <div nz-col nzSpan="24" *ngIf="isUpdating 
-          ? (dataDrawerCahe?.extra_data && user_type?.type === 'SUPPLIER')
-          : (extraForm?.type === 'SUPPLIER')">
+
+        <div
+          nz-col
+          nzSpan="24"
+          *ngIf="
+            isUpdating
+              ? dataDrawerCahe?.extra_data && user_type?.code_type === 2
+              : extraForm?.code_type === 2
+          "
+        >
           <nz-form-item>
             <nz-form-label
               [nzSm]="8"
               [nzXs]="24"
               nzFor="state"
-              style="text-align: center">
-              State:
+              style="text-align: center"
+            >
+              State
             </nz-form-label>
 
             <nz-form-control
-              [nzSm]="16" 
-              [nzXs]="24" 
-              [nzErrorTip]="errorTemplate">
-              <input
-                nz-input
-                name="state"
-                formControlName="state"
-              />
+              [nzSm]="16"
+              [nzXs]="24"
+              [nzErrorTip]="errorTemplate"
+            >
+              <input nz-input name="state" formControlName="state" />
             </nz-form-control>
           </nz-form-item>
         </div>
 
-        <div nz-col nzSpan="24" *ngIf="isUpdating 
-          ? (dataDrawerCahe?.extra_data && user_type?.type === 'SUPPLIER')
-          : (extraForm?.type === 'SUPPLIER')">
+        <div
+          nz-col
+          nzSpan="24"
+          *ngIf="
+            isUpdating
+              ? dataDrawerCahe?.extra_data && user_type?.code_type === 2
+              : extraForm?.code_type === 2
+          "
+        >
           <nz-form-item>
             <nz-form-label
               [nzSm]="8"
               [nzXs]="24"
               nzFor="postal_code"
-              style="text-align: center">
-              Postal code:
+              style="text-align: center"
+            >
+              Postal code
             </nz-form-label>
 
-            <nz-form-control
-              [nzSm]="16" 
-              [nzXs]="24" >
+            <nz-form-control [nzSm]="16" [nzXs]="24">
               <input
                 nz-input
                 name="postal_code"
@@ -495,32 +515,44 @@
           </nz-form-item>
         </div>
 
-        <div nz-col nzSpan="24" *ngIf="isUpdating 
-          ? (dataDrawerCahe?.extra_data && user_type?.type === 'PARTNER' && userAttr.rol != 'SUPPLIER')
-          : (extraForm?.type === 'PARTNER' && userAttr.rol != 'SUPPLIER')">
+        <div
+          nz-col
+          nzSpan="24"
+          *ngIf="
+            isUpdating
+              ? dataDrawerCahe?.extra_data &&
+                user_type?.code_type === 3 &&
+                userAttr.rol != 2
+              : extraForm?.code_type === 3 && userAttr.rol != 2
+          "
+        >
           <nz-form-item>
             <nz-form-label
               [nzSm]="8"
               [nzXs]="24"
               nzFor="supplier"
-              style="text-align: center">
-              Supplier:
+              style="text-align: center"
+            >
+              Provider
             </nz-form-label>
 
-            <nz-form-control 
-              [nzSm]="16" 
-              [nzXs]="24" 
-              [nzErrorTip]="errorTemplate">
+            <nz-form-control
+              [nzSm]="16"
+              [nzXs]="24"
+              [nzErrorTip]="errorTemplate"
+            >
               <nz-select
                 formControlName="supplier"
                 name="supplier"
                 nzShowSearch
                 nzAllowClear
-                nzPlaceHolder="Select supplier">
+                nzPlaceHolder="Select supplier"
+              >
                 <nz-option
                   *ngFor="let o of suppliers"
                   [nzLabel]="o.user.first_name + ' ' + o.user.last_name"
-                  [nzValue]="o.id">
+                  [nzValue]="o.id"
+                >
                 </nz-option>
               </nz-select>
             </nz-form-control>
@@ -538,19 +570,11 @@
 
   <ng-template #footerTpl>
     <div style="display: flex; float: right">
-      <button 
-        nz-button 
-        style="margin-right: 8px" 
-        (click)="closeDrawer()">
+      <button nz-button style="margin-right: 8px" (click)="closeDrawer()">
         Close
       </button>
 
-      <button 
-        nz-button 
-        nzType="primary" 
-        (click)="submit()">
-        Save
-      </button>
+      <button nz-button nzType="primary" (click)="submit()">Save</button>
     </div>
   </ng-template>
 </nz-drawer>

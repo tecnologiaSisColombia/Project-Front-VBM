@@ -6,7 +6,7 @@ import {
   UntypedFormBuilder,
   UntypedFormGroup,
   Validators,
-  AbstractControl
+  AbstractControl,
 } from '@angular/forms';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
@@ -76,7 +76,11 @@ export class DoctorComponent {
   searchFields = [
     { placeholder: 'First Name...', model: 'firstSearch', key: 'first_name' },
     { placeholder: 'Last Name...', model: 'lastSearch', key: 'last_name' },
-    { placeholder: 'License Number...', model: 'licenseSearch', key: 'license' },
+    {
+      placeholder: 'License Number...',
+      model: 'licenseSearch',
+      key: 'license',
+    },
   ];
   private searchNameSubject = new Subject<{ type: string; value: string }>();
 
@@ -86,12 +90,21 @@ export class DoctorComponent {
     private msgService: NzMessageService
   ) {
     this.form = this.fb.group({
-      license_number: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      license_number: [
+        null,
+        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
+      ],
       npi: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       email: [null, [Validators.required, Validators.email]],
       phone: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
-      last_name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
-      first_name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      last_name: [
+        null,
+        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
+      ],
+      first_name: [
+        null,
+        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
+      ],
       supplier: [null, [Validators.required]],
     });
 
@@ -121,8 +134,10 @@ export class DoctorComponent {
     this.doctorService.getSuppliers({}, null, null, true).subscribe({
       next: (res: any) => {
         this.suppliers = res;
-        if (this.userAttr.rol == 'SUPPLIER') {
-          const supplier = this.suppliers.find((s) => s.user.id == this.userAttr.id);
+        if (this.userAttr.rol == 2) {
+          const supplier = this.suppliers.find(
+            (s) => s.user.id == this.userAttr.id
+          );
           this.form.patchValue({ supplier: supplier.id });
         }
       },
@@ -144,9 +159,11 @@ export class DoctorComponent {
         this.page,
         this.page_size
       )
-      .pipe(finalize(() => {
-        this.isDataLoading = false;
-      }))
+      .pipe(
+        finalize(() => {
+          this.isDataLoading = false;
+        })
+      )
       .subscribe({
         next: (res: any) => {
           this.dataToDisplay = res.results;
@@ -190,10 +207,13 @@ export class DoctorComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
-        this.doctorService.delete(id)
-          .pipe(finalize(() => {
-            this.isDataLoading = false;
-          }))
+        this.doctorService
+          .delete(id)
+          .pipe(
+            finalize(() => {
+              this.isDataLoading = false;
+            })
+          )
           .subscribe({
             next: () => {
               this.msgService.success('Doctor deleted successfully');
@@ -214,10 +234,13 @@ export class DoctorComponent {
 
   update(id: number, data: any) {
     this.isDataLoading = true;
-    this.doctorService.update(id, data)
-      .pipe(finalize(() => {
-        this.isDataLoading = false;
-      }))
+    this.doctorService
+      .update(id, data)
+      .pipe(
+        finalize(() => {
+          this.isDataLoading = false;
+        })
+      )
       .subscribe({
         next: () => {
           this.msgService.success('Doctor updated successfully');
@@ -232,7 +255,7 @@ export class DoctorComponent {
 
   submit() {
     if (!this.form.valid) {
-      Object.values(this.form.controls).forEach(control => {
+      Object.values(this.form.controls).forEach((control) => {
         if (control.invalid) {
           control.markAsDirty();
           control.updateValueAndValidity({ onlySelf: true });
@@ -247,10 +270,13 @@ export class DoctorComponent {
 
     this.drawerLoader = true;
 
-    this.doctorService.create(this.form.value)
-      .pipe(finalize(() => {
-        this.drawerLoader = false;
-      }))
+    this.doctorService
+      .create(this.form.value)
+      .pipe(
+        finalize(() => {
+          this.drawerLoader = false;
+        })
+      )
       .subscribe({
         next: () => {
           this.msgService.success('Doctor created successfully');
@@ -261,7 +287,6 @@ export class DoctorComponent {
           this.msgService.error(JSON.stringify(err.error));
         },
       });
-
   }
 
   changeStatus(id: number, data: any) {
@@ -304,14 +329,19 @@ export class DoctorComponent {
 
   hasFeedback(controlName: string): boolean {
     const control = this.form.get(controlName);
-    return control?.invalid && (control.dirty || control.touched) ? true : false;
+    return control?.invalid && (control.dirty || control.touched)
+      ? true
+      : false;
   }
 
   exportDoctors(): void {
-    this.doctorService.get({}, null, null, true)
-      .pipe(finalize(() => {
-        this.exportLoader = false;
-      }))
+    this.doctorService
+      .get({}, null, null, true)
+      .pipe(
+        finalize(() => {
+          this.exportLoader = false;
+        })
+      )
       .subscribe({
         next: (res: any) => {
           if (res.length === 0) {
@@ -353,7 +383,8 @@ export class DoctorComponent {
             }, {})
           );
 
-          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+          const worksheet: XLSX.WorkSheet =
+            XLSX.utils.json_to_sheet(filteredData);
           const workbook: XLSX.WorkBook = XLSX.utils.book_new();
           XLSX.utils.book_append_sheet(workbook, worksheet, 'Doctors');
 

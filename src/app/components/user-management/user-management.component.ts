@@ -6,7 +6,7 @@ import {
   UntypedFormGroup,
   UntypedFormBuilder,
   ReactiveFormsModule,
-  AbstractControl
+  AbstractControl,
 } from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -52,7 +52,7 @@ import { finalize } from 'rxjs/operators';
     NzSpinModule,
     NzPaginationModule,
     NzEmptyModule,
-    NzDividerModule
+    NzDividerModule,
   ],
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.css', '/src/animations/styles.css'],
@@ -66,7 +66,13 @@ export class UserManagementComponent implements OnInit {
   visible = false;
   drawerTitle = '';
   extraForm: any = null;
-  userTypeOptions: { id: number; label: string; value: string, type: string }[] = [];
+  userTypeOptions: {
+    id: number;
+    label: string;
+    value: string;
+    type: string;
+    code_type: number;
+  }[] = [];
   localities: any[] = [];
   suppliers: any[] = [];
   insurers: any[] = [];
@@ -87,9 +93,9 @@ export class UserManagementComponent implements OnInit {
     { placeholder: 'Last Name...', model: 'lastSearch', key: 'last_name' },
   ];
   fieldsToClearMap: { [key: string]: string[] } = {
-    'SUPPLIER': ['type_user'],
-    'PARTNER': ['type_user', 'number_license', 'localities'],
-    'MASTER': ['type_user', 'number_license', 'supplier', 'localities']
+    '2': ['type_user'],
+    '3': ['type_user', 'number_license', 'localities'],
+    '1': ['type_user', 'number_license', 'supplier', 'localities'],
   };
   private searchNameSubject = new Subject<{ type: string; value: string }>();
   user_type: any = '';
@@ -104,7 +110,10 @@ export class UserManagementComponent implements OnInit {
     private supplierService: DoctorService
   ) {
     this.form = this.fb.group({
-      first_name: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      first_name: [
+        '',
+        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
+      ],
       last_name: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
@@ -161,17 +170,20 @@ export class UserManagementComponent implements OnInit {
         address: data.extra_data[0].address,
         city: data.extra_data[0].city,
         state: data.extra_data[0].state,
-        postal_code: data.extra_data[0].postal_code
+        postal_code: data.extra_data[0].postal_code,
       });
     }
 
-    const selectedUserType = this.userTypeOptions.find(e => e.id === this.dataDrawerCahe.user_type);
+    const selectedUserType = this.userTypeOptions.find(
+      (e) => e.id === this.dataDrawerCahe.user_type
+    );
 
     if (selectedUserType) {
-      const userType = selectedUserType.type;
-      const fieldsToClear = this.fieldsToClearMap[userType] || this.fieldsToClearMap['MASTER'];
+      const userType = selectedUserType.code_type;
+      const fieldsToClear =
+        this.fieldsToClearMap[userType] || this.fieldsToClearMap['MASTER'];
 
-      fieldsToClear.forEach(field => {
+      fieldsToClear.forEach((field) => {
         const control = this.form.get(field);
         if (control) {
           control.clearValidators();
@@ -180,14 +192,28 @@ export class UserManagementComponent implements OnInit {
       });
 
       const controls = {
-        SUPPLIER: ['number_license', 'localities', 'insurers', 'address', 'city', 'state', 'npi'],
-        PARTNER: ['supplier'],
+        2: [
+          'number_license',
+          'localities',
+          'insurers',
+          'address',
+          'city',
+          'state',
+          'npi',
+        ],
+        3: ['supplier'],
       };
 
-      const requiredWithPattern = ['address', 'city', 'state', 'number_license', 'npi'];
+      const requiredWithPattern = [
+        'address',
+        'city',
+        'state',
+        'number_license',
+        'npi',
+      ];
 
       Object.entries(controls).forEach(([key, controlNames]) => {
-        const isActive = userType === key;
+        const isActive = userType.toString() === key.toString();
         controlNames.forEach((control) => {
           if (isActive) {
             const validators = requiredWithPattern.includes(control)
@@ -202,13 +228,14 @@ export class UserManagementComponent implements OnInit {
       });
     }
 
-    this.user_type = this.userTypeOptions.find(e => e.id == this.dataDrawerCahe.user_type) || { id: 1, type: 'MASTER' };
+    this.user_type = this.userTypeOptions.find(
+      (e) => e.id == this.dataDrawerCahe.user_type
+    ) || { id: 1, type: 'MASTER', code_type: 2 };
   }
-
 
   submit(): void {
     if (!this.form.valid) {
-      Object.values(this.form.controls).forEach(control => {
+      Object.values(this.form.controls).forEach((control) => {
         control.markAsDirty();
         control.updateValueAndValidity({ onlySelf: true });
       });
@@ -222,28 +249,38 @@ export class UserManagementComponent implements OnInit {
       : this.userService.createUser(this.form.value);
 
     request
-      .pipe(finalize(() => {
-        this.drawerLoader = false;
-      }))
+      .pipe(
+        finalize(() => {
+          this.drawerLoader = false;
+        })
+      )
       .subscribe({
         next: () => {
           if (this.isUpdating && this.form.value) {
             this.userService
               .updateDataByType(
-                this.userTypeOptions.find(e => e.id === this.user_type.id)!,
+                this.userTypeOptions.find((e) => e.id === this.user_type.id)!,
                 this.dataDrawerCahe.id,
                 this.form.value
               )
-              .subscribe({ error: err => this.msgService.error(JSON.stringify(err?.error)) });
+              .subscribe({
+                error: (err) =>
+                  this.msgService.error(JSON.stringify(err?.error)),
+              });
           }
 
-          this.msgService.success(`User ${this.isUpdating ? 'updated' : 'created'} successfully`);
+          this.msgService.success(
+            `User ${this.isUpdating ? 'updated' : 'created'} successfully`
+          );
 
           this.getInitData();
           this.getSuppliers();
           this.closeDrawer();
         },
-        error: err => this.msgService.error(JSON.stringify(err?.error?.message || err?.error)),
+        error: (err) =>
+          this.msgService.error(
+            JSON.stringify(err?.error?.message || err?.error)
+          ),
       });
   }
 
@@ -252,11 +289,25 @@ export class UserManagementComponent implements OnInit {
     const selectedType = this.userTypeOptions.find((e) => e.value === userType);
 
     const controls = {
-      SUPPLIER: ['number_license', 'localities', 'insurers', 'address', 'city', 'state', 'npi'],
-      PARTNER: ['supplier'],
+      2: [
+        'number_license',
+        'localities',
+        'insurers',
+        'address',
+        'city',
+        'state',
+        'npi',
+      ],
+      3: ['supplier'],
     };
 
-    const requiredWithPattern = ['address', 'city', 'state', 'number_license', 'npi'];
+    const requiredWithPattern = [
+      'address',
+      'city',
+      'state',
+      'number_license',
+      'npi',
+    ];
 
     const resetControls = () => {
       Object.values(controls)
@@ -297,11 +348,12 @@ export class UserManagementComponent implements OnInit {
   }
 
   getSuppliers(): void {
-    this.supplierService.getSuppliers({ status: 1 }, null, null, true)
+    this.supplierService
+      .getSuppliers({ status: 1 }, null, null, true)
       .subscribe({
         next: (res: any) => {
           this.suppliers = res;
-          if (this.userAttr.rol == 'SUPPLIER') {
+          if (this.userAttr.rol == 2) {
             const supplier = this.suppliers.find(
               (s) => s.user.id == this.userAttr.id
             );
@@ -329,44 +381,42 @@ export class UserManagementComponent implements OnInit {
   }
 
   getInsurers(): void {
-    this.insurerService.getInsurers({ status: 1 }, null, null, true)
-      .subscribe({
-        next: (res: any) => {
-          this.insurers = res;
-        },
-        error: (err) => {
-          this.msgService.error(JSON.stringify(err.error));
-        },
-      });
+    this.insurerService.getInsurers({ status: 1 }, null, null, true).subscribe({
+      next: (res: any) => {
+        this.insurers = res;
+      },
+      error: (err) => {
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
   }
 
   getLocalities(): void {
-    this.localitiesService.get({ status: 1 }, null, null, true)
-      .subscribe({
-        next: (res: any) => {
-          this.localities = res
-        },
-        error: (err) => {
-          this.msgService.error(JSON.stringify(err.error));
-        },
-      });
+    this.localitiesService.get({ status: 1 }, null, null, true).subscribe({
+      next: (res: any) => {
+        this.localities = res;
+      },
+      error: (err) => {
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
   }
 
   getUserTypes(): void {
-    this.userService.getUserTypes()
-      .subscribe({
-        next: (res: any[]) => {
-          this.userTypeOptions = res.map((type) => ({
-            label: type.name,
-            value: type.name,
-            type: type.type,
-            id: type.id,
-          }));
-        },
-        error: (error) => {
-          this.msgService.error(JSON.stringify(error));
-        },
-      });
+    this.userService.getUserTypes().subscribe({
+      next: (res: any[]) => {
+        this.userTypeOptions = res.map((type) => ({
+          label: type.name,
+          value: type.name,
+          type: type.type,
+          id: type.id,
+          code_type: type.code_type,
+        }));
+      },
+      error: (error) => {
+        this.msgService.error(JSON.stringify(error));
+      },
+    });
   }
 
   getInitData(): void {
@@ -422,8 +472,13 @@ export class UserManagementComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
-        this.userService.delete(username, id)
-          .pipe(finalize(() => { this.isDataLoading = false; }))
+        this.userService
+          .delete(username, id)
+          .pipe(
+            finalize(() => {
+              this.isDataLoading = false;
+            })
+          )
           .subscribe({
             next: () => {
               this.msgService.success('User deleted successfully');
@@ -490,10 +545,13 @@ export class UserManagementComponent implements OnInit {
   }
 
   exportUsers(): void {
-    this.userService.getUsers({}, null, null, true)
-      .pipe(finalize(() => {
-        this.exportLoader = false;
-      }))
+    this.userService
+      .getUsers({}, null, null, true)
+      .pipe(
+        finalize(() => {
+          this.exportLoader = false;
+        })
+      )
       .subscribe({
         next: (res: any) => {
           if (res.length === 0) {
@@ -538,7 +596,8 @@ export class UserManagementComponent implements OnInit {
             }, {})
           );
 
-          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+          const worksheet: XLSX.WorkSheet =
+            XLSX.utils.json_to_sheet(filteredData);
           const workbook: XLSX.WorkBook = XLSX.utils.book_new();
           XLSX.utils.book_append_sheet(workbook, worksheet, 'Users');
 

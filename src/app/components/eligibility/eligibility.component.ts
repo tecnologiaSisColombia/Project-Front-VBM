@@ -17,7 +17,7 @@ import { MemberComponent } from './member/member.component';
 import { PlanDetailsComponent } from './plan-details/plan-details.component';
 import { EligibilityService } from 'app/services/eligibility/eligibility.service';
 import * as XLSX from 'xlsx';
-import { ClaimEntryComponent } from "./claim-entry/claim-entry.component";
+import { ClaimEntryComponent } from './claim-entry/claim-entry.component';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { S3Service } from 'app/services/upload-s3/upload-s3.service';
@@ -45,10 +45,10 @@ import { finalize } from 'rxjs/operators';
     PlanDetailsComponent,
     ClaimEntryComponent,
     NzEmptyModule,
-    NzButtonModule
+    NzButtonModule,
   ],
   templateUrl: './eligibility.component.html',
-  styleUrls: ['./eligibility.component.css', '/src/animations/styles.css']
+  styleUrls: ['./eligibility.component.css', '/src/animations/styles.css'],
 })
 export class EligibilityComponent {
   isDataLoading = false;
@@ -72,7 +72,11 @@ export class EligibilityComponent {
   searchFields = [
     { placeholder: 'First Name...', model: 'firstSearch', key: 'first_name' },
     { placeholder: 'Last Name...', model: 'lastSearch', key: 'last_name' },
-    { placeholder: 'Suscriber Id...', model: 'suscriberSearch', key: 'suscriber_id' },
+    {
+      placeholder: 'Suscriber Id...',
+      model: 'suscriberSearch',
+      key: 'suscriber_id',
+    },
   ];
   selectedClaim: any = {
     patientName: '',
@@ -100,29 +104,31 @@ export class EligibilityComponent {
     addressPatient: '',
     primaryPlanName: '',
     visualTestMedicare: '',
-    visionElements: ''
+    visionElements: '',
   };
   private searchNameSubject = new Subject<{ type: string; value: string }>();
-  @ViewChild(PlanDetailsComponent, { static: false }) planDetailsComponent!: PlanDetailsComponent;
+  @ViewChild(PlanDetailsComponent, { static: false })
+  planDetailsComponent!: PlanDetailsComponent;
 
   constructor(
     private msgService: NzMessageService,
     private eligibilityService: EligibilityService,
     private s3Service: S3Service
   ) {
+    this.searchNameSubject
+      .pipe(debounceTime(1000))
+      .subscribe(({ type, value }) => {
+        const fields = {
+          first_name: () => (this.firstSearch = value),
+          last_name: () => (this.lastSearch = value),
+          suscriber_id: () => (this.suscriberSearch = value),
+        };
 
-    this.searchNameSubject.pipe(debounceTime(1000)).subscribe(({ type, value }) => {
-      const fields = {
-        first_name: () => (this.firstSearch = value),
-        last_name: () => (this.lastSearch = value),
-        suscriber_id: () => (this.suscriberSearch = value),
-      };
-
-      (fields as Record<string, () => void>)[type]?.();
-      this.page = 1;
-      this.getInitData();
-      this.isDataLoading = false;
-    });
+        (fields as Record<string, () => void>)[type]?.();
+        this.page = 1;
+        this.getInitData();
+        this.isDataLoading = false;
+      });
   }
 
   ngOnInit(): void {
@@ -141,9 +147,11 @@ export class EligibilityComponent {
         this.page,
         this.page_size
       )
-      .pipe(finalize(() => {
-        this.isDataLoading = false;
-      }))
+      .pipe(
+        finalize(() => {
+          this.isDataLoading = false;
+        })
+      )
       .subscribe({
         next: (res: any) => {
           this.dataToDisplay = res.results;
@@ -169,10 +177,13 @@ export class EligibilityComponent {
 
     this.uploading = true;
 
-    this.s3Service.uploadEligibility(formData)
-      .pipe(finalize(() => {
-        this.uploading = false;
-      }))
+    this.s3Service
+      .uploadEligibility(formData)
+      .pipe(
+        finalize(() => {
+          this.uploading = false;
+        })
+      )
       .subscribe({
         next: () => {
           this.msgService.success('File upload successfully');
@@ -268,24 +279,26 @@ export class EligibilityComponent {
       state_patient: rowData?.state ?? '',
       phone_patient: rowData?.primary_phone ?? '',
       postal_code_patient: rowData?.postal_code ?? '',
-      postal_code_supplier: rowData?.suppliers[0].postal_code ?? '',
-      address_supplier: rowData?.suppliers[0].address ?? '',
+      postal_code_supplier: rowData?.suppliers[0]?.postal_code ?? '',
+      address_supplier: rowData?.suppliers[0]?.address ?? '',
       orderringNpi: rowData?.insurer_data?.orderring_npi ?? '',
       referingNpi: rowData?.insurer_data?.refering_npi ?? '',
       auth: rowData?.insurer_data?.auth ?? '',
       insurer: rowData?.insurer_data?.name ?? '',
       address_insurer: rowData?.insurer_data?.address ?? '',
-      city_supplier: rowData?.suppliers[0].city ?? '',
-      phone_supplier: rowData?.suppliers[0].user.phone ?? '',
-      state_supplier: rowData?.suppliers[0].state ?? '',
+      city_supplier: rowData?.suppliers[0]?.city ?? '',
+      phone_supplier: rowData?.suppliers[0]?.user.phone ?? '',
+      state_supplier: rowData?.suppliers[0]?.state ?? '',
       modifiers: rowData?.insurer_data?.modifiers ?? '',
       plan_name: rowData?.subplan_data?.plan_data.name ?? '',
-      addressPatient: `${rowData?.primary_address ?? ''} ${rowData?.address_1 ?? ''}`.trim(),
+      addressPatient: `${rowData?.primary_address ?? ''} ${
+        rowData?.address_1 ?? ''
+      }`.trim(),
       primaryPlanName: rowData?.primary_insure_plan_name ?? '',
       visualTestMedicare: rowData.subplan_data.visual_test_medicare ?? '',
       plan_contract: rowData.subplan_data.plan_contract ?? '',
       group: rowData.subplan_data.group ?? '',
-      visionElements: rowData.subplan_data.vision_elements ?? ''
+      visionElements: rowData.subplan_data.vision_elements ?? '',
     };
     this.isVisibleModalClaim = true;
   }
@@ -295,8 +308,8 @@ export class EligibilityComponent {
       patientName: `${rowData?.last_name ?? ''} ${rowData?.first_name ?? ''}`,
       primaryPlanName: rowData?.primary_insure_plan_name ?? '',
       visualTestMedicare: rowData.subplan_data.visual_test_medicare ?? '',
-      visionElements: rowData.subplan_data.vision_elements ?? ''
-    }
+      visionElements: rowData.subplan_data.vision_elements ?? '',
+    };
     this.isVisibleModalDetails = true;
   }
 
@@ -307,7 +320,12 @@ export class EligibilityComponent {
 
     this.isPrinting = true;
 
-    html2canvas(content, { scale: 4, logging: false, useCORS: true, backgroundColor: null })
+    html2canvas(content, {
+      scale: 4,
+      logging: false,
+      useCORS: true,
+      backgroundColor: null,
+    })
       .then((canvas) => {
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('p', 'mm', 'a4');
@@ -318,17 +336,20 @@ export class EligibilityComponent {
         pdf.save('details.pdf');
         this.msgService.success('Export completed successfully');
       })
-      .catch(error => this.msgService.error(JSON.stringify(error)))
+      .catch((error) => this.msgService.error(JSON.stringify(error)))
       .finally(() => {
         this.isPrinting = false;
       });
   }
 
   exportBenefits(): void {
-    this.eligibilityService.getPatients({}, null, null, true)
-      .pipe(finalize(() => {
-        this.exportLoader = false;
-      }))
+    this.eligibilityService
+      .getPatients({}, null, null, true)
+      .pipe(
+        finalize(() => {
+          this.exportLoader = false;
+        })
+      )
       .subscribe({
         next: (res: any) => {
           if (res.length === 0) {
@@ -349,7 +370,7 @@ export class EligibilityComponent {
             effective: 'Effective',
             terminates: 'Terminates',
             city: 'City',
-            primary_phone: 'Phone'
+            primary_phone: 'Phone',
           };
 
           const selectedColumns = Object.keys(
@@ -364,7 +385,8 @@ export class EligibilityComponent {
             return row;
           });
 
-          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+          const worksheet: XLSX.WorkSheet =
+            XLSX.utils.json_to_sheet(filteredData);
           const workbook: XLSX.WorkBook = XLSX.utils.book_new();
           XLSX.utils.book_append_sheet(workbook, worksheet, 'patients');
 
@@ -395,8 +417,5 @@ export class EligibilityComponent {
       });
   }
 
-
-  printContentMember(): void {
-
-  }
+  printContentMember(): void {}
 }

@@ -43,7 +43,7 @@ import { finalize } from 'rxjs/operators';
     NzSwitchModule,
     NzModalModule,
     NzSelectModule,
-    NzEmptyModule
+    NzEmptyModule,
   ],
   templateUrl: './profiles.component.html',
   styleUrls: ['./profiles.component.css', '/src/animations/styles.css'],
@@ -75,23 +75,24 @@ export class ProfilesComponent implements OnInit {
   moduleSearch: any = null;
   types_users = [
     {
-      id: 'MASTER',
+      id: '1',
       label: 'Master',
     },
     {
-      id: 'SUPPLIER',
-      label: 'Supplier',
+      id: '2',
+      label: 'Provider',
     },
     {
-      id: 'PARTNER',
+      id: '3',
       label: 'Partner',
     },
     {
-      id: 'EXTERNAL',
+      id: '4',
       label: 'External',
     },
   ];
-  private searchSubject: Subject<{ type: string; value: string }> = new Subject();
+  private searchSubject: Subject<{ type: string; value: string }> =
+    new Subject();
 
   constructor(
     private fb: FormBuilder,
@@ -100,7 +101,7 @@ export class ProfilesComponent implements OnInit {
   ) {
     this.searchSubject.pipe(debounceTime(1000)).subscribe((data) => {
       this.page = 1;
-      this.p_page = 1
+      this.p_page = 1;
 
       switch (data.type) {
         case 'name':
@@ -122,7 +123,10 @@ export class ProfilesComponent implements OnInit {
     this.getGroups();
 
     this.addForm = this.fb.group({
-      new_group_name: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      new_group_name: [
+        '',
+        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
+      ],
       type: [null, [Validators.required]],
     });
 
@@ -153,10 +157,13 @@ export class ProfilesComponent implements OnInit {
       admin: updatedData.admin,
     };
 
-    this.profileService.updatePerfil(id, permissions)
-      .pipe(finalize(() => {
-        this.isDataLoading = false;
-      }))
+    this.profileService
+      .updatePerfil(id, permissions)
+      .pipe(
+        finalize(() => {
+          this.isDataLoading = false;
+        })
+      )
       .subscribe({
         next: () => {
           this.seePermissions(group);
@@ -181,10 +188,19 @@ export class ProfilesComponent implements OnInit {
 
     this.isDataLoadingP = true;
 
-    this.profileService.getGroupPerfil(id_grupo, this.p_page, this.p_page_size, false, this.moduleSearch)
-      .pipe(finalize(() => {
-        this.isDataLoadingP = false;
-      }))
+    this.profileService
+      .getGroupPerfil(
+        id_grupo,
+        this.p_page,
+        this.p_page_size,
+        false,
+        this.moduleSearch
+      )
+      .pipe(
+        finalize(() => {
+          this.isDataLoadingP = false;
+        })
+      )
       .subscribe({
         next: (res: any) => {
           this.permisosList = res.results;
@@ -213,10 +229,13 @@ export class ProfilesComponent implements OnInit {
 
     this.isDataLoading = true;
 
-    this.profileService.updateGroup(updatedData.id, updatedData)
-      .pipe(finalize(() => {
-        this.isDataLoading = false;
-      }))
+    this.profileService
+      .updateGroup(updatedData.id, updatedData)
+      .pipe(
+        finalize(() => {
+          this.isDataLoading = false;
+        })
+      )
       .subscribe({
         next: () => {
           this.message.success('Profile updated successfully');
@@ -242,9 +261,11 @@ export class ProfilesComponent implements OnInit {
 
     this.profileService
       .updateGroup(this.editCache[id].data.id, this.editCache[id].data)
-      .pipe(finalize(() => {
-        this.isDataLoading = false;
-      }))
+      .pipe(
+        finalize(() => {
+          this.isDataLoading = false;
+        })
+      )
       .subscribe({
         next: () => {
           this.message.success('Group updated successfully');
@@ -302,10 +323,13 @@ export class ProfilesComponent implements OnInit {
       type: this.addForm.get('type')?.value,
     };
 
-    this.profileService.addGroup(data)
-      .pipe(finalize(() => {
-        this.isDataLoading = false;
-      }))
+    this.profileService
+      .addGroup(data)
+      .pipe(
+        finalize(() => {
+          this.isDataLoading = false;
+        })
+      )
       .subscribe({
         next: () => {
           this.message.success('Group created successfully');
@@ -331,9 +355,11 @@ export class ProfilesComponent implements OnInit {
     this.isDataLoading = true;
     this.profileService
       .getGroups({ name: this.nameSearch }, this.page, this.page_size, init)
-      .pipe(finalize(() => {
-        this.isDataLoading = false;
-      }))
+      .pipe(
+        finalize(() => {
+          this.isDataLoading = false;
+        })
+      )
       .subscribe({
         next: (res: any) => {
           this.listOfDisplayData = res.results;
@@ -346,7 +372,11 @@ export class ProfilesComponent implements OnInit {
       });
   }
 
-  handlePagination(page: number, pageSize: number, isPermissions: boolean = false): void {
+  handlePagination(
+    page: number,
+    pageSize: number,
+    isPermissions: boolean = false
+  ): void {
     if (isPermissions) {
       this.p_page = page;
       this.p_page_size = pageSize;
@@ -379,10 +409,13 @@ export class ProfilesComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
-        this.profileService.deleteGroup(id_group)
-          .pipe(finalize(() => {
-            this.isDataLoading = false;
-          }))
+        this.profileService
+          .deleteGroup(id_group)
+          .pipe(
+            finalize(() => {
+              this.isDataLoading = false;
+            })
+          )
           .subscribe({
             next: () => {
               this.message.success('Group deleted successfully');
@@ -402,10 +435,13 @@ export class ProfilesComponent implements OnInit {
   }
 
   exportGroups(): void {
-    this.profileService.getGroups({}, null, null, true)
-      .pipe(finalize(() => {
-        this.exportLoader = false;
-      }))
+    this.profileService
+      .getGroups({}, null, null, true)
+      .pipe(
+        finalize(() => {
+          this.exportLoader = false;
+        })
+      )
       .subscribe({
         next: (res: any) => {
           if (res.length === 0) {
@@ -442,7 +478,8 @@ export class ProfilesComponent implements OnInit {
 
           const groupsData = formatData(res, headers);
 
-          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(groupsData);
+          const worksheet: XLSX.WorkSheet =
+            XLSX.utils.json_to_sheet(groupsData);
           const workbook: XLSX.WorkBook = XLSX.utils.book_new();
           XLSX.utils.book_append_sheet(workbook, worksheet, 'Groups');
 
@@ -451,7 +488,9 @@ export class ProfilesComponent implements OnInit {
             type: 'array',
           });
 
-          const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+          const blob = new Blob([excelBuffer], {
+            type: 'application/octet-stream',
+          });
           const url = URL.createObjectURL(blob);
 
           const link = document.createElement('a');
@@ -470,5 +509,4 @@ export class ProfilesComponent implements OnInit {
         },
       });
   }
-
 }
