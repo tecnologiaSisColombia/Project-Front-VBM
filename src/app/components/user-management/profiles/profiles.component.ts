@@ -75,19 +75,19 @@ export class ProfilesComponent implements OnInit {
   moduleSearch: any = null;
   types_users = [
     {
-      id: '1',
+      id: 1,
       label: 'Master',
     },
     {
-      id: '2',
+      id: 2,
       label: 'Provider',
     },
     {
-      id: '3',
-      label: 'Partner',
+      id: 3,
+      label: 'Associate',
     },
     {
-      id: '4',
+      id: 4,
       label: 'External',
     },
   ];
@@ -127,12 +127,12 @@ export class ProfilesComponent implements OnInit {
         '',
         [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
       ],
-      type: [null, [Validators.required]],
+      code_type: [null, [Validators.required]],
     });
 
     this.editForm = this.fb.group({
       name: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
-      type: [null, [Validators.required]],
+      code_type: [null, [Validators.required]],
     });
   }
 
@@ -282,8 +282,9 @@ export class ProfilesComponent implements OnInit {
     this.selectedGroupId = group.id;
     this.editForm.patchValue({
       name: group.name,
-      type: group.type,
+      code_type: group.code_type,
     });
+
     this.isVisibleEditDrawer = true;
     this.isDataLoading = false;
   }
@@ -320,7 +321,7 @@ export class ProfilesComponent implements OnInit {
 
     const data = {
       name: this.addForm.get('new_group_name')?.value,
-      type: this.addForm.get('type')?.value,
+      code_type: this.addForm.get('code_type')?.value,
     };
 
     this.profileService
