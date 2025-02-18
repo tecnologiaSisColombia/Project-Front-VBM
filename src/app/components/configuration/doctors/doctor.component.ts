@@ -76,11 +76,7 @@ export class DoctorComponent {
   searchFields = [
     { placeholder: 'First Name...', model: 'firstSearch', key: 'first_name' },
     { placeholder: 'Last Name...', model: 'lastSearch', key: 'last_name' },
-    {
-      placeholder: 'License Number...',
-      model: 'licenseSearch',
-      key: 'license',
-    },
+    { placeholder: 'License Number...', model: 'licenseSearch', key: 'license' },
   ];
   private searchNameSubject = new Subject<{ type: string; value: string }>();
 
@@ -90,21 +86,12 @@ export class DoctorComponent {
     private msgService: NzMessageService
   ) {
     this.form = this.fb.group({
-      license_number: [
-        null,
-        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
-      ],
+      license_number: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       npi: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       email: [null, [Validators.required, Validators.email]],
       phone: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
-      last_name: [
-        null,
-        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
-      ],
-      first_name: [
-        null,
-        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
-      ],
+      last_name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      first_name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       supplier: [null, [Validators.required]],
     });
 

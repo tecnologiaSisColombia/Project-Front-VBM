@@ -180,8 +180,7 @@ export class UserManagementComponent implements OnInit {
 
     if (selectedUserType) {
       const userType = selectedUserType.code_type;
-      const fieldsToClear =
-        this.fieldsToClearMap[userType] || this.fieldsToClearMap['MASTER'];
+      const fieldsToClear = this.fieldsToClearMap[userType] || this.fieldsToClearMap['1'];
 
       fieldsToClear.forEach((field) => {
         const control = this.form.get(field);
