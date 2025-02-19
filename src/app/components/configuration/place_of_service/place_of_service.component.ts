@@ -28,7 +28,7 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-location',
+  selector: 'app-place_of_service',
   standalone: true,
   imports: [
     NzBreadCrumbModule,
@@ -47,8 +47,8 @@ import { finalize } from 'rxjs/operators';
     NzSwitchModule,
     NzEmptyModule,
   ],
-  templateUrl: './location.component.html',
-  styleUrls: ['./location.component.css', '/src/animations/styles.css'],
+  templateUrl: './place_of_service.component.html',
+  styleUrls: ['./place_of_service.component.css', '/src/animations/styles.css'],
 })
 export class LocationComponent {
   form: UntypedFormGroup;

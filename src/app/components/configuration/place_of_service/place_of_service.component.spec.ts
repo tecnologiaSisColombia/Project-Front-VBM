@@ -1,18 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { LocationComponent } from './place_of_service.component';
 
-import { ClaimPreviewComponent } from './claim-preview.component';
-
-describe('ClaimPreviewComponent', () => {
-  let component: ClaimPreviewComponent;
-  let fixture: ComponentFixture<ClaimPreviewComponent>;
+describe('LocationComponent', () => {
+  let component: LocationComponent;
+  let fixture: ComponentFixture<LocationComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ClaimPreviewComponent]
+      imports: [LocationComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ClaimPreviewComponent);
+    fixture = TestBed.createComponent(LocationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

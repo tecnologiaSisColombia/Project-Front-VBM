@@ -299,6 +299,7 @@ export class EligibilityComponent {
       plan_contract: rowData.subplan_data.plan_contract ?? '',
       group: rowData.subplan_data.group ?? '',
       visionElements: rowData.subplan_data.vision_elements ?? '',
+      primary_subscriber_id: rowData?.primary_subscriber_id ?? '',
     };
     this.isVisibleModalClaim = true;
   }

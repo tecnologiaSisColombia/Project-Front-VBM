@@ -9,7 +9,7 @@ import { ProductsComponent } from 'app/components/configuration/products/product
 import { DoctorComponent } from 'app/components/configuration/doctors/doctor.component'
 import { LocalitiesComponent } from 'app/components/configuration/localities/localities.component'
 import { DiagnosisComponent } from 'app/components/configuration/diagnosis/diagnosis.component'
-import { LocationComponent } from 'app/components/configuration/location/location.component'
+import { LocationComponent } from 'app/components/configuration/place_of_service/place_of_service.component'
 import { LoginComponent } from 'app/components/login/login.component'
 import { ResetPasswordComponent } from 'app/components/reset-password/reset-password.component'
 import { ChangePasswordComponent } from 'app/components/change-password/change-password.component'
@@ -78,7 +78,7 @@ export const routes: Routes = [
             component: DiagnosisComponent,
           },
           {
-            path: 'location',
+            path: 'place_of_service',
             component: LocationComponent,
           },
         ],
