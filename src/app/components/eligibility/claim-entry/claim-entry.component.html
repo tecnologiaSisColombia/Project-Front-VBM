@@ -662,30 +662,278 @@
     
     <nz-divider nzType="horizontal"></nz-divider>
 
+    <button 
+      nz-button 
+      nzType="primary" 
+      nzIcon="plus"
+      style="margin-bottom: 16px;"
+      (click)="addDiagnosis()">
+      Add diagnosis
+    </button>
+
+    <div formArrayName="diagnosis">
+      <nz-row [nzGutter]="16">
+        <nz-col
+          [nzSpan]="24"
+          [nzSm]="12"
+          [nzMd]="8"
+          [nzLg]="6"
+          style="margin-bottom: 16px;"
+          *ngFor="let diagCtrl of diagnosisControls.controls; let i = index">
+          <nz-form-item>
+            <nz-form-label 
+              [nzSpan]="6" 
+              [nzSm]="8" 
+              [nzMd]="6">
+              Diag {{ i + 1 }}
+            </nz-form-label>
+            
+            <nz-form-control 
+              [nzSpan]="18" 
+              [nzSm]="16" 
+              [nzMd]="18">
+              <nz-select
+                nzShowSearch
+                [formControlName]="i"
+                [nzOptions]="diagnosisOptions"
+                style="width: 100%"
+                [nzSuffixIcon]="deleteIcon"
+                placeholder="Select Diagnosis">
+              </nz-select>
+
+              <ng-template #deleteIcon>
+                <i
+                  nz-icon
+                  nzType="delete"
+                  nzTheme="twotone"
+                  *ngIf="i !== 0"
+                  (click)="removeDiagnosis(i)"
+                  style="cursor: pointer">
+                </i>
+              </ng-template>
+            </nz-form-control>
+          </nz-form-item>
+        </nz-col>
+      </nz-row>
+    </div>
+      
+    <nz-divider nzType="horizontal"></nz-divider>
+
     <div class="table-container">
-      <nz-table
-        #basicTable
-        [nzSize]="'small'"
+      <nz-table 
+        [nzData]="rowsControls.controls" 
+        [nzSize]="'small'" 
         [nzFrontPagination]="false">
         <thead>
           <tr>
             <th nzWidth="12.09%">From</th>
             <th nzWidth="12.09%">To</th>
-            <th nzWidth="7.09%">Tos</th>
-            <th nzWidth="9.09%">Cpt</th>
+            <th nzWidth="7.09%">Place of Service</th>
+            <th nzWidth="7.09%">Emg</th>
+            <th nzWidth="9.09%">Procedures</th>
             <th *ngIf="claimData.modifiers == '1'" nzWidth="9.09%">Modifiers</th>
             <th nzWidth="7.09%">Diagnosis pointer</th>
             <th nzWidth="9.09%">Charges</th>
-            <th nzWidth="7.09%">Units</th>
-            <th *ngIf="claimData.orderringNpi == '1'" nzWidth="9.09%">Ordering NPI</th>
-            <th *ngIf="claimData.referingNpi == '1'" nzWidth="9.09%">Refering NPI</th>
+            <th nzWidth="7.09%">Days or Unit</th>
+            <th nzWidth="7.09%">Rendering Provider ID</th>
             <th nzWidth="9.09%">Action</th>
           </tr>
         </thead>
-
+        <tbody formArrayName="rows">
+          <tr *ngFor="let rowCtrl of rowsControls.controls; let i = index" [formGroupName]="i">
+            <td>
+              <nz-date-picker 
+                nzFormat="MM/dd/yyyy" 
+                formControlName="date_initial">
+              </nz-date-picker>
+            </td>
+            <td>
+              <nz-date-picker 
+                nzFormat="MM/dd/yyyy" 
+                formControlName="date_final">
+              </nz-date-picker>
+            </td>
+            <td>
+              <input 
+                nz-input 
+                type="text" 
+                formControlName="place_of_service" 
+              />
+            </td>
+            <td>
+              <nz-select 
+                formControlName="emg" 
+                nzPlaceHolder="Select Emg">
+                <nz-option 
+                  nzValue="NO" 
+                  nzLabel="NO">
+                </nz-option>
+                <nz-option 
+                  nzValue="YES" 
+                  nzLabel="YES">
+                </nz-option>
+              </nz-select>
+            </td>
+            <td>
+              <nz-spin [nzSpinning]="cptLoading">
+                <input 
+                  nz-input 
+                  type="text" 
+                  formControlName="procedures"
+                  (ngModelChange)="searchProcedures(rowCtrl.get('procedures')?.value, rowCtrl)" />
+              </nz-spin>
+            </td>
+            <td *ngIf="claimData.modifiers == '1'">
+              <div formArrayName="modifiers">
+                <ng-container 
+                  *ngFor="let modifierCtrl of getModifiersControls(rowCtrl); 
+                  let j = index" [formGroupName]="j">
+                  <nz-select 
+                    formControlName="value" 
+                    style="width: 100px; margin-right: 8px" 
+                    nzShowSearch 
+                    nzAllowClear>
+                    <nz-option 
+                      *ngFor="let option of modifiersOptions" 
+                      [nzValue]="option.value" 
+                      [nzLabel]="option.label">
+                    </nz-option>
+                  </nz-select>
+                </ng-container>
+              </div>              
+            </td>            
+            <td>
+              <input 
+                nz-input 
+                type="text" 
+                formControlName="diagnosis_pointer" 
+              />
+            </td>
+            <td>
+              <input 
+                nz-input 
+                type="number" 
+                formControlName="charges" 
+                (ngModelChange)="calculateTotalCharges()" 
+              />
+            </td>
+            <td>
+              <input 
+                nz-input 
+                type="number" 
+                formControlName="units" 
+              />
+            </td>
+            <td>
+              <input 
+                nz-input 
+                type="number" 
+                formControlName="rendering_id" 
+                readonly 
+              />
+            </td>
+            <td>
+              <a>
+                <span 
+                  nz-icon 
+                  title="Add row" 
+                  nzType="plus" 
+                  (click)="addRow()"
+                  nzTheme="outline">
+                </span>
+              </a>
+              <nz-divider nzType="vertical"></nz-divider>
+              <a>
+                <span 
+                  nz-icon 
+                  title="Copy row" 
+                  nzType="copy" 
+                  (click)="copyRow(i)"
+                  nzTheme="outline">
+                </span>
+              </a>
+              <nz-divider nzType="vertical"></nz-divider>
+              <a>
+                <span
+                  nz-icon
+                  title="Delete row"
+                  nzType="delete"
+                  nzTheme="outline"
+                  (click)="deleteRow(i)">
+                </span>
+              </a>
+              <nz-divider nzType="vertical"></nz-divider>
+              <a>
+                <span
+                  nz-icon
+                  title="Reset row"
+                  nzType="reload"
+                  nzTheme="outline"
+                  (click)="resetRow(i)"
+                >
+                </span>
+              </a>
+            </td>
+          </tr>
+        </tbody>
       </nz-table>
     </div>
+
+    <nz-divider nzType="horizontal"></nz-divider>
+
+    <nz-row [nzGutter]="16">
+      <nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="federal_tax_id">
+            Federal Tax ID
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSpan]="16">
+            <input 
+              nz-input
+              id="federal_tax_id"
+              formControlName="federal_tax_id"
+              readonly
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+  
+      <nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="ssn_ein">
+            SSN / EIN
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSpan]="16">
+            <nz-select 
+              style="width: 100%;" 
+              nzShowSearch 
+              nzAllowClear 
+              id="ssn_ein"
+              nzPlaceHolder="Select SSN / EIN"
+              formControlName="ssn_ein">
+              <nz-option 
+                nzLabel="SSN" 
+                [nzValue]="1">
+              </nz-option>
+              <nz-option 
+                nzLabel="EIN" 
+                [nzValue]="2">
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+    </nz-row>
   </form>
+
 
 <!-- 
   <div class="section">
@@ -841,7 +1089,7 @@
         <tr>
           <th nzWidth="12.09%">From</th>
           <th nzWidth="12.09%">To</th>
-          <th nzWidth="7.09%">Tos</th>
+          <th nzWidth="7.09%">place_of_service</th>
           <th nzWidth="9.09%">Cpt</th>
           <th *ngIf="claimData.modifiers == '1'" nzWidth="9.09%">Modifiers</th>
           <th nzWidth="7.09%">Diagnosis pointer</th>
@@ -861,21 +1109,21 @@
           <td>
             <nz-date-picker
               nzFormat="MM/dd/yyyy"
-              [(ngModel)]="row.dateInitial"
-              (ngModelChange)="formatDate(row, 'dateInitial')"
+              [(ngModel)]="row.date_initial"
+              (ngModelChange)="formatDate(row, 'date_initial')"
             >
             </nz-date-picker>
           </td>
           <td>
             <nz-date-picker
               nzFormat="MM/dd/yyyy"
-              [(ngModel)]="row.dateFinal"
-              (ngModelChange)="formatDate(row, 'dateFinal')"
+              [(ngModel)]="row.date_final"
+              (ngModelChange)="formatDate(row, 'date_final')"
             >
             </nz-date-picker>
           </td>
           <td>
-            <input nz-input type="text" [(ngModel)]="row.tos" />
+            <input nz-input type="text" [(ngModel)]="row.place_of_service" />
           </td>
           <td>
             <nz-spin [nzSpinning]="cptLoading">

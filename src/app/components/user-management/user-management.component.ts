@@ -128,6 +128,7 @@ export class UserManagementComponent implements OnInit {
       postal_code: [null],
       number_license: [''],
       npi: [''],
+      federal_tax_id: [''],
     });
     this.searchNameSubject
       .pipe(debounceTime(1000))
@@ -166,6 +167,7 @@ export class UserManagementComponent implements OnInit {
       this.form.patchValue({
         number_license: data.extra_data[0].license_number,
         npi: data.extra_data[0].npi,
+        federal_tax_id: data.extra_data[0].federal_tax_id,
         supplier: data.extra_data[0].supplier_id,
         address: data.extra_data[0].address,
         city: data.extra_data[0].city,
@@ -199,6 +201,7 @@ export class UserManagementComponent implements OnInit {
           'city',
           'state',
           'npi',
+          'federal_tax_id'
         ],
         3: ['supplier'],
       };
@@ -209,6 +212,7 @@ export class UserManagementComponent implements OnInit {
         'state',
         'number_license',
         'npi',
+        'federal_tax_id'
       ];
 
       Object.entries(controls).forEach(([key, controlNames]) => {

@@ -306,7 +306,6 @@
           </nz-form-item>
         </div>
 
-
         <div
           nz-col
           nzSpan="24"
@@ -330,6 +329,34 @@
                 nz-input 
                 name="npi" 
                 formControlName="npi" 
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div
+          nz-col
+          nzSpan="24"
+          *ngIf="isUpdating ? 
+            (dataDrawerCahe?.extra_data && user_type?.code_type === 2) : 
+            (extraForm?.code_type === 2)">
+          <nz-form-item>
+            <nz-form-label
+              [nzSm]="8"
+              [nzXs]="24"
+              nzFor="federal_tax_id"
+              style="text-align: center">
+              Federal tax id
+            </nz-form-label>
+
+            <nz-form-control
+              [nzSm]="16"
+              [nzXs]="24"
+              [nzErrorTip]="errorTemplate">
+              <input 
+                nz-input 
+                name="federal_tax_id" 
+                formControlName="federal_tax_id" 
               />
             </nz-form-control>
           </nz-form-item>

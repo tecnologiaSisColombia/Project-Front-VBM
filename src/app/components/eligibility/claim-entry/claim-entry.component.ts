@@ -11,22 +11,22 @@ import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { Component, SimpleChanges } from '@angular/core';
-
 import {
   FormsModule,
   ReactiveFormsModule,
   UntypedFormBuilder,
   UntypedFormGroup,
   Validators,
-  AbstractControl
+  UntypedFormArray,
+  AbstractControl,
 } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { LocationService } from 'app/services/config/location.service';
 import { LocalityService } from 'app/services/config/localities.service';
 import { DiagnosisService } from 'app/services/config/diagnosis.service';
 import { ModifiersService } from 'app/services/config/modifiers.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Input } from '@angular/core';
-// import { ClaimPreviewComponent } from './claim-preview/claim-preview.component';
 import { ServicesService } from 'app/services/config/services.service';
 import { ProductsService } from 'app/services/config/products.service';
 import { debounceTime, Subject } from 'rxjs';
@@ -43,14 +43,13 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
     NzDividerModule,
     NzModalModule,
     NzIconModule,
-    // NzButtonComponent,
+    NzButtonComponent,
     ReactiveFormsModule,
     NzDatePickerModule,
     NzTableModule,
     NzInputModule,
     NzSelectModule,
     FormsModule,
-    // ClaimPreviewComponent,
     NzSpinModule,
   ],
   templateUrl: './claim-entry.component.html',
@@ -58,92 +57,60 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
 })
 export class ClaimEntryComponent {
   @Input() claimData!: {
-    patientName: string;
-    validFrom: string;
-    validThru: string;
-    birthDate: string;
-    city_patient: string;
-    state_patient: string;
-    phone_patient: string;
-    postal_code_patient: string;
-    city_supplier: string;
-    state_supplier: string;
-    postal_code_supplier: string;
-    phone_supplier: string;
-    address_supplier: string;
+    patient_name: string;
+    patient_birthDate: string;
+    patient_city: string;
+    patient_state: string;
+    patient_phone: string;
+    patient_postal_code: string;
+    patient_address: string;
+    provider_city: string;
+    provider_state: string;
+    provider_postal_code: string;
+    provider_phone: string;
+    provider_address: string;
+    provider_npi: string;
     plan_contract: string;
+    provider_federal_tax_id: string;
     plan_name: string;
     group: string;
+    auth: string;
+    insured_name: string;
+    insurer_address: string;
+    modifiers: string;
+    primary_subscriber_id: string;
     orderringNpi: string;
     referingNpi: string;
-    auth: string;
-    insurer: string;
-    address_insurer: string;
-    modifiers: string;
-    addressPatient: string;
-    primaryPlanName: string;
-    visualTestMedicare: string;
-    visionElements: string;
-    primary_subscriber_id: string;
   };
+  cptLoading = false;
+  modifiersOptions: { label: string; value: number }[] = [];
+  modifiersInput: any[] = [];
+  totalCharges = 0;
+  locations: any[] = [];
+  diagnosisOptions: { label: string; value: number }[] = [];
+  diagnosis: any[] = [];
+  localities: any[] = [{ id: 'N/A', name: 'N/A' }];
+  selectedDiagnosis: { code: any; description: any }[] = [];
   form: UntypedFormGroup;
+  private searchCptSubject = new Subject<any>();
 
-  // accountFields = [
-  //   { id: 'observations', label: 'Reserved for local use:', value: '' },
-  //   { id: 'p_account', label: 'Patient account:', value: '' },
-  //   { id: 'auth', label: 'Auth:', value: '' },
-  //   { id: 'charge', label: 'Total charge:', value: 0 },
-  //   { id: 'paid', label: 'Paid:', value: 0 },
-  //   { id: 'balance', label: 'Balance:', value: 0 },
-  // ];
-  // memberHave: any[] = [
-  //   { id: 'no', name: 'NO' },
-  //   { id: 'yes', name: 'YES' },
-  // ];
-  // rows = [
-  //   {
-  //     dateInitial: null,
-  //     dateFinal: null,
-  //     tos: '',
-  //     cpt: '',
-  //     modifiers: [
-  //       { id: 1, value: '' },
-  //       { id: 2, value: '' },
-  //       { id: 3, value: '' },
-  //     ],
-  //     diagnosisPointer: '',
-  //     charges: null,
-  //     units: null,
-  //     ordering_npi: null,
-  //     refering_npi: null,
-  //   },
-  // ];
-  // locations: any[] = [];
+
   // selectedLocation: any = null;
-  // localities: any[] = [{ id: 'N/A', name: 'N/A' }];
   // selectedLocality: any = 'N/A';
   // selectedMemberHave: any = 'no';
-  // diagnosis: any[] = [];
-  // modifiersInput: any[] = [];
   // listOfCpt: any[] = [];
-  // selectedDiagnosis: { code: any; description: any }[] = [];
-  // diagnosisOptions: { label: string; value: number }[] = [];
-  // modifiersOptions: { label: string; value: number }[] = [];
   // isPreviewVisible = false;
-  // cptLoading = false;
   // currentTime: string = '';
-  // totalCharges = 0;
   // private updateTimeout: any;
-  // private searchCptSubject = new Subject<any>();
 
   constructor(
-    // private msgService: NzMessageService,
-    // private locationService: LocationService,
-    // private localityService: LocalityService,
-    // private diagnosisService: DiagnosisService,
-    // private modifiersService: ModifiersService,
-    // private serviceService: ServicesService,
-    // private productService: ProductsService,
+    private msgService: NzMessageService,
+    private locationService: LocationService,
+    private localityService: LocalityService,
+    private diagnosisService: DiagnosisService,
+    private modifiersService: ModifiersService,
+    private serviceService: ServicesService,
+    private productService: ProductsService,
     private fb: UntypedFormBuilder,
   ) {
 
@@ -166,61 +133,72 @@ export class ClaimEntryComponent {
       gender: [null, [Validators.required]],
       insured_name: [null, [Validators.required]],
       policy_group: [null, [Validators.required]],
-      other_insured: [null],
       plan_name: [null, [Validators.required]],
+      insured_signature: [1, [Validators.required]],
+      patient_signature: [1, [Validators.required]],
+      date: [null, [Validators.required]],
+      date_initial: [null, [Validators.required]],
+      date_final: [null, [Validators.required]],
+      place_of_service: [null, [Validators.required]],
+      emg: [null, [Validators.required]],
+      procedures: [null, [Validators.required]],
+      diagnosis_pointer: [null, [Validators.required]],
+      charges: [null, [Validators.required]],
+      units: [null, [Validators.required]],
+      rendering_id: [null, [Validators.required]],
+      federal_tax_id: [null, [Validators.required]],
+      ssn_ein: [null, [Validators.required]],
+      modifiers: [null],
+      refering_provider_npi: [null],
       other_accident: [null],
       auto_accident: [null],
       employment: [null],
-      insured_signature: [1, [Validators.required]],
-      patient_signature: [1, [Validators.required]],
+      other_insured: [null],
       refering_provider: [null],
-      date: [null, [Validators.required]],
-      refering_provider_npi: [null],
+      rows: this.fb.array([this.createRow()]),
+      diagnosis: this.fb.array([
+        new FormControl(null, Validators.required),
+        new FormControl(null),
+        new FormControl(null),
+        new FormControl(null)
+      ])
     });
 
-    // this.searchCptSubject
-    //   .pipe(debounceTime(1000))
-    //   .subscribe(({ search, row }: any) => {
-    //     this.cptLoading = true;
-    //     if (search.startsWith('V') || search.startsWith('v')) {
-    //       this.productService.get({ code: search }, 1, 1, true).subscribe({
-    //         next: (res: any) => {
-    //           if (res.length > 0) {
-    //             row.charges = res[0].value;
-    //           } else {
-    //             msgService.info('Product not found');
-    //           }
-    //           this.cptLoading = false;
-    //         },
-    //         error: (err) => {
-    //           this.cptLoading = false;
-    //           this.msgService.error(JSON.stringify(err.error));
-    //         },
-    //       });
-    //     } else {
-    //       this.serviceService.get({ code: search }, 1, 1, true).subscribe({
-    //         next: (res: any) => {
-    //           if (res.length > 0) {
-    //             row.charges = res[0].value;
-    //           } else {
-    //             msgService.info('Service not found');
-    //           }
-    //           this.cptLoading = false;
-    //         },
-    //         error: (err) => {
-    //           this.cptLoading = false;
-    //           this.msgService.error(JSON.stringify(err.error));
-    //         },
-    //       });
-    //     }
-    //   });
+    this.searchCptSubject
+      .pipe(debounceTime(1000))
+      .subscribe(({ search, row }: any) => {
+        this.cptLoading = true;
+        if (search.startsWith('V') || search.startsWith('v')) {
+          this.productService.get({ code: search }, 1, 1, true).subscribe({
+            next: (res: any) => {
+              row.charges = res?.[0]?.value ?? msgService.info('Product not found');
+              this.cptLoading = false;
+            },
+            error: (err) => {
+              this.cptLoading = false;
+              this.msgService.error(JSON.stringify(err.error));
+            },
+          });
+        } else {
+          this.serviceService.get({ code: search }, 1, 1, true).subscribe({
+            next: (res: any) => {
+              row.charges = res?.length ? res[0].value : msgService.info('Service not found');
+              this.cptLoading = false;
+            },
+            error: (err) => {
+              this.cptLoading = false;
+              this.msgService.error(JSON.stringify(err.error));
+            },
+          });
+        }
+      });
   }
 
   ngOnInit(): void {
-    // this.getLocations();
-    // this.getLocalities();
-    // this.getDiagnosis();
-    // this.getModifiers();
+    this.getLocations();
+    this.getLocalities();
+    this.getDiagnosis();
+    this.getModifiers();
     // this.updateCurrentTime();
     // this.selectedDiagnosis = [
     //   { code: null, description: null },
@@ -228,88 +206,182 @@ export class ClaimEntryComponent {
     //   { code: null, description: null },
     //   { code: null, description: null },
     // ];
+
+
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['claimData'] && this.claimData) {
       this.form.patchValue({
-        provider_phone: this.claimData.phone_supplier,
-        provider_zip_code: this.claimData.postal_code_supplier,
-        patient_phone: this.claimData.phone_patient,
-        patient_zip_code: this.claimData.postal_code_patient,
-        provider_state: this.claimData.state_supplier,
-        provider_city: this.claimData.city_supplier,
-        patient_state: this.claimData.state_patient,
-        patient_city: this.claimData.city_patient,
-        insured_address: this.claimData.address_supplier,
-        patient_address: this.claimData.addressPatient,
+        provider_phone: this.claimData.provider_phone,
+        provider_zip_code: this.claimData.provider_postal_code,
+        patient_phone: this.claimData.patient_phone,
+        patient_zip_code: this.claimData.patient_postal_code,
+        provider_state: this.claimData.provider_state,
+        provider_city: this.claimData.provider_city,
+        patient_state: this.claimData.patient_state,
+        patient_city: this.claimData.patient_city,
+        insured_address: this.claimData.provider_address,
+        patient_address: this.claimData.patient_address,
         insured_id: this.claimData.primary_subscriber_id,
-        patient_name: this.claimData.patientName,
-        patient_birth_date: this.claimData.birthDate,
-        insured_name: this.claimData.insurer,
+        patient_name: this.claimData.patient_name,
+        patient_birth_date: this.claimData.patient_birthDate,
+        insured_name: this.claimData.insured_name,
         policy_group: this.claimData.group,
         plan_name: this.claimData.plan_name,
+        federal_tax_id: this.claimData.provider_federal_tax_id,
+      });
 
-        
+      (this.rowsControls.controls as UntypedFormGroup[]).forEach((rowGroup) => {
+        rowGroup.patchValue({ rendering_id: this.claimData.provider_npi });
       });
     }
   }
 
-  // searchCpt(search: string, row: any) {
-  //   if (search.length < 3) return;
-  //   this.searchCptSubject.next({ search: search, row: row });
-  // }
-  // getLocations(): void {
-  //   this.locationService.get({}, null, null, true).subscribe({
-  //     next: (res: any) => {
-  //       this.locations = res;
-  //     },
-  //     error: (err) => {
-  //       this.msgService.error(JSON.stringify(err.error));
-  //     },
-  //   });
-  // }
+  get rowsControls(): UntypedFormArray {
+    return this.form.get('rows') as UntypedFormArray;
+  }
 
-  // getLocalities(): void {
-  //   this.localityService.get({}, null, null, true).subscribe({
-  //     next: (res: any) => {
-  //       this.localities = [{ id: 'N/A', name: 'N/A' }, ...res];
-  //     },
-  //     error: (err) => {
-  //       this.msgService.error(JSON.stringify(err.error));
-  //     },
-  //   });
-  // }
+  get diagnosisControls(): UntypedFormArray {
+    return this.form.get('diagnosis') as UntypedFormArray;
+  }
 
-  // getDiagnosis(): void {
-  //   this.diagnosisService.get({}, null, null, true).subscribe({
-  //     next: (res: any) => {
-  //       this.diagnosis = res;
-  //       this.diagnosisOptions = this.diagnosis.map((d) => ({
-  //         value: d.code,
-  //         label: `${d.code} - ${d.description}`,
-  //       }));
-  //     },
-  //     error: (err) => {
-  //       this.msgService.error(JSON.stringify(err.error));
-  //     },
-  //   });
-  // }
+  createRow(): UntypedFormGroup {
+    return this.fb.group({
+      date_initial: [null, Validators.required],
+      date_final: [null, Validators.required],
+      place_of_service: ['', Validators.required],
+      emg: ['NO', Validators.required],
+      procedures: ['', Validators.required],
+      modifiers: this.fb.array([
+        this.fb.group({ id: 1, value: [''] }),
+        this.fb.group({ id: 2, value: [''] }),
+        this.fb.group({ id: 3, value: [''] }),
+        this.fb.group({ id: 4, value: [''] }),
+      ]),
+      diagnosis_pointer: ['', Validators.required],
+      charges: [null, Validators.required],
+      units: [null, Validators.required],
+      rendering_id: [this.claimData?.provider_npi ?? null, Validators.required],
+    });
+  }
 
-  // getModifiers(): void {
-  //   this.modifiersService.get({}, null, null, true).subscribe({
-  //     next: (res: any) => {
-  //       this.modifiersInput = res;
-  //       this.modifiersOptions = this.modifiersInput.map((d) => ({
-  //         value: d.code,
-  //         label: `${d.code}`,
-  //       }));
-  //     },
-  //     error: (err) => {
-  //       this.msgService.error(JSON.stringify(err.error));
-  //     },
-  //   });
-  // }
+  getModifiersControls(rowCtrl: AbstractControl): AbstractControl[] {
+    return (rowCtrl.get('modifiers') as UntypedFormArray).controls;
+  }
+
+  addRow(): void {
+    this.rowsControls.push(this.createRow());
+  }
+
+  searchProcedures(search: string, row: any) {
+    if (search.length < 4) return;
+    this.searchCptSubject.next({ search: search, row: row });
+  }
+
+  getModifiers(): void {
+    this.modifiersService.get({}, null, null, true).subscribe({
+      next: (res: any) => {
+        this.modifiersInput = res;
+        this.modifiersOptions = this.modifiersInput.map((d) => ({
+          value: d.code,
+          label: `${d.code}`,
+        }));
+      },
+      error: (err) => {
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
+  }
+
+  getLocations(): void {
+    this.locationService.get({}, null, null, true).subscribe({
+      next: (res: any) => {
+        this.locations = res;
+      },
+      error: (err) => {
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
+  }
+
+  getDiagnosis(): void {
+    this.diagnosisService.get({}, null, null, true).subscribe({
+      next: (res: any) => {
+        this.diagnosis = res;
+        this.diagnosisOptions = this.diagnosis.map((d) => ({
+          value: d.code,
+          label: `${d.code}`,
+        }));
+      },
+      error: (err) => {
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
+  }
+
+  getLocalities(): void {
+    this.localityService.get({}, null, null, true).subscribe({
+      next: (res: any) => {
+        this.localities = [{ id: 'N/A', name: 'N/A' }, ...res];
+      },
+      error: (err) => {
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
+  }
+
+  copyRow(i: number): void {
+    const rowGroup = this.rowsControls.at(i) as UntypedFormGroup;
+    const rowValue = rowGroup.getRawValue();
+    const newRow = this.fb.group({
+      date_initial: [rowValue.date_initial, Validators.required],
+      date_final: [rowValue.date_final, Validators.required],
+      place_of_service: [rowValue.place_of_service, Validators.required],
+      emg: [rowValue.emg, Validators.required],
+      procedures: [rowValue.procedures, Validators.required],
+      modifiers: this.fb.array(
+        rowValue.modifiers.map((mod: any) =>
+          this.fb.group({
+            id: mod.id,
+            value: [mod.value]
+          })
+        )
+      ),
+      diagnosis_pointer: [rowValue.diagnosis_pointer, Validators.required],
+      charges: [rowValue.charges, Validators.required],
+      units: [rowValue.units, Validators.required],
+      rendering_id: [rowValue.rendering_id, Validators.required]
+    });
+
+    this.rowsControls.push(newRow);
+  }
+
+  deleteRow(i: number): void {
+    if (this.rowsControls.length > 1) {
+      this.rowsControls.removeAt(i);
+    }
+  }
+
+  resetRow(i: number): void {
+    this.rowsControls.setControl(i, this.createRow());
+  }
+
+  addDiagnosis(): void {
+    const diagnosisArray = this.form.get('diagnosis') as UntypedFormArray;
+    if (diagnosisArray.length < 12) {
+      diagnosisArray.push(new FormControl(null));
+    }
+  }
+  
+  removeDiagnosis(index: number): void {
+    const diagnosisArray = this.form.get('diagnosis') as UntypedFormArray;
+    if (index > 0) {
+      diagnosisArray.removeAt(index);
+    }
+  }
+  
+
 
   // getOrdinalSuffix(index: number): string {
   //   const suffixes = ['th', 'st', 'nd', 'rd'];
@@ -319,114 +391,15 @@ export class ClaimEntryComponent {
   //   );
   // }
 
-  // addRow(): void {
-  //   const rowId = this.rows.length + 1;
-  //   this.rows.push({
-  //     dateInitial: null,
-  //     dateFinal: null,
-  //     tos: '',
-  //     cpt: '',
-  //     modifiers: [
-  //       { id: rowId * 10 + 1, value: '' },
-  //       { id: rowId * 10 + 2, value: '' },
-  //       { id: rowId * 10 + 3, value: '' },
-  //     ],
-  //     diagnosisPointer: '',
-  //     charges: null,
-  //     units: null,
-  //     ordering_npi: null,
-  //     refering_npi: null,
-  //   });
-  // }
 
-  // deleteRow(index: number): void {
-  //   if (this.rows.length > 1) {
-  //     this.rows.splice(index, 1);
-  //     this.calculateTotalCharges();
-  //   }
-  // }
 
-  // copyRow(index: number): void {
-  //   const rowId = this.rows.length + 1;
-  //   const copiedRow = { ...this.rows[index] };
 
-  //   copiedRow.modifiers = this.rows[index].modifiers.map(
-  //     (modifier, modIndex) => ({
-  //       id: rowId * 10 + modIndex + 1,
-  //       value: modifier.value,
-  //     })
-  //   );
+  calculateTotalCharges(): void {
+    // this.totalCharges = this.rows.reduce((sum, row) => sum + +(row.charges ?? 0), 0);
+    // this.calculateBalance();
+  }
 
-  //   this.rows.push(copiedRow);
 
-  //   this.calculateTotalCharges();
-  // }
-
-  // calculateBalance(): void {
-  //   const paid = Number(
-  //     this.accountFields.find((field) => field.id === 'paid')?.value || 0
-  //   );
-  //   const balance = this.totalCharges - paid;
-
-  //   this.accountFields = this.accountFields.map((field) => {
-  //     if (field.id === 'balance') {
-  //       return { ...field, value: balance };
-  //     }
-  //     return field;
-  //   });
-  // }
-
-  // resetRow(index: number): void {
-  //   this.rows[index] = {
-  //     dateInitial: null,
-  //     dateFinal: null,
-  //     tos: '',
-  //     cpt: '',
-  //     modifiers: [
-  //       { id: 1, value: '' },
-  //       { id: 2, value: '' },
-  //       { id: 3, value: '' },
-  //     ],
-  //     diagnosisPointer: '',
-  //     charges: null,
-  //     units: null,
-  //     ordering_npi: null,
-  //     refering_npi: null,
-  //   };
-  //   this.calculateTotalCharges();
-  // }
-
-  // calculateTotalCharges(): void {
-  //   this.totalCharges = this.rows.reduce(
-  //     (sum, row) => sum + +(row.charges ?? 0),
-  //     0
-  //   );
-
-  //   this.accountFields = this.accountFields.map((field) =>
-  //     field.id === 'charge' ? { ...field, value: this.totalCharges } : field
-  //   );
-
-  //   this.calculateBalance();
-  // }
-
-  // formatDate(row: any, field: string): void {
-  //   if (row[field]) {
-  //     const date = new Date(row[field]);
-  //     row[field] = `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date
-  //       .getDate()
-  //       .toString()
-  //       .padStart(2, '0')}/${date.getFullYear()}`;
-  //   }
-  // }
-
-  // addDiagnosis(): void {
-  //   if (this.selectedDiagnosis.length < 12) {
-  //     this.selectedDiagnosis.push({
-  //       code: this.selectedDiagnosis.length + 1,
-  //       description: null,
-  //     });
-  //   }
-  // }
 
   // removeDiagnosis(index: number): void {
   //   if (this.selectedDiagnosis.length > 2) {
@@ -437,7 +410,7 @@ export class ClaimEntryComponent {
   // onLocationChange(): void {
   //   if (this.selectedLocation) {
   //     this.rows.forEach((row) => {
-  //       row.tos = this.selectedLocation;
+  //       row.place_of_service = this.selectedLocation;
   //     });
   //   }
   // }
@@ -462,17 +435,5 @@ export class ClaimEntryComponent {
   //   this.updateTimeout = setTimeout(() => {
   //     this.accountFields = [...this.accountFields];
   //   }, 200);
-  // }
-
-  // previewClaim(): void {
-  //   for (const row of this.rows) {
-  //     if (row.dateInitial && row.dateFinal && row.dateFinal < row.dateInitial) {
-  //       this.msgService.warning(
-  //         'The final date cannot be earlier than the initial date'
-  //       );
-  //       return;
-  //     }
-  //   }
-  //   this.isPreviewVisible = true;
   // }
 }
