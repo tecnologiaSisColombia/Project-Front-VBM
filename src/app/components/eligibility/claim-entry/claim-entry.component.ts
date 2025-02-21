@@ -19,6 +19,8 @@ import {
   Validators,
   UntypedFormArray,
   AbstractControl,
+  FormGroup,
+  FormArray
 } from '@angular/forms';
 import { FormControl } from '@angular/forms';
 import { LocationService } from 'app/services/config/location.service';
@@ -29,8 +31,10 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { Input } from '@angular/core';
 import { ServicesService } from 'app/services/config/services.service';
 import { ProductsService } from 'app/services/config/products.service';
-import { debounceTime, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { forkJoin } from 'rxjs';
+import { NzFormModule } from 'ng-zorro-antd/form';
 
 @Component({
   selector: 'app-claim-entry',
@@ -51,6 +55,7 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
     NzSelectModule,
     FormsModule,
     NzSpinModule,
+    NzFormModule
   ],
   templateUrl: './claim-entry.component.html',
   styleUrls: ['./claim-entry.component.css'],
@@ -83,14 +88,15 @@ export class ClaimEntryComponent {
     orderringNpi: string;
     referingNpi: string;
   };
-  cptLoading = false;
   modifiersOptions: { label: string; value: number }[] = [];
   modifiersInput: any[] = [];
   totalCharges = 0;
   locations: any[] = [];
+  placeServicesOptions: { label: string; value: number }[] = [];
   diagnosisOptions: { label: string; value: number }[] = [];
   diagnosis: any[] = [];
   localities: any[] = [{ id: 'N/A', name: 'N/A' }];
+  codeOptions: { label: string; value: string; charge: number }[] = [];
   form: UntypedFormGroup;
   private searchCptSubject = new Subject<any>();
 
@@ -145,12 +151,12 @@ export class ClaimEntryComponent {
         new FormControl(null)
       ]),
       federal_tax_id: [null, [Validators.required]],
-      ssn_ein: [null, [Validators.required]],
+      ssn_ein: [2, [Validators.required]],
       patient_account: [null],
-      accept_assignment: [1, [Validators.required]],
+      // accept_assignment: [1, [Validators.required]],
 
       total_charge: [null, [Validators.required]],
-      signature_doctor: [null, [Validators.required]],
+      signature_doctor: [1, [Validators.required]],
       date_signature_doctor: [null, [Validators.required]],
       service_facility_location: [null, [Validators.required]],
       service_facility_npi: [null, [Validators.required]],
@@ -159,41 +165,7 @@ export class ClaimEntryComponent {
       billing_provider_address: [null, [Validators.required]],
       amount_paid: [null],
       rows: this.fb.array([this.createRow()]),
-
     });
-
-    this.searchCptSubject
-      .pipe(debounceTime(1000))
-      .subscribe(({ search, row }: any) => {
-        this.cptLoading = true;
-        if (search.startsWith('V') || search.startsWith('v')) {
-          this.productService.get({ code: search }, 1, 1, true).subscribe({
-            next: (res: any) => {
-              row.charges = res?.[0]?.value ?? msgService.info('Product not found');
-              this.cptLoading = false;
-            },
-            error: (err) => {
-              this.cptLoading = false;
-              this.msgService.error(JSON.stringify(err.error));
-            },
-          });
-        } else {
-          this.serviceService.get({ code: search }, 1, 1, true).subscribe({
-            next: (res: any) => {
-              if (res.length > 0) {
-                row.charges = res[0].value;
-              } else {
-                msgService.info('Service not found');
-              }
-              this.cptLoading = false;
-            },
-            error: (err) => {
-              this.cptLoading = false;
-              this.msgService.error(JSON.stringify(err.error));
-            },
-          });
-        }
-      });
   }
 
   ngOnInit(): void {
@@ -216,13 +188,6 @@ export class ClaimEntryComponent {
         patient_state: this.claimData.patient_state,
         patient_zip_code: this.claimData.patient_postal_code,
         patient_phone: this.claimData.patient_phone,
-        // insured_address: this.claimData.provider_address,
-        // insured_city: this.claimData.provider_city,
-        // insured_state: this.claimData.provider_state,
-        // insured_zip_code: this.claimData.provider_postal_code,
-        // insured_phone: this.claimData.provider_phone,
-        // other_insured_name_policy_group: this.claimData.group,
-        // insurance_plan_name: this.claimData.plan_name,
         insured_police_group_feca: this.claimData.group,
         insured_date_birth: this.claimData.patient_birthDate,
         insured_gender: this.claimData.patient_gender,
@@ -230,8 +195,14 @@ export class ClaimEntryComponent {
         billing_provider_phone: this.claimData.provider_phone,
         billing_provider_npi: this.claimData.provider_npi,
         billing_provider_address: this.claimData.provider_address,
-
         federal_tax_id: this.claimData.provider_federal_tax_id,
+        // insured_address: this.claimData.provider_address,
+        // insured_city: this.claimData.provider_city,
+        // insured_state: this.claimData.provider_state,
+        // insured_zip_code: this.claimData.provider_postal_code,
+        // insured_phone: this.claimData.provider_phone,
+        // other_insured_name_policy_group: this.claimData.group,
+        // insurance_plan_name: this.claimData.plan_name,
       });
 
       (this.rowsControls.controls as UntypedFormGroup[]).forEach((rowGroup) => {
@@ -276,9 +247,50 @@ export class ClaimEntryComponent {
     this.rowsControls.push(this.createRow());
   }
 
-  searchProcedures(search: string, row: any) {
-    if (search.length < 3) return;
-    this.searchCptSubject.next({ search: search, row: row });
+  searchCodes(value: string): void {
+    const product$ = this.productService.get({ code: value }, 1, 10, true);
+    const service$ = this.serviceService.get({ code: value }, 1, 10, true);
+    forkJoin([product$, service$]).subscribe({
+      next: ([products, services]) => {
+        const options: { label: string; value: string; charge: number }[] = [];
+        if (products && Array.isArray(products) && products.length > 0) {
+          products.forEach((p: any) => {
+            options.push({
+              label: `${p.code}`,
+              value: p.code,
+              charge: p.value,
+            });
+          });
+        }
+        if (services && Array.isArray(services) && services.length > 0) {
+          services.forEach((s: any) => {
+            options.push({
+              label: `${s.code}`,
+              value: s.code,
+              charge: s.value,
+            });
+          });
+        }
+        this.codeOptions = options;
+      },
+      error: (err) => {
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
+  }
+
+  searchProcedures(value: string, row: AbstractControl) {
+    (!value || value.length < 3) && (row.get('charges')?.setValue(null), void 0);
+    this.searchCptSubject.next({ search: value, row: row });
+  }
+
+  onProcedureSelected(selectedCode: string, row: AbstractControl): void {
+    const option = this.codeOptions.find(o => o.value === selectedCode);
+    if (option) {
+      row.get('charges')?.setValue(option.charge);
+    } else {
+      row.get('charges')?.setValue(null);
+    }
   }
 
   getModifiers(): void {
@@ -300,6 +312,10 @@ export class ClaimEntryComponent {
     this.locationService.get({}, null, null, true).subscribe({
       next: (res: any) => {
         this.locations = res;
+        this.placeServicesOptions = this.locations.map((d) => ({
+          value: d.code,
+          label: `${d.code}`,
+        }));
       },
       error: (err) => {
         this.msgService.error(JSON.stringify(err.error));
@@ -357,34 +373,62 @@ export class ClaimEntryComponent {
     });
 
     this.rowsControls.push(newRow);
+    this.calculateTotalCharges()
   }
 
   deleteRow(i: number): void {
-    if (this.rowsControls.length > 1) {
-      this.rowsControls.removeAt(i);
-    }
+    if (this.rowsControls.length > 1) this.rowsControls.removeAt(i);
+    this.calculateTotalCharges()
   }
 
   resetRow(i: number): void {
     this.rowsControls.setControl(i, this.createRow());
+    this.calculateTotalCharges()
   }
 
   addDiagnosis(): void {
     const diagnosisArray = this.form.get('diagnosis') as UntypedFormArray;
-    if (diagnosisArray.length < 12) {
-      diagnosisArray.push(new FormControl(null));
-    }
+    diagnosisArray.length < 12 && diagnosisArray.push(new FormControl(null));
   }
 
   removeDiagnosis(index: number): void {
     const diagnosisArray = this.form.get('diagnosis') as UntypedFormArray;
-    if (index > 0) {
-      diagnosisArray.removeAt(index);
-    }
+    index > 0 && diagnosisArray.removeAt(index);
   }
 
   calculateTotalCharges(): void {
+    let total = 0;
+    this.rowsControls.controls.forEach((control: AbstractControl) => {
+      const row = control as UntypedFormGroup;
+      const charge = row.get('charges')?.value;
+      total += charge ? Number(charge) : 0;
+    });
+    this.form.get('total_charge')?.setValue(total);
+  }
 
+  submitForm(): void {
+    console.log('Enviando formulario:', this.form.value);
+  }
+
+  markAllControlsAsDirty(control: AbstractControl): void {
+    if (control instanceof FormControl) {
+      control.markAsDirty();
+      control.updateValueAndValidity();
+    } else if (control instanceof FormGroup || control instanceof FormArray) {
+      Object.keys(control.controls).forEach(key => {
+        this.markAllControlsAsDirty(control.get(key)!);
+      });
+    }
+  }
+
+  getErrorMessage(control: AbstractControl | null): string | null {
+    if (!control || !control.errors) return null;
+
+    if (control.hasError('required')) return 'This field is required';
+
+    if (control.hasError('pattern')) return 'This field cannot be empty';
+
+    return null;
   }
 
 }

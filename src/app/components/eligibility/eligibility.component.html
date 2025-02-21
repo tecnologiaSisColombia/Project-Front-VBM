@@ -203,14 +203,15 @@
 <nz-modal
   [nzAutofocus]="null"
   [(nzVisible)]="isVisibleModalClaim"
-  nzWidth="97%"
+  nzWidth="98%"
   (nzOnCancel)="cancelOkModalClaim()"
-  (nzOnOk)="cancelOkModalClaim()"
+  (nzOnOk)="submit()"
   [nzClosable]="false"
   nzMaskClosable="false">
   <ng-container *nzModalContent>
     <app-claim-entry 
-      [claimData]="selectedClaim">
+      [claimData]="selectedClaim"
+      #claimEntry>
     </app-claim-entry>
   </ng-container>
 </nz-modal>

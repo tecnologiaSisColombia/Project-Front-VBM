@@ -11,7 +11,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { debounceTime, Subject } from 'rxjs';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, FormArray, FormControl, AbstractControl, FormGroup } from '@angular/forms';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { MemberComponent } from './member/member.component';
 import { PlanDetailsComponent } from './plan-details/plan-details.component';
@@ -107,8 +107,12 @@ export class EligibilityComponent {
     visionElements: '',
   };
   private searchNameSubject = new Subject<{ type: string; value: string }>();
+
   @ViewChild(PlanDetailsComponent, { static: false })
   planDetailsComponent!: PlanDetailsComponent;
+
+  @ViewChild('claimEntry', { static: false })
+  claimEntry!: ClaimEntryComponent;
 
   constructor(
     private msgService: NzMessageService,
@@ -133,6 +137,18 @@ export class EligibilityComponent {
 
   ngOnInit(): void {
     this.getInitData();
+  }
+
+  submit(): void {
+    if (this.claimEntry && this.claimEntry.form.valid) {
+      this.claimEntry.submitForm();
+    } else {
+      if (this.claimEntry) {
+        this.claimEntry.submitForm();
+        this.claimEntry.markAllControlsAsDirty(this.claimEntry.form);
+      }
+      return;
+    }
   }
 
   getInitData() {
@@ -414,5 +430,5 @@ export class EligibilityComponent {
       });
   }
 
-  printContentMember(): void {}
+  printContentMember(): void { }
 }

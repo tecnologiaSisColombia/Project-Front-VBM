@@ -1,22 +1,10 @@
-nz-date-picker,
-input[nz-input] {
-    width: 100%;
-    border-radius: 6px;
-    padding: 8px 12px;
-}
-
 nz-table th,
 nz-table td {
     text-align: center;
-    padding: 10px;
     white-space: nowrap;
 }
 
 .table-container {
     overflow-x: auto;
     max-width: 100%;
-}
-
-nz-table {
-    min-width: 1000px;
 }
