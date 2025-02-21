@@ -110,10 +110,7 @@ export class UserManagementComponent implements OnInit {
     private supplierService: DoctorService
   ) {
     this.form = this.fb.group({
-      first_name: [
-        '',
-        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
-      ],
+      first_name: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)],],
       last_name: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
@@ -180,6 +177,7 @@ export class UserManagementComponent implements OnInit {
       (e) => e.id === this.dataDrawerCahe.user_type
     );
 
+    
     if (selectedUserType) {
       const userType = selectedUserType.code_type;
       const fieldsToClear = this.fieldsToClearMap[userType] || this.fieldsToClearMap['1'];
@@ -300,6 +298,7 @@ export class UserManagementComponent implements OnInit {
         'city',
         'state',
         'npi',
+        'federal_tax_id'
       ],
       3: ['supplier'],
     };
@@ -310,6 +309,7 @@ export class UserManagementComponent implements OnInit {
       'state',
       'number_license',
       'npi',
+      'federal_tax_id'
     ];
 
     const resetControls = () => {
@@ -324,6 +324,10 @@ export class UserManagementComponent implements OnInit {
     const applyValidation = (type: string | null) => {
       Object.entries(controls).forEach(([key, controlNames]) => {
         const isActive = type === key;
+
+        console.log(type)
+        console.log(key)
+
         controlNames.forEach((control) => {
           if (isActive) {
             const validators = requiredWithPattern.includes(control)
@@ -347,7 +351,7 @@ export class UserManagementComponent implements OnInit {
     this.extraForm = selectedType;
 
     resetControls();
-    applyValidation(this.extraForm.type);
+    applyValidation(this.extraForm.code_type.toString());
   }
 
   getSuppliers(): void {

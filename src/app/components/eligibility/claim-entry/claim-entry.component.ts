@@ -63,6 +63,7 @@ export class ClaimEntryComponent {
     patient_state: string;
     patient_phone: string;
     patient_postal_code: string;
+    patient_gender: string;
     patient_address: string;
     provider_city: string;
     provider_state: string;
@@ -90,18 +91,8 @@ export class ClaimEntryComponent {
   diagnosisOptions: { label: string; value: number }[] = [];
   diagnosis: any[] = [];
   localities: any[] = [{ id: 'N/A', name: 'N/A' }];
-  selectedDiagnosis: { code: any; description: any }[] = [];
   form: UntypedFormGroup;
   private searchCptSubject = new Subject<any>();
-
-
-  // selectedLocation: any = null;
-  // selectedLocality: any = 'N/A';
-  // selectedMemberHave: any = 'no';
-  // listOfCpt: any[] = [];
-  // isPreviewVisible = false;
-  // currentTime: string = '';
-  // private updateTimeout: any;
 
   constructor(
     private msgService: NzMessageService,
@@ -115,53 +106,60 @@ export class ClaimEntryComponent {
   ) {
 
     this.form = this.fb.group({
-      provider_phone: [null, [Validators.required]],
-      provider_zip_code: [null, [Validators.required]],
-      patient_phone: [null, [Validators.required]],
-      patient_zip_code: [null, [Validators.required]],
-      provider_state: [null, [Validators.required]],
-      provider_city: [null, [Validators.required]],
-      patient_state: [null, [Validators.required]],
-      patient_city: [null, [Validators.required]],
-      insured_address: [null, [Validators.required]],
-      relationship: [1, [Validators.required]],
-      patient_address: [null, [Validators.required]],
       insurance_type: [7, [Validators.required]],
       insured_id: [null, [Validators.required]],
       patient_name: [null, [Validators.required]],
       patient_birth_date: [null, [Validators.required]],
-      gender: [null, [Validators.required]],
+      patient_gender: [null, [Validators.required]],
       insured_name: [null, [Validators.required]],
-      policy_group: [null, [Validators.required]],
-      plan_name: [null, [Validators.required]],
-      insured_signature: [1, [Validators.required]],
+      patient_address: [null, [Validators.required]],
+      patient_city: [null, [Validators.required]],
+      patient_state: [null, [Validators.required]],
+      patient_zip_code: [null, [Validators.required]],
+      patient_phone: [null, [Validators.required]],
+      relationship: [1, [Validators.required]],
+      // insured_address: [null, [Validators.required]],
+      // insured_city: [null, [Validators.required]],
+      // insured_state: [null, [Validators.required]],
+      // insured_zip_code: [null, [Validators.required]],
+      // insured_phone: [null, [Validators.required]],
+      // other_insured_name: [null],
+      // other_insured_name_policy_group: [null, [Validators.required]],
+      // insurance_plan_name: [null, [Validators.required]],
+      // employment: [null],
+      // auto_accident: [null],
+      // other_accident: [null],
+      insured_police_group_feca: [null, [Validators.required]],
+      insured_date_birth: [null, [Validators.required]],
+      insured_gender: [null, [Validators.required]],
+      insured_insurance_plan_name: [null, [Validators.required]],
       patient_signature: [1, [Validators.required]],
-      date: [null, [Validators.required]],
-      date_initial: [null, [Validators.required]],
-      date_final: [null, [Validators.required]],
-      place_of_service: [null, [Validators.required]],
-      emg: [null, [Validators.required]],
-      procedures: [null, [Validators.required]],
-      diagnosis_pointer: [null, [Validators.required]],
-      charges: [null, [Validators.required]],
-      units: [null, [Validators.required]],
-      rendering_id: [null, [Validators.required]],
-      federal_tax_id: [null, [Validators.required]],
-      ssn_ein: [null, [Validators.required]],
-      modifiers: [null],
-      refering_provider_npi: [null],
-      other_accident: [null],
-      auto_accident: [null],
-      employment: [null],
-      other_insured: [null],
-      refering_provider: [null],
-      rows: this.fb.array([this.createRow()]),
+      date_service: [null, [Validators.required]],
+      insured_signature: [1, [Validators.required]],
+      name_referring_provider: [null],
+      name_referring_provider_npi: [null],
       diagnosis: this.fb.array([
         new FormControl(null, Validators.required),
         new FormControl(null),
         new FormControl(null),
         new FormControl(null)
-      ])
+      ]),
+      federal_tax_id: [null, [Validators.required]],
+      ssn_ein: [null, [Validators.required]],
+      patient_account: [null],
+      accept_assignment: [1, [Validators.required]],
+
+      total_charge: [null, [Validators.required]],
+      signature_doctor: [null, [Validators.required]],
+      date_signature_doctor: [null, [Validators.required]],
+      service_facility_location: [null, [Validators.required]],
+      service_facility_npi: [null, [Validators.required]],
+      billing_provider_phone: [null, [Validators.required]],
+      billing_provider_npi: [null, [Validators.required]],
+      billing_provider_address: [null, [Validators.required]],
+      amount_paid: [null],
+      rows: this.fb.array([this.createRow()]),
+
     });
 
     this.searchCptSubject
@@ -182,7 +180,11 @@ export class ClaimEntryComponent {
         } else {
           this.serviceService.get({ code: search }, 1, 1, true).subscribe({
             next: (res: any) => {
-              row.charges = res?.length ? res[0].value : msgService.info('Service not found');
+              if (res.length > 0) {
+                row.charges = res[0].value;
+              } else {
+                msgService.info('Service not found');
+              }
               this.cptLoading = false;
             },
             error: (err) => {
@@ -199,41 +201,41 @@ export class ClaimEntryComponent {
     this.getLocalities();
     this.getDiagnosis();
     this.getModifiers();
-    // this.updateCurrentTime();
-    // this.selectedDiagnosis = [
-    //   { code: null, description: null },
-    //   { code: null, description: null },
-    //   { code: null, description: null },
-    //   { code: null, description: null },
-    // ];
-
-
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['claimData'] && this.claimData) {
       this.form.patchValue({
-        provider_phone: this.claimData.provider_phone,
-        provider_zip_code: this.claimData.provider_postal_code,
-        patient_phone: this.claimData.patient_phone,
-        patient_zip_code: this.claimData.patient_postal_code,
-        provider_state: this.claimData.provider_state,
-        provider_city: this.claimData.provider_city,
-        patient_state: this.claimData.patient_state,
-        patient_city: this.claimData.patient_city,
-        insured_address: this.claimData.provider_address,
-        patient_address: this.claimData.patient_address,
         insured_id: this.claimData.primary_subscriber_id,
         patient_name: this.claimData.patient_name,
         patient_birth_date: this.claimData.patient_birthDate,
+        patient_gender: this.claimData.patient_gender,
         insured_name: this.claimData.insured_name,
-        policy_group: this.claimData.group,
-        plan_name: this.claimData.plan_name,
+        patient_address: this.claimData.patient_address,
+        patient_city: this.claimData.patient_city,
+        patient_state: this.claimData.patient_state,
+        patient_zip_code: this.claimData.patient_postal_code,
+        patient_phone: this.claimData.patient_phone,
+        // insured_address: this.claimData.provider_address,
+        // insured_city: this.claimData.provider_city,
+        // insured_state: this.claimData.provider_state,
+        // insured_zip_code: this.claimData.provider_postal_code,
+        // insured_phone: this.claimData.provider_phone,
+        // other_insured_name_policy_group: this.claimData.group,
+        // insurance_plan_name: this.claimData.plan_name,
+        insured_police_group_feca: this.claimData.group,
+        insured_date_birth: this.claimData.patient_birthDate,
+        insured_gender: this.claimData.patient_gender,
+        insured_insurance_plan_name: this.claimData.plan_name,
+        billing_provider_phone: this.claimData.provider_phone,
+        billing_provider_npi: this.claimData.provider_npi,
+        billing_provider_address: this.claimData.provider_address,
+
         federal_tax_id: this.claimData.provider_federal_tax_id,
       });
 
       (this.rowsControls.controls as UntypedFormGroup[]).forEach((rowGroup) => {
-        rowGroup.patchValue({ rendering_id: this.claimData.provider_npi });
+        rowGroup.patchValue({ rendering_provider_id: this.claimData.provider_npi });
       });
     }
   }
@@ -262,7 +264,7 @@ export class ClaimEntryComponent {
       diagnosis_pointer: ['', Validators.required],
       charges: [null, Validators.required],
       units: [null, Validators.required],
-      rendering_id: [this.claimData?.provider_npi ?? null, Validators.required],
+      rendering_provider_id: [this.claimData?.provider_npi ?? null, Validators.required],
     });
   }
 
@@ -275,7 +277,7 @@ export class ClaimEntryComponent {
   }
 
   searchProcedures(search: string, row: any) {
-    if (search.length < 4) return;
+    if (search.length < 3) return;
     this.searchCptSubject.next({ search: search, row: row });
   }
 
@@ -351,7 +353,7 @@ export class ClaimEntryComponent {
       diagnosis_pointer: [rowValue.diagnosis_pointer, Validators.required],
       charges: [rowValue.charges, Validators.required],
       units: [rowValue.units, Validators.required],
-      rendering_id: [rowValue.rendering_id, Validators.required]
+      rendering_provider_id: [rowValue.rendering_provider_id, Validators.required]
     });
 
     this.rowsControls.push(newRow);
@@ -373,67 +375,16 @@ export class ClaimEntryComponent {
       diagnosisArray.push(new FormControl(null));
     }
   }
-  
+
   removeDiagnosis(index: number): void {
     const diagnosisArray = this.form.get('diagnosis') as UntypedFormArray;
     if (index > 0) {
       diagnosisArray.removeAt(index);
     }
   }
-  
-
-
-  // getOrdinalSuffix(index: number): string {
-  //   const suffixes = ['th', 'st', 'nd', 'rd'];
-  //   return (
-  //     index +
-  //     (suffixes[((index % 100) - 20) % 10] || suffixes[index % 100] || 'th')
-  //   );
-  // }
-
-
-
 
   calculateTotalCharges(): void {
-    // this.totalCharges = this.rows.reduce((sum, row) => sum + +(row.charges ?? 0), 0);
-    // this.calculateBalance();
+
   }
 
-
-
-  // removeDiagnosis(index: number): void {
-  //   if (this.selectedDiagnosis.length > 2) {
-  //     this.selectedDiagnosis.splice(index, 1);
-  //   }
-  // }
-
-  // onLocationChange(): void {
-  //   if (this.selectedLocation) {
-  //     this.rows.forEach((row) => {
-  //       row.place_of_service = this.selectedLocation;
-  //     });
-  //   }
-  // }
-
-  // updateCurrentTime() {
-  //   const now = new Date();
-  //   this.currentTime = now.toLocaleString('en-US', { hour12: true });
-  // }
-
-  // updateFieldValue(index: number, value: any): void {
-  //   clearTimeout(this.updateTimeout);
-
-  //   this.accountFields[index].value = value;
-
-  //   if (
-  //     this.accountFields[index].id === 'charge' ||
-  //     this.accountFields[index].id === 'paid'
-  //   ) {
-  //     this.calculateBalance();
-  //   }
-
-  //   this.updateTimeout = setTimeout(() => {
-  //     this.accountFields = [...this.accountFields];
-  //   }, 200);
-  // }
 }

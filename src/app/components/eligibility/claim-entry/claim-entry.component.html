@@ -6,7 +6,7 @@
           <nz-form-label 
             [nzSpan]="8" 
             nzFor="insurance_type">
-            Insurance Type
+            1. Insurance Type
           </nz-form-label>
 
           <nz-form-control [nzSpan]="16">
@@ -48,10 +48,11 @@
           <nz-form-label 
             [nzSpan]="8" 
             nzFor="insured_id">
-            Insured ID Number
+            1a. Insured ID Number
           </nz-form-label>
 
-          <nz-form-control [nzSpan]="16">
+          <nz-form-control 
+            [nzSpan]="16">
             <input 
               nz-input
               id="insured_id"
@@ -71,7 +72,7 @@
           <nz-form-label 
             [nzSpan]="8" 
             nzFor="patient_name">
-            Patient's Name
+            2. Patient's Name
           </nz-form-label>
 
           <nz-form-control 
@@ -91,7 +92,7 @@
           <nz-form-label 
             [nzSpan]="8" 
             nzFor="patient_birth_date">
-            Patient's Birth Date
+            3. Patient's Birth Date
           </nz-form-label>
 
           <nz-form-control 
@@ -105,30 +106,23 @@
           </nz-form-control>
         </nz-form-item>
       </nz-col>
-    
+
       <nz-col [nzSpan]="6">
         <nz-form-item>
           <nz-form-label 
             [nzSpan]="8" 
-            nzFor="gender">
-            Gender
+            nzFor="patient_gender">
+            3. Patient's Gender
           </nz-form-label>
 
-          <nz-form-control [nzSpan]="16">
-            <nz-select 
-              style="width: 100%;" 
-              nzShowSearch 
-              nzAllowClear 
-              id="gender"
-              nzPlaceHolder="Select Gender"
-              formControlName="gender">
-              <nz-option 
-                nzLabel="F" [nzValue]="1">
-              </nz-option>
-              <nz-option 
-                nzLabel="M" [nzValue]="2">
-              </nz-option>
-            </nz-select>
+          <nz-form-control 
+            [nzSpan]="16">
+            <input 
+              nz-input
+              id="patient_gender"
+              formControlName="patient_gender"
+              readonly
+            />
           </nz-form-control>
         </nz-form-item>
       </nz-col>
@@ -138,7 +132,7 @@
           <nz-form-label 
             [nzSpan]="8" 
             nzFor="insured_name">
-            Insured's Name
+            4. Insured's Name
           </nz-form-label>
 
           <nz-form-control 
@@ -157,32 +151,116 @@
     <nz-divider nzType="horizontal"></nz-divider>
 
     <nz-row [nzGutter]="16">
-      <nz-col [nzSpan]="8">
+      <nz-col [nzSpan]="6">
         <nz-form-item>
           <nz-form-label 
-            [nzSpan]="8" 
+            [nzSpan]="8"
             nzFor="patient_address">
-            Patient's Address
+            5. Patient's Address
           </nz-form-label>
 
-          <nz-form-control 
+          <nz-form-control
             [nzSpan]="16">
             <input 
-              nz-input
-              id="patient_address"
-              formControlName="patient_address"
-              readonly
+              nz-input 
+              id="patient_address" 
+              formControlName="patient_address" 
+              readonly 
             />
           </nz-form-control>
         </nz-form-item>
       </nz-col>
     
-      <nz-col [nzSpan]="8">
+      <nz-col [nzSpan]="5">
+        <nz-form-item>
+          <nz-form-label
+            [nzSpan]="8"
+            nzFor="patient_city">
+            5. Patient's City
+          </nz-form-label>
+
+          <nz-form-control
+            [nzSpan]="16">
+            <input 
+              nz-input 
+              id="patient_city" 
+              formControlName="patient_city" 
+              readonly 
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+    
+      <nz-col [nzSpan]="4">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8"
+            nzFor="patient_state">
+            5. Patient's State
+          </nz-form-label>
+          
+          <nz-form-control
+            [nzSpan]="16">
+            <input 
+              nz-input 
+              id="patient_state" 
+              formControlName="patient_state" 
+              readonly 
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+    
+      <nz-col [nzSpan]="5">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8"
+            nzFor="patient_zip_code">
+            5. Patient's Zip Code
+          </nz-form-label>
+
+          <nz-form-control
+            [nzSpan]="16">
+            <input 
+              nz-input 
+              id="patient_zip_code" 
+              formControlName="patient_zip_code" 
+              readonly 
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+
+      <nz-col [nzSpan]="4">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8"
+            nzFor="patient_phone">
+            5. Patient's Phone
+          </nz-form-label>
+
+          <nz-form-control
+            [nzSpan]="16">
+            <input 
+              nz-input 
+              id="patient_phone" 
+              formControlName="patient_phone" 
+              readonly 
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+    </nz-row>
+    
+    <nz-divider nzType="horizontal"></nz-divider>
+
+    <nz-row [nzGutter]="16">
+      <nz-col [nzSpan]="12">
         <nz-form-item>
           <nz-form-label 
             [nzSpan]="8" 
             nzFor="relationship">
-            Patient's Relationship To Insured
+            6. Patient's Relationship To Insured
           </nz-form-label>
 
           <nz-form-control 
@@ -210,13 +288,33 @@
           </nz-form-control>
         </nz-form-item>
       </nz-col>
+
+      <nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="insured_police_group_feca">
+            11. Insured's Police Group Or Feca
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSpan]="16">
+            <input 
+              nz-input
+              id="insured_police_group_feca"
+              formControlName="insured_police_group_feca"
+              readonly
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
     
-      <nz-col [nzSpan]="8">
+      <!-- <nz-col [nzSpan]="6">
         <nz-form-item>
           <nz-form-label 
             [nzSpan]="8" 
             nzFor="insured_address">
-            Insured's Address
+            7. Insured's Address
           </nz-form-label>
 
           <nz-form-control 
@@ -229,249 +327,160 @@
             />
           </nz-form-control>
         </nz-form-item>
-      </nz-col>
+      </nz-col> -->
+
+      <!-- <nz-col [nzSpan]="5">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="insured_city">
+            7. Insured's City
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSpan]="16">
+            <input 
+              nz-input 
+              id="insured_city" 
+              formControlName="insured_city" 
+              readonly 
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col> -->
+    
+      <!-- <nz-col [nzSpan]="5">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="insured_state">
+            7. Insured's State
+          </nz-form-label>
+
+          <nz-form-control [nzSpan]="16">
+            <input 
+              nz-input 
+              id="insured_state" 
+              formControlName="insured_state" 
+              readonly 
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col> -->
     </nz-row>
     
-    <nz-divider nzType="horizontal"></nz-divider>
-
-    <nz-row [nzGutter]="16">
-      <nz-col [nzSpan]="6">
-        <nz-form-item>
-          <nz-form-label 
-            [nzSpan]="8" 
-            nzFor="patient_city">
-            Patient's City
-          </nz-form-label>
-
-          <nz-form-control 
-            [nzSpan]="16">
-            <input 
-              nz-input
-              id="patient_city"
-              formControlName="patient_city"
-              readonly
-            />
-          </nz-form-control>
-        </nz-form-item>
-      </nz-col>
+    <!-- <nz-divider nzType="horizontal"></nz-divider> -->
     
-      <nz-col [nzSpan]="6">
+    <!-- <nz-row [nzGutter]="16"> -->
+      <!-- <nz-col [nzSpan]="8">
         <nz-form-item>
           <nz-form-label 
             [nzSpan]="8" 
-            nzFor="patient_state">
-            Patient's State
+            nzFor="insured_zip_code">
+            7. Insured's Zip Code
           </nz-form-label>
 
           <nz-form-control 
             [nzSpan]="16">
             <input 
               nz-input
-              id="patient_state"
-              formControlName="patient_state"
+              id="insured_zip_code"
+              formControlName="insured_zip_code"
               readonly
             />
           </nz-form-control>
         </nz-form-item>
-      </nz-col>
-        
-      <nz-col [nzSpan]="6">
+      </nz-col> -->
+
+      <!-- <nz-col [nzSpan]="8">
         <nz-form-item>
           <nz-form-label 
             [nzSpan]="8" 
-            nzFor="provider_city">
-            Provider's City
+            nzFor="insured_phone">
+            7. Insured's Phone
           </nz-form-label>
 
           <nz-form-control 
             [nzSpan]="16">
             <input 
               nz-input
-              id="provider_city"
-              formControlName="provider_city"
+              id="insured_phone"
+              formControlName="insured_phone"
               readonly
             />
           </nz-form-control>
         </nz-form-item>
-      </nz-col>
-    
-      <nz-col [nzSpan]="6">
+      </nz-col> -->
+
+      <!-- <nz-col [nzSpan]="8">
         <nz-form-item>
           <nz-form-label 
             [nzSpan]="8" 
-            nzFor="provider_state">
-            Provider's State
+            nzFor="other_insured_name">
+            9. Other Insured's Name
           </nz-form-label>
 
           <nz-form-control 
             [nzSpan]="16">
             <input 
               nz-input
-              id="provider_state"
-              formControlName="provider_state"
+              id="other_insured_name"
+              formControlName="other_insured_name"
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col> -->
+    <!-- </nz-row>     -->
+
+    <!-- <nz-divider nzType="horizontal"></nz-divider> -->
+
+    <!-- <nz-row [nzGutter]="16"> -->
+      <!-- <nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="other_insured_name_policy_group">
+            9a. Other Insured's or Group Number
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSpan]="16">
+            <input 
+              nz-input
+              id="other_insured_name_policy_group"
+              formControlName="other_insured_name_policy_group"
               readonly
             />
           </nz-form-control>
         </nz-form-item>
-      </nz-col>
-    </nz-row>
-    
-    <nz-divider nzType="horizontal"></nz-divider>
+      </nz-col> -->
 
-    <nz-row [nzGutter]="16">
-      <nz-col [nzSpan]="6">
+      <!-- <nz-col [nzSpan]="8">
         <nz-form-item>
           <nz-form-label 
             [nzSpan]="8" 
-            nzFor="patient_zip_code">
-            Patient's Zip Code
+            nzFor="insurance_plan_name">
+            9d. Insurance Plan Name
           </nz-form-label>
 
           <nz-form-control 
             [nzSpan]="16">
             <input 
               nz-input
-              id="patient_zip_code"
-              formControlName="patient_zip_code"
+              id="insurance_plan_name"
+              formControlName="insurance_plan_name"
               readonly
             />
           </nz-form-control>
         </nz-form-item>
-      </nz-col>
-    
-      <nz-col [nzSpan]="6">
-        <nz-form-item>
-          <nz-form-label 
-            [nzSpan]="8" 
-            nzFor="patient_phone">
-            Patient's Phone
-          </nz-form-label>
+      </nz-col> -->
 
-          <nz-form-control 
-            [nzSpan]="16">
-            <input 
-              nz-input
-              id="patient_phone"
-              formControlName="patient_phone"
-              readonly
-            />
-          </nz-form-control>
-        </nz-form-item>
-      </nz-col>
-    
-      <nz-col [nzSpan]="6">
-        <nz-form-item>
-          <nz-form-label 
-            [nzSpan]="8" 
-            nzFor="provider_zip_code">
-            Provider's Zip Code
-          </nz-form-label>
-
-          <nz-form-control 
-            [nzSpan]="16">
-            <input 
-              nz-input
-              id="provider_zip_code"
-              formControlName="provider_zip_code"
-              readonly
-            />
-          </nz-form-control>
-        </nz-form-item>
-      </nz-col>
-    
-      <nz-col [nzSpan]="6">
-        <nz-form-item>
-          <nz-form-label 
-            [nzSpan]="8" 
-            nzFor="provider_phone">
-            Provider's Phone
-          </nz-form-label>
-
-          <nz-form-control 
-            [nzSpan]="16">
-            <input 
-              nz-input
-              id="provider_phone"
-              formControlName="provider_phone"
-              readonly
-            />
-          </nz-form-control>
-        </nz-form-item>
-      </nz-col>
-    </nz-row>
-
-    <nz-divider nzType="horizontal"></nz-divider>
-
-    <nz-row [nzGutter]="16">
-      <nz-col [nzSpan]="8">
-        <nz-form-item>
-          <nz-form-label 
-            [nzSpan]="8" 
-            nzFor="other_insured">
-            Other Insured's Name
-          </nz-form-label>
-
-          <nz-form-control 
-            [nzSpan]="16">
-            <input 
-              nz-input
-              id="other_insured"
-              formControlName="other_insured"
-            />
-          </nz-form-control>
-        </nz-form-item>
-      </nz-col>
-    
-      <nz-col [nzSpan]="8">
-        <nz-form-item>
-          <nz-form-label 
-            [nzSpan]="8" 
-            nzFor="policy_group">
-            Insured's Policy Group Or Feca
-          </nz-form-label>
-
-          <nz-form-control 
-            [nzSpan]="16">
-            <input 
-              nz-input
-              id="policy_group"
-              formControlName="policy_group"
-              readonly
-            />
-          </nz-form-control>
-        </nz-form-item>
-      </nz-col>
-
-      <nz-col [nzSpan]="8">
-        <nz-form-item>
-          <nz-form-label 
-            [nzSpan]="8" 
-            nzFor="plan_name">
-            Insurance Plan Name
-          </nz-form-label>
-
-          <nz-form-control 
-            [nzSpan]="16">
-            <input 
-              nz-input
-              id="plan_name"
-              formControlName="plan_name"
-              readonly
-            />
-          </nz-form-control>
-        </nz-form-item>
-      </nz-col>
-    </nz-row>    
-
-    <nz-divider nzType="horizontal"></nz-divider>
-
-    <nz-row [nzGutter]="16">
-      <nz-col [nzSpan]="8">
+      <!-- <nz-col [nzSpan]="8">
         <nz-form-item>
           <nz-form-label 
             [nzSpan]="8" 
             nzFor="employment">
-            Employment
+            10a. Employment
           </nz-form-label>
 
           <nz-form-control [nzSpan]="16">
@@ -491,17 +500,22 @@
             </nz-select>
           </nz-form-control>
         </nz-form-item>
-      </nz-col>
-    
-      <nz-col [nzSpan]="8">
+      </nz-col> -->
+    <!-- </nz-row>     -->
+
+    <!-- <nz-divider nzType="horizontal"></nz-divider> -->
+
+    <!-- <nz-row [nzGutter]="16"> -->
+      <!-- <nz-col [nzSpan]="8">
         <nz-form-item>
           <nz-form-label 
             [nzSpan]="8" 
             nzFor="auto_accident">
-            Auto Accident
+            10b. Auto Accident
           </nz-form-label>
 
-          <nz-form-control [nzSpan]="16">
+          <nz-form-control 
+            [nzSpan]="16">
             <nz-select 
               style="width: 100%;" 
               nzShowSearch 
@@ -518,14 +532,14 @@
             </nz-select>
           </nz-form-control>
         </nz-form-item>
-      </nz-col>
+      </nz-col> -->
 
-      <nz-col [nzSpan]="8">
+      <!-- <nz-col [nzSpan]="8">
         <nz-form-item>
           <nz-form-label 
             [nzSpan]="8" 
             nzFor="other_accident">
-            Other Accident
+            10c. Other Accident
           </nz-form-label>
 
           <nz-form-control [nzSpan]="16">
@@ -545,70 +559,85 @@
             </nz-select>
           </nz-form-control>
         </nz-form-item>
-      </nz-col>
-    </nz-row>    
+      </nz-col> -->
+    <!-- </nz-row> -->
 
     <nz-divider nzType="horizontal"></nz-divider>
 
     <nz-row [nzGutter]="16">
-      <nz-col [nzSpan]="8">
+      <nz-col [nzSpan]="6">
         <nz-form-item>
           <nz-form-label 
             [nzSpan]="8" 
-            nzFor="patient_signature">
-            Patient's Signature
-          </nz-form-label>
-
-          <nz-form-control [nzSpan]="16">
-            <nz-select 
-              style="width: 100%;" 
-              nzShowSearch 
-              nzAllowClear 
-              id="patient_signature"
-              nzPlaceHolder="Select Patient's Signature"
-              formControlName="patient_signature">
-              <nz-option 
-                nzLabel="SOF (Signature On File)" [nzValue]="1">
-              </nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </nz-col>
-    
-      <nz-col [nzSpan]="8">
-        <nz-form-item>
-          <nz-form-label 
-            [nzSpan]="8" 
-            nzFor="date">
-            Date
+            nzFor="insured_date_birth">
+            11a. Insured's Date of Birth
           </nz-form-label>
 
           <nz-form-control 
             [nzSpan]="16">
             <nz-date-picker 
               nzFormat="MM-dd-YYYY" 
-              formControlName="date">
+              formControlName="insured_date_birth">
             </nz-date-picker>
           </nz-form-control>
         </nz-form-item>
-      </nz-col>      
+      </nz-col> 
+
+      <nz-col [nzSpan]="4">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="insured_gender">
+            11b. Insured's Gender
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSpan]="16">
+            <input 
+              nz-input
+              id="insured_gender"
+              formControlName="insured_gender"
+              readonly
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
 
       <nz-col [nzSpan]="8">
         <nz-form-item>
           <nz-form-label 
             [nzSpan]="8" 
-            nzFor="insured_signature">
-            Insured's Signature
+            nzFor="insured_insurance_plan_name">
+            11c. Insured's Insurance Plan Name
           </nz-form-label>
 
-          <nz-form-control [nzSpan]="16">
+          <nz-form-control 
+            [nzSpan]="16">
+            <input 
+              nz-input
+              id="insured_insurance_plan_name"
+              formControlName="insured_insurance_plan_name"
+              readonly
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+    
+      <nz-col [nzSpan]="6">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="patient_signature">
+            12. Patient's Signature
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSpan]="16">
             <nz-select 
               style="width: 100%;" 
-              nzShowSearch 
-              nzAllowClear 
-              id="insured_signature"
-              nzPlaceHolder="Insured's Signature"
-              formControlName="insured_signature">
+              id="patient_signature"
+              nzPlaceHolder="Select Patient's Signature"
+              formControlName="patient_signature">
               <nz-option 
                 nzLabel="SOF (Signature On File)" [nzValue]="1">
               </nz-option>
@@ -621,39 +650,79 @@
     <nz-divider nzType="horizontal"></nz-divider>
 
     <nz-row [nzGutter]="16">
-      <nz-col [nzSpan]="12">
+      <nz-col [nzSpan]="6">
         <nz-form-item>
           <nz-form-label 
             [nzSpan]="8" 
-            nzFor="refering_provider">
-            Name or Referring Provider
+            nzFor="date_service">
+            12. Date
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSpan]="16">
+            <nz-date-picker 
+              nzFormat="MM-dd-YYYY" 
+              formControlName="date_service">
+            </nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>      
+
+      <nz-col [nzSpan]="6">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="insured_signature">
+            13. Insured's Signature
+          </nz-form-label>
+
+          <nz-form-control [nzSpan]="16">
+            <nz-select 
+              style="width: 100%;" 
+              id="insured_signature"
+              nzPlaceHolder="Insured's Signature"
+              formControlName="insured_signature">
+              <nz-option 
+                nzLabel="SOF (Signature On File)" [nzValue]="1">
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+
+      <nz-col [nzSpan]="6">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="name_referring_provider">
+            17. Name or Referring Provider
           </nz-form-label>
 
           <nz-form-control 
             [nzSpan]="16">
             <input 
               nz-input 
-              id="refering_provider" 
-              formControlName="refering_provider" 
+              id="name_referring_provider" 
+              formControlName="name_referring_provider" 
             />
           </nz-form-control>
         </nz-form-item>
       </nz-col>
     
-      <nz-col [nzSpan]="12">
+      <nz-col [nzSpan]="6">
         <nz-form-item>
           <nz-form-label 
             [nzSpan]="8" 
-            nzFor="refering_provider_npi">
-            Name or Referring Provider NPI
+            nzFor="name_referring_provider_npi">
+            17b. Name or Referring Provider NPI
           </nz-form-label>
 
           <nz-form-control 
             [nzSpan]="16">
             <input 
               nz-input 
-              id="refering_provider_npi" 
-              formControlName="refering_provider_npi" 
+              id="name_referring_provider_npi" 
+              formControlName="name_referring_provider_npi" 
             />
           </nz-form-control>
         </nz-form-item>
@@ -828,7 +897,7 @@
               <input 
                 nz-input 
                 type="number" 
-                formControlName="rendering_id" 
+                formControlName="rendering_provider_id" 
                 readonly 
               />
             </td>
@@ -882,7 +951,7 @@
     <nz-divider nzType="horizontal"></nz-divider>
 
     <nz-row [nzGutter]="16">
-      <nz-col [nzSpan]="12">
+      <nz-col [nzSpan]="6">
         <nz-form-item>
           <nz-form-label 
             [nzSpan]="8" 
@@ -902,7 +971,7 @@
         </nz-form-item>
       </nz-col>
   
-      <nz-col [nzSpan]="12">
+      <nz-col [nzSpan]="6">
         <nz-form-item>
           <nz-form-label 
             [nzSpan]="8" 
@@ -931,358 +1000,233 @@
           </nz-form-control>
         </nz-form-item>
       </nz-col>
-    </nz-row>
-  </form>
 
-
-<!-- 
-  <div class="section">
-    <button nz-button nzType="primary" nzIcon="plus" (click)="addDiagnosis()">
-      Add diagnosis
-    </button>
-
-    <br /><br />
-
-    <form nz-form>
-      <nz-row [nzGutter]="16">
-        <nz-col
-          [nzSpan]="24"
-          [nzSm]="12"
-          [nzMd]="8"
-          [nzLg]="6"
-          *ngFor="let item of selectedDiagnosis; let i = index"
-        >
-          <nz-form-item>
-            <nz-form-label [nzSpan]="6" [nzSm]="8" [nzMd]="6">
-              {{ getOrdinalSuffix(i + 1) }}
-            </nz-form-label>
-
-            <nz-form-control [nzSpan]="18" [nzSm]="16" [nzMd]="18">
-              <nz-select
-                nzShowSearch
-                [(ngModel)]="item.description"
-                [nzOptions]="diagnosisOptions"
-                style="width: 100%"
-                placeholder="Select a diagnosis"
-                name="diagnosis{{ i }}"
-                [nzSuffixIcon]="deleteIcon"
-              >
-              </nz-select>
-
-              <ng-template #deleteIcon>
-                <i
-                  *ngIf="selectedDiagnosis.length > 2 && i >= 2"
-                  nz-icon
-                  nzType="delete"
-                  nzTheme="twotone"
-                  nzTooltipTitle="Delete diagnosis"
-                  (click)="removeDiagnosis(i)"
-                  class="delete-icon"
-                  style="cursor: pointer"
-                >
-                </i>
-              </ng-template>
-            </nz-form-control>
-          </nz-form-item>
-          <br />
-        </nz-col>
-      </nz-row>
-    </form>
-  </div>
-
-  <div class="section">
-    <nz-row [nzGutter]="16">
-      <nz-col [nzSpan]="8">
+      <nz-col [nzSpan]="6">
         <nz-form-item>
-          <nz-form-label [nzSpan]="4" nzFor="facility">
-            Facility:
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="patient_account">
+            Patient's Account Number
           </nz-form-label>
 
-          <nz-form-control [nzSpan]="20">
-            <nz-select
-              name="facility"
-              id="facility"
-              style="width: 100%"
-              nzShowSearch
-              [(ngModel)]="selectedLocality"
-            >
-              <nz-option
-                *ngFor="let locality of localities"
-                [nzValue]="locality.id"
-                [nzLabel]="locality.name"
-              >
-              </nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </nz-col>
-
-      <nz-col [nzSpan]="8">
-        <nz-form-item>
-          <nz-form-label [nzSpan]="4" nzFor="location">
-            Location:
-          </nz-form-label>
-
-          <nz-form-control [nzSpan]="20">
-            <nz-select
-              name="location"
-              id="location"
-              style="width: 100%"
-              nzShowSearch
-              [(ngModel)]="selectedLocation"
-              [nzPlaceHolder]="'Select a location'"
-              (ngModelChange)="onLocationChange()"
-            >
-              <nz-option
-                *ngFor="let location of locations"
-                [nzValue]="location.code"
-                [nzLabel]="location.code + ' - ' + location.description"
-              >
-              </nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </nz-col>
-
-      <nz-col [nzSpan]="8">
-        <nz-form-item>
-          <nz-form-label [nzSpan]="8" nzFor="information">
-            Member have C.O.B
-          </nz-form-label>
-
-          <nz-form-control [nzSpan]="16">
-            <nz-select
-              name="information"
-              id="information"
-              style="width: 100%"
-              [(ngModel)]="selectedMemberHave"
-            >
-              <nz-option
-                *ngFor="let member of memberHave"
-                [nzValue]="member.id"
-                [nzLabel]="member.name"
-              >
-              </nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </nz-col>
-    </nz-row>
-  </div>
-
-  <br /><br />
-
-  <div class="table-container">
-    <b>
-      Service(s): {{ claimData.patientName | uppercase }} {{ currentTime }}
-    </b>
-
-    <br /><br />
-
-    <nz-table
-      #basicTable
-      [nzData]="rows"
-      [nzSize]="'small'"
-      [nzFrontPagination]="false"
-    >
-      <thead>
-        <tr>
-          <th nzWidth="12.09%">From</th>
-          <th nzWidth="12.09%">To</th>
-          <th nzWidth="7.09%">place_of_service</th>
-          <th nzWidth="9.09%">Cpt</th>
-          <th *ngIf="claimData.modifiers == '1'" nzWidth="9.09%">Modifiers</th>
-          <th nzWidth="7.09%">Diagnosis pointer</th>
-          <th nzWidth="9.09%">Charges</th>
-          <th nzWidth="7.09%">Units</th>
-          <th *ngIf="claimData.orderringNpi == '1'" nzWidth="9.09%">
-            Ordering NPI
-          </th>
-          <th *ngIf="claimData.referingNpi == '1'" nzWidth="9.09%">
-            Refering NPI
-          </th>
-          <th nzWidth="9.09%">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let row of rows; index as i">
-          <td>
-            <nz-date-picker
-              nzFormat="MM/dd/yyyy"
-              [(ngModel)]="row.date_initial"
-              (ngModelChange)="formatDate(row, 'date_initial')"
-            >
-            </nz-date-picker>
-          </td>
-          <td>
-            <nz-date-picker
-              nzFormat="MM/dd/yyyy"
-              [(ngModel)]="row.date_final"
-              (ngModelChange)="formatDate(row, 'date_final')"
-            >
-            </nz-date-picker>
-          </td>
-          <td>
-            <input nz-input type="text" [(ngModel)]="row.place_of_service" />
-          </td>
-          <td>
-            <nz-spin [nzSpinning]="cptLoading">
-              <input
-                nz-input
-                type="text"
-                [(ngModel)]="row.cpt"
-                (ngModelChange)="searchCpt(row.cpt, row)"
-              />
-            </nz-spin>
-          </td>
-          <td *ngIf="claimData.modifiers == '1'">
-            <ng-container
-              *ngFor="let modifier of row.modifiers; index as modIndex"
-            >
-              <nz-select
-                [(ngModel)]="modifier.value"
-                [id]="modifier.id"
-                style="width: 100px; margin-right: 8px"
-                nzShowSearch
-                nzAllowClear
-              >
-                <nz-option
-                  *ngFor="let option of modifiersOptions"
-                  [nzValue]="option.value"
-                  [nzLabel]="option.label"
-                >
-                </nz-option>
-              </nz-select>
-            </ng-container>
-          </td>
-          <td>
-            <input nz-input type="text" [(ngModel)]="row.diagnosisPointer" />
-          </td>
-          <td>
-            <input
+          <nz-form-control 
+            [nzSpan]="16">
+            <input 
               nz-input
-              type="number"
-              name="charge{{ i }}"
-              [(ngModel)]="row.charges"
-              (ngModelChange)="calculateTotalCharges()"
+              id="patient_account"
+              formControlName="patient_account"
             />
-          </td>
-          <td>
-            <input nz-input type="number" [(ngModel)]="row.units" />
-          </td>
-          <td *ngIf="claimData.orderringNpi == '1'">
-            <input nz-input type="number" [(ngModel)]="row.ordering_npi" />
-          </td>
-          <td *ngIf="claimData.referingNpi == '1'">
-            <input nz-input type="number" [(ngModel)]="row.refering_npi" />
-          </td>
-          <td>
-            <a>
-              <span
-                nz-icon
-                title="Add row"
-                nzType="plus"
-                nzTheme="outline"
-                (click)="addRow()"
-              >
-              </span>
-            </a>
-            <nz-divider nzType="vertical"></nz-divider>
-            <a>
-              <span
-                nz-icon
-                title="Copy row"
-                nzType="copy"
-                nzTheme="outline"
-                (click)="copyRow(i)"
-              >
-              </span>
-            </a>
-            <nz-divider nzType="vertical"></nz-divider>
-            <a>
-              <span
-                nz-icon
-                title="Delete row"
-                nzType="delete"
-                nzTheme="outline"
-                (click)="deleteRow(i)"
-              >
-              </span>
-            </a>
-            <nz-divider nzType="vertical"></nz-divider>
-            <a>
-              <span
-                nz-icon
-                title="Reset row"
-                nzType="reload"
-                nzTheme="outline"
-                (click)="resetRow(i)"
-              >
-              </span>
-            </a>
-          </td>
-        </tr>
-      </tbody>
-    </nz-table>
-  </div>
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
 
-  <div class="section">
-    <nz-divider nzText="Account information"></nz-divider>
+      <nz-col [nzSpan]="6">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="accept_assignment">
+            Accept Assignment
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSpan]="16">
+            <nz-select 
+              style="width: 100%;" 
+              id="accept_assignment"
+              nzPlaceHolder="Select Accept Assignment"
+              formControlName="accept_assignment">
+              <nz-option 
+                nzLabel="YES" 
+                [nzValue]="1">
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+    </nz-row>
+
+    <nz-divider nzType="horizontal"></nz-divider>
 
     <nz-row [nzGutter]="16">
-      <ng-container *ngFor="let field of accountFields; let i = index">
-        <nz-col
-          [nzSpan]="8"
-          *ngIf="
-            field.id != 'auth' || (field.id == 'auth' && claimData.auth == '1')
-          "
-        >
-          <nz-form-item>
-            <nz-form-label [nzSm]="8" [nzXs]="16">
-              {{ field.label }}
-            </nz-form-label>
+      <nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="total_charge">
+            Total Charge
+          </nz-form-label>
 
-            <nz-form-control [nzSm]="16" [nzXs]="24">
-              <input
-                nz-input
-                [id]="field.id"
-                [(ngModel)]="field.value"
-                [readonly]="field.id === 'charge' || field.id === 'balance'"
-                [type]="
-                  ['charge', 'paid', 'balance'].includes(field.id)
-                    ? 'number'
-                    : 'text'
-                "
-                (ngModelChange)="updateFieldValue(i, $event)"
-              />
-            </nz-form-control>
-          </nz-form-item>
-          <br />
-        </nz-col>
-      </ng-container>
+          <nz-form-control 
+            [nzSpan]="16">
+            <input 
+              nz-input 
+              id="total_charge" 
+              formControlName="total_charge" 
+              readonly 
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+    
+      <nz-col [nzSpan]="12">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="amount_paid">
+            Amount Paid
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSpan]="16">
+            <input 
+              nz-input 
+              id="amount_paid" 
+              formControlName="amount_paid" 
+              readonly 
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
     </nz-row>
-  </div>
+    
+    <nz-divider nzType="horizontal"></nz-divider>
 
-  <nz-divider [nzText]="dividerTemplate"></nz-divider>
+    <nz-row [nzGutter]="16">
+      <nz-col [nzSpan]="6">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="signature_doctor">
+            Signature Doctor
+          </nz-form-label>
 
-  <ng-template #dividerTemplate>
-    <button
-      nz-button
-      nzType="primary"
-      [ngStyle]="{ 'background-color': '#FF5733', 'border-color': '#FF5733' }"
-      (click)="previewClaim()"
-    >
-      Preview claim
-    </button>
+          <nz-form-control 
+            [nzSpan]="16">
+            <input 
+              nz-input 
+              id="signature_doctor" 
+              formControlName="signature_doctor" 
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+    
+      <nz-col [nzSpan]="6">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="date_signature_doctor">
+            Date Signature Doctor
+          </nz-form-label>
 
-    <app-claim-preview
-      [isPreviewVisible]="isPreviewVisible"
-      [claimData]="claimData"
-      [selectedDiagnosis]="selectedDiagnosis"
-      [accountFields]="accountFields"
-      [rows]="rows"
-      (closePreviewEvent)="isPreviewVisible = false"
-    >
-    </app-claim-preview>
-  </ng-template>
-</nz-card> -->
+          <nz-form-control 
+            [nzSpan]="16">
+            <nz-date-picker 
+              nzFormat="MM-dd-YYYY" 
+              formControlName="date_signature_doctor">
+            </nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col> 
+
+      <nz-col [nzSpan]="6">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="service_facility_location">
+            Service Facility Location
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSpan]="16">
+            <input 
+              nz-input 
+              id="service_facility_location" 
+              formControlName="service_facility_location" 
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col> 
+
+      <nz-col [nzSpan]="6">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="service_facility_npi">
+            Service Facility NPI
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSpan]="16">
+            <input 
+              nz-input 
+              id="service_facility_npi" 
+              formControlName="service_facility_npi" 
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col> 
+    </nz-row> 
+
+    <nz-divider nzType="horizontal"></nz-divider>
+
+    <nz-row [nzGutter]="16">
+      <nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="billing_provider_phone">
+            Billing Provider Phone
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSpan]="16">
+            <input 
+              nz-input 
+              id="billing_provider_phone" 
+              formControlName="billing_provider_phone" 
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+    
+      <nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="billing_provider_npi">
+            Billing Provider NPI
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSpan]="16">
+            <input 
+              nz-input 
+              id="billing_provider_npi" 
+              formControlName="billing_provider_npi" 
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col> 
+
+      <nz-col [nzSpan]="8">
+        <nz-form-item>
+          <nz-form-label 
+            [nzSpan]="8" 
+            nzFor="billing_provider_address">
+            Billing Provider Address
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSpan]="16">
+            <input 
+              nz-input 
+              id="billing_provider_address" 
+              formControlName="billing_provider_address" 
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col> 
+    </nz-row> 
+  </form>
+</nz-card>

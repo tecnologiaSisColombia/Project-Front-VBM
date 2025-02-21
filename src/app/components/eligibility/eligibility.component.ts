@@ -276,6 +276,7 @@ export class EligibilityComponent {
       patient_city: rowData?.city ?? '',
       patient_state: rowData?.state ?? '',
       patient_phone: rowData?.primary_phone ?? '',
+      patient_gender: rowData?.gender ?? '',
       patient_postal_code: rowData?.postal_code ?? '',
       orderringNpi: rowData?.insurer_data?.orderring_npi ?? '',
       referingNpi: rowData?.insurer_data?.refering_npi ?? '',
