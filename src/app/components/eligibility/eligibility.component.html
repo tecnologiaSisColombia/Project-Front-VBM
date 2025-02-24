@@ -66,21 +66,20 @@
     <thead>
       <tr>
         <th>Insurer</th>
-        <th>Name</th>
-        <th>Suscriber Id</th>
+        <th>Name - ID</th>
         <th>DOB</th>
         <th>Effective</th>
         <th>Terminates</th>
         <th>Active Member</th>
         <th>Other Insurance</th>
-        <th>Action</th>
+        <th>Elegibility</th>
+        <th>Claims</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let data of basicTable.data">
         <td>{{data.insurer_data?.name}}</td>
-        <td>{{data.first_name + ' ' + data.last_name}}</td>
-        <td>{{data.primary_subscriber_id}}</td>
+        <td>{{data.first_name + ' ' + data.last_name + ' - ' + data.primary_subscriber_id}}</td>
         <td>{{data.birth_date}}</td>
         <td>{{data.effective}}</td>
         <td>{{data.terminates}}</td>
@@ -110,7 +109,8 @@
               title="Show Member">
             </span>
           </a>
-          <nz-divider nzType="vertical"></nz-divider>
+        </td>    
+        <td>
           <a>
             <span
               nz-icon
@@ -120,7 +120,17 @@
               title="Claim entry">
             </span>
           </a>
-        </td>        
+          <nz-divider nzType="vertical"></nz-divider>
+          <a>
+            <span
+              nz-icon
+              nzType="read"
+              nzTheme="outline"
+              (click)="openModalListClaims(data.id)"
+              title="View Claims">
+            </span>
+          </a>
+        </td>    
       </tr>
     </tbody>
   </nz-table>
@@ -216,6 +226,20 @@
     </app-claim-entry>
   </ng-container>
 </nz-modal>>
+
+<nz-modal
+  [(nzVisible)]="isVisibleModalListClaims"
+  nzWidth="80%"
+  (nzOnCancel)="CancelOkModalListClaims()"
+  (nzOnOk)="CancelOkModalListClaims()"
+  [nzClosable]="false"
+  nzMaskClosable="false">
+  <ng-container *nzModalContent>
+    <app-view-claims
+    [claimData]="selectedClaim">
+    </app-view-claims>
+  </ng-container>
+</nz-modal>
 
 <nz-modal
   [nzAutofocus]="null"

@@ -39,4 +39,31 @@ export class EligibilityService {
 
         return this.http.get(`${this.hostname}eligibility/patients/`, { params })
     }
+
+    createClaim(data: any) {
+        return this.http.post(`${this.hostname}eligibility/claim`, data)
+    }
+
+    getClaim(
+        { patient, id_claims }: any,
+        page: number | null = 1,
+        pageSize: number | null = 10,
+        init = false
+    ) {
+        let params = new HttpParams()
+            .set('page', (page ?? 1).toString())
+            .set('page_size', (pageSize ?? 10).toString())
+            .set('init', init)
+
+
+        if (patient != null) {
+            params = params.set('patient', patient)
+        }
+
+        if (id_claims != null) {
+            params = params.set('patient', id_claims)
+        }
+
+        return this.http.get(`${this.hostname}eligibility/claim`, { params })
+    }
 }

@@ -20,26 +20,10 @@
                 nzPlaceHolder="Select Insurance Type"
                 formControlName="insurance_type">
                 <nz-option 
-                  nzLabel="MEDICARE" [nzValue]="1">
-                </nz-option>
-                <nz-option 
-                  nzLabel="MEDICAID" [nzValue]="2">
-                </nz-option>
-                <nz-option 
-                  nzLabel="TRICARE" [nzValue]="3">
-                </nz-option>
-                <nz-option 
-                  nzLabel="CHAMPVA" [nzValue]="4">
-                </nz-option>
-                <nz-option 
-                  nzLabel="GROUP HEALTH PLAN" [nzValue]="5">
-                </nz-option>
-                <nz-option 
-                  nzLabel="FECA" [nzValue]="6">
-                </nz-option>
-                <nz-option 
-                  nzLabel="OTHER" [nzValue]="7">
-                </nz-option>
+                  *ngFor="let option of insuranceTypeOptions"
+                  [nzLabel]="option.label" 
+                  [nzValue]="option.value">
+                </nz-option>  
               </nz-select>
             </nz-form-control>
           </nz-form-item>
@@ -259,7 +243,7 @@
       </nz-row>
       
       <nz-row [nzGutter]="16">
-        <nz-col [nzSpan]="6">
+        <nz-col [nzSpan]="4">
           <nz-form-item>
             <nz-form-label 
               [nzSpan]="24" 
@@ -293,7 +277,7 @@
           </nz-form-item>
         </nz-col>
 
-        <nz-col [nzSpan]="6">
+        <nz-col [nzSpan]="4">
           <nz-form-item>
             <nz-form-label 
               [nzSpan]="24" 
@@ -314,7 +298,7 @@
           </nz-form-item>
         </nz-col>
 
-        <nz-col [nzSpan]="6">
+        <nz-col [nzSpan]="4">
           <nz-form-item>
             <nz-form-label 
               [nzSpan]="24" 
@@ -335,7 +319,7 @@
           </nz-form-item>
         </nz-col>
 
-        <nz-col [nzSpan]="6">
+        <nz-col [nzSpan]="4">
           <nz-form-item>
             <nz-form-label 
               [nzSpan]="24" 
@@ -355,9 +339,7 @@
             </nz-form-control>
           </nz-form-item>
         </nz-col>
-      </nz-row>
 
-      <nz-row [nzGutter]="16">
         <nz-col [nzSpan]="4">
           <nz-form-item>
             <nz-form-label 
@@ -378,7 +360,7 @@
             </nz-form-control>
           </nz-form-item>
         </nz-col>
-      
+
         <nz-col [nzSpan]="4">
           <nz-form-item>
             <nz-form-label 
@@ -396,13 +378,17 @@
                 nzPlaceHolder="Select Patient's Signature"
                 formControlName="patient_signature">
                 <nz-option 
-                  nzLabel="SOF (Signature On File)" [nzValue]="1">
-                </nz-option>
+                  *ngFor="let option of signatureOptions"
+                  [nzLabel]="option.label" 
+                  [nzValue]="option.value">
+                </nz-option>      
               </nz-select>
             </nz-form-control>
           </nz-form-item>
         </nz-col>
+      </nz-row>
 
+      <nz-row [nzGutter]="16">
         <nz-col [nzSpan]="4">
           <nz-form-item>
             <nz-form-label 
@@ -440,8 +426,10 @@
                 nzPlaceHolder="Insured's Signature"
                 formControlName="insured_signature">
                 <nz-option 
-                  nzLabel="SOF (Signature On File)" [nzValue]="1">
-                </nz-option>
+                  *ngFor="let option of signatureOptions"
+                  [nzLabel]="option.label" 
+                  [nzValue]="option.value">
+                </nz-option>   
               </nz-select>
             </nz-form-control>
           </nz-form-item>
@@ -481,6 +469,44 @@
                 nz-input 
                 id="name_referring_provider_npi" 
                 formControlName="name_referring_provider_npi" 
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </nz-col>
+
+        <nz-col [nzSpan]="4">
+          <nz-form-item>
+            <nz-form-label 
+              [nzSpan]="24" 
+              nzFor="original_ref_number">
+              22b. Original Ref. Number
+            </nz-form-label>
+
+            <nz-form-control 
+              [nzSpan]="24">
+              <input 
+                nz-input 
+                id="original_ref_number" 
+                formControlName="original_ref_number" 
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </nz-col>
+
+        <nz-col [nzSpan]="4">
+          <nz-form-item>
+            <nz-form-label 
+              [nzSpan]="24" 
+              nzFor="prior_authorization_number">
+              23. Prior Authorization Number
+            </nz-form-label>
+
+            <nz-form-control 
+              [nzSpan]="24">
+              <input 
+                nz-input 
+                id="prior_authorization_number" 
+                formControlName="prior_authorization_number" 
               />
             </nz-form-control>
           </nz-form-item>
@@ -595,12 +621,12 @@
                     formControlName="emg" 
                     nzPlaceHolder="Select Emg">
                     <nz-option 
-                      nzValue="NO" 
-                      nzLabel="NO">
+                      nzValue="1" 
+                      nzLabel="YES">
                     </nz-option>
                     <nz-option 
-                      nzValue="YES" 
-                      nzLabel="YES">
+                      nzValue="2" 
+                      nzLabel="NO">
                     </nz-option>
                   </nz-select>
                 </nz-form-control>
@@ -771,13 +797,10 @@
                 nzPlaceHolder="Select SSN / EIN"
                 formControlName="ssn_ein">
                 <nz-option 
-                  nzLabel="SSN" 
-                  [nzValue]="1">
-                </nz-option>
-                <nz-option 
-                  nzLabel="EIN" 
-                  [nzValue]="2">
-                </nz-option>
+                  *ngFor="let option of ssnEinOptions"
+                  [nzLabel]="option.label" 
+                  [nzValue]="option.value">
+                </nz-option>   
               </nz-select>
             </nz-form-control>
           </nz-form-item>
@@ -860,8 +883,10 @@
                 nzPlaceHolder="Select Signature Doctor"
                 formControlName="signature_doctor">
                 <nz-option 
-                  nzLabel="SOF (Signature On File)" [nzValue]="1">
-                </nz-option>
+                  *ngFor="let option of signatureOptions"
+                  [nzLabel]="option.label" 
+                  [nzValue]="option.value">
+                </nz-option>   
               </nz-select>
             </nz-form-control>
           </nz-form-item>
@@ -1245,30 +1270,6 @@
               </nz-option>
               <nz-option 
                 nzLabel="NO" [nzValue]="2">
-              </nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </nz-col> -->
-
-      <!-- <nz-col [nzSpan]="6">
-        <nz-form-item>
-          <nz-form-label 
-            [nzSpan]="8" 
-            nzFor="accept_assignment">
-            Accept Assignment
-          </nz-form-label>
-
-          <nz-form-control 
-            [nzSpan]="16">
-            <nz-select 
-              style="width: 100%;" 
-              id="accept_assignment"
-              nzPlaceHolder="Select Accept Assignment"
-              formControlName="accept_assignment">
-              <nz-option 
-                nzLabel="YES" 
-                [nzValue]="1">
               </nz-option>
             </nz-select>
           </nz-form-control>

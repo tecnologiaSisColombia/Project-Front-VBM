@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { Input } from '@angular/core';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzGridModule } from 'ng-zorro-antd/grid';
@@ -27,13 +28,14 @@ import { LocationService } from 'app/services/config/location.service';
 import { LocalityService } from 'app/services/config/localities.service';
 import { DiagnosisService } from 'app/services/config/diagnosis.service';
 import { ModifiersService } from 'app/services/config/modifiers.service';
+import { EligibilityService } from 'app/services/eligibility/eligibility.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { Input } from '@angular/core';
 import { ServicesService } from 'app/services/config/services.service';
 import { ProductsService } from 'app/services/config/products.service';
 import { forkJoin, map, catchError } from 'rxjs';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzFormModule } from 'ng-zorro-antd/form';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-claim-entry',
@@ -60,33 +62,7 @@ import { NzFormModule } from 'ng-zorro-antd/form';
   styleUrls: ['./claim-entry.component.css'],
 })
 export class ClaimEntryComponent {
-  @Input() claimData!: {
-    patient_name: string;
-    patient_birthDate: string;
-    patient_city: string;
-    patient_state: string;
-    patient_phone: string;
-    patient_postal_code: string;
-    patient_gender: string;
-    patient_address: string;
-    provider_city: string;
-    provider_state: string;
-    provider_postal_code: string;
-    provider_phone: string;
-    provider_address: string;
-    provider_npi: string;
-    plan_contract: string;
-    provider_federal_tax_id: string;
-    plan_name: string;
-    group: string;
-    auth: string;
-    insured_name: string;
-    insurer_address: string;
-    modifiers: string;
-    primary_subscriber_id: string;
-    orderringNpi: string;
-    referingNpi: string;
-  };
+  @Input() claimData: any;
   modifiersOptions: { label: string; value: number }[] = [];
   modifiersInput: any[] = [];
   totalCharges = 0;
@@ -97,6 +73,22 @@ export class ClaimEntryComponent {
   localities: any[] = [{ id: 'N/A', name: 'N/A' }];
   codeOptions: { label: string; value: string; charge: number }[] = [];
   modalLoader = false;
+  signatureOptions = [
+    { label: "SOF (Signature On File)", value: 1 },
+  ];
+  ssnEinOptions = [
+    { label: "SSN", value: 1 },
+    { label: "EIN", value: 2 },
+  ];
+  insuranceTypeOptions = [
+    { label: "MEDICARE", value: 1 },
+    { label: "MEDICAID", value: 2 },
+    { label: "TRICARE", value: 3 },
+    { label: "CHAMPVA", value: 5 },
+    { label: "GROUP HEALTH PLAN", value: 5 },
+    { label: "FECA", value: 6 },
+    { label: "OTHER", value: 7 },
+  ];
   form: UntypedFormGroup;
 
   constructor(
@@ -107,6 +99,7 @@ export class ClaimEntryComponent {
     private modifiersService: ModifiersService,
     private serviceService: ServicesService,
     private productService: ProductsService,
+    private eligibilityService: EligibilityService,
     private fb: UntypedFormBuilder,
   ) {
 
@@ -123,17 +116,6 @@ export class ClaimEntryComponent {
       patient_zip_code: [null, [Validators.required]],
       patient_phone: [null, [Validators.required]],
       relationship: [1, [Validators.required]],
-      // insured_address: [null, [Validators.required]],
-      // insured_city: [null, [Validators.required]],
-      // insured_state: [null, [Validators.required]],
-      // insured_zip_code: [null, [Validators.required]],
-      // insured_phone: [null, [Validators.required]],
-      // other_insured_name: [null],
-      // other_insured_name_policy_group: [null, [Validators.required]],
-      // insurance_plan_name: [null, [Validators.required]],
-      // employment: [null],
-      // auto_accident: [null],
-      // other_accident: [null],
       insured_police_group_feca: [null, [Validators.required]],
       insured_date_birth: [null, [Validators.required]],
       insured_gender: [null, [Validators.required]],
@@ -152,8 +134,6 @@ export class ClaimEntryComponent {
       federal_tax_id: [null, [Validators.required]],
       ssn_ein: [2, [Validators.required]],
       patient_account: [null],
-      // accept_assignment: [1, [Validators.required]],
-
       total_charge: [null, [Validators.required]],
       signature_doctor: [1, [Validators.required]],
       date_signature_doctor: [null, [Validators.required]],
@@ -163,6 +143,8 @@ export class ClaimEntryComponent {
       billing_provider_npi: [null, [Validators.required]],
       billing_provider_address: [null, [Validators.required]],
       amount_paid: [null],
+      original_ref_number: [null],
+      prior_authorization_number: [null],
       rows: this.fb.array([this.createRow()]),
     });
   }
@@ -206,13 +188,6 @@ export class ClaimEntryComponent {
         billing_provider_npi: this.claimData.provider_npi,
         billing_provider_address: this.claimData.provider_address,
         federal_tax_id: this.claimData.provider_federal_tax_id,
-        // insured_address: this.claimData.provider_address,
-        // insured_city: this.claimData.provider_city,
-        // insured_state: this.claimData.provider_state,
-        // insured_zip_code: this.claimData.provider_postal_code,
-        // insured_phone: this.claimData.provider_phone,
-        // other_insured_name_policy_group: this.claimData.group,
-        // insurance_plan_name: this.claimData.plan_name,
       });
 
       (this.rowsControls.controls as UntypedFormGroup[]).forEach((rowGroup) => {
@@ -236,12 +211,22 @@ export class ClaimEntryComponent {
       .filter(option => option !== null) as { value: number; label: string }[];
   }
 
+  getLabelOptions(value: any, options: { value: any; label: string }[]): string {
+    return options.find(option => option.value === value)?.label || value;
+  }
+
+  getDiagnosisCode(pointer: number): string | null {
+    const diagnosisArray = this.form.get('diagnosis') as UntypedFormArray;
+    const diagnosisControl = diagnosisArray.at(pointer - 1);
+    return diagnosisControl ? diagnosisControl.value : null;
+  }
+
   createRow(): UntypedFormGroup {
     return this.fb.group({
       date_initial: [null, Validators.required],
       date_final: [null, Validators.required],
       place_of_service: ['', Validators.required],
-      emg: ['NO', Validators.required],
+      emg: ['2', Validators.required],
       procedures: ['', Validators.required],
       modifiers: this.fb.array([
         this.fb.group({ id: [1], value: ['', Validators.required] }),
@@ -308,7 +293,7 @@ export class ClaimEntryComponent {
       next: (res: any) => {
         this.modifiersInput = res;
         this.modifiersOptions = this.modifiersInput.map((d) => ({
-          value: d.code,
+          value: d.id,
           label: `${d.code}`,
         }));
       },
@@ -323,7 +308,7 @@ export class ClaimEntryComponent {
       next: (res: any) => {
         this.locations = res;
         this.placeServicesOptions = this.locations.map((d) => ({
-          value: d.code,
+          value: d.id,
           label: `${d.code}`,
         }));
       },
@@ -424,12 +409,74 @@ export class ClaimEntryComponent {
 
     const formValue = { ...this.form.value };
 
-    formValue.rows.forEach((row: any) => {
-      row.date_initial = this.formatDate(row.date_initial);
-      row.date_final = this.formatDate(row.date_final);
-    });
+    const payload = {
+      patient: this.claimData.patient_id,
+      diagnosis: formValue.diagnosis ? formValue.diagnosis.filter((d: any) => d) : [],
+      cpts: formValue.rows.map((row: any) => ({
+        procedures: row.procedures,
+        date_initial: row.date_initial,
+        date_final: row.date_final,
+        place_of_service: row.place_of_service,
+        emg: row.emg,
+        modifiers: row.modifiers ? row.modifiers.map((mod: any) => ({
+          id: mod.value,
+          value: mod.value
+        })) : [],
+        diagnosis_pointer: row.diagnosis_pointer,
+        charges: row.charges,
+        days_or_unit: row.units,
+        rendering_provider_id: row.rendering_provider_id,
+        dx: this.getDiagnosisCode(row.diagnosis_pointer)
+      })),
+      insurance_type: formValue.insurance_type,
+      relationship: formValue.relationship,
+      insured_address: null,
+      insured_city: null,
+      insured_state: null,
+      insured_zip_code: null,
+      insured_phone: null,
+      other_insured_name: null,
+      other_insured_name_policy_group: null,
+      employment: null,
+      auto_accident: null,
+      other_accident: null,
+      insured_date_birth: formValue.insured_date_birth,
+      insured_gender: formValue.insured_gender === 'M' ? 1 : formValue.insured_gender === 'F' ? 2 : 3,
+      insured_insurance_plan_name: formValue.insured_insurance_plan_name,
+      patient_signature: formValue.patient_signature,
+      date_service: formValue.date_service,
+      insured_signature: formValue.insured_signature,
+      name_referring_provider: formValue.name_referring_provider,
+      name_referring_provider_npi: formValue.name_referring_provider_npi,
+      original_ref_number: formValue.original_ref_number,
+      prior_authorization_number: formValue.prior_authorization_number,
+      federal_tax_id: formValue.federal_tax_id,
+      ssn_ein: formValue.ssn_ein,
+      patient_account_number: formValue.patient_account_number,
+      accept_assignment: 1,
+      total_charge: formValue.total_charge,
+      amount_paid: formValue.amount_paid,
+      signature_doctor: formValue.signature_doctor,
+      date_signature_doctor: formValue.date_signature_doctor,
+      service_facility_location: formValue.service_facility_location,
+      service_facility_npi: formValue.service_facility_npi,
+      billing_provider_phone: formValue.billing_provider_phone,
+      billing_provider_npi: formValue.billing_provider_npi,
+      billing_provider_address: formValue.billing_provider_address
+    };
 
-    console.log('Enviando formulario:', formValue);
+    this.eligibilityService.createClaim(payload)
+      .pipe(finalize(() => {
+        this.modalLoader = false;
+      }))
+      .subscribe({
+        next: () => {
+          this.msgService.success('Claim created successfully');
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 
   markAllControlsAsDirty(control: AbstractControl): void {

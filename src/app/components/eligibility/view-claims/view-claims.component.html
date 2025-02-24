@@ -1,0 +1,86 @@
+<div class="title-page layout-container">
+    <div class="breadcrumb-container">
+      <nz-breadcrumb>
+        <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+        <nz-breadcrumb-item>Eligibility</nz-breadcrumb-item>
+        <nz-breadcrumb-item>Views Claims</nz-breadcrumb-item>
+      </nz-breadcrumb>
+    </div>
+</div>
+  
+<div class="main-table layout-container">
+  <div class="table-filters">
+    <nz-input-group
+      *ngFor="let field of searchFields"
+      [nzSuffix]="suffixIconSearch">
+      <input
+        type="text"
+        nz-input
+        [placeholder]="field.placeholder"
+        [(ngModel)]="this[field.model]"
+        (ngModelChange)="search($event, field.key)"
+      />
+
+      <ng-template #suffixIconSearch>
+        <span 
+          nz-icon 
+          nzType="search"> 
+        </span>
+      </ng-template>
+    </nz-input-group>
+  </div>
+
+  <nz-table
+    #basicTable
+    [nzData]="dataToDisplay"
+    [nzLoading]="isDataLoading"
+    [nzNoResult]="noDataTemplate"
+    [nzFrontPagination]="false">
+    <thead>
+      <tr>
+        <th>Date service</th>
+        <th>Id claims</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of basicTable.data">
+        <td>{{data.date_service | date: 'MM-dd-yyyy'}}</td>
+        <td>{{data.id_claim}}</td>
+        <td>
+          <a>
+            <span
+              nz-icon
+              title="View"
+              nzType="eye"
+              nzTheme="outline">
+            </span>
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+  
+  <ng-template #noDataTemplate>
+    <nz-empty
+      nzNotFoundImage="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+      [nzNotFoundContent]="contentTpl">
+      <ng-template #contentTpl>
+        <span>
+          No records found
+        </span>
+      </ng-template>
+    </nz-empty>
+  </ng-template>
+
+  <nz-pagination
+    [nzPageIndex]="page"
+    [nzResponsive]="true"
+    [nzTotal]="count_records"
+    [nzPageSize]="page_size"
+    (nzPageIndexChange)="pageChange($event)"
+    (nzPageSizeChange)="pageSizeChange($event)"
+    [nzShowSizeChanger]="true"
+    nzShowQuickJumper>
+  </nz-pagination>
+</div>

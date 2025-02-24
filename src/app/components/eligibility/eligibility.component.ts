@@ -11,10 +11,11 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { debounceTime, Subject } from 'rxjs';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import { FormsModule, FormArray, FormControl, AbstractControl, FormGroup } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { MemberComponent } from './member/member.component';
 import { PlanDetailsComponent } from './plan-details/plan-details.component';
+import { ViewClaimsComponent } from './view-claims/view-claims.component';
 import { EligibilityService } from 'app/services/eligibility/eligibility.service';
 import * as XLSX from 'xlsx';
 import { ClaimEntryComponent } from './claim-entry/claim-entry.component';
@@ -46,6 +47,7 @@ import { finalize } from 'rxjs/operators';
     ClaimEntryComponent,
     NzEmptyModule,
     NzButtonModule,
+    ViewClaimsComponent
   ],
   templateUrl: './eligibility.component.html',
   styleUrls: ['./eligibility.component.css', '/src/animations/styles.css'],
@@ -59,6 +61,7 @@ export class EligibilityComponent {
   isVisibleModalMember = false;
   isVisibleModalClaim = false;
   isVisibleModalUpload = false;
+  isVisibleModalListClaims = false;
   dataToDisplay: any[] = [];
   num_pages = 1;
   count_records = 0;
@@ -72,40 +75,9 @@ export class EligibilityComponent {
   searchFields = [
     { placeholder: 'First Name...', model: 'firstSearch', key: 'first_name' },
     { placeholder: 'Last Name...', model: 'lastSearch', key: 'last_name' },
-    {
-      placeholder: 'Suscriber Id...',
-      model: 'suscriberSearch',
-      key: 'suscriber_id',
-    },
+    { placeholder: 'Suscriber Id...', model: 'suscriberSearch', key: 'suscriber_id', },
   ];
-  selectedClaim: any = {
-    patientName: '',
-    validFrom: '',
-    validThru: '',
-    birthDate: '',
-    orderringNpi: '',
-    referingNpi: '',
-    auth: '',
-    state_patient: '',
-    phone_patient: '',
-    phone_supplier: '',
-    postal_code_patient: '',
-    postal_code_supplier: '',
-    address_supplier: '',
-    group: '',
-    plan_contract: '',
-    insurer: '',
-    city_patient: '',
-    city_supplier: '',
-    plan_name: '',
-    address_insurer: '',
-    state_supplier: '',
-    modifiers: '',
-    addressPatient: '',
-    primaryPlanName: '',
-    visualTestMedicare: '',
-    visionElements: '',
-  };
+  selectedClaim: any = {};
   private searchNameSubject = new Subject<{ type: string; value: string }>();
 
   @ViewChild(PlanDetailsComponent, { static: false })
@@ -142,6 +114,7 @@ export class EligibilityComponent {
   submit(): void {
     if (this.claimEntry && this.claimEntry.form.valid) {
       this.claimEntry.submit();
+      this.cancelOkModalClaim()
     } else {
       this.claimEntry.markAllControlsAsDirty(this.claimEntry.form);
     }
@@ -277,12 +250,26 @@ export class EligibilityComponent {
     this.isVisibleModalMember = false;
   }
 
+  CancelOkModalListClaims(): void {
+    this.isVisibleModalListClaims = false;
+  }
+
   openModalMember(): void {
     this.isVisibleModalMember = true;
   }
 
+  openModalListClaims(id: any): void {
+
+    this.selectedClaim = {
+      patient_id: id ?? '',
+    };
+
+    this.isVisibleModalListClaims = true;
+  }
+
   openModalClaim(rowData: any): void {
     this.selectedClaim = {
+      patient_id: rowData?.id ?? '',
       patient_name: `${rowData?.last_name ?? ''} ${rowData?.first_name ?? ''}`,
       patient_birthDate: rowData?.birth_date ?? '',
       patient_city: rowData?.city ?? '',
@@ -290,9 +277,7 @@ export class EligibilityComponent {
       patient_phone: rowData?.primary_phone ?? '',
       patient_gender: rowData?.gender ?? '',
       patient_postal_code: rowData?.postal_code ?? '',
-      orderringNpi: rowData?.insurer_data?.orderring_npi ?? '',
-      referingNpi: rowData?.insurer_data?.refering_npi ?? '',
-      auth: rowData?.insurer_data?.auth ?? '',
+      patient_address: `${rowData?.primary_address ?? ''} ${rowData?.address_1 ?? ''}`.trim(),
       insured_name: rowData?.insurer_data?.name ?? '',
       insurer_address: rowData?.insurer_data?.address ?? '',
       provider_city: rowData?.suppliers[0]?.city ?? '',
@@ -304,7 +289,6 @@ export class EligibilityComponent {
       provider_federal_tax_id: rowData?.suppliers[0]?.federal_tax_id ?? '',
       modifiers: rowData?.insurer_data?.modifiers ?? '',
       plan_name: rowData?.subplan_data?.plan_data.name ?? '',
-      patient_address: `${rowData?.primary_address ?? ''} ${rowData?.address_1 ?? ''}`.trim(),
       plan_contract: rowData.subplan_data.plan_contract ?? '',
       group: rowData.subplan_data.group ?? '',
       primary_subscriber_id: rowData?.primary_subscriber_id ?? '',
