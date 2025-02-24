@@ -20,9 +20,9 @@ import {
   UntypedFormArray,
   AbstractControl,
   FormGroup,
-  FormArray
+  FormArray,
+  FormControl
 } from '@angular/forms';
-import { FormControl } from '@angular/forms';
 import { LocationService } from 'app/services/config/location.service';
 import { LocalityService } from 'app/services/config/localities.service';
 import { DiagnosisService } from 'app/services/config/diagnosis.service';
@@ -31,7 +31,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { Input } from '@angular/core';
 import { ServicesService } from 'app/services/config/services.service';
 import { ProductsService } from 'app/services/config/products.service';
-import { Subject, forkJoin, map, catchError } from 'rxjs';
+import { forkJoin, map, catchError } from 'rxjs';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzFormModule } from 'ng-zorro-antd/form';
 
@@ -173,6 +173,16 @@ export class ClaimEntryComponent {
     this.getDiagnosis();
     this.getModifiers();
     this.searchCodes();
+
+    this.form.get('name_referring_provider')?.valueChanges.subscribe(value => {
+      const npiControl = this.form.get('name_referring_provider_npi');
+      if (value && value.trim() !== '') {
+        npiControl?.setValidators([Validators.required]);
+      } else {
+        npiControl?.clearValidators();
+      }
+      npiControl?.updateValueAndValidity();
+    });
   }
 
   ngOnChanges(changes: SimpleChanges) {
