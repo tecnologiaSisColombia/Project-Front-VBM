@@ -1,3 +1,14 @@
+<div class="title-page">
+  <div class="breadcrumb-container">
+    <nz-breadcrumb>
+      <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Patients</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Patient Management</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Claims Entry</nz-breadcrumb-item>
+    </nz-breadcrumb>
+  </div>
+</div>
+
 <nz-card nzTitle="CLAIM ENTRY" [nzBordered]="true" class="main-card">
   <nz-spin [nzSpinning]="modalLoader">
     <form nz-form [formGroup]="form" (submit)="submit()">

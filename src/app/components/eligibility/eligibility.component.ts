@@ -114,6 +114,7 @@ export class EligibilityComponent {
   submit(): void {
     if (this.claimEntry && this.claimEntry.form.valid) {
       this.claimEntry.submit();
+      this.msgService.success('Claim created successfully');
       this.cancelOkModalClaim()
     } else {
       this.claimEntry.markAllControlsAsDirty(this.claimEntry.form);

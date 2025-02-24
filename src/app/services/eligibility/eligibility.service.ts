@@ -45,7 +45,7 @@ export class EligibilityService {
     }
 
     getClaim(
-        { patient, id_claims }: any,
+        { patient, id_claim }: any,
         page: number | null = 1,
         pageSize: number | null = 10,
         init = false
@@ -60,10 +60,28 @@ export class EligibilityService {
             params = params.set('patient', patient)
         }
 
-        if (id_claims != null) {
-            params = params.set('patient', id_claims)
+        if (id_claim != null) {
+            params = params.set('id_claim', id_claim)
         }
 
         return this.http.get(`${this.hostname}eligibility/claim`, { params })
+    }
+
+    getClaimCpt(
+        { id_claim }: any,
+        page: number | null = 1,
+        pageSize: number | null = 10,
+        init = false
+    ) {
+        let params = new HttpParams()
+            .set('page', (page ?? 1).toString())
+            .set('page_size', (pageSize ?? 10).toString())
+            .set('init', init)
+
+        if (id_claim != null) {
+            params = params.set('id_claim', id_claim)
+        }
+
+        return this.http.get(`${this.hostname}eligibility/claim-cpt`, { params })
     }
 }

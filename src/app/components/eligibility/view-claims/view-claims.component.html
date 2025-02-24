@@ -2,7 +2,8 @@
     <div class="breadcrumb-container">
       <nz-breadcrumb>
         <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
-        <nz-breadcrumb-item>Eligibility</nz-breadcrumb-item>
+        <nz-breadcrumb-item>Patients</nz-breadcrumb-item>
+        <nz-breadcrumb-item>Patient Management</nz-breadcrumb-item>
         <nz-breadcrumb-item>Views Claims</nz-breadcrumb-item>
       </nz-breadcrumb>
     </div>
@@ -40,6 +41,8 @@
       <tr>
         <th>Date service</th>
         <th>Id claims</th>
+        <th>Origin</th>
+        <th>Status</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -47,6 +50,9 @@
       <tr *ngFor="let data of basicTable.data">
         <td>{{data.date_service | date: 'MM-dd-yyyy'}}</td>
         <td>{{data.id_claim}}</td>
+        <td>{{ data.origin == 1 ? 'PLATFORM' : (data.origin == 2 ? 'EXTERNAL' : data.origin) }}</td>
+        <td>{{ data.status == 1 ? 'PENDING' : (data.status == 2 ? 'IN_PROCCESS' : data.status) }}</td>
+
         <td>
           <a>
             <span

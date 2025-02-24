@@ -1,3 +1,10 @@
+.title-page {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
 nz-table th,
 nz-table td {
     text-align: center;

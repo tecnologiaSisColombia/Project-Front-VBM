@@ -84,7 +84,7 @@ export class ViewClaimsComponent {
     this.eligibilityService
       .getClaim(
         {
-          id_claims: this.idClaimsSearch,
+          id_claim: this.idClaimsSearch,
           patient: this.claimData.patient_id
         },
         this.page,
@@ -98,6 +98,7 @@ export class ViewClaimsComponent {
       .subscribe({
         next: (res: any) => {
           this.dataToDisplay = res.results;
+          console.log(this.dataToDisplay)
           this.setPagination(res.total);
         },
         error: (err) => {

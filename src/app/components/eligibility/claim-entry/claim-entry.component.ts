@@ -471,7 +471,6 @@ export class ClaimEntryComponent {
       }))
       .subscribe({
         next: () => {
-          this.msgService.success('Claim created successfully');
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
