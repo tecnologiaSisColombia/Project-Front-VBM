@@ -207,14 +207,15 @@
   (nzOnCancel)="cancelOkModalClaim()"
   (nzOnOk)="submit()"
   [nzClosable]="false"
-  nzMaskClosable="false">
+  nzMaskClosable="false"
+  [nzOkText]="'Save Claim'">
   <ng-container *nzModalContent>
     <app-claim-entry 
       [claimData]="selectedClaim"
       #claimEntry>
     </app-claim-entry>
   </ng-container>
-</nz-modal>
+</nz-modal>>
 
 <nz-modal
   [nzAutofocus]="null"

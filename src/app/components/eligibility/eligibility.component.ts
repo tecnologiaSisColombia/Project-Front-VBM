@@ -141,13 +141,9 @@ export class EligibilityComponent {
 
   submit(): void {
     if (this.claimEntry && this.claimEntry.form.valid) {
-      this.claimEntry.submitForm();
+      this.claimEntry.submit();
     } else {
-      if (this.claimEntry) {
-        this.claimEntry.submitForm();
-        this.claimEntry.markAllControlsAsDirty(this.claimEntry.form);
-      }
-      return;
+      this.claimEntry.markAllControlsAsDirty(this.claimEntry.form);
     }
   }
 

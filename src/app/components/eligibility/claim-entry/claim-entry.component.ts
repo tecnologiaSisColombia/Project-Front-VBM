@@ -31,9 +31,8 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { Input } from '@angular/core';
 import { ServicesService } from 'app/services/config/services.service';
 import { ProductsService } from 'app/services/config/products.service';
-import { Subject } from 'rxjs';
+import { Subject, forkJoin, map, catchError } from 'rxjs';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
-import { forkJoin } from 'rxjs';
 import { NzFormModule } from 'ng-zorro-antd/form';
 
 @Component({
@@ -97,8 +96,8 @@ export class ClaimEntryComponent {
   diagnosis: any[] = [];
   localities: any[] = [{ id: 'N/A', name: 'N/A' }];
   codeOptions: { label: string; value: string; charge: number }[] = [];
+  modalLoader = false;
   form: UntypedFormGroup;
-  private searchCptSubject = new Subject<any>();
 
   constructor(
     private msgService: NzMessageService,
@@ -173,6 +172,7 @@ export class ClaimEntryComponent {
     this.getLocalities();
     this.getDiagnosis();
     this.getModifiers();
+    this.searchCodes();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -219,6 +219,13 @@ export class ClaimEntryComponent {
     return this.form.get('diagnosis') as UntypedFormArray;
   }
 
+  get diagnosisPointerOptions(): { value: number; label: string }[] {
+    return this.diagnosisControls.controls
+      .map((control, index) => control.value ?
+        { value: index + 1, label: (index + 1).toString() } : null)
+      .filter(option => option !== null) as { value: number; label: string }[];
+  }
+
   createRow(): UntypedFormGroup {
     return this.fb.group({
       date_initial: [null, Validators.required],
@@ -227,10 +234,10 @@ export class ClaimEntryComponent {
       emg: ['NO', Validators.required],
       procedures: ['', Validators.required],
       modifiers: this.fb.array([
-        this.fb.group({ id: 1, value: [''] }),
-        this.fb.group({ id: 2, value: [''] }),
-        this.fb.group({ id: 3, value: [''] }),
-        this.fb.group({ id: 4, value: [''] }),
+        this.fb.group({ id: [1], value: ['', Validators.required] }),
+        this.fb.group({ id: [2], value: ['', Validators.required] }),
+        this.fb.group({ id: [3], value: ['', Validators.required] }),
+        this.fb.group({ id: [4], value: ['', Validators.required] }),
       ]),
       diagnosis_pointer: ['', Validators.required],
       charges: [null, Validators.required],
@@ -247,50 +254,43 @@ export class ClaimEntryComponent {
     this.rowsControls.push(this.createRow());
   }
 
-  searchCodes(value: string): void {
-    const product$ = this.productService.get({ code: value }, 1, 10, true);
-    const service$ = this.serviceService.get({ code: value }, 1, 10, true);
-    forkJoin([product$, service$]).subscribe({
-      next: ([products, services]) => {
-        const options: { label: string; value: string; charge: number }[] = [];
-        if (products && Array.isArray(products) && products.length > 0) {
-          products.forEach((p: any) => {
-            options.push({
-              label: `${p.code}`,
-              value: p.code,
-              charge: p.value,
-            });
-          });
-        }
-        if (services && Array.isArray(services) && services.length > 0) {
-          services.forEach((s: any) => {
-            options.push({
-              label: `${s.code}`,
-              value: s.code,
-              charge: s.value,
-            });
-          });
-        }
-        this.codeOptions = options;
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
+  updateDiagnosisPointers(): void {
+    const validOptions = this.diagnosisControls.controls
+      .map((control, index) => control.value ? index + 1 : null)
+      .filter(val => val !== null) as number[];
+
+    this.rowsControls.controls.forEach(row => {
+      const currentValue = row.get('diagnosis_pointer')?.value;
+      if (currentValue && !validOptions.includes(currentValue)) {
+        row.get('diagnosis_pointer')?.setValue(null);
+      }
     });
   }
 
-  searchProcedures(value: string, row: AbstractControl) {
-    (!value || value.length < 3) && (row.get('charges')?.setValue(null), void 0);
-    this.searchCptSubject.next({ search: value, row: row });
+  searchCodes(): void {
+    forkJoin([
+      this.productService.get({}, 1, 10, true).pipe(
+        map((res: any) => Array.isArray(res) ? res : [])
+      ),
+      this.serviceService.get({}, 1, 10, true).pipe(
+        map((res: any) => Array.isArray(res) ? res : [])
+      )
+    ])
+      .pipe(
+        map(([products, services]) => [
+          ...products.map((p: any) => ({ label: p.code, value: p.code, charge: p.value })),
+          ...services.map((s: any) => ({ label: s.code, value: s.code, charge: s.value }))
+        ]),
+        catchError((err) => {
+          this.msgService.error(JSON.stringify(err.error));
+          return [[]];
+        })
+      )
+      .subscribe(options => this.codeOptions = options);
   }
 
   onProcedureSelected(selectedCode: string, row: AbstractControl): void {
-    const option = this.codeOptions.find(o => o.value === selectedCode);
-    if (option) {
-      row.get('charges')?.setValue(option.charge);
-    } else {
-      row.get('charges')?.setValue(null);
-    }
+    row.get('charges')?.setValue(this.codeOptions.find(o => o.value === selectedCode)?.charge ?? null);
   }
 
   getModifiers(): void {
@@ -393,7 +393,10 @@ export class ClaimEntryComponent {
 
   removeDiagnosis(index: number): void {
     const diagnosisArray = this.form.get('diagnosis') as UntypedFormArray;
-    index > 0 && diagnosisArray.removeAt(index);
+    if (index > 0) {
+      diagnosisArray.removeAt(index);
+      this.updateDiagnosisPointers();
+    }
   }
 
   calculateTotalCharges(): void {
@@ -406,8 +409,17 @@ export class ClaimEntryComponent {
     this.form.get('total_charge')?.setValue(total);
   }
 
-  submitForm(): void {
-    console.log('Enviando formulario:', this.form.value);
+  submit(): void {
+    this.modalLoader = true;
+
+    const formValue = { ...this.form.value };
+
+    formValue.rows.forEach((row: any) => {
+      row.date_initial = this.formatDate(row.date_initial);
+      row.date_final = this.formatDate(row.date_final);
+    });
+
+    console.log('Enviando formulario:', formValue);
   }
 
   markAllControlsAsDirty(control: AbstractControl): void {
@@ -429,6 +441,21 @@ export class ClaimEntryComponent {
     if (control.hasError('pattern')) return 'This field cannot be empty';
 
     return null;
+  }
+
+  hasFeedback(controlName: string): 'success' | 'error' | '' {
+    const control = this.form.get(controlName);
+    if (!control) return '';
+    if (control.valid && (control.dirty || control.touched)) return 'success';
+    return control.invalid ? 'error' : '';
+  }
+
+  formatDate(date: Date): string {
+    if (!date) return '';
+    const d = new Date(date);
+    return `${(d.getMonth() + 1).toString().padStart(2, '0')}-` +
+      `${d.getDate().toString().padStart(2, '0')}-` +
+      `${d.getFullYear()}`;
   }
 
 }
