@@ -79,7 +79,7 @@ export class EligibilityService {
             .set('init', init)
 
         if (id_claim != null) {
-            params = params.set('id_claim', id_claim)
+            params = params.set('claim', id_claim)
         }
 
         return this.http.get(`${this.hostname}eligibility/claim-cpt`, { params })

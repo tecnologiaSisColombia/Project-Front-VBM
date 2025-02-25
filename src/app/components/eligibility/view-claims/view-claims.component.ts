@@ -17,6 +17,7 @@ import { FormsModule } from '@angular/forms';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { EligibilityService } from 'app/services/eligibility/eligibility.service';
+import { ClaimEntryComponent } from '../claim-entry/claim-entry.component';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -37,7 +38,8 @@ import { finalize } from 'rxjs/operators';
     NzSelectModule,
     FormsModule,
     NzModalModule,
-    NzEmptyModule
+    NzEmptyModule,
+    ClaimEntryComponent
   ],
   templateUrl: './view-claims.component.html',
   styleUrl: './view-claims.component.css'
@@ -45,12 +47,14 @@ import { finalize } from 'rxjs/operators';
 export class ViewClaimsComponent {
   @Input() claimData: any;
   isDataLoading = false;
+  isVisibleModalViewClaim = false;
   dataToDisplay: any[] = [];
   num_pages = 1;
   count_records = 0;
   page_size = 10;
   page = 1;
   idClaimsSearch: any = null;
+  selectedClaim: any = {};
   [key: string]: any;
   searchFields = [
     { placeholder: 'Id Claim...', model: 'idClaimsSearch', key: 'id_claim' },
@@ -70,16 +74,16 @@ export class ViewClaimsComponent {
 
         (fields as Record<string, () => void>)[type]?.();
         this.page = 1;
-        this.getInitData();
+        this.getClaim();
         this.isDataLoading = false;
       });
   }
 
   ngOnInit(): void {
-    this.getInitData()
+    this.getClaim()
   }
 
-  getInitData() {
+  getClaim() {
     this.isDataLoading = true;
     this.eligibilityService
       .getClaim(
@@ -98,14 +102,44 @@ export class ViewClaimsComponent {
       .subscribe({
         next: (res: any) => {
           this.dataToDisplay = res.results;
-          console.log(this.dataToDisplay)
           this.setPagination(res.total);
+
+          if (this.dataToDisplay.length > 0) {
+            // this.getClaimCpt();
+          }
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
         },
       });
   }
+
+  // getClaimCpt() {
+  //   const rawId = this.dataToDisplay[0].id;
+  //   this.isDataLoading = true;
+  //   this.eligibilityService
+  //     .getClaimCpt(
+  //       {
+  //         id_claim: rawId
+  //       },
+  //       this.page,
+  //       this.page_size,
+  //       true
+  //     )
+  //     .pipe(
+  //       finalize(() => {
+  //         this.isDataLoading = false;
+  //       })
+  //     )
+  //     .subscribe({
+  //       next: (res: any) => {
+  //         console.log(res)
+  //       },
+  //       error: (err) => {
+  //         this.msgService.error(JSON.stringify(err.error));
+  //       },
+  //     });
+  // }
 
   search(value: string, type: string) {
     this.isDataLoading = true;
@@ -114,17 +148,26 @@ export class ViewClaimsComponent {
 
   pageChange(event: number) {
     this.page = event;
-    this.getInitData();
+    this.getClaim();
   }
 
   pageSizeChange(pageSize: number): void {
     this.page_size = pageSize;
     this.page = 1;
-    this.getInitData();
+    this.getClaim();
   }
 
   setPagination(count: number) {
     this.count_records = count;
     this.num_pages = Math.ceil(count / this.page_size);
+  }
+
+  openModalViewClaims(data: any) {
+    this.selectedClaim = data;
+    this.isVisibleModalViewClaim = true;
+  }
+
+  CancelOkModalViewClaims() {
+    this.isVisibleModalViewClaim = false;
   }
 }

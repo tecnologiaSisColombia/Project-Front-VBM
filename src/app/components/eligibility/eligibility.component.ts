@@ -25,6 +25,7 @@ import { S3Service } from 'app/services/upload-s3/upload-s3.service';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { finalize } from 'rxjs/operators';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-eligibility',
@@ -113,9 +114,20 @@ export class EligibilityComponent {
 
   submit(): void {
     if (this.claimEntry && this.claimEntry.form.valid) {
-      this.claimEntry.submit();
-      this.msgService.success('Claim created successfully');
-      this.cancelOkModalClaim()
+      Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to save the claim?',
+        icon: 'warning',
+        showCancelButton: true,
+        allowOutsideClick: false,
+        confirmButtonText: 'Yes, save',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.claimEntry.submit();
+          this.cancelOkModalClaim();
+        }
+      });
     } else {
       this.claimEntry.markAllControlsAsDirty(this.claimEntry.form);
     }
@@ -287,9 +299,9 @@ export class EligibilityComponent {
       provider_postal_code: rowData?.suppliers[0]?.postal_code ?? '',
       provider_state: rowData?.suppliers[0]?.state ?? '',
       provider_npi: rowData?.suppliers[0]?.npi ?? '',
-      provider_federal_tax_id: rowData?.suppliers[0]?.federal_tax_id ?? '',
+      federal_tax_id: rowData?.suppliers[0]?.federal_tax_id ?? '',
       modifiers: rowData?.insurer_data?.modifiers ?? '',
-      plan_name: rowData?.subplan_data?.plan_data.name ?? '',
+      insured_insurance_plan_name: rowData?.subplan_data?.plan_data.name ?? '',
       plan_contract: rowData.subplan_data.plan_contract ?? '',
       group: rowData.subplan_data.group ?? '',
       primary_subscriber_id: rowData?.primary_subscriber_id ?? '',

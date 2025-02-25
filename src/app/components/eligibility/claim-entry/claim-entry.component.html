@@ -663,11 +663,14 @@
                     *ngFor="let modifierCtrl of getModifiersControls(rowCtrl); 
                     let j = index" [formGroupName]="j">
                     <nz-col [nzSpan]="6">
-                      <nz-form-control [nzHasFeedback]="hasFeedback('rows.0.modifiers')">
+                      <nz-form-control 
+                        [nzHasFeedback]="true"
+                        [nzValidateStatus]="getModifierValidationStatus(rowCtrl)">
                         <nz-select
                           formControlName="value"
                           nzAllowClear
-                          nzShowSearch>
+                          nzShowSearch
+                          (ngModelChange)="onModifierChange(rowCtrl)">
                           <nz-option
                             *ngFor="let option of modifiersOptions"
                             [nzValue]="option.value"
@@ -922,7 +925,8 @@
               <nz-date-picker 
                 style="width: 100%;"
                 nzFormat="MM-dd-YYYY" 
-                formControlName="date_signature_doctor">
+                formControlName="date_signature_doctor"
+                [nzDisabledDate]="disabledDate">
               </nz-date-picker>
             </nz-form-control>
           </nz-form-item>

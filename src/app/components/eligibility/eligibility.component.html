@@ -224,9 +224,10 @@
       #claimEntry>
     </app-claim-entry>
   </ng-container>
-</nz-modal>>
+</nz-modal>
 
 <nz-modal
+  [nzAutofocus]="null"
   [(nzVisible)]="isVisibleModalListClaims"
   nzWidth="80%"
   (nzOnCancel)="CancelOkModalListClaims()"

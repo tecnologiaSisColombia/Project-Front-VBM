@@ -40,7 +40,7 @@
     <thead>
       <tr>
         <th>Date service</th>
-        <th>Id claims</th>
+        <th>Id claim</th>
         <th>Origin</th>
         <th>Status</th>
         <th>Actions</th>
@@ -48,18 +48,18 @@
     </thead>
     <tbody>
       <tr *ngFor="let data of basicTable.data">
-        <td>{{data.date_service | date: 'MM-dd-yyyy'}}</td>
-        <td>{{data.id_claim}}</td>
+        <td>{{ data.date_service | date: 'MM-dd-yyyy' }}</td>
+        <td>{{ data.id_claim }}</td>
         <td>{{ data.origin == 1 ? 'PLATFORM' : (data.origin == 2 ? 'EXTERNAL' : data.origin) }}</td>
         <td>{{ data.status == 1 ? 'PENDING' : (data.status == 2 ? 'IN_PROCCESS' : data.status) }}</td>
-
         <td>
           <a>
             <span
               nz-icon
               title="View"
               nzType="eye"
-              nzTheme="outline">
+              nzTheme="outline"
+              (click)="openModalViewClaims(data)">
             </span>
           </a>
         </td>
@@ -90,3 +90,18 @@
     nzShowQuickJumper>
   </nz-pagination>
 </div>
+
+<nz-modal
+  [nzAutofocus]="null"
+  [(nzVisible)]="isVisibleModalViewClaim"
+  nzWidth="98%"
+  (nzOnCancel)="CancelOkModalViewClaims()"
+  (nzOnOk)="CancelOkModalViewClaims()"
+  [nzClosable]="false"
+  nzMaskClosable="false">
+  <ng-container *nzModalContent>
+    <app-claim-entry 
+      [claimData]="selectedClaim">
+    </app-claim-entry>
+  </ng-container>
+</nz-modal>

@@ -205,11 +205,11 @@ export class ClaimEntryComponent {
         insured_police_group_feca: this.claimData.group,
         insured_date_birth: this.claimData.patient_birthDate,
         insured_gender: this.claimData.patient_gender,
-        insured_insurance_plan_name: this.claimData.plan_name,
+        insured_insurance_plan_name: this.claimData.insured_insurance_plan_name,
         billing_provider_phone: this.claimData.provider_phone,
         billing_provider_npi: this.claimData.provider_npi,
         billing_provider_address: this.claimData.provider_address,
-        federal_tax_id: this.claimData.provider_federal_tax_id,
+        federal_tax_id: this.claimData.federal_tax_id,
       });
 
       (this.rowsControls.controls as UntypedFormGroup[]).forEach((rowGroup) => {
@@ -256,15 +256,48 @@ export class ClaimEntryComponent {
       procedures: ['', Validators.required],
       modifiers: this.fb.array([
         this.fb.group({ id: [1], value: ['', Validators.required] }),
-        this.fb.group({ id: [2], value: ['', Validators.required] }),
-        this.fb.group({ id: [3], value: ['', Validators.required] }),
-        this.fb.group({ id: [4], value: ['', Validators.required] }),
-      ]),
+        this.fb.group({ id: [2], value: [''] }),
+        this.fb.group({ id: [3], value: [''] }),
+        this.fb.group({ id: [4], value: [''] }),
+      ], { validators: this.uniqueModifiersValidator }),
       diagnosis_pointer: ['', Validators.required],
       charges: [null, Validators.required],
       units: [null, Validators.required],
       rendering_provider_id: [this.claimData?.provider_npi ?? null, Validators.required],
     });
+  }
+
+  uniqueModifiersValidator(formArray: AbstractControl) {
+    if (!(formArray instanceof FormArray)) return null;
+
+    const values: string[] = formArray.controls
+      .map((control) => control.get('value')?.value)
+      .filter((val) => val !== null && val !== '');
+
+    const uniqueValues = new Set(values);
+
+    return values.length === uniqueValues.size ? null : { duplicateModifier: true };
+  }
+
+  getModifierValidationStatus(rowCtrl: AbstractControl): 'success' | 'error' | '' {
+    const modifiersArray = rowCtrl.get('modifiers') as FormArray;
+
+    if (modifiersArray.errors?.['duplicateModifier']) {
+      return 'error';
+    }
+
+    if (modifiersArray.valid && modifiersArray.touched) {
+      return 'success';
+    }
+
+    return '';
+  }
+
+  onModifierChange(rowCtrl: AbstractControl): void {
+    const modifiersArray = rowCtrl.get('modifiers') as FormArray;
+
+    modifiersArray.markAllAsTouched();
+    modifiersArray.updateValueAndValidity({ emitEvent: true });
   }
 
   getModifiersControls(rowCtrl: AbstractControl): AbstractControl[] {
@@ -514,7 +547,8 @@ export class ClaimEntryComponent {
         this.modalLoader = false;
       }))
       .subscribe({
-        next: () => {
+        next: (res) => {
+          this.msgService.success(JSON.stringify(res));
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
