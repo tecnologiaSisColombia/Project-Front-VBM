@@ -89,6 +89,8 @@ export class ClaimEntryComponent {
     { label: "FECA", value: 6 },
     { label: "OTHER", value: 7 },
   ];
+  diagnosisPointerOptionsCache: { value: number; label: string }[] = [];
+
   form: UntypedFormGroup;
 
   constructor(
@@ -156,6 +158,26 @@ export class ClaimEntryComponent {
     this.getModifiers();
     this.searchCodes();
 
+    const rows = this.form.get('rows') as FormArray;
+    const dateInitialControl = rows.at(0).get('date_initial');
+    const dateFinalControl = rows.at(0).get('date_final');
+
+    dateInitialControl?.valueChanges.subscribe((newInitialDate: Date) => {
+      const currentFinalDate = dateFinalControl?.value;
+      if (currentFinalDate && newInitialDate) {
+        const today = new Date().setHours(0, 0, 0, 0);
+        const newInitial = new Date(newInitialDate).setHours(0, 0, 0, 0);
+        const final = new Date(currentFinalDate).setHours(0, 0, 0, 0);
+
+        if (final !== today && final <= newInitial) dateFinalControl?.reset();
+      }
+      dateFinalControl?.updateValueAndValidity();
+    });
+
+    this.form.get('diagnosis')?.valueChanges.subscribe(() => {
+      this.updateDiagnosisPointerOptions();
+    });
+
     this.form.get('name_referring_provider')?.valueChanges.subscribe(value => {
       const npiControl = this.form.get('name_referring_provider_npi');
       if (value && value.trim() !== '') {
@@ -204,10 +226,14 @@ export class ClaimEntryComponent {
     return this.form.get('diagnosis') as UntypedFormArray;
   }
 
-  get diagnosisPointerOptions(): { value: number; label: string }[] {
-    return this.diagnosisControls.controls
-      .map((control, index) => control.value ?
-        { value: index + 1, label: (index + 1).toString() } : null)
+  updateDiagnosisPointerOptions(): void {
+    this.diagnosisPointerOptionsCache = this.diagnosisControls.controls
+      .map((control, index) => {
+        if (control.value) {
+          return { value: index + 1, label: (index + 1).toString() };
+        }
+        return null;
+      })
       .filter(option => option !== null) as { value: number; label: string }[];
   }
 
@@ -248,6 +274,21 @@ export class ClaimEntryComponent {
   addRow(): void {
     this.rowsControls.push(this.createRow());
   }
+
+  disabledDate = (current: Date): boolean => {
+    return current > new Date();
+  };
+
+  disabledFinalDate = (current: Date): boolean => {
+    const initialDate = this.form.get('rows')?.value[0]?.date_initial;
+    if (!initialDate) return true;
+
+    const today = new Date().setHours(0, 0, 0, 0);
+    const currentDate = new Date(current).setHours(0, 0, 0, 0);
+    const initialDateOnly = new Date(initialDate).setHours(0, 0, 0, 0);
+
+    return currentDate !== today && (currentDate > today || currentDate < initialDateOnly);
+  };
 
   updateDiagnosisPointers(): void {
     const validOptions = this.diagnosisControls.controls
@@ -383,13 +424,16 @@ export class ClaimEntryComponent {
 
   addDiagnosis(): void {
     const diagnosisArray = this.form.get('diagnosis') as UntypedFormArray;
-    diagnosisArray.length < 12 && diagnosisArray.push(new FormControl(null));
+    if (diagnosisArray.length < 12) {
+      diagnosisArray.push(new FormControl(null));
+    }
   }
 
   removeDiagnosis(index: number): void {
     const diagnosisArray = this.form.get('diagnosis') as UntypedFormArray;
     if (index > 0) {
       diagnosisArray.removeAt(index);
+      this.updateDiagnosisPointerOptions();
       this.updateDiagnosisPointers();
     }
   }
@@ -504,14 +548,6 @@ export class ClaimEntryComponent {
     if (!control) return '';
     if (control.valid && (control.dirty || control.touched)) return 'success';
     return control.invalid ? 'error' : '';
-  }
-
-  formatDate(date: Date): string {
-    if (!date) return '';
-    const d = new Date(date);
-    return `${(d.getMonth() + 1).toString().padStart(2, '0')}-` +
-      `${d.getDate().toString().padStart(2, '0')}-` +
-      `${d.getFullYear()}`;
   }
 
 }

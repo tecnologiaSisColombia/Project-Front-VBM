@@ -413,8 +413,9 @@
               [nzSpan]="24">
               <nz-date-picker
                 style="width: 100%"
-                nzFormat="MM-dd-YYYY" 
-                formControlName="date_service">
+                nzFormat="MM-dd-YYYY"
+                formControlName="date_service"
+                [nzDisabledDate]="disabledDate">
               </nz-date-picker>
             </nz-form-control>
           </nz-form-item>
@@ -601,7 +602,8 @@
                   <nz-date-picker
                     style="width: 110px;"
                     nzFormat="MM-dd-yyyy"
-                    formControlName="date_initial">
+                    formControlName="date_initial"
+                    [nzDisabledDate]="disabledDate">
                   </nz-date-picker>
                 </nz-form-control>
               </td>            
@@ -611,7 +613,8 @@
                   <nz-date-picker
                     style="width: 110px;"
                     nzFormat="MM-dd-yyyy"
-                    formControlName="date_final">
+                    formControlName="date_final"
+                    [nzDisabledDate]="disabledFinalDate">
                   </nz-date-picker>
                 </nz-form-control>
               </td>
@@ -682,7 +685,7 @@
                   <nz-select 
                     formControlName="diagnosis_pointer">
                     <nz-option
-                      *ngFor="let option of diagnosisPointerOptions"
+                      *ngFor="let option of diagnosisPointerOptionsCache"
                       [nzValue]="option.value"
                       [nzLabel]="option.label">
                     </nz-option>
