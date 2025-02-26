@@ -74,6 +74,10 @@ export class LocalitiesComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      address: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      phone: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      postal_code: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      state: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
     });
 
     this.searchNameSubject.pipe(debounceTime(1000)).subscribe((data) => {

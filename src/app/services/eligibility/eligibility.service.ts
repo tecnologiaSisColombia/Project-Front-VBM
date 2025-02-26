@@ -45,7 +45,7 @@ export class EligibilityService {
     }
 
     getClaim(
-        { patient, id_claim }: any,
+        { patient, id_claim, origin }: any,
         page: number | null = 1,
         pageSize: number | null = 10,
         init = false
@@ -55,13 +55,16 @@ export class EligibilityService {
             .set('page_size', (pageSize ?? 10).toString())
             .set('init', init)
 
-
         if (patient != null) {
             params = params.set('patient', patient)
         }
 
         if (id_claim != null) {
             params = params.set('id_claim', id_claim)
+        }
+
+        if (origin != null) {
+            params = params.set('origin', origin)
         }
 
         return this.http.get(`${this.hostname}eligibility/claim`, { params })
@@ -83,5 +86,23 @@ export class EligibilityService {
         }
 
         return this.http.get(`${this.hostname}eligibility/claim-cpt`, { params })
+    }
+
+    getClaimDx(
+        { id_claim }: any,
+        page: number | null = 1,
+        pageSize: number | null = 10,
+        init = false
+    ) {
+        let params = new HttpParams()
+            .set('page', (page ?? 1).toString())
+            .set('page_size', (pageSize ?? 10).toString())
+            .set('init', init)
+
+        if (id_claim != null) {
+            params = params.set('claim', id_claim)
+        }
+
+        return this.http.get(`${this.hostname}eligibility/claim-dx`, { params })
     }
 }

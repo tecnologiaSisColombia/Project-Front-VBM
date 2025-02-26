@@ -21,15 +21,20 @@
         [(ngModel)]="this[field.model]"
         (ngModelChange)="search($event, field.key)"
       />
-
       <ng-template #suffixIconSearch>
-        <span 
-          nz-icon 
-          nzType="search"> 
-        </span>
+        <span nz-icon nzType="search"></span>
       </ng-template>
     </nz-input-group>
-  </div>
+  
+      <nz-select
+        [(ngModel)]="originSearch"
+        (ngModelChange)="search($event, 'origin')"
+        nzAllowClear
+        nzPlaceHolder="Select Origin">
+        <nz-option nzValue="1" nzLabel="PLATFORM"></nz-option>
+        <nz-option nzValue="2" nzLabel="EXTERNAL"></nz-option>
+    </nz-select>
+  </div>  
 
   <nz-table
     #basicTable
@@ -101,7 +106,7 @@
   nzMaskClosable="false">
   <ng-container *nzModalContent>
     <app-claim-entry 
-      [claimData]="selectedClaim">
+      [claimDataView]="selectedClaim">
     </app-claim-entry>
   </ng-container>
 </nz-modal>

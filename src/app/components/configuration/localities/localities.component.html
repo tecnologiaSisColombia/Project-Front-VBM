@@ -64,6 +64,10 @@
     <thead>
       <tr>
         <th>Name</th>
+        <th>Address</th>
+        <th>Phone</th>
+        <th>Postal Code</th>
+        <th>State</th>
         <th>Created</th>
         <th>Action</th>
       </tr>
@@ -71,6 +75,10 @@
     <tbody>
       <tr *ngFor="let data of basicTable.data">
         <td>{{ data.name }}</td>
+        <td>{{ data.address }}</td>
+        <td>{{ data.phone }}</td>
+        <td>{{ data.postal_code }}</td>
+        <td>{{ data.state }}</td>
         <td>{{ data.created | date }}</td>
         <td>
           <a>
@@ -159,6 +167,94 @@
               nz-input 
               formControlName="name" 
               id="name" 
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="address"
+            style="text-align: center">
+            Address
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('address')">
+            <input 
+              nz-input 
+              formControlName="address" 
+              id="address" 
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="phone"
+            style="text-align: center">
+            Phone
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('phone')">
+            <input 
+              nz-input 
+              formControlName="phone" 
+              id="phone" 
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="postal_code"
+            style="text-align: center">
+            Postal code
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('postal_code')">
+            <input 
+              nz-input 
+              formControlName="postal_code" 
+              id="postal_code" 
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="state"
+            style="text-align: center">
+            State
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('state')">
+            <input 
+              nz-input 
+              formControlName="state" 
+              id="state" 
             />
           </nz-form-control>
         </nz-form-item>

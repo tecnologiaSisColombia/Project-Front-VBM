@@ -19,6 +19,7 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { EligibilityService } from 'app/services/eligibility/eligibility.service';
 import { ClaimEntryComponent } from '../claim-entry/claim-entry.component';
 import { finalize } from 'rxjs/operators';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-view-claims',
@@ -54,12 +55,13 @@ export class ViewClaimsComponent {
   page_size = 10;
   page = 1;
   idClaimsSearch: any = null;
+  originSearch: any = null;
   selectedClaim: any = {};
   [key: string]: any;
   searchFields = [
     { placeholder: 'Id Claim...', model: 'idClaimsSearch', key: 'id_claim' },
   ];
-  private searchNameSubject = new Subject<{ type: string; value: string }>();
+  private searchNameSubject = new Subject<{ type: string; value: string | number | null }>();
 
   constructor(
     private msgService: NzMessageService,
@@ -70,6 +72,7 @@ export class ViewClaimsComponent {
       .subscribe(({ type, value }) => {
         const fields = {
           id_claim: () => (this.idClaimsSearch = value),
+          origin: () => (this.originSearch = value),
         };
 
         (fields as Record<string, () => void>)[type]?.();
@@ -77,6 +80,7 @@ export class ViewClaimsComponent {
         this.getClaim();
         this.isDataLoading = false;
       });
+
   }
 
   ngOnInit(): void {
@@ -89,7 +93,8 @@ export class ViewClaimsComponent {
       .getClaim(
         {
           id_claim: this.idClaimsSearch,
-          patient: this.claimData.patient_id
+          patient: this.claimData.patient_id,
+          origin: this.originSearch,
         },
         this.page,
         this.page_size
@@ -103,10 +108,6 @@ export class ViewClaimsComponent {
         next: (res: any) => {
           this.dataToDisplay = res.results;
           this.setPagination(res.total);
-
-          if (this.dataToDisplay.length > 0) {
-            // this.getClaimCpt();
-          }
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
@@ -114,36 +115,12 @@ export class ViewClaimsComponent {
       });
   }
 
-  // getClaimCpt() {
-  //   const rawId = this.dataToDisplay[0].id;
-  //   this.isDataLoading = true;
-  //   this.eligibilityService
-  //     .getClaimCpt(
-  //       {
-  //         id_claim: rawId
-  //       },
-  //       this.page,
-  //       this.page_size,
-  //       true
-  //     )
-  //     .pipe(
-  //       finalize(() => {
-  //         this.isDataLoading = false;
-  //       })
-  //     )
-  //     .subscribe({
-  //       next: (res: any) => {
-  //         console.log(res)
-  //       },
-  //       error: (err) => {
-  //         this.msgService.error(JSON.stringify(err.error));
-  //       },
-  //     });
-  // }
-
-  search(value: string, type: string) {
+  search(value: string | number | null, type: string) {
+    if (type === 'origin') {
+      this.originSearch = value !== null ? Number(value) : null;
+    }
     this.isDataLoading = true;
-    this.searchNameSubject.next({ type, value });
+    this.searchNameSubject.next({ type, value: value ?? null });
   }
 
   pageChange(event: number) {
@@ -164,7 +141,31 @@ export class ViewClaimsComponent {
 
   openModalViewClaims(data: any) {
     this.selectedClaim = data;
-    this.isVisibleModalViewClaim = true;
+    this.isDataLoading = true;
+
+    const cptRequest = this.eligibilityService.getClaimCpt(
+      { id_claim: this.selectedClaim.id }, null, null, true);
+
+    const dxRequest = this.eligibilityService.getClaimDx(
+      { id_claim: this.selectedClaim.id }, null, null, true);
+
+    forkJoin({ cpts: cptRequest, dx: dxRequest })
+      .pipe(finalize(() => {
+        this.isDataLoading = false;
+      }))
+      .subscribe({
+        next: (res: any) => {
+          this.selectedClaim.cpts = res.cpts;
+          this.selectedClaim.dx = res.dx;
+          this.selectedClaim.modifiers = this.claimData.modifiers;
+          this.selectedClaim.provider_data = this.claimData.provider;
+          this.selectedClaim.patient_data = this.claimData.patient;
+          this.isVisibleModalViewClaim = true;
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        }
+      });
   }
 
   CancelOkModalViewClaims() {

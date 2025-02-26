@@ -9,11 +9,11 @@
   </div>
 </div>
 
-<nz-card nzTitle="CLAIM ENTRY" [nzBordered]="true" class="main-card">
+<nz-card nzTitle="HEALTH INSURANCE CLAIM FORM" [nzBordered]="true" class="main-card">
   <nz-spin [nzSpinning]="modalLoader">
     <form nz-form [formGroup]="form" (submit)="submit()">
       <nz-row [nzGutter]="16">
-        <nz-col [nzSpan]="4">
+        <nz-col [nzSpan]="5">
           <nz-form-item>
             <nz-form-label 
               [nzSpan]="24" 
@@ -40,7 +40,7 @@
           </nz-form-item>
         </nz-col>
       
-        <nz-col [nzSpan]="4">
+        <nz-col [nzSpan]="5">
           <nz-form-item>
             <nz-form-label 
               [nzSpan]="24" 
@@ -61,7 +61,7 @@
           </nz-form-item>
         </nz-col>
 
-        <nz-col [nzSpan]="4">
+        <nz-col [nzSpan]="6">
           <nz-form-item>
             <nz-form-label 
               [nzSpan]="24" 
@@ -118,27 +118,6 @@
                 nz-input
                 id="patient_gender"
                 formControlName="patient_gender"
-                readonly
-              />
-            </nz-form-control>
-          </nz-form-item>
-        </nz-col>
-
-        <nz-col [nzSpan]="4">
-          <nz-form-item>
-            <nz-form-label 
-              [nzSpan]="24" 
-              nzFor="insured_name">
-              4. Insured's Name
-            </nz-form-label>
-
-            <nz-form-control 
-              [nzErrorTip]="errorTemplate"
-              [nzSpan]="24">
-              <input 
-                nz-input
-                id="insured_name"
-                formControlName="insured_name"
                 readonly
               />
             </nz-form-control>
@@ -407,19 +386,27 @@
               nzFor="date_service">
               12. Date Service
             </nz-form-label>
-
             <nz-form-control 
               [nzErrorTip]="errorTemplate"
               [nzSpan]="24">
-              <nz-date-picker
-                style="width: 100%"
-                nzFormat="MM-dd-YYYY"
-                formControlName="date_service"
-                [nzDisabledDate]="disabledDate">
-              </nz-date-picker>
+              <ng-container *ngIf="isViewMode; else editDateService">
+                <input
+                  nz-input
+                  readonly
+                  [value]="form.get('date_service')?.value | date:'MM-dd-YYYY'"
+                />
+              </ng-container>
+              <ng-template #editDateService>
+                <nz-date-picker
+                  style="width: 100%"
+                  nzFormat="MM-dd-YYYY"
+                  formControlName="date_service"
+                  [nzDisabledDate]="disabledDate">
+                </nz-date-picker>
+              </ng-template>
             </nz-form-control>
           </nz-form-item>
-        </nz-col>   
+        </nz-col>          
 
         <nz-col [nzSpan]="4">
           <nz-form-item>
@@ -459,6 +446,7 @@
               [nzSpan]="24">
               <input 
                 nz-input 
+                [readOnly]="isViewMode"
                 id="name_referring_provider" 
                 formControlName="name_referring_provider" 
               />
@@ -479,6 +467,7 @@
               [nzErrorTip]="errorTemplate">
               <input 
                 nz-input 
+                [readOnly]="isViewMode"
                 id="name_referring_provider_npi" 
                 formControlName="name_referring_provider_npi" 
               />
@@ -498,6 +487,7 @@
               [nzSpan]="24">
               <input 
                 nz-input 
+                [readOnly]="isViewMode"
                 id="original_ref_number" 
                 formControlName="original_ref_number" 
               />
@@ -517,6 +507,7 @@
               [nzSpan]="24">
               <input 
                 nz-input 
+                [readOnly]="isViewMode"
                 id="prior_authorization_number" 
                 formControlName="prior_authorization_number" 
               />
@@ -525,7 +516,9 @@
         </nz-col>
       </nz-row>
 
-      <nz-row nzJustify="center">
+      <nz-row 
+        nzJustify="center" 
+        *ngIf="!isViewMode">
         <nz-col>
           <button 
             nz-button 
@@ -540,39 +533,53 @@
       </nz-row>    
 
       <div formArrayName="diagnosis">
+        <nz-row nzJustify="center" *ngIf="isViewMode">
+          <p>Diagnosis</p>
+        </nz-row>
         <nz-row [nzGutter]="16">
           <nz-col
             [nzSpan]="6"
             style="margin-bottom: 16px;"
             *ngFor="let diagCtrl of diagnosisControls.controls; let i = index">
             <nz-form-item>            
-              <nz-form-control 
-                [nzErrorTip]="errorTemplate"
+              <nz-form-control
+                [nzHasFeedback]="true"
+                [nzValidateStatus]="getDiagnosisStatus(diagCtrl)"
                 [nzSpan]="24">
-                <nz-select
-                  nzShowSearch
-                  [formControlName]="i"
-                  [nzOptions]="diagnosisOptions"
-                  style="width: 100%"
-                  [nzSuffixIcon]="deleteIcon"
-                  [nzPlaceHolder]="'Diag ' + (i + 1)">
-                </nz-select>
+                <ng-container *ngIf="isViewMode; else editDiagnosis">
+                  <input
+                    nz-input
+                    readonly
+                    [value]="getDiagnosisLabel(diagCtrl.value)"
+                    [placeholder]="'Diag ' + (i + 1)" />
+                </ng-container>
 
-                <ng-template #deleteIcon>
-                  <i
-                    nz-icon
-                    nzType="delete"
-                    nzTheme="twotone"
-                    *ngIf="i !== 0"
-                    (click)="removeDiagnosis(i)"
-                    style="cursor: pointer">
-                  </i>
+                <ng-template #editDiagnosis>
+                  <nz-select
+                    nzShowSearch
+                    [formControlName]="i"
+                    [nzOptions]="diagnosisOptions"
+                    style="width: 100%"
+                    [nzSuffixIcon]="deleteIcon"
+                    [nzPlaceHolder]="'Diag ' + (i + 1)">
+                  </nz-select>
+
+                  <ng-template #deleteIcon>
+                    <i
+                      nz-icon
+                      nzType="delete"
+                      nzTheme="twotone"
+                      *ngIf="!isViewMode && i !== 0"
+                      (click)="removeDiagnosis(i)"
+                      style="cursor: pointer">
+                    </i>
+                  </ng-template>
                 </ng-template>
               </nz-form-control>
             </nz-form-item>
           </nz-col>
         </nz-row>
-      </div>
+      </div>      
         
       <div class="table-container">
         <nz-table 
@@ -581,123 +588,192 @@
           [nzFrontPagination]="false">
           <thead>
             <tr>
-              <th>Date Initial</th>
-              <th>Date Final</th>
+              <th nzWidth="150px">Date Initial</th>
+              <th nzWidth="150px">Date Final</th>
               <th>Place of Service</th>
               <th nzWidth="110px">Emg</th>
               <th>Procedures (CPT)</th>
-              <th nzWidth="400px" *ngIf="claimData.modifiers == '1'">Modifiers</th>
+              <th 
+                nzWidth="400px" 
+                *ngIf="claimData?.modifiers == '1' || 
+                claimDataView.modifiers == '1'">
+                Modifiers
+              </th>
               <th>Diagnosis pointer</th>
               <th nzWidth="100px">Charges</th>
               <th nzWidth="80px">Days Unit</th>
               <th>Rendering Provider ID</th>
-              <th>Action</th>
+              <th *ngIf="!isViewMode">Action</th>
             </tr>
           </thead>
           <tbody formArrayName="rows">
             <tr *ngFor="let rowCtrl of rowsControls.controls; let i = index" [formGroupName]="i">
               <td>
                 <nz-form-control 
-                  [nzHasFeedback]="hasFeedback('rows.0.date_initial')">
-                  <nz-date-picker
-                    style="width: 110px;"
-                    nzFormat="MM-dd-yyyy"
-                    formControlName="date_initial"
-                    [nzDisabledDate]="disabledDate">
-                  </nz-date-picker>
+                  [nzHasFeedback]="hasFeedback('rows.' + i + '.date_initial')">
+                  <ng-container *ngIf="isViewMode; else editDateInitial">
+                    <input
+                      nz-input
+                      readonly
+                      [value]="rowCtrl.get('date_initial')?.value | date:'MM-dd-yyyy'"
+                    />
+                  </ng-container>
+                  <ng-template #editDateInitial>
+                    <nz-date-picker
+                      style="width: 100%"
+                      nzFormat="MM-dd-yyyy"
+                      formControlName="date_initial"
+                      [nzDisabledDate]="disabledDate">
+                    </nz-date-picker>
+                  </ng-template>
                 </nz-form-control>
-              </td>            
+              </td>                        
               <td>
                 <nz-form-control 
-                  [nzHasFeedback]="hasFeedback('rows.0.date_final')">
-                  <nz-date-picker
-                    style="width: 110px;"
-                    nzFormat="MM-dd-yyyy"
-                    formControlName="date_final"
-                    [nzDisabledDate]="disabledFinalDate">
-                  </nz-date-picker>
+                  [nzHasFeedback]="hasFeedback('rows.' + i + '.date_final')">
+                  <ng-container *ngIf="isViewMode; else editDateFinal">
+                    <input
+                      nz-input
+                      readonly
+                      [value]="rowCtrl.get('date_final')?.value | date:'MM-dd-yyyy'"
+                    />
+                  </ng-container>
+                  <ng-template #editDateFinal>
+                    <nz-date-picker
+                      style="width: 100%"
+                      nzFormat="MM-dd-yyyy"
+                      formControlName="date_final"
+                      [nzDisabledDate]="disabledFinalDate">
+                    </nz-date-picker>
+                  </ng-template>
                 </nz-form-control>
-              </td>
-              <td>
-                <nz-form-control
-                  [nzHasFeedback]="hasFeedback('rows.0.place_of_service')">
-                  <nz-select
-                    formControlName="place_of_service"
-                    [nzOptions]="placeServicesOptions"
-                    style="width: 100%">
-                  </nz-select>
-                </nz-form-control>
-              </td>            
-              <td>
-                <nz-form-control 
-                  [nzHasFeedback]="hasFeedback('rows.0.emg')">
-                  <nz-select 
-                    formControlName="emg" 
-                    nzPlaceHolder="Select Emg">
-                    <nz-option 
-                      nzValue="1" 
-                      nzLabel="YES">
-                    </nz-option>
-                    <nz-option 
-                      nzValue="2" 
-                      nzLabel="NO">
-                    </nz-option>
-                  </nz-select>
-                </nz-form-control>
-              </td>
+              </td>              
               <td>
                 <nz-form-control 
-                  [nzHasFeedback]="hasFeedback('rows.0.procedures')">
-                  <nz-select
-                    formControlName="procedures"
-                    nzShowSearch
-                    style="width: 100%"
-                    (ngModelChange)="onProcedureSelected($event, rowCtrl)"
-                    [nzOptions]="codeOptions">
-                  </nz-select>
+                  [nzHasFeedback]="hasFeedback('rows.' + i + '.place_of_service')">
+                  <ng-container *ngIf="isViewMode; else editPlaceService">
+                    <input
+                      nz-input
+                      readonly
+                      formControlName="place_of_service"
+                    />
+                  </ng-container>
+                  <ng-template #editPlaceService>
+                    <nz-select
+                      formControlName="place_of_service"
+                      [nzOptions]="placeServicesOptions"
+                      style="width: 100%">
+                    </nz-select>
+                  </ng-template>
                 </nz-form-control>
-              </td>            
-              <td *ngIf="claimData.modifiers == '1'">
+              </td>                         
+              <td>
+                <nz-form-control 
+                  [nzHasFeedback]="hasFeedback('rows.' + i + '.emg')">
+                  <ng-container *ngIf="isViewMode; else editEmg">
+                    <input
+                      nz-input
+                      readonly
+                      [value]="getEmgLabel(rowCtrl.get('emg')?.value)"
+                    />
+                  </ng-container>
+                  <ng-template #editEmg>
+                    <nz-select 
+                      formControlName="emg" 
+                      nzPlaceHolder="Select Emg">
+                      <nz-option 
+                        nzValue="1" 
+                        nzLabel="YES">
+                      </nz-option>
+                      <nz-option 
+                        nzValue="2" 
+                        nzLabel="NO">
+                      </nz-option>
+                    </nz-select>
+                  </ng-template>
+                </nz-form-control>
+              </td>              
+              <td>
+                <nz-form-control 
+                  [nzHasFeedback]="hasFeedback('rows.' + i + '.procedures')">
+                  <ng-container *ngIf="isViewMode; else editProcedure">
+                    <input
+                      nz-input
+                      readonly
+                      formControlName="procedures"
+                    />
+                  </ng-container>
+                  <ng-template #editProcedure>
+                    <nz-select
+                      formControlName="procedures"
+                      nzShowSearch
+                      style="width: 100%"
+                      (ngModelChange)="onProcedureSelected($event, rowCtrl)"
+                      [nzOptions]="codeOptions">
+                    </nz-select>
+                  </ng-template>
+                </nz-form-control>
+              </td>                       
+              <td *ngIf="claimData?.modifiers == '1' || claimDataView.modifiers == '1'">
                 <div formArrayName="modifiers" nz-row [nzGutter]="8">
-                  <ng-container
+                  <ng-container 
                     *ngFor="let modifierCtrl of getModifiersControls(rowCtrl); 
                     let j = index" [formGroupName]="j">
                     <nz-col [nzSpan]="6">
                       <nz-form-control 
                         [nzHasFeedback]="true"
-                        [nzValidateStatus]="getModifierValidationStatus(rowCtrl)">
-                        <nz-select
-                          formControlName="value"
-                          nzAllowClear
-                          nzShowSearch
-                          (ngModelChange)="onModifierChange(rowCtrl)">
-                          <nz-option
-                            *ngFor="let option of modifiersOptions"
-                            [nzValue]="option.value"
-                            [nzLabel]="option.label">
-                          </nz-option>
-                        </nz-select>
+                        [nzValidateStatus]="getModifierStatus(rowCtrl, modifierCtrl)">
+                        <ng-container *ngIf="isViewMode; else editModifier">
+                          <input
+                            nz-input
+                            readonly
+                            [value]="getModifierLabel(modifierCtrl.get('value')?.value)" />
+                        </ng-container>
+                        <ng-template #editModifier>
+                          <nz-select
+                            formControlName="value"
+                            nzAllowClear
+                            nzShowSearch
+                            (ngModelChange)="onModifierChange(rowCtrl)">
+                            <nz-option
+                              *ngFor="let option of modifiersOptions"
+                              [nzValue]="option.value"
+                              [nzLabel]="option.label">
+                            </nz-option>
+                          </nz-select>
+                        </ng-template>
                       </nz-form-control>
                     </nz-col>
                   </ng-container>
                 </div>
-              </td>
+              </td>              
               <td>
                 <nz-form-control 
-                  [nzHasFeedback]="hasFeedback('rows.0.diagnosis_pointer')">
-                  <nz-select 
-                    formControlName="diagnosis_pointer">
-                    <nz-option
-                      *ngFor="let option of diagnosisPointerOptionsCache"
-                      [nzValue]="option.value"
-                      [nzLabel]="option.label">
-                    </nz-option>
-                  </nz-select>
+                  [nzHasFeedback]="hasFeedback('rows.' + i + '.diagnosis_pointer')">
+                  <ng-container 
+                    *ngIf="isViewMode; else selectDiagnosis">
+                    <input 
+                      nz-input 
+                      type="text"
+                      formControlName="diagnosis_pointer"
+                      readonly
+                    />
+                  </ng-container>
+                  <ng-template #selectDiagnosis>
+                    <nz-select 
+                      formControlName="diagnosis_pointer">
+                      <nz-option
+                        *ngFor="let option of diagnosisPointerOptionsCache"
+                        [nzValue]="option.value"
+                        [nzLabel]="option.label">
+                      </nz-option>
+                    </nz-select>
+                  </ng-template>
                 </nz-form-control>
-              </td>            
+              </td>                             
               <td>
                 <nz-form-control 
-                  [nzHasFeedback]="hasFeedback('rows.0.charges')">
+                  [nzHasFeedback]="hasFeedback('rows.' + i + '.charges')">
                   <input 
                     nz-input 
                     type="number" 
@@ -709,26 +785,26 @@
               </td>
               <td>
                 <nz-form-control 
-                  [nzHasFeedback]="hasFeedback('rows.0.units')">
+                  [nzHasFeedback]="hasFeedback('rows.' + i + '.units')">
                   <input 
                     nz-input 
                     type="number" 
+                    [readonly]="isViewMode"
                     formControlName="units" 
                   />
                 </nz-form-control>
               </td>
               <td>
                 <nz-form-control 
-                  [nzHasFeedback]="hasFeedback('rows.0.rendering_provider_id')">
+                  [nzHasFeedback]="hasFeedback('rows.' + i + '.rendering_provider_id')">
                   <input 
                     nz-input 
-                    type="number" 
                     formControlName="rendering_provider_id" 
                     readonly 
                   />
                 </nz-form-control>
               </td>
-              <td>
+              <td *ngIf="!isViewMode">
                 <a>
                   <span 
                     nz-icon 
@@ -803,31 +879,40 @@
               nzFor="ssn_ein">
               25b. SSN / EIN
             </nz-form-label>
-
             <nz-form-control 
               [nzErrorTip]="errorTemplate"
               [nzSpan]="24">
-              <nz-select 
-                style="width: 100%;" 
-                nzShowSearch 
-                id="ssn_ein"
-                nzPlaceHolder="Select SSN / EIN"
-                formControlName="ssn_ein">
-                <nz-option 
-                  *ngFor="let option of ssnEinOptions"
-                  [nzLabel]="option.label" 
-                  [nzValue]="option.value">
-                </nz-option>   
-              </nz-select>
+              <ng-container *ngIf="isViewMode; else editSsnEin">
+                <input
+                  nz-input
+                  readonly
+                  [value]="getSsnEinLabel(form.get('ssn_ein')?.value)"
+                  placeholder="SSN / EIN"
+                />
+              </ng-container>
+              <ng-template #editSsnEin>
+                <nz-select 
+                  style="width: 100%;" 
+                  nzShowSearch 
+                  id="ssn_ein"
+                  nzPlaceHolder="Select SSN / EIN"
+                  formControlName="ssn_ein">
+                  <nz-option 
+                    *ngFor="let option of ssnEinOptions"
+                    [nzLabel]="option.label" 
+                    [nzValue]="option.value">
+                  </nz-option>   
+                </nz-select>
+              </ng-template>
             </nz-form-control>
           </nz-form-item>
-        </nz-col>
+        </nz-col>        
 
         <nz-col [nzSpan]="4">
           <nz-form-item>
             <nz-form-label 
               [nzSpan]="24" 
-              nzFor="patient_account">
+              nzFor="patient_account_number">
               26. Patient's Account Number
             </nz-form-label>
 
@@ -835,8 +920,9 @@
               [nzSpan]="24">
               <input 
                 nz-input
-                id="patient_account"
-                formControlName="patient_account"
+                id="patient_account_number"
+                [readonly]="isViewMode"
+                formControlName="patient_account_number"
               />
             </nz-form-control>
           </nz-form-item>
@@ -855,6 +941,7 @@
               [nzSpan]="24">
               <input 
                 nz-input 
+                type="number"
                 id="total_charge" 
                 formControlName="total_charge" 
                 readonly 
@@ -876,7 +963,8 @@
               <input
                 type="number"
                 nz-input 
-                id="amount_paid" 
+                id="amount_paid"
+                [readonly]="isViewMode"
                 formControlName="amount_paid" 
               />
             </nz-form-control>
@@ -886,28 +974,34 @@
         <nz-col [nzSpan]="4">
           <nz-form-item>
             <nz-form-label 
-              [nzSpan]="24" 
-              nzFor="signature_doctor">
+              [nzSpan]="24" nzFor="signature_doctor">
               31. Signature Doctor
             </nz-form-label>
-
             <nz-form-control 
-              [nzErrorTip]="errorTemplate"
-              [nzSpan]="24">
-              <nz-select 
-                style="width: 100%;" 
-                id="signature_doctor"
-                nzPlaceHolder="Select Signature Doctor"
-                formControlName="signature_doctor">
-                <nz-option 
-                  *ngFor="let option of signatureOptions"
-                  [nzLabel]="option.label" 
-                  [nzValue]="option.value">
-                </nz-option>   
-              </nz-select>
+              [nzErrorTip]="errorTemplate" [nzSpan]="24">
+              <ng-container *ngIf="isViewMode; else editSignatureDoctor">
+                <input 
+                  nz-input 
+                  readonly
+                  [value]="getSignatureDoctorLabel(form.get('signature_doctor')?.value)"
+                />
+              </ng-container>
+              <ng-template #editSignatureDoctor>
+                <nz-select 
+                  style="width: 100%;" 
+                  id="signature_doctor"
+                  nzPlaceHolder="Select Signature Doctor"
+                  formControlName="signature_doctor">
+                  <nz-option 
+                    *ngFor="let option of signatureOptions"
+                    [nzLabel]="option.label" 
+                    [nzValue]="option.value">
+                  </nz-option>   
+                </nz-select>
+              </ng-template>
             </nz-form-control>
           </nz-form-item>
-        </nz-col>
+        </nz-col>        
       </nz-row>
       
       <nz-row [nzGutter]="16">    
@@ -918,19 +1012,27 @@
               nzFor="date_signature_doctor">
               31b. Date Signature Doctor
             </nz-form-label>
-
             <nz-form-control 
-              [nzErrorTip]="errorTemplate"
+              [nzErrorTip]="errorTemplate" 
               [nzSpan]="24">
-              <nz-date-picker 
-                style="width: 100%;"
-                nzFormat="MM-dd-YYYY" 
-                formControlName="date_signature_doctor"
-                [nzDisabledDate]="disabledDate">
-              </nz-date-picker>
+              <ng-container *ngIf="isViewMode; else editDate">
+                <input
+                  nz-input
+                  readonly
+                  [value]="form.get('date_signature_doctor')?.value | date:'MM-dd-yyyy'"
+                />
+              </ng-container>
+              <ng-template #editDate>
+                <nz-date-picker 
+                  style="width: 100%;"
+                  nzFormat="MM-dd-YYYY" 
+                  formControlName="date_signature_doctor"
+                  [nzDisabledDate]="disabledDate">
+                </nz-date-picker>
+              </ng-template>
             </nz-form-control>
           </nz-form-item>
-        </nz-col> 
+        </nz-col>
 
         <nz-col [nzSpan]="4">
           <nz-form-item>
@@ -941,17 +1043,34 @@
             </nz-form-label>
 
             <nz-form-control 
-              [nzErrorTip]="errorTemplate"
+              [nzErrorTip]="errorTemplate" 
               [nzSpan]="24">
-              <input 
-                nz-input 
-                id="service_facility_location" 
-                formControlName="service_facility_location" 
-              />
+              <ng-container *ngIf="isViewMode; else selectAddress">
+                <input
+                  nz-input
+                  id="service_facility_location"
+                  formControlName="service_facility_location"
+                  readonly
+                />
+              </ng-container>
+
+              <ng-template #selectAddress>
+                <nz-select 
+                  id="service_facility_location"
+                  formControlName="service_facility_location"
+                  nzShowSearch
+                  nzPlaceHolder="Select Address">
+                  <nz-option 
+                    *ngFor="let locality of localities" 
+                    [nzValue]="locality.address" 
+                    [nzLabel]="locality.name + ' - ' + locality.address">
+                  </nz-option>
+                </nz-select>
+              </ng-template>
             </nz-form-control>
           </nz-form-item>
-        </nz-col> 
-
+        </nz-col>
+        
         <nz-col [nzSpan]="4">
           <nz-form-item>
             <nz-form-label 
@@ -961,16 +1080,33 @@
             </nz-form-label>
 
             <nz-form-control 
-              [nzErrorTip]="errorTemplate"
+              [nzErrorTip]="errorTemplate" 
               [nzSpan]="24">
-              <input 
-                nz-input 
-                id="service_facility_npi" 
-                formControlName="service_facility_npi" 
-              />
+              <ng-container *ngIf="isViewMode; else selectTemplate">
+                <input
+                  nz-input
+                  id="service_facility_npi"
+                  formControlName="service_facility_npi"
+                  [readonly]="isViewMode"
+                />
+              </ng-container>
+
+              <ng-template #selectTemplate>
+                <nz-select 
+                  id="service_facility_npi"
+                  formControlName="service_facility_npi"
+                  nzShowSearch
+                  nzPlaceHolder="Select Npi">
+                  <nz-option 
+                    *ngFor="let doctor of doctors" 
+                    [nzValue]="doctor.npi" 
+                    [nzLabel]="doctor.first_name + ' - ' + doctor.npi">
+                  </nz-option>
+                </nz-select>
+              </ng-template>
             </nz-form-control>
           </nz-form-item>
-        </nz-col> 
+        </nz-col>        
 
         <nz-col [nzSpan]="4">
           <nz-form-item>

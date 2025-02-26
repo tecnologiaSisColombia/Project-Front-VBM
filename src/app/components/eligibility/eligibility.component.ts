@@ -271,10 +271,12 @@ export class EligibilityComponent {
     this.isVisibleModalMember = true;
   }
 
-  openModalListClaims(id: any): void {
-
+  openModalListClaims(data: any): void {
     this.selectedClaim = {
-      patient_id: id ?? '',
+      patient_id: data.id ?? '',
+      modifiers: data.insurer_data.modifiers,
+      provider: data.suppliers[0],
+      patient: data
     };
 
     this.isVisibleModalListClaims = true;
@@ -291,20 +293,11 @@ export class EligibilityComponent {
       patient_gender: rowData?.gender ?? '',
       patient_postal_code: rowData?.postal_code ?? '',
       patient_address: `${rowData?.primary_address ?? ''} ${rowData?.address_1 ?? ''}`.trim(),
-      insured_name: rowData?.insurer_data?.name ?? '',
-      insurer_address: rowData?.insurer_data?.address ?? '',
-      provider_city: rowData?.suppliers[0]?.city ?? '',
-      provider_phone: rowData?.suppliers[0]?.user.phone ?? '',
-      provider_address: rowData?.suppliers[0]?.address ?? '',
-      provider_postal_code: rowData?.suppliers[0]?.postal_code ?? '',
-      provider_state: rowData?.suppliers[0]?.state ?? '',
-      provider_npi: rowData?.suppliers[0]?.npi ?? '',
-      federal_tax_id: rowData?.suppliers[0]?.federal_tax_id ?? '',
       modifiers: rowData?.insurer_data?.modifiers ?? '',
       insured_insurance_plan_name: rowData?.subplan_data?.plan_data.name ?? '',
-      plan_contract: rowData.subplan_data.plan_contract ?? '',
       group: rowData.subplan_data.group ?? '',
       primary_subscriber_id: rowData?.primary_subscriber_id ?? '',
+      provider_data: rowData?.suppliers[0],
     };
     this.isVisibleModalClaim = true;
   }
