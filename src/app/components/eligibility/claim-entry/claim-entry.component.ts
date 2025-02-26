@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Input } from '@angular/core';
+import { Input, ViewChild, ElementRef } from '@angular/core';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzGridModule } from 'ng-zorro-antd/grid';
@@ -93,8 +93,8 @@ export class ClaimEntryComponent {
     { label: "OTHER", value: 7 },
   ];
   diagnosisPointerOptionsCache: { value: number; label: string }[] = [];
-
   form: UntypedFormGroup;
+  @ViewChild('childContent', { static: false }) childContent!: ElementRef;
 
   constructor(
     private msgService: NzMessageService,
@@ -711,4 +711,7 @@ export class ClaimEntryComponent {
     return control.invalid ? 'error' : '';
   }
 
+  getChildContent(): ElementRef {
+    return this.childContent;
+  }
 }

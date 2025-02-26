@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
@@ -9,6 +9,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { debounceTime, Subject } from 'rxjs';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
@@ -20,6 +21,8 @@ import { EligibilityService } from 'app/services/eligibility/eligibility.service
 import { ClaimEntryComponent } from '../claim-entry/claim-entry.component';
 import { finalize } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-view-claims',
@@ -40,6 +43,7 @@ import { forkJoin } from 'rxjs';
     FormsModule,
     NzModalModule,
     NzEmptyModule,
+    NzButtonComponent,
     ClaimEntryComponent
   ],
   templateUrl: './view-claims.component.html',
@@ -48,6 +52,7 @@ import { forkJoin } from 'rxjs';
 export class ViewClaimsComponent {
   @Input() claimData: any;
   isDataLoading = false;
+  isPrinting = false;
   isVisibleModalViewClaim = false;
   dataToDisplay: any[] = [];
   num_pages = 1;
@@ -62,6 +67,9 @@ export class ViewClaimsComponent {
     { placeholder: 'Id Claim...', model: 'idClaimsSearch', key: 'id_claim' },
   ];
   private searchNameSubject = new Subject<{ type: string; value: string | number | null }>();
+
+  @ViewChild(ClaimEntryComponent, { static: false })
+  claimEntryComponent!: ClaimEntryComponent;
 
   constructor(
     private msgService: NzMessageService,
@@ -170,5 +178,34 @@ export class ViewClaimsComponent {
 
   CancelOkModalViewClaims() {
     this.isVisibleModalViewClaim = false;
+  }
+
+  printClaim() {
+    const content = this.claimEntryComponent.getChildContent()?.nativeElement;
+
+    if (!content) return;
+
+    this.isPrinting = true;
+
+    html2canvas(content, {
+      scale: 4,
+      logging: false,
+      useCORS: true,
+      backgroundColor: null,
+    })
+      .then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a0');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+        pdf.addImage(imgData, 'PNG', 0, 10, pdfWidth, pdfHeight, '', 'FAST');
+        pdf.save('Claim.pdf');
+        this.msgService.success('Export completed successfully');
+      })
+      .catch((error) => this.msgService.error(JSON.stringify(error)))
+      .finally(() => {
+        this.isPrinting = false;
+      });
   }
 }

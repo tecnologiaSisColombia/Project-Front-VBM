@@ -20,6 +20,8 @@ import { UserManagementComponent } from 'app/components/user-management/user-man
 import { ProfilesComponent } from 'app/components/user-management/profiles/profiles.component'
 import { EligibilityComponent } from 'app/components/eligibility/eligibility.component'
 import { MainMenuComponent } from 'app/components/main-menu/main-menu.component'
+import { BillingComponent } from 'app/components/billing/billing.component'
+
 
 export const routes: Routes = [
   {
@@ -121,6 +123,11 @@ export const routes: Routes = [
       {
         path: 'patients',
         component: EligibilityComponent,
+        canActivate: [AuthGuardService],
+      },
+      {
+        path: 'billing',
+        component: BillingComponent,
         canActivate: [AuthGuardService],
       },
     ],
