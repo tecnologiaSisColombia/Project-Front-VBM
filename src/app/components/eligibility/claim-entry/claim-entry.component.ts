@@ -473,10 +473,10 @@ export class ClaimEntryComponent {
 
   searchCodes(): void {
     forkJoin([
-      this.productService.get({ payer_id: this.claimData.insurer_data.payer_id }, null, null, true).pipe(
+      this.productService.get({ payer_id: this.claimData?.insurer_data.payer_id }, null, null, true).pipe(
         map((res: any) => Array.isArray(res) ? res : [])
       ),
-      this.serviceService.get({ payer_id: this.claimData.insurer_data.payer_id }, null, null, true).pipe(
+      this.serviceService.get({ payer_id: this.claimData?.insurer_data.payer_id }, null, null, true).pipe(
         map((res: any) => Array.isArray(res) ? res : [])
       )
     ])
