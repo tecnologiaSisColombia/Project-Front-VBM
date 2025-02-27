@@ -11,7 +11,7 @@ export class ProductsService {
   constructor(private http: HttpClient) { }
 
   get(
-    { description, code }: any,
+    { description, code, payer_id }: any,
     page: number | null = 1,
     pageSize: number | null = 10,
     init = false
@@ -20,6 +20,10 @@ export class ProductsService {
       .set('page', (page ?? 1).toString())
       .set('page_size', (pageSize ?? 10).toString())
       .set('init', init);
+
+    if (payer_id != null) {
+      params = params.set('payer_id', payer_id);
+    }
 
     if (description != null) {
       params = params.set('description', description);

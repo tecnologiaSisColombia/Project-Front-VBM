@@ -13,7 +13,8 @@ export class ServicesService {
   get(
     {
       description,
-      code
+      code,
+      payer_id
     }: any,
     page: number | null = 1,
     pageSize: number | null = 10,
@@ -23,6 +24,11 @@ export class ServicesService {
       .set('page', (page ?? 1).toString())
       .set('page_size', (pageSize ?? 10).toString())
       .set('init', init);
+
+
+    if (payer_id != null) {
+      params = params.set('payer_id', payer_id);
+    }
 
     if (description != null) {
       params = params.set('description', description);

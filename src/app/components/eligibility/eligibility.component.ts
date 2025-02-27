@@ -298,6 +298,7 @@ export class EligibilityComponent {
       group: rowData.subplan_data.group ?? '',
       primary_subscriber_id: rowData?.primary_subscriber_id ?? '',
       provider_data: rowData?.suppliers[0],
+      insurer_data: rowData?.insurer_data,
     };
     this.isVisibleModalClaim = true;
   }

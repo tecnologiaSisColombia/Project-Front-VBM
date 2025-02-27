@@ -193,6 +193,22 @@ export class ClaimEntryComponent {
     });
   }
 
+  updateModifiersValidation(): void {
+    if (!(this.claimData?.modifiers === '1' || this.claimDataView?.modifiers === '1')) {
+      this.rowsControls.controls.forEach((row) => {
+        const formGroup = row as FormGroup;
+        const modifiersArray = formGroup.get('modifiers') as FormArray;
+        modifiersArray.controls.forEach((modGroup: AbstractControl) => {
+          const modControl = modGroup.get('value') as FormControl;
+          modControl.clearValidators();
+          modControl.updateValueAndValidity();
+        });
+        modifiersArray.clearValidators();
+        modifiersArray.updateValueAndValidity();
+      });
+    }
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['claimData'] && this.claimData) {
       this.form.patchValue({
@@ -256,6 +272,7 @@ export class ClaimEntryComponent {
 
           rowsFormArray.push(rowGroup);
         });
+
       }
       this.form.patchValue({
         insured_id: this.claimDataView.patient_data.primary_subscriber_id,
@@ -290,6 +307,9 @@ export class ClaimEntryComponent {
         billing_provider_npi: this.claimDataView.provider_data.npi,
       });
     }
+
+    this.updateModifiersValidation();
+
   }
 
   get isViewMode(): boolean {
@@ -399,7 +419,6 @@ export class ClaimEntryComponent {
   getModifierStatus(row: AbstractControl, modCtrl: AbstractControl): string {
     const modifiersArray = row.get('modifiers') as FormArray;
     const modValue = modCtrl.get('value')?.value;
-    // Si el valor está vacío, no mostramos error
     if (!modValue) {
       return '';
     }
@@ -454,10 +473,10 @@ export class ClaimEntryComponent {
 
   searchCodes(): void {
     forkJoin([
-      this.productService.get({}, 1, 10, true).pipe(
+      this.productService.get({ payer_id: this.claimData.insurer_data.payer_id }, null, null, true).pipe(
         map((res: any) => Array.isArray(res) ? res : [])
       ),
-      this.serviceService.get({}, 1, 10, true).pipe(
+      this.serviceService.get({ payer_id: this.claimData.insurer_data.payer_id }, null, null, true).pipe(
         map((res: any) => Array.isArray(res) ? res : [])
       )
     ])

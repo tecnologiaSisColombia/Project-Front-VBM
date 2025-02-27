@@ -348,6 +348,9 @@ export class InsurersComponent implements OnInit {
   }
 
   selectChange(type: 'services' | 'products', selectedValues: any[]): void {
+    if (!selectedValues) {
+      return;
+    }
     if (selectedValues.includes('ALL')) {
       const allValues = this[type].map((o: any) => o.id);
       const isAllSelected = selectedValues.length === allValues.length + 1;

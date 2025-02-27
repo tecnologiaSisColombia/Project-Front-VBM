@@ -10,7 +10,7 @@
 </div>
 
 <div #childContent>
-  <nz-card [nzTitle]="'HEALTH INSURANCE CLAIM FORM ' + (isViewMode ? claimDataView.id_claim : '')"
+  <nz-card [nzTitle]="'HEALTH INSURANCE CLAIM FORM ' + (isViewMode ? claimDataView?.id_claim : '')"
     [nzBordered]="true" 
     class="main-card">
     <nz-spin [nzSpinning]="modalLoader">
@@ -599,7 +599,7 @@
                 <th 
                   nzWidth="400px" 
                   *ngIf="claimData?.modifiers == '1' || 
-                  claimDataView.modifiers == '1'">
+                  claimDataView?.modifiers == '1'">
                   Modifiers
                 </th>
                 <th>Diagnosis pointer</th>
@@ -717,7 +717,7 @@
                     </ng-template>
                   </nz-form-control>
                 </td>                       
-                <td *ngIf="claimData?.modifiers == '1' || claimDataView.modifiers == '1'">
+                <td *ngIf="claimData?.modifiers == '1' || claimDataView?.modifiers == '1'">
                   <div formArrayName="modifiers" nz-row [nzGutter]="8">
                     <ng-container 
                       *ngFor="let modifierCtrl of getModifiersControls(rowCtrl); 
