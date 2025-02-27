@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { BlankComponent } from 'app/layouts/blank/blank.component';
 import { FullComponent } from 'app/layouts/full/full.component';
 import { AuthGuardService } from 'app/services/guards/auth-guard.service'
 import { LoginGuardService } from 'app/services/guards/login.guard'
@@ -26,7 +25,6 @@ import { BillingComponent } from 'app/components/billing/billing.component'
 export const routes: Routes = [
   {
     path: 'login',
-    component: BlankComponent,
     canActivate: [LoginGuardService],
     children: [
       {
