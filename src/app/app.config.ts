@@ -1,7 +1,6 @@
 import { ApplicationConfig, importProvidersFrom } from '@angular/core'
 import { provideRouter } from '@angular/router'
 import { routes } from './app.routes'
-import { provideClientHydration } from '@angular/platform-browser'
 import {
   HTTP_INTERCEPTORS,
   provideHttpClient,
@@ -31,12 +30,10 @@ export const appConfig: ApplicationConfig = {
     AuthGuardService,
     LoginGuardService,
     provideRouter(routes),
-    provideClientHydration(),
-    provideHttpClient(withFetch()),
+    provideHttpClient(withFetch(), withInterceptorsFromDi()),
     provideNzIcons(icons),
     provideNzI18n(en_US),
     importProvidersFrom(FormsModule),
     provideAnimationsAsync(),
-    provideHttpClient(withInterceptorsFromDi()),
   ],
 }

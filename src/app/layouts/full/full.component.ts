@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-full',
   templateUrl: './full.component.html',
-  styleUrls: ['./full.component.css', '../../../animations/styles.css'],
+  styleUrls: ['./full.component.css', '/src/animations/styles.css'],
   standalone: true,
   imports: [
     NzBreadCrumbModule,
@@ -30,9 +30,6 @@ import { CommonModule } from '@angular/common';
   ],
 })
 export class FullComponent implements OnInit {
-  isCollapsed = false;
-  permisos = [];
-  adminRead = false;
   currentDate: Date = new Date();
   access = {
     admin: false,

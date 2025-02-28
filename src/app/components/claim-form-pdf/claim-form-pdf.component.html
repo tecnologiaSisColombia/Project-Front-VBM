@@ -1,0 +1,16 @@
+<div *ngIf="showPdf" class="pdf-container">
+    <button 
+        (click)="closeViewer()" 
+        class="close-btn">
+        Close PDF
+    </button>
+  
+    <ngx-extended-pdf-viewer
+        *ngIf="pdfSrc"
+        [src]="pdfSrc"
+        language="en-US"
+        [textLayer]="true"
+        [showSidebarButton]="false"
+        style="width: 100%; height: 100%;">
+    </ngx-extended-pdf-viewer>
+</div>

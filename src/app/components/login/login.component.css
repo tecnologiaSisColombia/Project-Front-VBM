@@ -43,11 +43,6 @@ input[nz-input] {
   text-align: center;
 }
 
-.logo {
-  max-width: 150px;
-  max-height: 150px;
-}
-
 .login-form-margin {
   margin-bottom: 16px;
 }

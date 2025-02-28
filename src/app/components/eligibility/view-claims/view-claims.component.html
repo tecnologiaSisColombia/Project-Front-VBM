@@ -67,6 +67,16 @@
               (click)="openModalViewClaims(data)">
             </span>
           </a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <a>
+            <span
+              nz-icon
+              title="View-PDF"
+              nzType="eye"
+              nzTheme="outline"
+              (click)="openPdf(data)">
+            </span>
+          </a>
         </td>
       </tr>
     </tbody>
@@ -132,3 +142,10 @@
     </button>
   </ng-container>
 </nz-modal>
+
+<app-claim-form-pdf 
+  *ngIf="showPdf"
+  [showPdf]="showPdf"
+  [claimDataView]="selectedClaim"
+  (closePdf)="closePdf()">
+</app-claim-form-pdf>

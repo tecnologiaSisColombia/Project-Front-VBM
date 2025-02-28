@@ -20,6 +20,7 @@ import { ProfilesComponent } from 'app/components/user-management/profiles/profi
 import { EligibilityComponent } from 'app/components/eligibility/eligibility.component'
 import { MainMenuComponent } from 'app/components/main-menu/main-menu.component'
 import { BillingComponent } from 'app/components/billing/billing.component'
+// import { ClaimFormPdfComponent } from 'app/components/claim-form-pdf/claim-form-pdf.component'
 
 
 export const routes: Routes = [

@@ -19,6 +19,7 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { EligibilityService } from 'app/services/eligibility/eligibility.service';
 import { ClaimEntryComponent } from '../claim-entry/claim-entry.component';
+import { ClaimFormPdfComponent } from 'app/components/claim-form-pdf/claim-form-pdf.component';
 import { finalize } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
 import html2canvas from 'html2canvas';
@@ -44,12 +45,14 @@ import jsPDF from 'jspdf';
     NzModalModule,
     NzEmptyModule,
     NzButtonComponent,
-    ClaimEntryComponent
+    ClaimEntryComponent,
+    ClaimFormPdfComponent
   ],
   templateUrl: './view-claims.component.html',
   styleUrl: './view-claims.component.css'
 })
 export class ViewClaimsComponent {
+  showPdf: boolean = false;
   @Input() claimData: any;
   isDataLoading = false;
   isPrinting = false;
@@ -93,6 +96,36 @@ export class ViewClaimsComponent {
 
   ngOnInit(): void {
     this.getClaim()
+  }
+
+  openPdf(data: any): void {
+    forkJoin({
+      cpts: this.eligibilityService.getClaimCpt({ id_claim: data.id }, null, null, true),
+      dx: this.eligibilityService.getClaimDx({ id_claim: data.id }, null, null, true)
+    })
+      .subscribe({
+        next: (res: any) => {
+          const completeData = {
+            ...data,
+            cpts: res.cpts,
+            dx: res.dx,
+            modifiers: this.claimData.modifiers,
+            provider_data: this.claimData.provider,
+            patient_data: this.claimData.patient,
+          };
+
+          this.selectedClaim = completeData;
+          this.showPdf = true;
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        }
+      });
+  }
+
+  closePdf(): void {
+    this.showPdf = false;
+    this.selectedClaim = null;
   }
 
   getClaim() {

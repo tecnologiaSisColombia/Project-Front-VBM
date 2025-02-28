@@ -135,7 +135,7 @@ export class ClaimEntryComponent {
         new FormControl(null),
         new FormControl(null),
         new FormControl(null)
-      ]),
+      ],{ validators: this.uniqueDiagnosisValidator }),
       federal_tax_id: [null, [Validators.required]],
       ssn_ein: [2, [Validators.required]],
       patient_account_number: [null],
@@ -196,14 +196,19 @@ export class ClaimEntryComponent {
   updateModifiersValidation(): void {
     if (!(this.claimData?.modifiers === '1' || this.claimDataView?.modifiers === '1')) {
       this.rowsControls.controls.forEach((row) => {
-        const formGroup = row as FormGroup;
-        const modifiersArray = formGroup.get('modifiers') as FormArray;
-        modifiersArray.controls.forEach((modGroup: AbstractControl) => {
+        const modifiersArray = row.get('modifiers') as FormArray;
+
+        modifiersArray.controls.forEach((modGroup, index) => {
           const modControl = modGroup.get('value') as FormControl;
-          modControl.clearValidators();
+          if (index === 0) {
+            modControl.setValidators([Validators.required]); // Primer campo obligatorio
+          } else {
+            modControl.clearValidators(); // Los demás opcionales
+          }
           modControl.updateValueAndValidity();
         });
-        modifiersArray.clearValidators();
+
+        modifiersArray.setValidators(this.uniqueModifiersValidator);
         modifiersArray.updateValueAndValidity();
       });
     }
@@ -396,7 +401,7 @@ export class ClaimEntryComponent {
         this.fb.group({ id: [2], value: [''] }),
         this.fb.group({ id: [3], value: [''] }),
         this.fb.group({ id: [4], value: [''] }),
-      ],),
+      ], { validators: this.uniqueModifiersValidator }),
       diagnosis_pointer: ['', Validators.required],
       charges: [null, Validators.required],
       units: [null, Validators.required],
@@ -414,6 +419,18 @@ export class ClaimEntryComponent {
     const uniqueValues = new Set(values);
 
     return values.length === uniqueValues.size ? null : { duplicateModifier: true };
+  }
+
+  uniqueDiagnosisValidator(formArray: AbstractControl): { [key: string]: boolean } | null {
+    if (!(formArray instanceof FormArray)) return null;
+
+    const values: string[] = formArray.controls
+      .map(control => control.value)
+      .filter(val => val !== null && val !== '');
+
+    const uniqueValues = new Set(values);
+
+    return values.length === uniqueValues.size ? null : { duplicateDiagnosis: true };
   }
 
   getModifierStatus(row: AbstractControl, modCtrl: AbstractControl): string {
