@@ -182,10 +182,9 @@ export class ServicesComponent implements OnInit {
   }
 
   update(id: number, data: any) {
-    this.isDataLoading = true;
     this.serviceService.update(id, data)
       .pipe(finalize(() => {
-        this.isDataLoading = false;
+        this.drawerLoader = false;
       }))
       .subscribe({
         next: () => {
@@ -210,11 +209,11 @@ export class ServicesComponent implements OnInit {
       return;
     }
 
+    this.drawerLoader = true;
+
     if (this.isUpdating) {
       return this.update(this.dataDrawerCache.id, this.form.value);
     }
-
-    this.drawerLoader = true;
 
     this.serviceService.create(this.form.value)
       .pipe(finalize(() => {

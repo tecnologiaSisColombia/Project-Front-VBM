@@ -1,11 +1,9 @@
 <div class="title-page layout-container">
-  <div class="breadcrumb-container">
-    <nz-breadcrumb>
-      <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Configuration of Insurance Companies</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Insurers</nz-breadcrumb-item>
-    </nz-breadcrumb>
-  </div>
+  <nz-breadcrumb>
+    <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+    <nz-breadcrumb-item>Configuration of Insurance Companies</nz-breadcrumb-item>
+    <nz-breadcrumb-item>Insurers</nz-breadcrumb-item>
+  </nz-breadcrumb>
 
   <div class="btn-container">
     <button 
@@ -35,7 +33,7 @@
   </div>
 </div>
 
-<div class="main-table layout-container">
+<div class="layout-container">
   <div class="table-filters">
     <nz-input-group
       *ngFor="let field of searchFields"
@@ -215,7 +213,6 @@
                 nzLabel="Select All / None" 
                 [nzValue]="'ALL'">
               </nz-option>
-              
               <nz-option 
                 *ngFor="let o of services" 
                 [nzLabel]="o.code + ' - ' + o.description" [nzValue]="o.id">
@@ -248,7 +245,6 @@
                 nzLabel="Select All / None" 
                 [nzValue]="'ALL'">
               </nz-option>
-
               <nz-option
                 *ngFor="let o of products"
                 [nzLabel]="o.code + ' - ' + o.description"

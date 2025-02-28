@@ -1,12 +1,10 @@
 <div class="title-page layout-container">
-  <div class="breadcrumb-container">
-    <nz-breadcrumb>
-      <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Configuration of Insurance Companies</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Coverages</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Subplans</nz-breadcrumb-item>
-    </nz-breadcrumb>
-  </div>
+  <nz-breadcrumb>
+    <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+    <nz-breadcrumb-item>Configuration of Insurance Companies</nz-breadcrumb-item>
+    <nz-breadcrumb-item>Coverages</nz-breadcrumb-item>
+    <nz-breadcrumb-item>Subplans</nz-breadcrumb-item>
+  </nz-breadcrumb>
 
   <div class="btn-container">
     <button 
@@ -36,7 +34,7 @@
   </div>
 </div>
 
-<div class="main-table layout-container">
+<div class="layout-container">
   <div class="table-filters">
     <nz-input-group
       *ngFor="let field of searchFields"
@@ -71,11 +69,11 @@
         <th>Name</th>
         <th>PDS</th>
         <th>Group</th>
-        <th>Plan contract</th>
-        <th>Visual test medicare</th>
-        <th>Visual surgery medicare</th>
-        <th>Routine visual test</th>
-        <th>Vision element</th>
+        <th>Plan Contract</th>
+        <th>Visual Test Medicare</th>
+        <th>Visual Surgery Medicare</th>
+        <th>Routine Visual Test</th>
+        <th>Vision Element</th>
         <th>Created</th>
         <th>Action</th>
       </tr>
@@ -209,7 +207,7 @@
             [nzXs]="24"
             nzFor="plan_contract"
             style="text-align: center">
-            Plan contract
+            Plan Contract
           </nz-form-label>
 
           <nz-form-control 
@@ -263,7 +261,7 @@
             [nzXs]="24"
             nzFor="visual_test_medicare"
             style="text-align: center">
-            Visual test medicare $
+            Visual Test Medicare $
           </nz-form-label>
 
           <nz-form-control
@@ -286,7 +284,7 @@
             [nzXs]="24"
             nzFor="visual_surgery_medicare"
             style="text-align: center">
-            Visual surgery medicare $
+            Visual Surgery Medicare $
           </nz-form-label>
 
           <nz-form-control
@@ -309,7 +307,7 @@
             [nzXs]="24"
             nzFor="routine_visual_test"
             style="text-align: center">
-            Routine visual test $
+            Routine Visual Test $
           </nz-form-label>
 
           <nz-form-control
@@ -332,7 +330,7 @@
             [nzXs]="24"
             nzFor="routine_visual_test_benefit"
             style="text-align: center">
-            Routine visual test benefit
+            Routine Visual Test Benefit
           </nz-form-label>
 
           <nz-form-control
@@ -353,7 +351,7 @@
             [nzXs]="24"
             nzFor="vision_elements"
             style="text-align: center">
-            Vision elements $
+            Vision Elements $
           </nz-form-label>
 
           <nz-form-control
@@ -376,7 +374,7 @@
             [nzXs]="24"
             nzFor="vision_elements_benefit"
             style="text-align: center">
-            Vision elements benefit
+            Vision Elements Benefit
           </nz-form-label>
 
           <nz-form-control
@@ -404,7 +402,7 @@
     <div style="display: flex; float: right">
       <button
         nz-button
-        style="display: flex; margin-right: 8px"
+        style="margin-right: 8px"
         (click)="closeDrawer()">
         close
       </button>

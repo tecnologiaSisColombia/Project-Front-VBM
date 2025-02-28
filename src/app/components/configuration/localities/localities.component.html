@@ -1,11 +1,9 @@
 <div class="title-page layout-container">
-  <div class="breadcrumb-container">
-    <nz-breadcrumb>
-      <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Resource Management</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Localities</nz-breadcrumb-item>
-    </nz-breadcrumb>
-  </div>
+  <nz-breadcrumb>
+    <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+    <nz-breadcrumb-item>Resource Management</nz-breadcrumb-item>
+    <nz-breadcrumb-item>Localities</nz-breadcrumb-item>
+  </nz-breadcrumb>
 
   <div class="btn-container">
     <button 
@@ -35,7 +33,7 @@
   </div>
 </div>
 
-<div class="main-table layout-container">
+<div class="layout-container">
   <div class="table-filters">
     <nz-input-group [nzSuffix]="suffixIconSearch">
       <input
@@ -221,7 +219,7 @@
             [nzXs]="24"
             nzFor="postal_code"
             style="text-align: center">
-            Postal code
+            Postal Code
           </nz-form-label>
 
           <nz-form-control 
@@ -272,7 +270,7 @@
     <div style="display: flex; float: right">
       <button
         nz-button
-        style="display: flex; margin-right: 8px"
+        style="margin-right: 8px"
         (click)="closeDrawer()">
         Close
       </button>

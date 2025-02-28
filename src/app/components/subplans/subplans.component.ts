@@ -148,14 +148,15 @@ export class SubplansComponent implements OnInit {
   }
 
   getPlans(): void {
-    this.planService.getPlans({ status: 1 }, null, null, true).subscribe({
-      next: (res: any) => {
-        this.plans = res;
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-    });
+    this.planService.getPlans({ status: 1 }, null, null, true)
+      .subscribe({
+        next: (res: any) => {
+          this.plans = res;
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 
   openDrawer(): void {
@@ -214,10 +215,9 @@ export class SubplansComponent implements OnInit {
   }
 
   update(id: number, data: any): void {
-    this.isDataLoading = true;
     this.subplanService.updateSubPlan(id, data)
       .pipe(finalize(() => {
-        this.isDataLoading = false;
+        this.drawerLoader = false;
       }))
       .subscribe({
         next: () => {
@@ -242,11 +242,11 @@ export class SubplansComponent implements OnInit {
       return;
     }
 
+    this.drawerLoader = true;
+
     if (this.isUpdating) {
       return this.update(this.dataDrawerCahe.group, this.form.value);
     }
-
-    this.drawerLoader = true;
 
     this.subplanService.createSubPlan(this.form.value)
       .pipe(finalize(() => {
@@ -365,9 +365,7 @@ export class SubplansComponent implements OnInit {
             type: 'array',
           });
 
-          const blob = new Blob([excelBuffer], {
-            type: 'application/octet-stream',
-          });
+          const blob = new Blob([excelBuffer], { type: 'application/octet-stream', });
           const link = document.createElement('a');
           const url = URL.createObjectURL(blob);
 

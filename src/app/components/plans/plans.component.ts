@@ -134,14 +134,15 @@ export class PlansComponent implements OnInit {
   }
 
   getInsurers(): void {
-    this.insurerService.getInsurers({ status: 1 }, null, null, true).subscribe({
-      next: (res: any) => {
-        this.insurers = res;
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-    });
+    this.insurerService.getInsurers({ status: 1 }, null, null, true)
+      .subscribe({
+        next: (res: any) => {
+          this.insurers = res;
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 
   openDrawer(): void {
@@ -199,10 +200,9 @@ export class PlansComponent implements OnInit {
   }
 
   update(id: number, data: any): void {
-    this.isDataLoading = true;
     this.planService.updatePlan(id, data)
       .pipe(finalize(() => {
-        this.isDataLoading = false;
+        this.drawerLoader = false;
       }))
       .subscribe({
         next: () => {
@@ -227,11 +227,11 @@ export class PlansComponent implements OnInit {
       return;
     }
 
+    this.drawerLoader = true;
+
     if (this.isUpdating) {
       return this.update(this.dataDrawerCahe.id, this.form.value);
     }
-
-    this.drawerLoader = true;
 
     this.planService.createPlan(this.form.value)
       .pipe(finalize(() => {
@@ -376,5 +376,4 @@ export class PlansComponent implements OnInit {
         },
       });
   }
-
 }

@@ -203,7 +203,6 @@ export class InsurersComponent implements OnInit {
   }
 
   closeDrawer(): void {
-    this.drawerLoader = false;
     this.isUpdating = false;
     this.visible = false;
     this.dataDrawerCahe = null;
@@ -245,10 +244,9 @@ export class InsurersComponent implements OnInit {
   }
 
   update(id: number, data: any): void {
-    this.isDataLoading = true;
     this.insurerService.updateInsurer(id, data)
       .pipe(finalize(() => {
-        this.isDataLoading = false;
+        this.drawerLoader = false;
       }))
       .subscribe({
         next: () => {
@@ -273,13 +271,23 @@ export class InsurersComponent implements OnInit {
       return;
     }
 
-    if (this.isUpdating) {
-      return this.update(this.dataDrawerCahe.id, this.form.value);
+    const formData = { ...this.form.value };
+
+    if (formData.services) {
+      formData.services = formData.services.filter((item: any) => item !== 'ALL');
+    }
+
+    if (formData.products) {
+      formData.products = formData.products.filter((item: any) => item !== 'ALL');
     }
 
     this.drawerLoader = true;
 
-    this.insurerService.createInsurer(this.form.value)
+    if (this.isUpdating) {
+      return this.update(this.dataDrawerCahe.id, formData);
+    }
+
+    this.insurerService.createInsurer(formData)
       .pipe(finalize(() => {
         this.drawerLoader = false;
       }))
@@ -348,9 +356,8 @@ export class InsurersComponent implements OnInit {
   }
 
   selectChange(type: 'services' | 'products', selectedValues: any[]): void {
-    if (!selectedValues) {
-      return;
-    }
+    if (!selectedValues) return;
+
     if (selectedValues.includes('ALL')) {
       const allValues = this[type].map((o: any) => o.id);
       const isAllSelected = selectedValues.length === allValues.length + 1;
@@ -386,9 +393,7 @@ export class InsurersComponent implements OnInit {
             active: 'Status',
           };
 
-          const selectedColumns = Object.keys(
-            headers
-          ) as (keyof typeof headers)[];
+          const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
           const filteredData = res.map((insurer: any) =>
             selectedColumns.reduce((obj: Record<string, any>, key) => {
@@ -408,8 +413,7 @@ export class InsurersComponent implements OnInit {
             }, {})
           );
 
-          const worksheet: XLSX.WorkSheet =
-            XLSX.utils.json_to_sheet(filteredData);
+          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
           const workbook: XLSX.WorkBook = XLSX.utils.book_new();
           XLSX.utils.book_append_sheet(workbook, worksheet, 'Insurers');
 
@@ -418,9 +422,7 @@ export class InsurersComponent implements OnInit {
             type: 'array',
           });
 
-          const blob = new Blob([excelBuffer], {
-            type: 'application/octet-stream',
-          });
+          const blob = new Blob([excelBuffer], { type: 'application/octet-stream', });
           const url = URL.createObjectURL(blob);
 
           const link = document.createElement('a');

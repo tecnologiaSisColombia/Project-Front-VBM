@@ -220,12 +220,11 @@ export class DoctorComponent {
   }
 
   update(id: number, data: any) {
-    this.isDataLoading = true;
     this.doctorService
       .update(id, data)
       .pipe(
         finalize(() => {
-          this.isDataLoading = false;
+          this.drawerLoader = false;
         })
       )
       .subscribe({
@@ -251,11 +250,11 @@ export class DoctorComponent {
       return;
     }
 
+    this.drawerLoader = false;
+
     if (this.isUpdating) {
       return this.update(this.dataDrawerCache.id, this.form.value);
     }
-
-    this.drawerLoader = true;
 
     this.doctorService
       .create(this.form.value)
@@ -316,9 +315,7 @@ export class DoctorComponent {
 
   hasFeedback(controlName: string): boolean {
     const control = this.form.get(controlName);
-    return control?.invalid && (control.dirty || control.touched)
-      ? true
-      : false;
+    return control?.invalid && (control.dirty || control.touched) ? true : false;
   }
 
   exportDoctors(): void {
@@ -348,9 +345,7 @@ export class DoctorComponent {
             active: 'Status',
           };
 
-          const selectedColumns = Object.keys(
-            headers
-          ) as (keyof typeof headers)[];
+          const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
           const filteredData = res.map((doctor: any) =>
             selectedColumns.reduce((obj: Record<string, any>, key) => {
@@ -370,8 +365,7 @@ export class DoctorComponent {
             }, {})
           );
 
-          const worksheet: XLSX.WorkSheet =
-            XLSX.utils.json_to_sheet(filteredData);
+          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
           const workbook: XLSX.WorkBook = XLSX.utils.book_new();
           XLSX.utils.book_append_sheet(workbook, worksheet, 'Doctors');
 

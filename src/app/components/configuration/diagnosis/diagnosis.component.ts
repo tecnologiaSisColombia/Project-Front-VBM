@@ -182,10 +182,9 @@ export class DiagnosisComponent {
   }
 
   update(id: number, data: any) {
-    this.isDataLoading = true;
     this.diagnosisService.update(id, data)
       .pipe(finalize(() => {
-        this.isDataLoading = false;
+        this.drawerLoader = false;
       }))
       .subscribe({
         next: () => {
@@ -210,11 +209,11 @@ export class DiagnosisComponent {
       return;
     }
 
+    this.drawerLoader = false;
+
     if (this.isUpdating) {
       return this.update(this.dataDrawerCache.id, this.form.value);
     }
-
-    this.drawerLoader = true;
 
     this.diagnosisService.create(this.form.value)
       .pipe(finalize(() => {
@@ -293,9 +292,7 @@ export class DiagnosisComponent {
             active: 'Status',
           };
 
-          const selectedColumns = Object.keys(
-            headers
-          ) as (keyof typeof headers)[];
+          const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
           const filteredData = res.map((diagnosis: any) =>
             selectedColumns.reduce((obj: Record<string, any>, key) => {

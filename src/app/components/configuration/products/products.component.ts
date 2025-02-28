@@ -181,10 +181,9 @@ export class ProductsComponent implements OnInit {
   }
 
   update(id: number, data: any) {
-    this.isDataLoading = true;
     this.productService.update(id, data)
       .pipe(finalize(() => {
-        this.isDataLoading = false;
+        this.drawerLoader = false;
       }))
       .subscribe({
         next: () => {
@@ -209,11 +208,11 @@ export class ProductsComponent implements OnInit {
       return;
     }
 
+    this.drawerLoader = false;
+
     if (this.isUpdating) {
       return this.update(this.dataDrawerCache.id, this.form.value);
     }
-
-    this.drawerLoader = true;
 
     this.productService.create(this.form.value)
       .pipe(finalize(() => {
@@ -342,5 +341,4 @@ export class ProductsComponent implements OnInit {
         },
       });
   }
-
 }

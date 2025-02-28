@@ -1,11 +1,9 @@
 <div class="title-page layout-container">
-  <div class="breadcrumb-container">
-    <nz-breadcrumb>
-      <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Resource Management</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Place of Service</nz-breadcrumb-item>
-    </nz-breadcrumb>
-  </div>
+  <nz-breadcrumb>
+    <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+    <nz-breadcrumb-item>Resource Management</nz-breadcrumb-item>
+    <nz-breadcrumb-item>Place of Service</nz-breadcrumb-item>
+  </nz-breadcrumb>
 
   <div class="btn-container">
     <button 
@@ -30,12 +28,12 @@
         [nzType]="exportLoader ? 'loading' : 'download'" 
         nzTheme="outline">
       </i>
-      {{ exportLoader ? 'Exporting...' : 'Export Location' }}
+      {{ exportLoader ? 'Exporting...' : 'Export Place of Service' }}
     </button>
   </div>
 </div>
 
-<div class="main-table layout-container">
+<div class="layout-container">
   <div class="table-filters">
     <nz-input-group
       *ngFor="let field of searchFields"

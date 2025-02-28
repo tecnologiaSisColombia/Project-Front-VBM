@@ -182,10 +182,9 @@ export class LocationComponent {
   }
 
   update(id: number, data: any) {
-    this.isDataLoading = true;
     this.locationService.update(id, data)
       .pipe(finalize(() => {
-        this.isDataLoading = false;
+        this.drawerLoader = false;
       }))
       .subscribe({
         next: () => {
@@ -210,11 +209,11 @@ export class LocationComponent {
       return;
     }
 
+    this.drawerLoader = true;
+
     if (this.isUpdating) {
       return this.update(this.dataDrawerCache.id, this.form.value);
     }
-
-    this.drawerLoader = true;
 
     this.locationService.create(this.form.value)
       .pipe(finalize(() => {
@@ -293,9 +292,7 @@ export class LocationComponent {
             active: 'Status',
           };
 
-          const selectedColumns = Object.keys(
-            headers
-          ) as (keyof typeof headers)[];
+          const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
           const filteredData = res.map((location: any) =>
             selectedColumns.reduce((obj: Record<string, any>, key) => {
@@ -317,7 +314,7 @@ export class LocationComponent {
 
           const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
           const workbook: XLSX.WorkBook = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(workbook, worksheet, 'Location');
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'Place Of Services');
 
           const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
             bookType: 'xlsx',
@@ -331,7 +328,7 @@ export class LocationComponent {
           const url = URL.createObjectURL(blob);
 
           link.setAttribute('href', url);
-          link.setAttribute('download', 'Location.xlsx');
+          link.setAttribute('download', 'Place Of Services.xlsx');
           link.style.visibility = 'hidden';
 
           document.body.appendChild(link);

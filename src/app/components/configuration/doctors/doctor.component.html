@@ -1,11 +1,9 @@
 <div class="title-page layout-container">
-  <div class="breadcrumb-container">
-    <nz-breadcrumb>
-      <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Resource Management</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Doctors</nz-breadcrumb-item>
-    </nz-breadcrumb>
-  </div>
+  <nz-breadcrumb>
+    <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+    <nz-breadcrumb-item>Resource Management</nz-breadcrumb-item>
+    <nz-breadcrumb-item>Doctors</nz-breadcrumb-item>
+  </nz-breadcrumb>
 
   <div class="btn-container">
     <button 
@@ -35,7 +33,7 @@
   </div>
 </div>
 
-<div class="main-table layout-container">
+<div class="layout-container">
   <div class="table-filters">
     <nz-input-group
       *ngFor="let field of searchFields"
@@ -65,11 +63,11 @@
     [nzFrontPagination]="false">
     <thead>
       <tr>
-        <th>Fisrt name</th>
-        <th>Last name</th>
+        <th>Fisrt Name</th>
+        <th>Last Name</th>
         <th>Email</th>
         <th>Phone</th>
-        <th>License number</th>
+        <th>License Number</th>
         <th>Npi</th>
         <th>Created</th>
         <th>Action</th>
@@ -157,7 +155,7 @@
             [nzXs]="24"
             nzFor="first_name"
             style="text-align: center">
-            First name
+            First Name
           </nz-form-label>
 
           <nz-form-control
@@ -179,7 +177,7 @@
             [nzXs]="24"
             nzFor="last_name"
             style="text-align: center">
-            Last name
+            Last Name
           </nz-form-label>
 
           <nz-form-control
@@ -201,7 +199,7 @@
             [nzXs]="24"
             nzFor="license_number"
             style="text-align: center">
-            License number
+            License Number
           </nz-form-label>
 
           <nz-form-control
