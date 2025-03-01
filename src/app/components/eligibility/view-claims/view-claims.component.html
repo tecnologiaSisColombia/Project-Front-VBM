@@ -104,19 +104,6 @@
   </nz-pagination>
 </div>
 
-<nz-modal
-  [nzAutofocus]="null"
-  [(nzVisible)]="isVisibleModalViewClaim"
-  nzWidth="98%"
-  [nzClosable]="false"
-  nzMaskClosable="false">
-  <ng-container *nzModalContent>
-    <app-claim-entry 
-      [claimDataView]="selectedClaim">
-    </app-claim-entry>
-  </ng-container>
-</nz-modal>
-
 <app-claim-form-pdf 
   *ngIf="showPdf"
   [showPdf]="showPdf"
