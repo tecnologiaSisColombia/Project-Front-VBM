@@ -22,17 +22,12 @@ import { Input } from '@angular/core';
     styleUrls: ['./plan-details.component.css']
 })
 export class PlanDetailsComponent {
-    @Input() claimData!: {
-        patientName: string;
-        primaryPlanName: string;
-        visualTestMedicare: string;
-        visionElements: string;
-    };
+    @Input() claimData: any;
+
     @ViewChild('childContent', { static: false }) childContent!: ElementRef;
     currentTime: string = '';
 
-    constructor() {
-    }
+    constructor() { }
 
     ngOnInit(): void {
         this.updateCurrentTime();

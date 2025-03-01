@@ -1,11 +1,9 @@
 <div class="title-page layout-container">
-  <div class="breadcrumb-container">
-    <nz-breadcrumb>
-      <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Patients</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Patient Management</nz-breadcrumb-item>
-    </nz-breadcrumb>
-  </div>
+  <nz-breadcrumb>
+    <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+    <nz-breadcrumb-item>Patients</nz-breadcrumb-item>
+    <nz-breadcrumb-item>Patient Management</nz-breadcrumb-item>
+  </nz-breadcrumb>
 
   <div class="btn-container">
     <button
@@ -35,7 +33,7 @@
   </div>
 </div>
 
-<div class="main-table layout-container">
+<div class="layout-container">
   <div class="table-filters">
     <nz-input-group 
       *ngFor="let field of searchFields" 
@@ -77,11 +75,11 @@
     </thead>
     <tbody>
       <tr *ngFor="let data of basicTable.data">
-        <td>{{data.insurer_data?.name}}</td>
-        <td>{{data.first_name + ' ' + data.last_name + ' - ' + data.primary_subscriber_id}}</td>
-        <td>{{data.birth_date}}</td>
-        <td>{{data.effective}}</td>
-        <td>{{data.terminates}}</td>
+        <td>{{ data.insurer_data?.name }}</td>
+        <td>{{ data.first_name + ' ' + data.last_name + ' - ' + data.primary_subscriber_id }}</td>
+        <td>{{ data.birth_date }}</td>
+        <td>{{ data.effective }}</td>
+        <td>{{ data.terminates }}</td>
         <td [ngClass]="isWithinRange(data.effective, data.terminates) ? 'text-green' : 'text-red'">
           {{isWithinRange(data.effective, data.terminates) ? 'Yes' : 'No'}}
         </td>
@@ -94,7 +92,7 @@
               nz-icon
               nzType="plus-circle"
               nzTheme="outline"
-              (click)="openModalDetails(data)"
+              (click)="openPlanDetails(data)"
               title="Show Plan Details">
           </span>
           </a>
@@ -114,7 +112,7 @@
               nz-icon
               nzType="form"
               nzTheme="outline"
-              (click)="openModalClaim(data)"
+              (click)="openModalClaimEntry(data)"
               title="Claim entry">
             </span>
           </a>
@@ -124,7 +122,7 @@
               nz-icon
               nzType="read"
               nzTheme="outline"
-              (click)="openModalListClaims(data)"
+              (click)="openModalViewClaims(data)"
               title="View Claims">
             </span>
           </a>
@@ -156,19 +154,6 @@
     [nzShowQuickJumper]="true">
   </nz-pagination>
 </div>
-
-<nz-modal
-  [(nzVisible)]="isVisibleModalMember"
-  nzWidth="1100px"
-  (nzOnCancel)="CancelOkModalMember()"
-  (nzOnOk)="CancelOkModalMember()"
-  [nzClosable]="false"
-  nzMaskClosable="false">
-  <ng-container *nzModalContent>
-    <app-member>
-    </app-member>
-  </ng-container>
-</nz-modal>
 
 <nz-modal
   [nzAutofocus]="null"
@@ -209,6 +194,20 @@
 
 <nz-modal
   [nzAutofocus]="null"
+  [(nzVisible)]="isVisibleModalMember"
+  nzWidth="1100px"
+  (nzOnCancel)="cancelOkModalMember()"
+  (nzOnOk)="cancelOkModalMember()"
+  [nzClosable]="false"
+  nzMaskClosable="false">
+  <ng-container *nzModalContent>
+    <app-member>
+    </app-member>
+  </ng-container>
+</nz-modal>
+
+<nz-modal
+  [nzAutofocus]="null"
   [(nzVisible)]="isVisibleModalClaim"
   nzWidth="98%"
   (nzOnCancel)="cancelOkModalClaim()"
@@ -228,8 +227,8 @@
   [nzAutofocus]="null"
   [(nzVisible)]="isVisibleModalListClaims"
   nzWidth="80%"
-  (nzOnCancel)="CancelOkModalListClaims()"
-  (nzOnOk)="CancelOkModalListClaims()"
+  (nzOnCancel)="cancelOkModalListClaims()"
+  (nzOnOk)="cancelOkModalListClaims()"
   [nzClosable]="false"
   nzMaskClosable="false">
   <ng-container *nzModalContent>

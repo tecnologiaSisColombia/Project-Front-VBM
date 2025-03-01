@@ -324,10 +324,6 @@ export class UserManagementComponent implements OnInit {
     const applyValidation = (type: string | null) => {
       Object.entries(controls).forEach(([key, controlNames]) => {
         const isActive = type === key;
-
-        console.log(type)
-        console.log(key)
-
         controlNames.forEach((control) => {
           if (isActive) {
             const validators = requiredWithPattern.includes(control)

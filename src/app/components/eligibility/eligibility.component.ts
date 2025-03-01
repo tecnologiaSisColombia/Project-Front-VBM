@@ -76,7 +76,7 @@ export class EligibilityComponent {
   searchFields = [
     { placeholder: 'First Name...', model: 'firstSearch', key: 'first_name' },
     { placeholder: 'Last Name...', model: 'lastSearch', key: 'last_name' },
-    { placeholder: 'Suscriber Id...', model: 'suscriberSearch', key: 'suscriber_id', },
+    { placeholder: 'Suscriber Id...', model: 'suscriberSearch', key: 'suscriber_id' },
   ];
   selectedClaim: any = {};
   private searchNameSubject = new Subject<{ type: string; value: string }>();
@@ -92,20 +92,17 @@ export class EligibilityComponent {
     private eligibilityService: EligibilityService,
     private s3Service: S3Service
   ) {
-    this.searchNameSubject
-      .pipe(debounceTime(1000))
-      .subscribe(({ type, value }) => {
-        const fields = {
-          first_name: () => (this.firstSearch = value),
-          last_name: () => (this.lastSearch = value),
-          suscriber_id: () => (this.suscriberSearch = value),
-        };
-
-        (fields as Record<string, () => void>)[type]?.();
-        this.page = 1;
-        this.getInitData();
-        this.isDataLoading = false;
-      });
+    this.searchNameSubject.pipe(debounceTime(1000)).subscribe(({ type, value }) => {
+      const updateField: Record<string, () => void> = {
+        first_name: () => (this.firstSearch = value),
+        last_name: () => (this.lastSearch = value),
+        suscriber_id: () => (this.suscriberSearch = value),
+      };
+      updateField[type]?.();
+      this.page = 1;
+      this.getInitData();
+      this.isDataLoading = false;
+    });
   }
 
   ngOnInit(): void {
@@ -113,7 +110,7 @@ export class EligibilityComponent {
   }
 
   submit(): void {
-    if (this.claimEntry && this.claimEntry.form.valid) {
+    if (this.claimEntry?.form.valid) {
       Swal.fire({
         title: 'Are you sure?',
         text: 'Do you want to save the claim?',
@@ -122,7 +119,7 @@ export class EligibilityComponent {
         allowOutsideClick: false,
         confirmButtonText: 'Yes, save',
         cancelButtonText: 'Cancel'
-      }).then((result) => {
+      }).then(result => {
         if (result.isConfirmed) {
           this.claimEntry.submit();
           this.cancelOkModalClaim();
@@ -176,8 +173,7 @@ export class EligibilityComponent {
     this.uploading = true;
 
     this.s3Service
-      .uploadEligibility(formData)
-      .pipe(
+      .uploadEligibility(formData).pipe(
         finalize(() => {
           this.uploading = false;
         })
@@ -196,13 +192,10 @@ export class EligibilityComponent {
 
   onFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
-
-    if (input.files && input.files.length > 0) {
+    if (input.files && input.files.length) {
       const file = input.files[0];
-
       const fileType = file.type.toLowerCase();
       const fileName = file.name.toLowerCase();
-
       if (fileType === 'application/zip' || fileName.endsWith('.zip')) {
         this.selectedFile = file;
       } else {
@@ -214,12 +207,12 @@ export class EligibilityComponent {
     }
   }
 
-  pageChange(event: number) {
+  pageChange(event: number): void {
     this.page = event;
     this.getInitData();
   }
 
-  setPagination(count: number) {
+  setPagination(count: number): void {
     this.count_records = count;
     this.num_pages = Math.ceil(count / this.page_size);
   }
@@ -230,7 +223,7 @@ export class EligibilityComponent {
     this.getInitData();
   }
 
-  search(value: string, type: string) {
+  search(value: string, type: string): void {
     this.isDataLoading = true;
     this.searchNameSubject.next({ type, value });
   }
@@ -259,11 +252,11 @@ export class EligibilityComponent {
     this.isVisibleModalDetails = false;
   }
 
-  CancelOkModalMember(): void {
+  cancelOkModalMember(): void {
     this.isVisibleModalMember = false;
   }
 
-  CancelOkModalListClaims(): void {
+  cancelOkModalListClaims(): void {
     this.isVisibleModalListClaims = false;
   }
 
@@ -271,49 +264,51 @@ export class EligibilityComponent {
     this.isVisibleModalMember = true;
   }
 
-  openModalListClaims(data: any): void {
+  openModalViewClaims(data: any): void {
     this.selectedClaim = {
-      patient_id: data.id ?? '',
-      modifiers: data.insurer_data.modifiers,
-      provider: data.suppliers[0],
+      patient_id: data?.id,
+      modifiers: data?.insurer_data?.modifiers,
+      provider: data?.suppliers[0],
       patient: data
     };
 
     this.isVisibleModalListClaims = true;
   }
 
-  openModalClaim(rowData: any): void {
+  openModalClaimEntry(rowData: any): void {
     this.selectedClaim = {
-      patient_id: rowData?.id ?? '',
-      patient_name: `${rowData?.last_name ?? ''} ${rowData?.first_name ?? ''}`,
-      patient_birthDate: rowData?.birth_date ?? '',
-      patient_city: rowData?.city ?? '',
-      patient_state: rowData?.state ?? '',
-      patient_phone: rowData?.primary_phone ?? '',
-      patient_gender: rowData?.gender ?? '',
-      patient_postal_code: rowData?.postal_code ?? '',
-      patient_address: `${rowData?.primary_address ?? ''} ${rowData?.address_1 ?? ''}`.trim(),
-      modifiers: rowData?.insurer_data?.modifiers ?? '',
-      insured_insurance_plan_name: rowData?.subplan_data?.plan_data.name ?? '',
-      group: rowData.subplan_data.group ?? '',
-      primary_subscriber_id: rowData?.primary_subscriber_id ?? '',
+      patient_id: rowData?.id,
+      patient_name: `${rowData?.last_name} ${rowData?.first_name}`,
+      patient_birthDate: rowData?.birth_date,
+      patient_city: rowData?.city,
+      patient_state: rowData?.state,
+      patient_phone: rowData?.primary_phone,
+      patient_gender: rowData?.gender,
+      patient_postal_code: rowData?.postal_code,
+      patient_address: `${rowData?.primary_address} ${rowData?.address_1}`.trim(),
+      modifiers: rowData?.insurer_data?.modifiers,
+      insured_insurance_plan_name: rowData?.subplan_data?.plan_data.name,
+      group: rowData.subplan_data.group,
+      primary_subscriber_id: rowData?.primary_subscriber_id,
       provider_data: rowData?.suppliers[0],
       insurer_data: rowData?.insurer_data,
     };
+
     this.isVisibleModalClaim = true;
   }
 
-  openModalDetails(rowData: any): void {
+  openPlanDetails(rowData: any): void {
     this.selectedClaim = {
-      patientName: `${rowData?.last_name ?? ''} ${rowData?.first_name ?? ''}`,
-      primaryPlanName: rowData?.primary_insure_plan_name ?? '',
-      visualTestMedicare: rowData.subplan_data.visual_test_medicare ?? '',
-      visionElements: rowData.subplan_data.vision_elements ?? '',
+      patientName: `${rowData?.last_name} ${rowData?.first_name}`,
+      primaryPlanName: rowData?.primary_insure_plan_name,
+      visualTestMedicare: rowData?.subplan_data?.visual_test_medicare,
+      visionElements: rowData?.subplan_data?.vision_elements,
     };
+
     this.isVisibleModalDetails = true;
   }
 
-  printContentDetails() {
+  printContentDetails(): void {
     const content = this.planDetailsComponent.getChildContent()?.nativeElement;
 
     if (!content) return;
@@ -324,35 +319,26 @@ export class EligibilityComponent {
       scale: 4,
       logging: false,
       useCORS: true,
-      backgroundColor: null,
+      backgroundColor: null
+    }).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 10, pdfWidth, pdfHeight, '', 'FAST');
+      pdf.save('details.pdf');
+      this.msgService.success('Export completed successfully');
     })
-      .then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-        pdf.addImage(imgData, 'PNG', 0, 10, pdfWidth, pdfHeight, '', 'FAST');
-        pdf.save('details.pdf');
-        this.msgService.success('Export completed successfully');
-      })
-      .catch((error) => this.msgService.error(JSON.stringify(error)))
-      .finally(() => {
-        this.isPrinting = false;
-      });
+      .catch(error => this.msgService.error(JSON.stringify(error)))
+      .finally(() => (this.isPrinting = false));
   }
 
   exportBenefits(): void {
-    this.eligibilityService
-      .getPatients({}, null, null, true)
-      .pipe(
-        finalize(() => {
-          this.exportLoader = false;
-        })
-      )
+    this.eligibilityService.getPatients({}, null, null, true)
+      .pipe(finalize(() => (this.exportLoader = false)))
       .subscribe({
         next: (res: any) => {
-          if (res.length === 0) {
+          if (!res.length) {
             this.msgService.warning('No data available to export');
             return;
           }
@@ -373,47 +359,34 @@ export class EligibilityComponent {
             primary_phone: 'Phone',
           };
 
-          const selectedColumns = Object.keys(
-            headers
-          ) as (keyof typeof headers)[];
+          const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
 
           const filteredData = res.map((patient: any) => {
             const row: Record<string, any> = {};
-            selectedColumns.forEach((key) => {
-              row[headers[key]] = patient[key] != null ? patient[key] : '';
-            });
+            selectedColumns.forEach(key =>
+              row[headers[key]] = patient[key] != null ? patient[key] : ''
+            );
             return row;
           });
 
-          const worksheet: XLSX.WorkSheet =
-            XLSX.utils.json_to_sheet(filteredData);
+          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
           const workbook: XLSX.WorkBook = XLSX.utils.book_new();
           XLSX.utils.book_append_sheet(workbook, worksheet, 'patients');
 
-          const excelBuffer: ArrayBuffer = XLSX.write(workbook, {
-            bookType: 'xlsx',
-            type: 'array',
-          });
-
-          const blob = new Blob([excelBuffer], {
-            type: 'application/octet-stream',
-          });
+          const excelBuffer: ArrayBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+          const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
           const link = document.createElement('a');
-          const url = URL.createObjectURL(blob);
 
-          link.setAttribute('href', url);
+          link.href = URL.createObjectURL(blob);
           link.setAttribute('download', 'Patients.xlsx');
           link.style.visibility = 'hidden';
 
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
-
           this.msgService.success('Export completed successfully');
         },
-        error: (err) => {
-          this.msgService.error(JSON.stringify(err.error));
-        },
+        error: err => this.msgService.error(JSON.stringify(err.error)),
       });
   }
 

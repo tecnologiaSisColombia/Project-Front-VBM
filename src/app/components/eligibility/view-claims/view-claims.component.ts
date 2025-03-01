@@ -9,7 +9,6 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { debounceTime, Subject } from 'rxjs';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
@@ -20,10 +19,8 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { EligibilityService } from 'app/services/eligibility/eligibility.service';
 import { ClaimEntryComponent } from '../claim-entry/claim-entry.component';
 import { ClaimFormPdfComponent } from 'app/components/claim-form-pdf/claim-form-pdf.component';
-import { finalize } from 'rxjs/operators';
+import { finalize, } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-view-claims',
@@ -44,7 +41,6 @@ import jsPDF from 'jspdf';
     FormsModule,
     NzModalModule,
     NzEmptyModule,
-    NzButtonComponent,
     ClaimEntryComponent,
     ClaimFormPdfComponent
   ],
@@ -52,11 +48,11 @@ import jsPDF from 'jspdf';
   styleUrl: './view-claims.component.css'
 })
 export class ViewClaimsComponent {
-  showPdf: boolean = false;
   @Input() claimData: any;
   isDataLoading = false;
   isPrinting = false;
   isVisibleModalViewClaim = false;
+  showPdf: boolean = false;
   dataToDisplay: any[] = [];
   num_pages = 1;
   count_records = 0;
@@ -85,7 +81,6 @@ export class ViewClaimsComponent {
           id_claim: () => (this.idClaimsSearch = value),
           origin: () => (this.originSearch = value),
         };
-
         (fields as Record<string, () => void>)[type]?.();
         this.page = 1;
         this.getClaim();
@@ -96,36 +91,6 @@ export class ViewClaimsComponent {
 
   ngOnInit(): void {
     this.getClaim()
-  }
-
-  openPdf(data: any): void {
-    forkJoin({
-      cpts: this.eligibilityService.getClaimCpt({ id_claim: data.id }, null, null, true),
-      dx: this.eligibilityService.getClaimDx({ id_claim: data.id }, null, null, true)
-    })
-      .subscribe({
-        next: (res: any) => {
-          const completeData = {
-            ...data,
-            cpts: res.cpts,
-            dx: res.dx,
-            modifiers: this.claimData.modifiers,
-            provider_data: this.claimData.provider,
-            patient_data: this.claimData.patient,
-          };
-
-          this.selectedClaim = completeData;
-          this.showPdf = true;
-        },
-        error: (err) => {
-          this.msgService.error(JSON.stringify(err.error));
-        }
-      });
-  }
-
-  closePdf(): void {
-    this.showPdf = false;
-    this.selectedClaim = null;
   }
 
   getClaim() {
@@ -180,28 +145,23 @@ export class ViewClaimsComponent {
     this.num_pages = Math.ceil(count / this.page_size);
   }
 
-  openModalViewClaims(data: any) {
-    this.selectedClaim = data;
-    this.isDataLoading = true;
-
-    const cptRequest = this.eligibilityService.getClaimCpt(
-      { id_claim: this.selectedClaim.id }, null, null, true);
-
-    const dxRequest = this.eligibilityService.getClaimDx(
-      { id_claim: this.selectedClaim.id }, null, null, true);
-
-    forkJoin({ cpts: cptRequest, dx: dxRequest })
-      .pipe(finalize(() => {
-        this.isDataLoading = false;
-      }))
+  openPdf(data: any): void {
+    forkJoin({
+      cpts: this.eligibilityService.getClaimCpt({ id_claim: data.id }, null, null, true),
+      dx: this.eligibilityService.getClaimDx({ id_claim: data.id }, null, null, true)
+    })
       .subscribe({
         next: (res: any) => {
-          this.selectedClaim.cpts = res.cpts;
-          this.selectedClaim.dx = res.dx;
-          this.selectedClaim.modifiers = this.claimData.modifiers;
-          this.selectedClaim.provider_data = this.claimData.provider;
-          this.selectedClaim.patient_data = this.claimData.patient;
-          this.isVisibleModalViewClaim = true;
+          const completeData = {
+            ...data,
+            cpts: res.cpts,
+            dx: res.dx,
+            modifiers: this.claimData.modifiers,
+            provider_data: this.claimData.provider,
+            patient_data: this.claimData.patient,
+          };
+          this.selectedClaim = completeData;
+          this.showPdf = true;
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
@@ -209,36 +169,8 @@ export class ViewClaimsComponent {
       });
   }
 
-  CancelOkModalViewClaims() {
-    this.isVisibleModalViewClaim = false;
-  }
-
-  printClaim() {
-    const content = this.claimEntryComponent.getChildContent()?.nativeElement;
-
-    if (!content) return;
-
-    this.isPrinting = true;
-
-    html2canvas(content, {
-      scale: 4,
-      logging: false,
-      useCORS: true,
-      backgroundColor: null,
-    })
-      .then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a0');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-        pdf.addImage(imgData, 'PNG', 0, 10, pdfWidth, pdfHeight, '', 'FAST');
-        pdf.save('Claim.pdf');
-        this.msgService.success('Export completed successfully');
-      })
-      .catch((error) => this.msgService.error(JSON.stringify(error)))
-      .finally(() => {
-        this.isPrinting = false;
-      });
+  closePdf(): void {
+    this.showPdf = false;
+    this.selectedClaim = null;
   }
 }

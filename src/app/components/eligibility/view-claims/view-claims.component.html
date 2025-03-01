@@ -1,15 +1,13 @@
 <div class="title-page layout-container">
-    <div class="breadcrumb-container">
-      <nz-breadcrumb>
-        <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
-        <nz-breadcrumb-item>Patients</nz-breadcrumb-item>
-        <nz-breadcrumb-item>Patient Management</nz-breadcrumb-item>
-        <nz-breadcrumb-item>Views Claims</nz-breadcrumb-item>
-      </nz-breadcrumb>
-    </div>
+    <nz-breadcrumb>
+      <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Patients</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Patient Management</nz-breadcrumb-item>
+      <nz-breadcrumb-item>Views Claims</nz-breadcrumb-item>
+    </nz-breadcrumb>
 </div>
   
-<div class="main-table layout-container">
+<div class="layout-container">
   <div class="table-filters">
     <nz-input-group
       *ngFor="let field of searchFields"
@@ -21,8 +19,12 @@
         [(ngModel)]="this[field.model]"
         (ngModelChange)="search($event, field.key)"
       />
+      
       <ng-template #suffixIconSearch>
-        <span nz-icon nzType="search"></span>
+        <span 
+          nz-icon 
+          nzType="search">
+        </span>
       </ng-template>
     </nz-input-group>
   
@@ -31,9 +33,15 @@
         (ngModelChange)="search($event, 'origin')"
         nzAllowClear
         nzPlaceHolder="Select Origin">
-        <nz-option nzValue="1" nzLabel="PLATFORM"></nz-option>
-        <nz-option nzValue="2" nzLabel="EXTERNAL"></nz-option>
-    </nz-select>
+        <nz-option
+          nzValue="1" 
+          nzLabel="PLATFORM">
+        </nz-option>
+        <nz-option 
+          nzValue="2" 
+          nzLabel="EXTERNAL">
+        </nz-option>
+      </nz-select>
   </div>  
 
   <nz-table
@@ -58,16 +66,6 @@
         <td>{{ data.origin == 1 ? 'PLATFORM' : (data.origin == 2 ? 'EXTERNAL' : data.origin) }}</td>
         <td>{{ data.status == 1 ? 'PENDING' : (data.status == 2 ? 'IN_PROCCESS' : data.status) }}</td>
         <td>
-          <a>
-            <span
-              nz-icon
-              title="View"
-              nzType="eye"
-              nzTheme="outline"
-              (click)="openModalViewClaims(data)">
-            </span>
-          </a>
-          <nz-divider nzType="vertical"></nz-divider>
           <a>
             <span
               nz-icon
@@ -116,30 +114,6 @@
     <app-claim-entry 
       [claimDataView]="selectedClaim">
     </app-claim-entry>
-  </ng-container>
-
-  <ng-container *nzModalFooter>
-    <button 
-      nz-button 
-      (click)="CancelOkModalViewClaims()">
-      Cancel
-    </button>
-
-    <button 
-      nz-button 
-      nzType="primary" 
-      (click)="CancelOkModalViewClaims()">
-      OK
-    </button>
-
-    <button 
-      nz-button 
-      nzType="primary" 
-      [disabled]="isPrinting" 
-      [ngStyle]="{'background-color': '#FF5733', 'border-color': '#FF5733'}" 
-      (click)="printClaim()">
-      Print Claim
-    </button>
   </ng-container>
 </nz-modal>
 

@@ -64,7 +64,6 @@ import { finalize } from 'rxjs/operators';
 })
 export class ClaimEntryComponent {
   @Input() claimData: any;
-  @Input() claimDataView: any;
   modifiersOptions: { label: string; value: number }[] = [];
   modifiersInput: any[] = [];
   totalCharges = 0;
@@ -135,7 +134,7 @@ export class ClaimEntryComponent {
         new FormControl(null),
         new FormControl(null),
         new FormControl(null)
-      ],{ validators: this.uniqueDiagnosisValidator }),
+      ], { validators: this.uniqueDiagnosisValidator }),
       federal_tax_id: [null, [Validators.required]],
       ssn_ein: [2, [Validators.required]],
       patient_account_number: [null],
@@ -194,16 +193,16 @@ export class ClaimEntryComponent {
   }
 
   updateModifiersValidation(): void {
-    if (!(this.claimData?.modifiers === '1' || this.claimDataView?.modifiers === '1')) {
+    if (!(this.claimData?.modifiers === '1')) {
       this.rowsControls.controls.forEach((row) => {
         const modifiersArray = row.get('modifiers') as FormArray;
 
         modifiersArray.controls.forEach((modGroup, index) => {
           const modControl = modGroup.get('value') as FormControl;
           if (index === 0) {
-            modControl.setValidators([Validators.required]); // Primer campo obligatorio
+            modControl.setValidators([Validators.required]);
           } else {
-            modControl.clearValidators(); // Los demás opcionales
+            modControl.clearValidators();
           }
           modControl.updateValueAndValidity();
         });
@@ -240,85 +239,9 @@ export class ClaimEntryComponent {
         rowGroup.patchValue({ rendering_provider_id: this.claimData.provider_data.npi });
       });
 
-    } else if (changes['claimDataView'] && this.claimDataView) {
-      if (Array.isArray(this.claimDataView.dx)) {
-        const dxArray = this.form.get('diagnosis') as FormArray;
-        dxArray.clear();
-
-        this.claimDataView.dx.forEach((diagObj: { dx: string }, index: number) => {
-          const validators = index === 0 ? [Validators.required] : [];
-          dxArray.push(new FormControl(diagObj.dx, validators));
-        });
-      }
-
-      if (Array.isArray(this.claimDataView.cpts)) {
-        const rowsFormArray = this.form.get('rows') as FormArray;
-
-        rowsFormArray.clear();
-
-        this.claimDataView.cpts.forEach((cptObj: any) => {
-          const rowGroup = this.fb.group({
-            date_initial: [cptObj.date_initial],
-            date_final: [cptObj.date_final],
-            place_of_service: [cptObj.place_of_service],
-            emg: [cptObj.emg?.toString()],
-            procedures: [cptObj.service ?? cptObj.products],
-            modifiers: this.fb.array([
-              this.fb.group({ id: [1], value: [cptObj.modifier_1] }),
-              this.fb.group({ id: [2], value: [cptObj.modifier_2] }),
-              this.fb.group({ id: [3], value: [cptObj.modifier_3] }),
-              this.fb.group({ id: [4], value: [cptObj.modifier_4] })
-            ]),
-            diagnosis_pointer: [cptObj.diagnosis_pointer],
-            charges: [cptObj.charges],
-            units: [cptObj.days_or_unit],
-            rendering_provider_id: [cptObj.rendering_provider_id]
-          });
-
-          rowsFormArray.push(rowGroup);
-        });
-
-      }
-      this.form.patchValue({
-        insured_id: this.claimDataView.patient_data.primary_subscriber_id,
-        patient_name: `${this.claimDataView.patient_data.last_name} ${this.claimDataView.patient_data.first_name}`,
-        patient_address: this.claimDataView.patient_data.primary_address,
-        patient_birth_date: this.claimDataView.patient_data.birth_date,
-        patient_gender: this.claimDataView.patient_data.gender,
-        patient_city: this.claimDataView.patient_data.city,
-        patient_state: this.claimDataView.patient_data.state,
-        patient_zip_code: this.claimDataView.patient_data.postal_code,
-        patient_phone: this.claimDataView.patient_data.primary_phone,
-        insured_date_birth: this.claimDataView.patient_data.birth_date,
-        insured_gender: this.claimDataView.patient_data.gender,
-        insured_police_group_feca: this.claimDataView.patient_data.primary_group_number,
-        insured_insurance_plan_name: this.claimDataView.patient_data.primary_insure_plan_name,
-        name_referring_provider: this.claimDataView.name_referring_provider,
-        name_referring_provider_npi: this.claimDataView.name_referring_provider_npi,
-        original_ref_number: this.claimDataView.original_ref_number,
-        prior_authorization_number: this.claimDataView.prior_authorization_number,
-        federal_tax_id: this.claimDataView.federal_tax_id,
-        date_signature_doctor: this.claimDataView.date_signature_doctor,
-        service_facility_location: this.claimDataView.service_facility_location,
-        service_facility_npi: this.claimDataView.service_facility_npi,
-        amount_paid: this.claimDataView.amount_paid,
-        date_service: this.claimDataView.date_service,
-        total_charge: this.claimDataView.total_charge,
-        patient_account_number: this.claimDataView.patient_account_number,
-        signature_doctor: this.claimDataView.signature_doctor,
-        ssn_ein: this.claimDataView.ssn_ein,
-        billing_provider_phone: this.claimDataView.provider_data.user.phone,
-        billing_provider_address: this.claimDataView.provider_data.address,
-        billing_provider_npi: this.claimDataView.provider_data.npi,
-      });
     }
-
     this.updateModifiersValidation();
 
-  }
-
-  get isViewMode(): boolean {
-    return !!this.claimDataView;
   }
 
   get rowsControls(): UntypedFormArray {
