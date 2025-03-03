@@ -28,27 +28,26 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-diagnosis',
-  standalone: true,
-  imports: [
-    NzBreadCrumbModule,
-    NzFormModule,
-    FormsModule,
-    ReactiveFormsModule,
-    NzButtonComponent,
-    NzTableModule,
-    NzPaginationModule,
-    NzDividerModule,
-    NzInputModule,
-    NzIconModule,
-    NzDrawerModule,
-    NzSpinModule,
-    CommonModule,
-    NzSwitchModule,
-    NzEmptyModule,
-  ],
-  templateUrl: './diagnosis.component.html',
-  styleUrls: ['./diagnosis.component.css', '/src/animations/styles.css'],
+    selector: 'app-diagnosis',
+    imports: [
+        NzBreadCrumbModule,
+        NzFormModule,
+        FormsModule,
+        ReactiveFormsModule,
+        NzButtonComponent,
+        NzTableModule,
+        NzPaginationModule,
+        NzDividerModule,
+        NzInputModule,
+        NzIconModule,
+        NzDrawerModule,
+        NzSpinModule,
+        CommonModule,
+        NzSwitchModule,
+        NzEmptyModule,
+    ],
+    templateUrl: './diagnosis.component.html',
+    styleUrls: ['./diagnosis.component.css', '/src/animations/styles.css']
 })
 export class DiagnosisComponent {
   form: UntypedFormGroup;

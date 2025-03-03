@@ -28,27 +28,26 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-place_of_service',
-  standalone: true,
-  imports: [
-    NzBreadCrumbModule,
-    NzFormModule,
-    FormsModule,
-    ReactiveFormsModule,
-    NzButtonComponent,
-    NzTableModule,
-    NzPaginationModule,
-    NzDividerModule,
-    NzInputModule,
-    NzIconModule,
-    NzDrawerModule,
-    NzSpinModule,
-    CommonModule,
-    NzSwitchModule,
-    NzEmptyModule,
-  ],
-  templateUrl: './place_of_service.component.html',
-  styleUrls: ['./place_of_service.component.css', '/src/animations/styles.css'],
+    selector: 'app-place_of_service',
+    imports: [
+        NzBreadCrumbModule,
+        NzFormModule,
+        FormsModule,
+        ReactiveFormsModule,
+        NzButtonComponent,
+        NzTableModule,
+        NzPaginationModule,
+        NzDividerModule,
+        NzInputModule,
+        NzIconModule,
+        NzDrawerModule,
+        NzSpinModule,
+        CommonModule,
+        NzSwitchModule,
+        NzEmptyModule,
+    ],
+    templateUrl: './place_of_service.component.html',
+    styleUrls: ['./place_of_service.component.css', '/src/animations/styles.css']
 })
 export class LocationComponent {
   form: UntypedFormGroup;

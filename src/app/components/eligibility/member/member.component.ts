@@ -19,28 +19,27 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
-  selector: 'app-member',
-  standalone: true,
-  imports: [
-    NzBreadCrumbModule,
-    NzFormModule,
-    NzButtonComponent,
-    NzTableModule,
-    NzPaginationModule,
-    NzDividerModule,
-    NzInputModule,
-    NzIconModule,
-    NzDrawerModule,
-    NzSpinModule,
-    CommonModule,
-    NzSwitchModule,
-    NzSelectModule,
-    FormsModule,
-    NzModalModule,
-    NzEmptyModule
-  ],
-  templateUrl: './member.component.html',
-  styleUrls: ['./member.component.css']
+    selector: 'app-member',
+    imports: [
+        NzBreadCrumbModule,
+        NzFormModule,
+        NzButtonComponent,
+        NzTableModule,
+        NzPaginationModule,
+        NzDividerModule,
+        NzInputModule,
+        NzIconModule,
+        NzDrawerModule,
+        NzSpinModule,
+        CommonModule,
+        NzSwitchModule,
+        NzSelectModule,
+        FormsModule,
+        NzModalModule,
+        NzEmptyModule
+    ],
+    templateUrl: './member.component.html',
+    styleUrls: ['./member.component.css']
 })
 export class MemberComponent {
   isDataLoading = false;

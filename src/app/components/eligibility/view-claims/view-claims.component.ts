@@ -17,35 +17,32 @@ import { FormsModule } from '@angular/forms';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { EligibilityService } from 'app/services/eligibility/eligibility.service';
-import { ClaimEntryComponent } from '../claim-entry/claim-entry.component';
 import { ClaimFormPdfComponent } from 'app/components/claim-form-pdf/claim-form-pdf.component';
 import { finalize, } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
 
 @Component({
-  selector: 'app-view-claims',
-  standalone: true,
-  imports: [
-    NzBreadCrumbModule,
-    NzFormModule,
-    NzTableModule,
-    NzPaginationModule,
-    NzDividerModule,
-    NzInputModule,
-    NzIconModule,
-    NzDrawerModule,
-    NzSpinModule,
-    CommonModule,
-    NzSwitchModule,
-    NzSelectModule,
-    FormsModule,
-    NzModalModule,
-    NzEmptyModule,
-    ClaimEntryComponent,
-    ClaimFormPdfComponent
-  ],
-  templateUrl: './view-claims.component.html',
-  styleUrl: './view-claims.component.css'
+    selector: 'app-view-claims',
+    imports: [
+        NzBreadCrumbModule,
+        NzFormModule,
+        NzTableModule,
+        NzPaginationModule,
+        NzDividerModule,
+        NzInputModule,
+        NzIconModule,
+        NzDrawerModule,
+        NzSpinModule,
+        CommonModule,
+        NzSwitchModule,
+        NzSelectModule,
+        FormsModule,
+        NzModalModule,
+        NzEmptyModule,
+        ClaimFormPdfComponent
+    ],
+    templateUrl: './view-claims.component.html',
+    styleUrl: './view-claims.component.css'
 })
 export class ViewClaimsComponent {
   @Input() claimData: any;
@@ -66,9 +63,6 @@ export class ViewClaimsComponent {
     { placeholder: 'Id Claim...', model: 'idClaimsSearch', key: 'id_claim' },
   ];
   private searchNameSubject = new Subject<{ type: string; value: string | number | null }>();
-
-  @ViewChild(ClaimEntryComponent, { static: false })
-  claimEntryComponent!: ClaimEntryComponent;
 
   constructor(
     private msgService: NzMessageService,

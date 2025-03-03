@@ -28,27 +28,26 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-products',
-  standalone: true,
-  imports: [
-    NzBreadCrumbModule,
-    NzFormModule,
-    FormsModule,
-    ReactiveFormsModule,
-    NzButtonComponent,
-    NzTableModule,
-    NzPaginationModule,
-    NzDividerModule,
-    NzInputModule,
-    NzIconModule,
-    NzDrawerModule,
-    NzSpinModule,
-    CommonModule,
-    NzSwitchModule,
-    NzEmptyModule
-  ],
-  templateUrl: './products.component.html',
-  styleUrls: ['./products.component.css', '/src/animations/styles.css'],
+    selector: 'app-products',
+    imports: [
+        NzBreadCrumbModule,
+        NzFormModule,
+        FormsModule,
+        ReactiveFormsModule,
+        NzButtonComponent,
+        NzTableModule,
+        NzPaginationModule,
+        NzDividerModule,
+        NzInputModule,
+        NzIconModule,
+        NzDrawerModule,
+        NzSpinModule,
+        CommonModule,
+        NzSwitchModule,
+        NzEmptyModule
+    ],
+    templateUrl: './products.component.html',
+    styleUrls: ['./products.component.css', '/src/animations/styles.css']
 })
 export class ProductsComponent implements OnInit {
   form: UntypedFormGroup;

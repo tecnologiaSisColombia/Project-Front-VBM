@@ -8,19 +8,18 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzTableModule } from 'ng-zorro-antd/table';
 
 @Component({
-  selector: 'app-billing',
-  standalone: true,
-  imports: [
-    NzBreadCrumbModule,
-    NzIconModule,
-    NzInputModule,
-    NzPaginationModule,
-    NzSpinModule,
-    NzSwitchModule,
-    NzTableModule
-  ],
-  templateUrl: './billing.component.html',
-  styleUrls: ['./billing.component.css', '/src/animations/styles.css']
+    selector: 'app-billing',
+    imports: [
+        NzBreadCrumbModule,
+        NzIconModule,
+        NzInputModule,
+        NzPaginationModule,
+        NzSpinModule,
+        NzSwitchModule,
+        NzTableModule
+    ],
+    templateUrl: './billing.component.html',
+    styleUrls: ['./billing.component.css', '/src/animations/styles.css']
 })
 export class BillingComponent {
 

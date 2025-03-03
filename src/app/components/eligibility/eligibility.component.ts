@@ -28,30 +28,29 @@ import { finalize } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-eligibility',
-  standalone: true,
-  imports: [
-    NzBreadCrumbModule,
-    NzButtonComponent,
-    NzTableModule,
-    NzPaginationModule,
-    NzDividerModule,
-    NzInputModule,
-    NzIconModule,
-    NzSpinModule,
-    CommonModule,
-    NzSwitchModule,
-    FormsModule,
-    NzModalModule,
-    MemberComponent,
-    PlanDetailsComponent,
-    ClaimEntryComponent,
-    NzEmptyModule,
-    NzButtonModule,
-    ViewClaimsComponent
-  ],
-  templateUrl: './eligibility.component.html',
-  styleUrls: ['./eligibility.component.css', '/src/animations/styles.css'],
+    selector: 'app-eligibility',
+    imports: [
+        NzBreadCrumbModule,
+        NzButtonComponent,
+        NzTableModule,
+        NzPaginationModule,
+        NzDividerModule,
+        NzInputModule,
+        NzIconModule,
+        NzSpinModule,
+        CommonModule,
+        NzSwitchModule,
+        FormsModule,
+        NzModalModule,
+        MemberComponent,
+        PlanDetailsComponent,
+        ClaimEntryComponent,
+        NzEmptyModule,
+        NzButtonModule,
+        ViewClaimsComponent
+    ],
+    templateUrl: './eligibility.component.html',
+    styleUrls: ['./eligibility.component.css', '/src/animations/styles.css']
 })
 export class EligibilityComponent {
   isDataLoading = false;

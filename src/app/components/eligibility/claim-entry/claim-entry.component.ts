@@ -39,28 +39,27 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-claim-entry',
-  standalone: true,
-  imports: [
-    NzBreadCrumbModule,
-    CommonModule,
-    NzCardModule,
-    NzGridModule,
-    NzDividerModule,
-    NzModalModule,
-    NzIconModule,
-    NzButtonComponent,
-    ReactiveFormsModule,
-    NzDatePickerModule,
-    NzTableModule,
-    NzInputModule,
-    NzSelectModule,
-    FormsModule,
-    NzSpinModule,
-    NzFormModule
-  ],
-  templateUrl: './claim-entry.component.html',
-  styleUrls: ['./claim-entry.component.css'],
+    selector: 'app-claim-entry',
+    imports: [
+        NzBreadCrumbModule,
+        CommonModule,
+        NzCardModule,
+        NzGridModule,
+        NzDividerModule,
+        NzModalModule,
+        NzIconModule,
+        NzButtonComponent,
+        ReactiveFormsModule,
+        NzDatePickerModule,
+        NzTableModule,
+        NzInputModule,
+        NzSelectModule,
+        FormsModule,
+        NzSpinModule,
+        NzFormModule
+    ],
+    templateUrl: './claim-entry.component.html',
+    styleUrls: ['./claim-entry.component.css']
 })
 export class ClaimEntryComponent {
   @Input() claimData: any;

@@ -14,20 +14,19 @@ import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-reset-password',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    CommonModule,
-    NzButtonModule,
-    NzInputModule,
-    NzFormModule,
-    NzIconModule,
-    NzCardModule,
-    RouterLink
-  ],
-  templateUrl: './reset-password.component.html',
-  styleUrls: ['./reset-password.component.css', '/src/animations/styles.css']
+    selector: 'app-reset-password',
+    imports: [
+        ReactiveFormsModule,
+        CommonModule,
+        NzButtonModule,
+        NzInputModule,
+        NzFormModule,
+        NzIconModule,
+        NzCardModule,
+        RouterLink
+    ],
+    templateUrl: './reset-password.component.html',
+    styleUrls: ['./reset-password.component.css', '/src/animations/styles.css']
 })
 export class ResetPasswordComponent {
   form: FormGroup;

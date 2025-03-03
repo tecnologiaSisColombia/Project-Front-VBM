@@ -32,30 +32,29 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-plans',
-  standalone: true,
-  imports: [
-    NzBreadCrumbModule,
-    NzFormModule,
-    FormsModule,
-    ReactiveFormsModule,
-    NzButtonComponent,
-    NzTableModule,
-    NzPaginationModule,
-    NzDividerModule,
-    NzInputModule,
-    NzIconModule,
-    NzDrawerModule,
-    NzSpinModule,
-    CommonModule,
-    NzSwitchModule,
-    NzSelectModule,
-    NzModalModule,
-    SubplansComponent,
-    NzEmptyModule
-  ],
-  templateUrl: './plans.component.html',
-  styleUrls: ['./plans.component.css', '/src/animations/styles.css'],
+    selector: 'app-plans',
+    imports: [
+        NzBreadCrumbModule,
+        NzFormModule,
+        FormsModule,
+        ReactiveFormsModule,
+        NzButtonComponent,
+        NzTableModule,
+        NzPaginationModule,
+        NzDividerModule,
+        NzInputModule,
+        NzIconModule,
+        NzDrawerModule,
+        NzSpinModule,
+        CommonModule,
+        NzSwitchModule,
+        NzSelectModule,
+        NzModalModule,
+        SubplansComponent,
+        NzEmptyModule
+    ],
+    templateUrl: './plans.component.html',
+    styleUrls: ['./plans.component.css', '/src/animations/styles.css']
 })
 export class PlansComponent implements OnInit {
   form: UntypedFormGroup;

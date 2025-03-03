@@ -29,28 +29,27 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-doctors',
-  standalone: true,
-  imports: [
-    NzBreadCrumbModule,
-    NzFormModule,
-    FormsModule,
-    ReactiveFormsModule,
-    NzButtonComponent,
-    NzTableModule,
-    NzPaginationModule,
-    NzDividerModule,
-    NzInputModule,
-    NzIconModule,
-    NzDrawerModule,
-    NzSpinModule,
-    CommonModule,
-    NzSwitchModule,
-    NzSelectModule,
-    NzEmptyModule,
-  ],
-  templateUrl: './doctor.component.html',
-  styleUrls: ['./doctor.component.css', '/src/animations/styles.css'],
+    selector: 'app-doctors',
+    imports: [
+        NzBreadCrumbModule,
+        NzFormModule,
+        FormsModule,
+        ReactiveFormsModule,
+        NzButtonComponent,
+        NzTableModule,
+        NzPaginationModule,
+        NzDividerModule,
+        NzInputModule,
+        NzIconModule,
+        NzDrawerModule,
+        NzSpinModule,
+        CommonModule,
+        NzSwitchModule,
+        NzSelectModule,
+        NzEmptyModule,
+    ],
+    templateUrl: './doctor.component.html',
+    styleUrls: ['./doctor.component.css', '/src/animations/styles.css']
 })
 export class DoctorComponent {
   form: UntypedFormGroup;

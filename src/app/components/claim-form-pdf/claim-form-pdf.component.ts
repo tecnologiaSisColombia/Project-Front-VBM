@@ -4,14 +4,13 @@ import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { PDFName, PDFDocument, PDFCheckBox } from 'pdf-lib';
 
 @Component({
-  selector: 'app-claim-form-pdf',
-  standalone: true,
-  imports: [
-    CommonModule,
-    NgxExtendedPdfViewerModule
-  ],
-  templateUrl: './claim-form-pdf.component.html',
-  styleUrls: ['./claim-form-pdf.component.css']
+    selector: 'app-claim-form-pdf',
+    imports: [
+        CommonModule,
+        NgxExtendedPdfViewerModule
+    ],
+    templateUrl: './claim-form-pdf.component.html',
+    styleUrls: ['./claim-form-pdf.component.css']
 })
 export class ClaimFormPdfComponent {
   @Input() showPdf: boolean = false;

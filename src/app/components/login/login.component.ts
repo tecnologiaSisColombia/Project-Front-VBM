@@ -18,20 +18,19 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzCardModule } from 'ng-zorro-antd/card';
 
 @Component({
-  selector: 'app-login',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterLink,
-    NzButtonModule,
-    NzInputModule,
-    NzFormModule,
-    NzIconModule,
-    NzCardModule
-  ],
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css', '/src/animations/styles.css'],
+    selector: 'app-login',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        RouterLink,
+        NzButtonModule,
+        NzInputModule,
+        NzFormModule,
+        NzIconModule,
+        NzCardModule
+    ],
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.css', '/src/animations/styles.css']
 })
 export class LoginComponent implements OnInit {
   form: FormGroup;

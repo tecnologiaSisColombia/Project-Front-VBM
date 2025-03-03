@@ -34,28 +34,27 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-user-management',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    NzButtonModule,
-    NzFormModule,
-    NzIconModule,
-    NzInputModule,
-    NzTableModule,
-    NzSelectModule,
-    NzDrawerModule,
-    NzBreadCrumbModule,
-    NzSwitchModule,
-    ReactiveFormsModule,
-    NzSpinModule,
-    NzPaginationModule,
-    NzEmptyModule,
-    NzDividerModule,
-  ],
-  templateUrl: './user-management.component.html',
-  styleUrls: ['./user-management.component.css', '/src/animations/styles.css'],
+    selector: 'app-user-management',
+    imports: [
+        CommonModule,
+        FormsModule,
+        NzButtonModule,
+        NzFormModule,
+        NzIconModule,
+        NzInputModule,
+        NzTableModule,
+        NzSelectModule,
+        NzDrawerModule,
+        NzBreadCrumbModule,
+        NzSwitchModule,
+        ReactiveFormsModule,
+        NzSpinModule,
+        NzPaginationModule,
+        NzEmptyModule,
+        NzDividerModule,
+    ],
+    templateUrl: './user-management.component.html',
+    styleUrls: ['./user-management.component.css', '/src/animations/styles.css']
 })
 export class UserManagementComponent implements OnInit {
   form: UntypedFormGroup;

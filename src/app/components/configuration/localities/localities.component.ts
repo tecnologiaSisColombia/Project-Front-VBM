@@ -28,27 +28,26 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-localities',
-  standalone: true,
-  imports: [
-    NzBreadCrumbModule,
-    NzFormModule,
-    FormsModule,
-    ReactiveFormsModule,
-    NzButtonComponent,
-    NzTableModule,
-    NzPaginationModule,
-    NzDividerModule,
-    NzInputModule,
-    NzIconModule,
-    NzDrawerModule,
-    NzSpinModule,
-    CommonModule,
-    NzSwitchModule,
-    NzEmptyModule
-  ],
-  templateUrl: './localities.component.html',
-  styleUrls: ['./localities.component.css', '/src/animations/styles.css'],
+    selector: 'app-localities',
+    imports: [
+        NzBreadCrumbModule,
+        NzFormModule,
+        FormsModule,
+        ReactiveFormsModule,
+        NzButtonComponent,
+        NzTableModule,
+        NzPaginationModule,
+        NzDividerModule,
+        NzInputModule,
+        NzIconModule,
+        NzDrawerModule,
+        NzSpinModule,
+        CommonModule,
+        NzSwitchModule,
+        NzEmptyModule
+    ],
+    templateUrl: './localities.component.html',
+    styleUrls: ['./localities.component.css', '/src/animations/styles.css']
 })
 export class LocalitiesComponent implements OnInit {
   form: UntypedFormGroup;

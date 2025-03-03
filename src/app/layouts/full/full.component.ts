@@ -12,22 +12,21 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-full',
-  templateUrl: './full.component.html',
-  styleUrls: ['./full.component.css', '/src/animations/styles.css'],
-  standalone: true,
-  imports: [
-    NzBreadCrumbModule,
-    NzIconModule,
-    NzMenuModule,
-    NzLayoutModule,
-    RouterOutlet,
-    RouterLink,
-    NzButtonModule,
-    NzDropDownModule,
-    NzAvatarModule,
-    CommonModule,
-  ],
+    selector: 'app-full',
+    templateUrl: './full.component.html',
+    styleUrls: ['./full.component.css', '/src/animations/styles.css'],
+    imports: [
+        NzBreadCrumbModule,
+        NzIconModule,
+        NzMenuModule,
+        NzLayoutModule,
+        RouterOutlet,
+        RouterLink,
+        NzButtonModule,
+        NzDropDownModule,
+        NzAvatarModule,
+        CommonModule,
+    ]
 })
 export class FullComponent implements OnInit {
   currentDate: Date = new Date();

@@ -9,7 +9,6 @@ import { Input } from '@angular/core';
 
 @Component({
     selector: 'app-plan-details',
-    standalone: true,
     imports: [
         NzBreadCrumbModule,
         CommonModule,
