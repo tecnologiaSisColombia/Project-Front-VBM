@@ -5,13 +5,13 @@ import { environment } from 'environments/environment'
 @Injectable({
     providedIn: 'root',
 })
-export class EligibilityService {
+export class BillingService {
     hostname = environment.apiUrl
 
     constructor(private http: HttpClient) { }
 
     getClaim(
-        { patient, id_claim, origin }: any,
+        { id_claim, origin }: any,
         page: number | null = 1,
         pageSize: number | null = 10,
         init = false
@@ -20,10 +20,6 @@ export class EligibilityService {
             .set('page', (page ?? 1).toString())
             .set('page_size', (pageSize ?? 10).toString())
             .set('init', init)
-
-        if (patient != null) {
-            params = params.set('patient', patient)
-        }
 
         if (id_claim != null) {
             params = params.set('id_claim', id_claim)

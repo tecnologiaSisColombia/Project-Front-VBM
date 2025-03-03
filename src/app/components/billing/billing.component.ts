@@ -16,7 +16,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { FormsModule } from '@angular/forms';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
-import { EligibilityService } from 'app/services/eligibility/eligibility.service';
+import { BillingService } from 'app/services/billing/billing.service';
 import { ClaimFormPdfComponent } from 'app/components/claim-form-pdf/claim-form-pdf.component';
 import { finalize, } from 'rxjs/operators';
 
@@ -44,7 +44,6 @@ import { finalize, } from 'rxjs/operators';
 })
 export class BillingComponent {
   isDataLoading = false;
-  isPrinting = false;
   isVisibleModalViewClaim = false;
   showPdf: boolean = false;
   dataToDisplay: any[] = [];
@@ -63,7 +62,7 @@ export class BillingComponent {
 
   constructor(
     private msgService: NzMessageService,
-    private eligibilityService: EligibilityService,
+    private billingService: BillingService,
   ) {
     this.searchNameSubject
       .pipe(debounceTime(1000))
@@ -85,31 +84,31 @@ export class BillingComponent {
   }
 
   getClaim() {
-    // this.isDataLoading = true;
-    // this.eligibilityService
-    //   .getClaim(
-    //     {
-    //       id_claim: this.idClaimsSearch,
-    //       patient: this.claimData.patient_id,
-    //       origin: this.originSearch,
-    //     },
-    //     this.page,
-    //     this.page_size
-    //   )
-    //   .pipe(
-    //     finalize(() => {
-    //       this.isDataLoading = false;
-    //     })
-    //   )
-    //   .subscribe({
-    //     next: (res: any) => {
-    //       this.dataToDisplay = res.results;
-    //       this.setPagination(res.total);
-    //     },
-    //     error: (err) => {
-    //       this.msgService.error(JSON.stringify(err.error));
-    //     },
-    //   });
+    this.isDataLoading = true;
+    this.billingService
+      .getClaim(
+        {
+          id_claim: this.idClaimsSearch,
+          origin: this.originSearch,
+        },
+        this.page,
+        this.page_size
+      )
+      .pipe(
+        finalize(() => {
+          this.isDataLoading = false;
+        })
+      )
+      .subscribe({
+        next: (res: any) => {
+          this.dataToDisplay = res.results;
+          console.log(this.dataToDisplay)
+          this.setPagination(res.total);
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 
   search(value: string | number | null, type: string) {
@@ -137,27 +136,30 @@ export class BillingComponent {
   }
 
   openPdf(data: any): void {
-    // forkJoin({
-    //   cpts: this.eligibilityService.getClaimCpt({ id_claim: data.id }, null, null, true),
-    //   dx: this.eligibilityService.getClaimDx({ id_claim: data.id }, null, null, true)
-    // })
-    //   .subscribe({
-    //     next: (res: any) => {
-    //       const completeData = {
-    //         ...data,
-    //         cpts: res.cpts,
-    //         dx: res.dx,
-    //         modifiers: this.claimData.modifiers,
-    //         provider_data: this.claimData.provider,
-    //         patient_data: this.claimData.patient,
-    //       };
-    //       this.selectedClaim = completeData;
-    //       this.showPdf = true;
-    //     },
-    //     error: (err) => {
-    //       this.msgService.error(JSON.stringify(err.error));
-    //     }
-    //   });
+    forkJoin({
+      cpts: this.billingService.getClaimCpt({ id_claim: data.id }, null, null, true),
+      dx: this.billingService.getClaimDx({ id_claim: data.id }, null, null, true)
+    })
+      .subscribe({
+        next: (res: any) => {
+          const completeData = {
+            ...data,
+            cpts: res.cpts,
+            dx: res.dx,
+            // provider_data: this.claimData.provider,
+            // patient_data: this.claimData.patient,
+          };
+          this.selectedClaim = completeData;
+          this.showPdf = true;
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        }
+      });
+  }
+
+  sendClaim(data: any): void {
+
   }
 
   closePdf(): void {

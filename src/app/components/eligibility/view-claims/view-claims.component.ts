@@ -46,7 +46,6 @@ import { finalize, } from 'rxjs/operators';
 export class ViewClaimsComponent {
   @Input() claimData: any;
   isDataLoading = false;
-  isPrinting = false;
   isVisibleModalViewClaim = false;
   showPdf: boolean = false;
   dataToDisplay: any[] = [];
@@ -149,7 +148,6 @@ export class ViewClaimsComponent {
             ...data,
             cpts: res.cpts,
             dx: res.dx,
-            modifiers: this.claimData.modifiers,
             provider_data: this.claimData.provider,
             patient_data: this.claimData.patient,
           };

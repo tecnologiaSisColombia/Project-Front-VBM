@@ -4,13 +4,13 @@ import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { PDFName, PDFDocument, PDFCheckBox } from 'pdf-lib';
 
 @Component({
-    selector: 'app-claim-form-pdf',
-    imports: [
-        CommonModule,
-        NgxExtendedPdfViewerModule
-    ],
-    templateUrl: './claim-form-pdf.component.html',
-    styleUrls: ['./claim-form-pdf.component.css']
+  selector: 'app-claim-form-pdf',
+  imports: [
+    CommonModule,
+    NgxExtendedPdfViewerModule
+  ],
+  templateUrl: './claim-form-pdf.component.html',
+  styleUrls: ['./claim-form-pdf.component.css']
 })
 export class ClaimFormPdfComponent {
   @Input() showPdf: boolean = false;
@@ -33,6 +33,12 @@ export class ClaimFormPdfComponent {
 
     const patientData = this.claimDataView?.patient_data;
 
+    const providerData = this.claimDataView?.provider_data;
+
+    const dxData = this.claimDataView?.dx;
+
+    const cptsData = this.claimDataView?.cpts;
+
     const { last_name: lastName, first_name: firstName, middle_initial: middleInitial } = patientData;
 
     const fullName = [lastName, firstName, middleInitial].filter(Boolean).join(", ").replace(", ", " ");
@@ -54,6 +60,10 @@ export class ClaimFormPdfComponent {
         form.getTextField(key)?.setText(value);
       });
     }
+
+    const assignmentValue = PDFName.of(this.claimDataView?.accept_assignment === 1 ? "YES" : "NO");
+
+    form.getField("assignment")?.acroField.dict.set(PDFName.of("V"), assignmentValue);
 
     const sexValue = PDFName.of(patientData.gender === "F" ? "F" : "M");
 
@@ -79,6 +89,28 @@ export class ClaimFormPdfComponent {
 
     form.getTextField('tax_id')?.setText(this.claimDataView?.federal_tax_id);
 
+    form.getTextField('pin1')?.setText(this.claimDataView?.service_facility_npi);
+
+    form.getTextField('fac_street')?.setText(this.claimDataView?.service_facility_location);
+
+    form.getTextField('doc_phone')?.setText(providerData?.user?.phone);
+
+    form.getTextField('pin')?.setText(providerData?.npi);
+
+    form.getTextField('doc_street')?.setText(providerData?.address);
+
+    form.getTextField('t_charge')?.setText(String(this.claimDataView?.total_charge));
+
+    form.getTextField('amt_paid')?.setText(String(this.claimDataView?.amount_paid ?? '0.00'));
+
+    form.getTextField('pt_account')?.setText(String(this.claimDataView?.patient_account_number ?? ''));
+
+    form.getTextField('prior_auth')?.setText(String(this.claimDataView?.prior_authorization_number ?? ''));
+
+    form.getTextField('ref_physician')?.setText(String(this.claimDataView?.name_referring_provider ?? ''));
+
+    form.getTextField('id_physician')?.setText(String(this.claimDataView?.name_referring_provider_npi ?? ''));
+
     const relationshipMap: Record<number, string> = {
       1: "S",
       2: "M",
@@ -86,9 +118,25 @@ export class ClaimFormPdfComponent {
       4: "O",
     };
 
-    const selectedValue = relationshipMap[this.claimDataView?.relationship];
+    const valueRelationship = relationshipMap[this.claimDataView?.relationship];
 
-    form.getField("rel_to_ins")?.acroField.dict.set(PDFName.of("V"), PDFName.of(selectedValue));
+    form.getField("rel_to_ins")?.acroField.dict.set(PDFName.of("V"), PDFName.of(valueRelationship));
+
+    const signatureMap: Record<number, string> = {
+      1: "SOF (Signature On File)",
+    };
+
+    const patientSignature = signatureMap[this.claimDataView?.patient_signature];
+
+    const insuredSignature = signatureMap[this.claimDataView?.insured_signature];
+
+    const doctorSignature = signatureMap[this.claimDataView?.signature_doctor];
+
+    form.getTextField('pt_signature')?.setText(patientSignature);
+
+    form.getTextField('ins_signature')?.setText(insuredSignature);
+
+    form.getTextField('physician_signature')?.setText(doctorSignature);
 
     const insuredDateBirth = this.claimDataView?.insured_date_birth
 
@@ -115,6 +163,35 @@ export class ClaimFormPdfComponent {
       const value = patientData.gender === "F" ? PDFName.of("FEMALE") : PDFName.of("MALE");
       field.acroField.dict.set(PDFName.of("V"), value);
     }
+
+    dxData.forEach((item: any, index: number) => {
+      const fieldNameDiag = `diagnosis${index + 1}`;
+      form.getTextField(fieldNameDiag)?.setText(item.dx);
+    });
+
+    const diagPointerMap: Record<number, string> = Object.fromEntries(
+      Array.from({ length: 12 }, (_, i) => [i + 1, String.fromCharCode(65 + i)])
+    );
+
+    cptsData.forEach((item: any, index: number) => {
+      const fields = {
+        [`place${index + 1}`]: String(item.place_of_service),
+        [`type${index + 1}`]: item.emg === 1 ? "YES" : "NO",
+        [`cpt${index + 1}`]: item.service ?? item.product,
+        [`ch${index + 1}`]: item.charges,
+        [`day${index + 1}`]: item.days_or_unit,
+        [`local${index + 1}`]: item.rendering_provider_id,
+        [`diag${index + 1}`]: diagPointerMap[item.diagnosis_pointer],
+        [`mod${index + 1}`]: String(item.modifier_1),
+      };
+
+      Object.entries(fields).forEach(([fieldName, value]) => {
+        const field = form.getTextField(fieldName);
+        if (field) {
+          field.setText(value);
+        }
+      });
+    });
 
     form.flatten();
 

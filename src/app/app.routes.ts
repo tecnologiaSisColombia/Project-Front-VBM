@@ -9,6 +9,7 @@ import { DoctorComponent } from 'app/components/configuration/doctors/doctor.com
 import { LocalitiesComponent } from 'app/components/configuration/localities/localities.component'
 import { DiagnosisComponent } from 'app/components/configuration/diagnosis/diagnosis.component'
 import { LocationComponent } from 'app/components/configuration/place-of-service/place-of-service.component'
+import { ModifiersComponent } from 'app/components/configuration/modifiers/modifiers.component'
 import { LoginComponent } from 'app/components/login/login.component'
 import { ResetPasswordComponent } from 'app/components/reset-password/reset-password.component'
 import { ChangePasswordComponent } from 'app/components/change-password/change-password.component'
@@ -20,6 +21,8 @@ import { ProfilesComponent } from 'app/components/user-management/profiles/profi
 import { EligibilityComponent } from 'app/components/eligibility/eligibility.component'
 import { MainMenuComponent } from 'app/components/main-menu/main-menu.component'
 import { BillingComponent } from 'app/components/billing/billing.component'
+import { Component } from '@angular/core';
+
 
 export const routes: Routes = [
   {
@@ -80,6 +83,10 @@ export const routes: Routes = [
             path: 'place_of_service',
             component: LocationComponent,
           },
+          {
+            path: 'modifiers',
+            component: ModifiersComponent
+          }
         ],
       },
       {
