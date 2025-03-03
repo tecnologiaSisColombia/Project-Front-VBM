@@ -20,7 +20,7 @@ import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { AuthService } from 'app/services/auth/auth.service';
 import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, finalize } from 'rxjs/operators';
 import * as XLSX from 'xlsx';
 import { InsurersService } from 'app/services/insurers/insurers.service';
 import { DoctorService } from 'app/services/config/doctors.service';
@@ -31,7 +31,6 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
-import { finalize } from 'rxjs/operators';
 
 @Component({
     selector: 'app-user-management',

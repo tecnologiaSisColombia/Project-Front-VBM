@@ -46,8 +46,8 @@ import { finalize } from 'rxjs/operators';
         NzSwitchModule,
         NzEmptyModule,
     ],
-    templateUrl: './place_of_service.component.html',
-    styleUrls: ['./place_of_service.component.css', '/src/animations/styles.css']
+    templateUrl: './place-of-service.component.html',
+    styleUrls: ['./place-of-service.component.css', '/src/animations/styles.css']
 })
 export class LocationComponent {
   form: UntypedFormGroup;

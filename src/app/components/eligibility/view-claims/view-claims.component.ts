@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
@@ -9,7 +9,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { debounceTime, Subject } from 'rxjs';
+import { debounceTime, Subject, forkJoin } from 'rxjs';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -19,30 +19,29 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { EligibilityService } from 'app/services/eligibility/eligibility.service';
 import { ClaimFormPdfComponent } from 'app/components/claim-form-pdf/claim-form-pdf.component';
 import { finalize, } from 'rxjs/operators';
-import { forkJoin } from 'rxjs';
 
 @Component({
-    selector: 'app-view-claims',
-    imports: [
-        NzBreadCrumbModule,
-        NzFormModule,
-        NzTableModule,
-        NzPaginationModule,
-        NzDividerModule,
-        NzInputModule,
-        NzIconModule,
-        NzDrawerModule,
-        NzSpinModule,
-        CommonModule,
-        NzSwitchModule,
-        NzSelectModule,
-        FormsModule,
-        NzModalModule,
-        NzEmptyModule,
-        ClaimFormPdfComponent
-    ],
-    templateUrl: './view-claims.component.html',
-    styleUrl: './view-claims.component.css'
+  selector: 'app-view-claims',
+  imports: [
+    NzBreadCrumbModule,
+    NzFormModule,
+    NzTableModule,
+    NzPaginationModule,
+    NzDividerModule,
+    NzInputModule,
+    NzIconModule,
+    NzDrawerModule,
+    NzSpinModule,
+    CommonModule,
+    NzSwitchModule,
+    NzSelectModule,
+    FormsModule,
+    NzModalModule,
+    NzEmptyModule,
+    ClaimFormPdfComponent
+  ],
+  templateUrl: './view-claims.component.html',
+  styleUrl: './view-claims.component.css'
 })
 export class ViewClaimsComponent {
   @Input() claimData: any;
