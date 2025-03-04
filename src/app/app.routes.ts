@@ -21,8 +21,6 @@ import { ProfilesComponent } from 'app/components/user-management/profiles/profi
 import { EligibilityComponent } from 'app/components/eligibility/eligibility.component'
 import { MainMenuComponent } from 'app/components/main-menu/main-menu.component'
 import { BillingComponent } from 'app/components/billing/billing.component'
-import { Component } from '@angular/core';
-
 
 export const routes: Routes = [
   {

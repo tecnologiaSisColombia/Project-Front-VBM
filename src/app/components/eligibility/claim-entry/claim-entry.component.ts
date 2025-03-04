@@ -39,27 +39,27 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-claim-entry',
-    imports: [
-        NzBreadCrumbModule,
-        CommonModule,
-        NzCardModule,
-        NzGridModule,
-        NzDividerModule,
-        NzModalModule,
-        NzIconModule,
-        NzButtonComponent,
-        ReactiveFormsModule,
-        NzDatePickerModule,
-        NzTableModule,
-        NzInputModule,
-        NzSelectModule,
-        FormsModule,
-        NzSpinModule,
-        NzFormModule
-    ],
-    templateUrl: './claim-entry.component.html',
-    styleUrls: ['./claim-entry.component.css']
+  selector: 'app-claim-entry',
+  imports: [
+    NzBreadCrumbModule,
+    CommonModule,
+    NzCardModule,
+    NzGridModule,
+    NzDividerModule,
+    NzModalModule,
+    NzIconModule,
+    NzButtonComponent,
+    ReactiveFormsModule,
+    NzDatePickerModule,
+    NzTableModule,
+    NzInputModule,
+    NzSelectModule,
+    FormsModule,
+    NzSpinModule,
+    NzFormModule
+  ],
+  templateUrl: './claim-entry.component.html',
+  styleUrls: ['./claim-entry.component.css']
 })
 export class ClaimEntryComponent {
   @Input() claimData: any;
@@ -145,7 +145,7 @@ export class ClaimEntryComponent {
       billing_provider_phone: [null, [Validators.required]],
       billing_provider_npi: [null, [Validators.required]],
       billing_provider_address: [null, [Validators.required]],
-      amount_paid: [null],
+      amount_paid: [0, [Validators.required]],
       original_ref_number: [null],
       prior_authorization_number: [null],
       rows: this.fb.array([this.createRow()]),
@@ -210,6 +210,28 @@ export class ClaimEntryComponent {
         modifiersArray.updateValueAndValidity();
       });
     }
+  }
+
+  isModifierDisabled(rowCtrl: AbstractControl, index: number): boolean {
+    if (index === 0) {
+      return false;
+    }
+
+    const modifiersArray = rowCtrl.get('modifiers') as FormArray;
+    const previousValue = modifiersArray.at(index - 1).get('value')?.value;
+
+    if (!previousValue) {
+      return true;
+    }
+
+    if (index >= 2) {
+      const beforePreviousValue = modifiersArray.at(index - 2).get('value')?.value;
+      if (previousValue && beforePreviousValue && previousValue === beforePreviousValue) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   ngOnChanges(changes: SimpleChanges) {

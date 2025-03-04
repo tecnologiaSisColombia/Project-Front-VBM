@@ -642,8 +642,8 @@
                 <td *ngIf="claimData?.modifiers == '1'">
                   <div formArrayName="modifiers" nz-row [nzGutter]="8">
                     <ng-container 
-                      *ngFor="let modifierCtrl of getModifiersControls(rowCtrl); 
-                      let j = index" [formGroupName]="j">
+                      *ngFor="let modifierCtrl of getModifiersControls(rowCtrl); let j = index" 
+                      [formGroupName]="j">
                       <nz-col [nzSpan]="6">
                         <nz-form-control 
                           [nzHasFeedback]="true"
@@ -652,7 +652,8 @@
                             formControlName="value"
                             nzAllowClear
                             nzShowSearch
-                            (ngModelChange)="onModifierChange(rowCtrl)">
+                            (ngModelChange)="onModifierChange(rowCtrl)"
+                            [nzDisabled]="isModifierDisabled(rowCtrl, j)">
                             <nz-option
                               *ngFor="let option of modifiersOptions"
                               [nzValue]="option.value"
@@ -663,7 +664,7 @@
                       </nz-col>
                     </ng-container>
                   </div>
-                </td>              
+                </td>                           
                 <td>
                   <nz-form-control 
                     [nzHasFeedback]="hasFeedback('rows.' + i + '.diagnosis_pointer')">
@@ -852,7 +853,8 @@
                 29. Amount Paid
               </nz-form-label>
 
-              <nz-form-control 
+              <nz-form-control
+                [nzErrorTip]="errorTemplate"
                 [nzSpan]="24">
                 <input
                   type="number"

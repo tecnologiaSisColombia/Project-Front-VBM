@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
-import { PDFName, PDFDocument, PDFCheckBox } from 'pdf-lib';
+import { PDFName, PDFDocument, PDFCheckBox, PDFArray, PDFDict } from 'pdf-lib';
+import { ModifiersService } from 'app/services/config/modifiers.service';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-claim-form-pdf',
@@ -17,11 +19,16 @@ export class ClaimFormPdfComponent {
   @Input() claimDataView: any;
   @Output() closePdf: EventEmitter<void> = new EventEmitter<void>();
   pdfSrc: string = '';
+  modifiersOptions: { label: string; value: number }[] = [];
+  modifiersInput: any[] = [];
 
-  constructor() { }
+  constructor(
+    private msgService: NzMessageService,
+    private modifiersService: ModifiersService,
+  ) { }
 
-  closeViewer(): void {
-    this.closePdf.emit();
+  ngOnInit(): void {
+    this.getModifiers();
   }
 
   async fillPdf(): Promise<void> {
@@ -29,7 +36,7 @@ export class ClaimFormPdfComponent {
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
     const form = pdfDoc.getForm();
 
-    // console.log(form.getFields().map(f => f.getName()));
+    console.log(form.getFields().map(f => f.getName()));
 
     const patientData = this.claimDataView?.patient_data;
 
@@ -111,6 +118,10 @@ export class ClaimFormPdfComponent {
 
     form.getTextField('id_physician')?.setText(String(this.claimDataView?.name_referring_provider_npi ?? ''));
 
+    form.getTextField('physician_date')?.setText(
+      String(this.claimDataView?.date_signature_doctor?.split('T')[0] ?? '')
+    );
+
     const relationshipMap: Record<number, string> = {
       1: "S",
       2: "M",
@@ -138,22 +149,17 @@ export class ClaimFormPdfComponent {
 
     form.getTextField('physician_signature')?.setText(doctorSignature);
 
-    const insuredDateBirth = this.claimDataView?.insured_date_birth
+    const dateInsured = this.extractDateParts(String(this.claimDataView?.insured_date_birth));
 
-    if (insuredDateBirth?.match(/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}([-+]\d{2}:\d{2})?)?$/)) {
-      const [datePart] = insuredDateBirth.split("T");
-      const [year, month, day] = datePart.split("-");
+    const fields = {
+      ins_dob_mm: dateInsured.mm,
+      ins_dob_dd: dateInsured.dd,
+      ins_dob_yy: dateInsured.yy,
+    };
 
-      const fields = {
-        ins_dob_mm: month,
-        ins_dob_dd: day,
-        ins_dob_yy: year.slice(-2),
-      };
-
-      Object.entries(fields).forEach(([key, value]) => {
-        form.getTextField(key)?.setText(value);
-      });
-    }
+    Object.entries(fields).forEach(([key, value]) => {
+      form.getTextField(key)?.setText(value);
+    });
 
     form.getTextField('ins_plan_name')?.setText(patientData?.primary_insure_plan_name);
 
@@ -163,6 +169,15 @@ export class ClaimFormPdfComponent {
       const value = patientData.gender === "F" ? PDFName.of("FEMALE") : PDFName.of("MALE");
       field.acroField.dict.set(PDFName.of("V"), value);
     }
+
+    const ssnEin: Record<number, string> = {
+      1: "SSN",
+      2: "EIN",
+    };
+
+    const valueSsnEin = ssnEin[this.claimDataView?.ssn_ein];
+
+    form.getField("ssn")?.acroField.dict.set(PDFName.of("V"), PDFName.of(valueSsnEin));
 
     dxData.forEach((item: any, index: number) => {
       const fieldNameDiag = `diagnosis${index + 1}`;
@@ -174,6 +189,10 @@ export class ClaimFormPdfComponent {
     );
 
     cptsData.forEach((item: any, index: number) => {
+      const dateInitial = this.extractDateParts(String(item.date_initial));
+
+      const dateFinal = this.extractDateParts(String(item.date_final));
+
       const fields = {
         [`place${index + 1}`]: String(item.place_of_service),
         [`type${index + 1}`]: item.emg === 1 ? "YES" : "NO",
@@ -182,7 +201,16 @@ export class ClaimFormPdfComponent {
         [`day${index + 1}`]: item.days_or_unit,
         [`local${index + 1}`]: item.rendering_provider_id,
         [`diag${index + 1}`]: diagPointerMap[item.diagnosis_pointer],
-        [`mod${index + 1}`]: String(item.modifier_1),
+        [`mod${index + 1}`]: this.getModifierCodeById((item.modifier_1)),
+        [`mod${index + 1}a`]: this.getModifierCodeById((item.modifier_2)),
+        [`mod${index + 1}b`]: this.getModifierCodeById((item.modifier_3)),
+        [`mod${index + 1}c`]: this.getModifierCodeById((item.modifier_4)),
+        [`sv${index + 1}_mm_from`]: dateInitial.mm,
+        [`sv${index + 1}_dd_from`]: dateInitial.dd,
+        [`sv${index + 1}_yy_from`]: dateInitial.yy,
+        [`sv${index + 1}_mm_end`]: dateFinal.mm,
+        [`sv${index + 1}_dd_end`]: dateFinal.dd,
+        [`sv${index + 1}_yy_end`]: dateFinal.yy,
       };
 
       Object.entries(fields).forEach(([fieldName, value]) => {
@@ -191,6 +219,43 @@ export class ClaimFormPdfComponent {
           field.setText(value);
         }
       });
+    });
+
+    const insuranceTypesMap: Record<number, string> = {
+      1: "Medicare",
+      2: "Medicaid",
+      3: "Tricare",
+      4: "Champva",
+      5: "Group",
+      6: "Feca",
+      7: "Other",
+    };
+
+    const targetValue = insuranceTypesMap[this.claimDataView?.insurance_type];
+
+    const insuranceType = form.getField('insurance_type');
+
+    const parent = insuranceType.acroField.dict;
+
+    parent.set(PDFName.of('V'), PDFName.of(targetValue));
+
+    const kidsRef = parent.get(PDFName.of('Kids'));
+
+    if (!kidsRef) return;
+
+    const kids = insuranceType.doc.context.lookup(kidsRef) as PDFArray;
+
+    if (!(kids instanceof PDFArray)) return;
+
+    kids.asArray().forEach(ref => {
+      const child = insuranceType.doc.context.lookup(ref) as PDFDict;
+      if (!(child instanceof PDFDict)) return;
+      const nDict = (child.get(PDFName.of('AP')) as PDFDict)?.get(PDFName.of('N'));
+      if (!(nDict instanceof PDFDict)) return;
+      child.set(PDFName.of('AS'), nDict.has(PDFName.of(targetValue))
+        ? PDFName.of(targetValue)
+        : PDFName.of('Off')
+      );
     });
 
     form.flatten();
@@ -206,12 +271,34 @@ export class ClaimFormPdfComponent {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['claimDataView'] && this.claimDataView) {
-      // console.log(this.claimDataView)
+      console.log(this.claimDataView)
       this.fillPdf();
     }
   }
 
-  ngOnInit(): void {
-    // Puedes iniciar algo si es necesario
+  getModifiers(): void {
+    this.modifiersService.get({}, null, null, true).subscribe({
+      next: (res: any) => {
+        this.modifiersInput = res;
+      },
+      error: (err) => {
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
   }
+
+  getModifierCodeById(id: number): string | undefined {
+    const modifier = this.modifiersInput.find((mod) => mod.id === id);
+    return modifier ? modifier.code : undefined;
+  }
+
+  extractDateParts = (dateStr: string) => {
+    const [yy, mm, dd] = dateStr.split('T')[0].split('-');
+    return { mm, dd, yy: yy.slice(2) };
+  };
+
+  closeViewer(): void {
+    this.closePdf.emit();
+  }
+
 }
