@@ -81,7 +81,7 @@
               title="Status"
               [(ngModel)]="data.active"
               nzSize="small"
-              (ngModelChange)="changeStatus(data.id, data)">
+              (ngModelChange)="changeStatus(data.code, data)">
             </nz-switch>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
@@ -101,7 +101,7 @@
               title="Delete"
               nzType="delete"
               nzTheme="outline"
-              (click)="delete(data.id)">
+              (click)="delete(data.code)">
             </span>
           </a>
         </td>

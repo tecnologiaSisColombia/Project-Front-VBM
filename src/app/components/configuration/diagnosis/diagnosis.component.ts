@@ -211,7 +211,7 @@ export class DiagnosisComponent {
     this.drawerLoader = false;
 
     if (this.isUpdating) {
-      return this.update(this.dataDrawerCache.id, this.form.value);
+      return this.update(this.dataDrawerCache.code, this.form.value);
     }
 
     this.diagnosisService.create(this.form.value)
