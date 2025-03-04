@@ -14,7 +14,8 @@ export class ServicesService {
     {
       description,
       code,
-      payer_id
+      payer_id,
+      active
     }: any,
     page: number | null = 1,
     pageSize: number | null = 10,
@@ -36,6 +37,10 @@ export class ServicesService {
 
     if (code != null) {
       params = params.set('code', code);
+    }
+
+    if (active != null) {
+      params = params.set('active', active);
     }
 
     return this.http.get(`${this.hostname}core/services`, { params });

@@ -11,7 +11,7 @@ export class EligibilityService {
     constructor(private http: HttpClient) { }
 
     getPatients(
-        { first_name, last_name, subscriber_id, status }: any,
+        { first_name, last_name, subscriber_id, active }: any,
         page: number | null = 1,
         pageSize: number | null = 10,
         init = false,
@@ -33,8 +33,8 @@ export class EligibilityService {
             params = params.set('subscriber_id', subscriber_id)
         }
 
-        if (status != null) {
-            params = params.set('status', status)
+        if (active != null) {
+            params = params.set('active', active)
         }
 
         return this.http.get(`${this.hostname}eligibility/patients/`, { params })
@@ -45,7 +45,7 @@ export class EligibilityService {
     }
 
     getClaim(
-        { patient, id_claim, origin }: any,
+        { patient, id_claim, origin, active }: any,
         page: number | null = 1,
         pageSize: number | null = 10,
         init = false
@@ -67,11 +67,15 @@ export class EligibilityService {
             params = params.set('origin', origin)
         }
 
+        if (active != null) {
+            params = params.set('active', active);
+        }
+
         return this.http.get(`${this.hostname}eligibility/claim`, { params })
     }
 
     getClaimCpt(
-        { id_claim }: any,
+        { id_claim, active }: any,
         page: number | null = 1,
         pageSize: number | null = 10,
         init = false
@@ -85,11 +89,15 @@ export class EligibilityService {
             params = params.set('claim', id_claim)
         }
 
+        if (active != null) {
+            params = params.set('active', active);
+        }
+
         return this.http.get(`${this.hostname}eligibility/claim-cpt`, { params })
     }
 
     getClaimDx(
-        { id_claim }: any,
+        { id_claim, active }: any,
         page: number | null = 1,
         pageSize: number | null = 10,
         init = false
@@ -101,6 +109,10 @@ export class EligibilityService {
 
         if (id_claim != null) {
             params = params.set('claim', id_claim)
+        }
+
+        if (active != null) {
+            params = params.set('active', active);
         }
 
         return this.http.get(`${this.hostname}eligibility/claim-dx`, { params })

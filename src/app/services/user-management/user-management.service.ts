@@ -23,7 +23,7 @@ export class UserService {
   }
 
   getUsers(
-    { username, first_name, last_name }: any,
+    { username, first_name, last_name, active }: any,
     page: number | null = 1,
     pageSize: number | null = 10,
     init = false
@@ -45,6 +45,10 @@ export class UserService {
       params = params.set('last_name', last_name);
     }
 
+    if (active != null) {
+      params = params.set('active', active);
+    }
+    
     return this.http.get<any[]>(`${this.baseUrl}core/users`, { params });
   }
 

@@ -11,7 +11,7 @@ export class InsurersService {
   constructor(private http: HttpClient) { }
 
   getInsurers(
-    { name, address, phone, payer_id, status }: any,
+    { name, address, phone, payer_id, active }: any,
     page: number | null = 1,
     pageSize: number | null = 10,
     init = false,
@@ -37,8 +37,8 @@ export class InsurersService {
       params = params.set('payer_id', payer_id)
     }
 
-    if (status != null) {
-      params = params.set('status', status)
+    if (active != null) {
+      params = params.set('active', active)
     }
 
     return this.http.get(`${this.hostname}insurers/`, { params })

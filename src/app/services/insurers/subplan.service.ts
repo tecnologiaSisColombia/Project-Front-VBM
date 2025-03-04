@@ -12,7 +12,7 @@ export class SubplanService {
 
   getSubPlans(
     plan_id: number | null = null,
-    { name, plan, group, plan_contract }: any,
+    { name, plan, group, plan_contract, active }: any,
     page: number | null = 1,
     pageSize: number | null = 10,
     init = false
@@ -40,6 +40,10 @@ export class SubplanService {
 
     if (plan_id != null) {
       params = params.set('plan_id', plan_id);
+    }
+
+    if (active != null) {
+      params = params.set('active', active);
     }
 
     return this.http.get(`${this.hostname}insurers/subplan/`, { params });

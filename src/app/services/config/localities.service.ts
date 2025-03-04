@@ -11,7 +11,7 @@ export class LocalityService {
   constructor(private http: HttpClient) { }
 
   get(
-    { name, status }: any,
+    { name, status, active }: any,
     page: number | null = 1,
     pageSize: number | null = 10,
     init = false
@@ -27,6 +27,10 @@ export class LocalityService {
 
     if (status != null) {
       params = params.set('status', status);
+    }
+
+    if (active != null) {
+      params = params.set('active', active);
     }
 
     return this.http.get(`${this.hostname}core/localities`, { params });

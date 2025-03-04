@@ -32,28 +32,28 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-insurers',
-    imports: [
-        NzBreadCrumbModule,
-        NzFormModule,
-        FormsModule,
-        ReactiveFormsModule,
-        NzButtonComponent,
-        NzTableModule,
-        NzPaginationModule,
-        NzDividerModule,
-        NzInputModule,
-        NzIconModule,
-        NzDrawerModule,
-        NzSpinModule,
-        CommonModule,
-        NzSwitchModule,
-        NzSelectModule,
-        NzModalModule,
-        NzEmptyModule,
-    ],
-    templateUrl: './insurers.component.html',
-    styleUrls: ['./insurers.component.css', '/src/animations/styles.css']
+  selector: 'app-insurers',
+  imports: [
+    NzBreadCrumbModule,
+    NzFormModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NzButtonComponent,
+    NzTableModule,
+    NzPaginationModule,
+    NzDividerModule,
+    NzInputModule,
+    NzIconModule,
+    NzDrawerModule,
+    NzSpinModule,
+    CommonModule,
+    NzSwitchModule,
+    NzSelectModule,
+    NzModalModule,
+    NzEmptyModule,
+  ],
+  templateUrl: './insurers.component.html',
+  styleUrls: ['./insurers.component.css', '/src/animations/styles.css']
 })
 export class InsurersComponent implements OnInit {
   form: UntypedFormGroup;
@@ -127,7 +127,7 @@ export class InsurersComponent implements OnInit {
 
   getServices() {
     this.isDataLoading = true;
-    this.serviceService.get({}, null, null, true)
+    this.serviceService.get({ active: 1 }, null, null, true)
       .pipe(finalize(() => {
         this.isDataLoading = false;
       }))
@@ -143,7 +143,7 @@ export class InsurersComponent implements OnInit {
 
   getProducts() {
     this.isDataLoading = true;
-    this.productService.get({}, null, null, true)
+    this.productService.get({ active: 1 }, null, null, true)
       .pipe(finalize(() => {
         this.isDataLoading = false;
       }))

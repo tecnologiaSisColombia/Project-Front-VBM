@@ -11,7 +11,7 @@ export class BillingService {
     constructor(private http: HttpClient) { }
 
     getClaim(
-        { id_claim, origin }: any,
+        { id_claim, origin, active }: any,
         page: number | null = 1,
         pageSize: number | null = 10,
         init = false
@@ -29,6 +29,10 @@ export class BillingService {
             params = params.set('origin', origin)
         }
 
+        if (active != null) {
+            params = params.set('active', active);
+        }
+
         return this.http.get(`${this.hostname}eligibility/claim`, { params })
     }
 
@@ -37,7 +41,7 @@ export class BillingService {
     }
 
     getClaimCpt(
-        { id_claim }: any,
+        { id_claim, active }: any,
         page: number | null = 1,
         pageSize: number | null = 10,
         init = false
@@ -51,11 +55,15 @@ export class BillingService {
             params = params.set('claim', id_claim)
         }
 
+        if (active != null) {
+            params = params.set('active', active);
+        }
+
         return this.http.get(`${this.hostname}eligibility/claim-cpt`, { params })
     }
 
     getClaimDx(
-        { id_claim }: any,
+        { id_claim, active }: any,
         page: number | null = 1,
         pageSize: number | null = 10,
         init = false
@@ -67,6 +75,10 @@ export class BillingService {
 
         if (id_claim != null) {
             params = params.set('claim', id_claim)
+        }
+
+        if (active != null) {
+            params = params.set('active', active);
         }
 
         return this.http.get(`${this.hostname}eligibility/claim-dx`, { params })

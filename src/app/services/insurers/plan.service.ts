@@ -11,7 +11,7 @@ export class PlanService {
   constructor(private http: HttpClient) { }
 
   getPlans(
-    { name, insurer }: any,
+    { name, insurer, active }: any,
     page: number | null = 1,
     pageSize: number | null = 10,
     init = false
@@ -27,6 +27,10 @@ export class PlanService {
 
     if (insurer != null) {
       params = params.set('insurer', insurer);
+    }
+
+    if (active != null) {
+      params = params.set('active', active);
     }
 
     return this.http.get(`${this.hostname}insurers/plan/`, { params });

@@ -32,29 +32,29 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-plans',
-    imports: [
-        NzBreadCrumbModule,
-        NzFormModule,
-        FormsModule,
-        ReactiveFormsModule,
-        NzButtonComponent,
-        NzTableModule,
-        NzPaginationModule,
-        NzDividerModule,
-        NzInputModule,
-        NzIconModule,
-        NzDrawerModule,
-        NzSpinModule,
-        CommonModule,
-        NzSwitchModule,
-        NzSelectModule,
-        NzModalModule,
-        SubplansComponent,
-        NzEmptyModule
-    ],
-    templateUrl: './plans.component.html',
-    styleUrls: ['./plans.component.css', '/src/animations/styles.css']
+  selector: 'app-plans',
+  imports: [
+    NzBreadCrumbModule,
+    NzFormModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NzButtonComponent,
+    NzTableModule,
+    NzPaginationModule,
+    NzDividerModule,
+    NzInputModule,
+    NzIconModule,
+    NzDrawerModule,
+    NzSpinModule,
+    CommonModule,
+    NzSwitchModule,
+    NzSelectModule,
+    NzModalModule,
+    SubplansComponent,
+    NzEmptyModule
+  ],
+  templateUrl: './plans.component.html',
+  styleUrls: ['./plans.component.css', '/src/animations/styles.css']
 })
 export class PlansComponent implements OnInit {
   form: UntypedFormGroup;
@@ -133,7 +133,7 @@ export class PlansComponent implements OnInit {
   }
 
   getInsurers(): void {
-    this.insurerService.getInsurers({ status: 1 }, null, null, true)
+    this.insurerService.getInsurers({ active: 1 }, null, null, true)
       .subscribe({
         next: (res: any) => {
           this.insurers = res;

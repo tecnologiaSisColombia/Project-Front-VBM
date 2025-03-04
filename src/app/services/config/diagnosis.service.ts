@@ -11,7 +11,7 @@ export class DiagnosisService {
     constructor(private http: HttpClient) { }
 
     get(
-        { description, code }: any,
+        { description, code, active }: any,
         page: number | null = 1,
         pageSize: number | null = 10,
         init = false
@@ -27,6 +27,10 @@ export class DiagnosisService {
 
         if (code != null) {
             params = params.set('code', code);
+        }
+
+        if (active != null) {
+            params = params.set('active', active);
         }
 
         return this.http.get(`${this.hostname}core/diagnosis`, { params });
