@@ -11,7 +11,7 @@ export class EligibilityService {
     constructor(private http: HttpClient) { }
 
     getPatients(
-        { first_name, last_name, subscriber_id, active }: any,
+        { first_name, last_name, subscriber_id, active, patient_id }: any,
         page: number | null = 1,
         pageSize: number | null = 10,
         init = false,
@@ -37,15 +37,15 @@ export class EligibilityService {
             params = params.set('active', active)
         }
 
+        if (patient_id != null) {
+            params = params.set('patient_id', patient_id)
+        }
+
         return this.http.get(`${this.hostname}eligibility/patients/`, { params })
     }
 
-    createClaim(data: any) {
-        return this.http.post(`${this.hostname}eligibility/claim`, data)
-    }
-
     getClaim(
-        { patient, id_claim, origin, active }: any,
+        { patient, id_claim, active, origin, status }: any,
         page: number | null = 1,
         pageSize: number | null = 10,
         init = false
@@ -65,6 +65,10 @@ export class EligibilityService {
 
         if (origin != null) {
             params = params.set('origin', origin)
+        }
+
+        if (status != null) {
+            params = params.set('status', status)
         }
 
         if (active != null) {
@@ -116,5 +120,9 @@ export class EligibilityService {
         }
 
         return this.http.get(`${this.hostname}eligibility/claim-dx`, { params })
+    }
+
+    createClaim(data: any) {
+        return this.http.post(`${this.hostname}eligibility/claim`, data)
     }
 }

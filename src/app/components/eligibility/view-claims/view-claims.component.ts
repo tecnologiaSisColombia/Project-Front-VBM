@@ -55,6 +55,7 @@ export class ViewClaimsComponent {
   page = 1;
   idClaimsSearch: any = null;
   originSearch: any = null;
+  statusSearch: any = null;
   selectedClaim: any = {};
   [key: string]: any;
   searchFields = [
@@ -66,19 +67,17 @@ export class ViewClaimsComponent {
     private msgService: NzMessageService,
     private eligibilityService: EligibilityService,
   ) {
-    this.searchNameSubject
-      .pipe(debounceTime(1000))
-      .subscribe(({ type, value }) => {
-        const fields = {
-          id_claim: () => (this.idClaimsSearch = value),
-          origin: () => (this.originSearch = value),
-        };
-        (fields as Record<string, () => void>)[type]?.();
-        this.page = 1;
-        this.getClaim();
-        this.isDataLoading = false;
-      });
-
+    this.searchNameSubject.pipe(debounceTime(1000)).subscribe(({ type, value }) => {
+      const fields = {
+        id_claim: () => (this.idClaimsSearch = value),
+        origin: () => (this.originSearch = value),
+        status: () => (this.statusSearch = value),
+      };
+      (fields as Record<string, () => void>)[type]?.();
+      this.page = 1;
+      this.getClaim();
+      this.isDataLoading = false;
+    });
   }
 
   ngOnInit(): void {
@@ -93,6 +92,7 @@ export class ViewClaimsComponent {
           id_claim: this.idClaimsSearch,
           patient: this.claimData.patient_id,
           origin: this.originSearch,
+          status: this.statusSearch
         },
         this.page,
         this.page_size
@@ -116,6 +116,8 @@ export class ViewClaimsComponent {
   search(value: string | number | null, type: string) {
     if (type === 'origin') {
       this.originSearch = value !== null ? Number(value) : null;
+    } else if (type === 'status') {
+      this.statusSearch = value !== null ? Number(value) : null;
     }
     this.isDataLoading = true;
     this.searchNameSubject.next({ type, value: value ?? null });

@@ -28,20 +28,41 @@
       </ng-template>
     </nz-input-group>
   
-      <nz-select
-        [(ngModel)]="originSearch"
-        (ngModelChange)="search($event, 'origin')"
-        nzAllowClear
-        nzPlaceHolder="Select Origin">
-        <nz-option
-          nzValue="1" 
-          nzLabel="PLATFORM">
-        </nz-option>
-        <nz-option 
-          nzValue="2" 
-          nzLabel="EXTERNAL">
-        </nz-option>
-      </nz-select>
+    <nz-select
+      [(ngModel)]="originSearch"
+      (ngModelChange)="search($event, 'origin')"
+      nzAllowClear
+      style="width: 100%; margin-left: 20px;"
+      nzPlaceHolder="Select Source">
+      <nz-option
+        nzValue="1" 
+        nzLabel="VISTALINKVX">
+      </nz-option>
+      <nz-option 
+        nzValue="2" 
+        nzLabel="VISTANET">
+      </nz-option>
+    </nz-select>
+
+    <nz-select
+      [(ngModel)]="statusSearch"
+      (ngModelChange)="search($event, 'status')"
+      nzAllowClear
+      style="width: 100%; margin-left: 20px;"
+      nzPlaceHolder="Select Status">
+      <nz-option
+        nzValue="1" 
+        nzLabel="PENDING">
+      </nz-option>
+      <nz-option 
+        nzValue="2" 
+        nzLabel="IN_PROCCESS">
+      </nz-option>
+      <nz-option 
+        nzValue="3" 
+        nzLabel="FINISHED">
+      </nz-option>
+    </nz-select>
   </div>  
 
   <nz-table
@@ -54,16 +75,16 @@
       <tr>
         <th>Date service</th>
         <th>Id claim</th>
-        <th>Origin</th>
+        <th>Source</th>
         <th>Status</th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let data of basicTable.data">
-        <td>{{ data.date_service | date: 'MM-dd-yyyy' }}</td>
+        <td>{{ data.date_service | date: 'dd-MM-yyyy' }}</td>
         <td>{{ data.id_claim }}</td>
-        <td>{{ data.origin == 1 ? 'PLATFORM' : (data.origin == 2 ? 'EXTERNAL' : data.origin) }}</td>
+        <td>{{ data.origin == 1 ? 'VISTALINKVX' : (data.origin == 2 ? 'VISTANET' : data.origin) }}</td>
         <td>{{ data.status == 1 ? 'PENDING' : (data.status == 2 ? 'IN_PROCCESS' : data.status) }}</td>
         <td>
           <a>

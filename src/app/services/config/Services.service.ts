@@ -26,7 +26,6 @@ export class ServicesService {
       .set('page_size', (pageSize ?? 10).toString())
       .set('init', init);
 
-
     if (payer_id != null) {
       params = params.set('payer_id', payer_id);
     }

@@ -8,6 +8,7 @@ import {
   Validators,
   AbstractControl
 } from '@angular/forms';
+import { ModifiersService } from 'app/services/config/modifiers.service';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
@@ -18,13 +19,12 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { debounceTime, Subject } from 'rxjs';
-import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import * as XLSX from 'xlsx';
-import { ModifiersService } from 'app/services/config/modifiers.service';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { debounceTime, Subject } from 'rxjs';
+import Swal from 'sweetalert2';
+import * as XLSX from 'xlsx';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -287,8 +287,8 @@ export class ModifiersComponent {
           const headers = {
             code: 'Code',
             description: 'Description',
-            created: 'Created',
             active: 'Status',
+            created: 'Created',
           };
 
           const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];

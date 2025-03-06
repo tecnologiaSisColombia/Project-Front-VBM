@@ -8,6 +8,7 @@ import {
   Validators,
   AbstractControl
 } from '@angular/forms';
+import { DiagnosisService } from 'app/services/config/diagnosis.service';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
@@ -18,36 +19,35 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { debounceTime, Subject } from 'rxjs';
-import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import * as XLSX from 'xlsx';
-import { DiagnosisService } from 'app/services/config/diagnosis.service';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { debounceTime, Subject } from 'rxjs';
+import Swal from 'sweetalert2';
+import * as XLSX from 'xlsx';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-diagnosis',
-    imports: [
-        NzBreadCrumbModule,
-        NzFormModule,
-        FormsModule,
-        ReactiveFormsModule,
-        NzButtonComponent,
-        NzTableModule,
-        NzPaginationModule,
-        NzDividerModule,
-        NzInputModule,
-        NzIconModule,
-        NzDrawerModule,
-        NzSpinModule,
-        CommonModule,
-        NzSwitchModule,
-        NzEmptyModule,
-    ],
-    templateUrl: './diagnosis.component.html',
-    styleUrls: ['./diagnosis.component.css', '/src/animations/styles.css']
+  selector: 'app-diagnosis',
+  imports: [
+    NzBreadCrumbModule,
+    NzFormModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NzButtonComponent,
+    NzTableModule,
+    NzPaginationModule,
+    NzDividerModule,
+    NzInputModule,
+    NzIconModule,
+    NzDrawerModule,
+    NzSpinModule,
+    CommonModule,
+    NzSwitchModule,
+    NzEmptyModule,
+  ],
+  templateUrl: './diagnosis.component.html',
+  styleUrls: ['./diagnosis.component.css', '/src/animations/styles.css']
 })
 export class DiagnosisComponent {
   form: UntypedFormGroup;
@@ -208,7 +208,7 @@ export class DiagnosisComponent {
       return;
     }
 
-    this.drawerLoader = false;
+    this.drawerLoader = true;
 
     if (this.isUpdating) {
       return this.update(this.dataDrawerCache.code, this.form.value);

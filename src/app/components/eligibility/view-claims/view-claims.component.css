@@ -7,16 +7,6 @@
 
 .table-filters {
     display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-nz-input-group {
-    flex: 1;
-    margin: 0;
-}
-
-nz-select {
-    width: 50%;
+    flex: 1 1 auto;
     margin: 20px;
 }

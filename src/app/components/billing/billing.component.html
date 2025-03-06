@@ -1,10 +1,36 @@
 <div class="title-page layout-container">
-  <div class="breadcrumb-container">
-    <nz-breadcrumb>
-      <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Billing</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Billing Management</nz-breadcrumb-item>
-    </nz-breadcrumb>
+  <nz-breadcrumb>
+    <nz-breadcrumb-item>Mar Chiquita</nz-breadcrumb-item>
+    <nz-breadcrumb-item>Billing</nz-breadcrumb-item>
+    <nz-breadcrumb-item>Billing Management</nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+  <div class="btn-container">
+    <button 
+      nz-button 
+      [disabled]="selectedRows.length === 0"
+      nzType="primary" 
+      (click)="sendSelectedClaims()">
+      <i 
+        nz-icon 
+        nzType="send" 
+        nzTheme="outline"> 
+      </i>
+      Send Selected ({{ selectedRows.length }})
+    </button>
+
+    <button
+      nz-button
+      [style.background-color]="'#00a651'"
+      [style.color]="'white'"
+      (click)="exportClaims()">
+      <i 
+        nz-icon 
+        [nzType]="exportLoader ? 'loading' : 'download'" 
+        nzTheme="outline">
+      </i>
+      {{ exportLoader ? 'Exporting...' : 'Export Claims' }}
+    </button>
   </div>
 </div>
 
@@ -30,17 +56,38 @@
     </nz-input-group>
 
     <nz-select
+      style="width: 100%; margin-left: 20px;"
       [(ngModel)]="originSearch"
       (ngModelChange)="search($event, 'origin')"
       nzAllowClear
-      nzPlaceHolder="Select Origin">
+      nzPlaceHolder="Select Source">
       <nz-option
         nzValue="1" 
-        nzLabel="PLATFORM">
+        nzLabel="VISTALINKVX">
       </nz-option>
       <nz-option 
         nzValue="2" 
-        nzLabel="EXTERNAL">
+        nzLabel="VISTANET">
+      </nz-option>
+    </nz-select>
+
+    <nz-select
+      style="width: 100%; margin-left: 20px;"
+      [(ngModel)]="statusSearch"
+      (ngModelChange)="search($event, 'status')"
+      nzAllowClear
+      nzPlaceHolder="Select Status">
+      <nz-option
+        nzValue="1" 
+        nzLabel="PENDING">
+      </nz-option>
+      <nz-option 
+        nzValue="2" 
+        nzLabel="IN_PROCCESS">
+      </nz-option>
+      <nz-option 
+        nzValue="3" 
+        nzLabel="FINISHED">
       </nz-option>
     </nz-select>
   </div>  
@@ -55,16 +102,23 @@
       <tr>
         <th>Date service</th>
         <th>Id claim</th>
-        <th>Origin</th>
+        <th>Source</th>
         <th>Status</th>
         <th>Actions</th>
+        <th>
+          <input 
+            type="checkbox" 
+            [(ngModel)]="allChecked" 
+            (change)="checkAll($any($event.target).checked)"
+          > 
+        </th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let data of basicTable.data">
-        <td>{{ data.date_service | date: 'MM-dd-yyyy' }}</td>
+        <td>{{ data.date_service | date: 'dd-MM-yyyy' }}</td>
         <td>{{ data.id_claim }}</td>
-        <td>{{ data.origin == 1 ? 'PLATFORM' : (data.origin == 2 ? 'EXTERNAL' : data.origin) }}</td>
+        <td>{{ data.origin == 1 ? 'VISTALINKVX' : (data.origin == 2 ? 'VISTANET' : data.origin) }}</td>
         <td>{{ data.status == 1 ? 'PENDING' : (data.status == 2 ? 'IN_PROCCESS' : data.status) }}</td>
         <td>
           <a>
@@ -76,16 +130,13 @@
               (click)="openPdf(data)">
             </span>
           </a>
-          <nz-divider nzType="vertical"></nz-divider>
-          <a>
-            <span
-              nz-icon
-              title="Send Claim"
-              nzType="send"
-              nzTheme="outline"
-              (click)="sendClaim(data)">
-            </span>
-          </a>
+        </td>
+        <td>
+          <input 
+            type="checkbox"
+            [(ngModel)]="data.checked" 
+            (ngModelChange)="updateSelection(data)"
+          >
         </td>
       </tr>
     </tbody>
@@ -114,3 +165,10 @@
     nzShowQuickJumper>
   </nz-pagination>
 </div>
+
+<app-claim-form-pdf 
+  *ngIf="showPdf"
+  [showPdf]="showPdf"
+  [claimDataView]="selectedClaim"
+  (closePdf)="closePdf()">
+</app-claim-form-pdf>

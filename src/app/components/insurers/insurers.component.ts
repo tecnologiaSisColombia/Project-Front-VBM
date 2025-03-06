@@ -19,17 +19,17 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { InsurersService } from 'app/services/insurers/insurers.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { debounceTime, Subject } from 'rxjs';
-import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import * as XLSX from 'xlsx';
 import { ProductsService } from 'app/services/config/products.service';
 import { ServicesService } from 'app/services/config/services.service';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { finalize } from 'rxjs/operators';
+import Swal from 'sweetalert2';
+import * as XLSX from 'xlsx';
+import { debounceTime, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-insurers',
@@ -388,6 +388,10 @@ export class InsurersComponent implements OnInit {
             payer_id: 'Payer ID',
             phone: 'Phone',
             address: 'Address',
+            modifiers: 'Modifiers',
+            orderring_npi: 'Orderring Npi',
+            refering_npi: 'Refering NPI',
+            auth: 'Auth',
             created: 'Created',
             active: 'Status',
           };
@@ -405,6 +409,8 @@ export class InsurersComponent implements OnInit {
                   day: 'numeric',
                   year: 'numeric',
                 });
+              } else if (['modifiers', 'orderring_npi', 'refering_npi', 'auth'].includes(key)) {
+                obj[headers[key]] = insurer[key] === 1 ? 'Yes' : insurer[key] === 2 ? 'No' : insurer[key];
               } else {
                 obj[headers[key]] = insurer[key];
               }

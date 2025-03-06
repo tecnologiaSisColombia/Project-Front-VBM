@@ -22,14 +22,14 @@ import { NzTableModule } from 'ng-zorro-antd/table';
 import { debounceTime, Subject } from 'rxjs';
 import { PlanService } from 'app/services/insurers/plan.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import Swal from 'sweetalert2';
 import { InsurersService } from 'app/services/insurers/insurers.service';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzModalModule } from 'ng-zorro-antd/modal';
-import { SubplansComponent } from '../subplans/subplans.component';
-import * as XLSX from 'xlsx';
+import { SubplansComponent } from 'app/components/subplans/subplans.component';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { finalize } from 'rxjs/operators';
+import * as XLSX from 'xlsx';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-plans',
@@ -339,7 +339,7 @@ export class PlansComponent implements OnInit {
                   year: 'numeric',
                 });
               } else if (key === 'insurer_name') {
-                obj[headers[key]] = coverage.insurer_data?.name || 'Unknown';
+                obj[headers[key]] = coverage.insurer_data?.name;
               } else {
                 obj[headers[key]] = coverage[key];
               }

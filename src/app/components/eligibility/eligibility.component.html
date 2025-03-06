@@ -199,7 +199,8 @@
   (nzOnCancel)="cancelOkModalMember()"
   (nzOnOk)="cancelOkModalMember()"
   [nzClosable]="false"
-  nzMaskClosable="false">
+  nzMaskClosable="false"
+  [nzBodyStyle]="{'max-height': '80vh', 'overflow': 'auto'}">
   <ng-container *nzModalContent>
     <app-member>
     </app-member>
@@ -226,15 +227,14 @@
 <nz-modal
   [nzAutofocus]="null"
   [(nzVisible)]="isVisibleModalListClaims"
-  nzWidth="80%"
+  nzWidth="1000px"
   (nzOnCancel)="cancelOkModalListClaims()"
   (nzOnOk)="cancelOkModalListClaims()"
   [nzClosable]="false"
-  nzMaskClosable="false">
+  nzMaskClosable="false"
+  [nzBodyStyle]="{'max-height': '80vh', 'overflow': 'auto'}">
   <ng-container *nzModalContent>
-    <app-view-claims
-    [claimData]="selectedClaim">
-    </app-view-claims>
+    <app-view-claims [claimData]="selectedClaim"></app-view-claims>
   </ng-container>
 </nz-modal>
 

@@ -10,77 +10,7 @@ export class BillingService {
 
     constructor(private http: HttpClient) { }
 
-    getClaim(
-        { id_claim, origin, active }: any,
-        page: number | null = 1,
-        pageSize: number | null = 10,
-        init = false
-    ) {
-        let params = new HttpParams()
-            .set('page', (page ?? 1).toString())
-            .set('page_size', (pageSize ?? 10).toString())
-            .set('init', init)
-
-        if (id_claim != null) {
-            params = params.set('id_claim', id_claim)
-        }
-
-        if (origin != null) {
-            params = params.set('origin', origin)
-        }
-
-        if (active != null) {
-            params = params.set('active', active);
-        }
-
-        return this.http.get(`${this.hostname}eligibility/claim`, { params })
-    }
-
-    createClaim(data: any) {
-        return this.http.post(`${this.hostname}eligibility/claim`, data)
-    }
-
-    getClaimCpt(
-        { id_claim, active }: any,
-        page: number | null = 1,
-        pageSize: number | null = 10,
-        init = false
-    ) {
-        let params = new HttpParams()
-            .set('page', (page ?? 1).toString())
-            .set('page_size', (pageSize ?? 10).toString())
-            .set('init', init)
-
-        if (id_claim != null) {
-            params = params.set('claim', id_claim)
-        }
-
-        if (active != null) {
-            params = params.set('active', active);
-        }
-
-        return this.http.get(`${this.hostname}eligibility/claim-cpt`, { params })
-    }
-
-    getClaimDx(
-        { id_claim, active }: any,
-        page: number | null = 1,
-        pageSize: number | null = 10,
-        init = false
-    ) {
-        let params = new HttpParams()
-            .set('page', (page ?? 1).toString())
-            .set('page_size', (pageSize ?? 10).toString())
-            .set('init', init)
-
-        if (id_claim != null) {
-            params = params.set('claim', id_claim)
-        }
-
-        if (active != null) {
-            params = params.set('active', active);
-        }
-
-        return this.http.get(`${this.hostname}eligibility/claim-dx`, { params })
+    convertX12(data: any) {
+        return this.http.post(`${this.hostname}x12/convert-x12`, data)
     }
 }

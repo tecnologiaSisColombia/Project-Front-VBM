@@ -22,35 +22,35 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { PlanService } from 'app/services/insurers/plan.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { debounceTime, Subject } from 'rxjs';
-import Swal from 'sweetalert2';
 import { SubplanService } from 'app/services/insurers/subplan.service';
-import * as XLSX from 'xlsx';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { finalize } from 'rxjs/operators';
+import Swal from 'sweetalert2';
+import { debounceTime, Subject } from 'rxjs';
+import * as XLSX from 'xlsx';
 
 @Component({
-    selector: 'app-subplans',
-    imports: [
-        NzBreadCrumbModule,
-        NzFormModule,
-        FormsModule,
-        ReactiveFormsModule,
-        NzButtonComponent,
-        NzTableModule,
-        NzPaginationModule,
-        NzDividerModule,
-        NzInputModule,
-        NzIconModule,
-        NzDrawerModule,
-        NzSpinModule,
-        CommonModule,
-        NzSwitchModule,
-        NzSelectModule,
-        NzEmptyModule,
-    ],
-    templateUrl: './subplans.component.html',
-    styleUrl: './subplans.component.css'
+  selector: 'app-subplans',
+  imports: [
+    NzBreadCrumbModule,
+    NzFormModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NzButtonComponent,
+    NzTableModule,
+    NzPaginationModule,
+    NzDividerModule,
+    NzInputModule,
+    NzIconModule,
+    NzDrawerModule,
+    NzSpinModule,
+    CommonModule,
+    NzSwitchModule,
+    NzSelectModule,
+    NzEmptyModule,
+  ],
+  templateUrl: './subplans.component.html',
+  styleUrl: './subplans.component.css'
 })
 export class SubplansComponent implements OnInit {
   form: UntypedFormGroup;
@@ -77,7 +77,6 @@ export class SubplansComponent implements OnInit {
     { placeholder: 'Plan...', model: 'planSearch', key: 'plan' },
     { placeholder: 'Group...', model: 'groupSearch', key: 'group' },
     { placeholder: 'Plan Contract...', model: 'planContractSearch', key: 'plan_contract' }
-
   ];
   private searchNameSubject = new Subject<{ type: string; value: string }>();
   @Input() planData: any;
@@ -345,7 +344,7 @@ export class SubplansComponent implements OnInit {
                     year: 'numeric',
                   });
                 } else if (key === 'plan_data') {
-                  obj[headers[key]] = subplan.plan_data?.name || 'Unknown';
+                  obj[headers[key]] = subplan.plan_data?.name;
                 } else {
                   obj[headers[key]] = subplan[key];
                 }

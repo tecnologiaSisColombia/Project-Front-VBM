@@ -18,36 +18,36 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { debounceTime, Subject } from 'rxjs';
-import Swal from 'sweetalert2';
-import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { ServicesService } from 'app/services/config/services.service';
-import * as XLSX from 'xlsx';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { debounceTime, Subject } from 'rxjs';
+import Swal from 'sweetalert2';
+import * as XLSX from 'xlsx';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-services',
-    imports: [
-        NzBreadCrumbModule,
-        NzFormModule,
-        FormsModule,
-        ReactiveFormsModule,
-        NzButtonComponent,
-        NzTableModule,
-        NzPaginationModule,
-        NzDividerModule,
-        NzInputModule,
-        NzIconModule,
-        NzDrawerModule,
-        NzSpinModule,
-        CommonModule,
-        NzSwitchModule,
-        NzEmptyModule
-    ],
-    templateUrl: './services.component.html',
-    styleUrls: ['./services.component.css', '/src/animations/styles.css']
+  selector: 'app-services',
+  imports: [
+    NzBreadCrumbModule,
+    NzFormModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NzButtonComponent,
+    NzTableModule,
+    NzPaginationModule,
+    NzDividerModule,
+    NzInputModule,
+    NzIconModule,
+    NzDrawerModule,
+    NzSpinModule,
+    CommonModule,
+    NzSwitchModule,
+    NzEmptyModule
+  ],
+  templateUrl: './services.component.html',
+  styleUrls: ['./services.component.css', '/src/animations/styles.css']
 })
 export class ServicesComponent implements OnInit {
   form: UntypedFormGroup;

@@ -18,19 +18,19 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzCardModule } from 'ng-zorro-antd/card';
 
 @Component({
-    selector: 'app-login',
-    imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        RouterLink,
-        NzButtonModule,
-        NzInputModule,
-        NzFormModule,
-        NzIconModule,
-        NzCardModule
-    ],
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.css', '/src/animations/styles.css']
+  selector: 'app-login',
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    NzButtonModule,
+    NzInputModule,
+    NzFormModule,
+    NzIconModule,
+    NzCardModule
+  ],
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css', '/src/animations/styles.css']
 })
 export class LoginComponent implements OnInit {
   form: FormGroup;
@@ -60,66 +60,66 @@ export class LoginComponent implements OnInit {
           control.updateValueAndValidity({ onlySelf: true });
         }
       });
+      return;
     }
 
     this.isDataLoading = true;
 
-    this.loginService.signIn(this.form.value)
-      .subscribe({
-        next: (res: any) => {
-          const getAttr = (name: string) => {
-            const attribute = res.attributes.find((attr: any) => attr.Name === name);
-            return attribute?.Value;
-          };
+    this.loginService.signIn(this.form.value).subscribe({
+      next: (res: any) => {
+        const getAttr = (name: string) => {
+          const attribute = res.attributes.find((attr: any) => attr.Name === name);
+          return attribute?.Value;
+        };
 
-          res.properties.user = {
-            id: getAttr('sub'),
-            email: getAttr('email'),
-            username: getAttr('username'),
-          };
+        res.properties.user = {
+          id: getAttr('sub'),
+          email: getAttr('email'),
+          username: getAttr('username'),
+        };
 
-          localStorage.removeItem('auth_challenge');
+        localStorage.removeItem('auth_challenge');
 
-          this.authService.doLogin(res.properties);
+        this.authService.doLogin(res.properties);
 
-          this.router.navigate(['/home']).then(() => {
-            this.isDataLoading = false;
+        this.router.navigate(['/home']).then(() => {
+          this.isDataLoading = false;
+        });
+      },
+      error: (err) => {
+        const errorMapping: Record<string, { route: string; queryParams: Record<string, any> }> = {
+          NewPasswordRequired: {
+            route: '/change_password',
+            queryParams: {
+              session: err.error.error.session,
+              username: this.form.get('username')?.value,
+            },
+          },
+          NewPasswordDays: {
+            route: '/change_password',
+            queryParams: {
+              username: this.form.get('username')?.value,
+            },
+          },
+        };
+
+        const errorCode = err?.error?.error?.code;
+
+        if (errorMapping[errorCode]) {
+          this.isDataLoading = false;
+
+          localStorage.setItem('auth_challenge', errorCode);
+
+          this.router.navigate([errorMapping[errorCode].route], {
+            queryParams: errorMapping[errorCode].queryParams,
           });
-        },
-        error: (err) => {
-          const errorMapping: Record<string, { route: string; queryParams: Record<string, any> }> = {
-            NewPasswordRequired: {
-              route: '/change_password',
-              queryParams: {
-                session: err.error.error.session,
-                username: this.form.get('username')?.value,
-              },
-            },
-            NewPasswordDays: {
-              route: '/change_password',
-              queryParams: {
-                username: this.form.get('username')?.value,
-              },
-            },
-          };
+        } else {
+          this.isDataLoading = false;
 
-          const errorCode = err?.error?.error?.code;
-
-          if (errorMapping[errorCode]) {
-            this.isDataLoading = false;
-
-            localStorage.setItem('auth_challenge', errorCode);
-
-            this.router.navigate([errorMapping[errorCode].route], {
-              queryParams: errorMapping[errorCode].queryParams,
-            });
-          } else {
-            this.isDataLoading = false;
-
-            this.msg.error(JSON.stringify(err?.error?.error?.message));
-          }
-        },
-      });
+          this.msg.error(JSON.stringify(err?.error?.error?.message));
+        }
+      },
+    });
   }
 
   getErrorMessage(control: AbstractControl | null): string | null {

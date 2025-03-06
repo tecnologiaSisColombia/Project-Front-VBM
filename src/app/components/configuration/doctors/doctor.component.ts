@@ -8,6 +8,7 @@ import {
   Validators,
   AbstractControl,
 } from '@angular/forms';
+import { DoctorService } from 'app/services/config/doctors.service';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
@@ -18,38 +19,37 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { debounceTime, Subject } from 'rxjs';
-import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzSelectModule } from 'ng-zorro-antd/select';
-import * as XLSX from 'xlsx';
-import { DoctorService } from 'app/services/config/doctors.service';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { debounceTime, Subject } from 'rxjs';
+import Swal from 'sweetalert2';
+import * as XLSX from 'xlsx';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-doctors',
-    imports: [
-        NzBreadCrumbModule,
-        NzFormModule,
-        FormsModule,
-        ReactiveFormsModule,
-        NzButtonComponent,
-        NzTableModule,
-        NzPaginationModule,
-        NzDividerModule,
-        NzInputModule,
-        NzIconModule,
-        NzDrawerModule,
-        NzSpinModule,
-        CommonModule,
-        NzSwitchModule,
-        NzSelectModule,
-        NzEmptyModule,
-    ],
-    templateUrl: './doctor.component.html',
-    styleUrls: ['./doctor.component.css', '/src/animations/styles.css']
+  selector: 'app-doctors',
+  imports: [
+    NzBreadCrumbModule,
+    NzFormModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NzButtonComponent,
+    NzTableModule,
+    NzPaginationModule,
+    NzDividerModule,
+    NzInputModule,
+    NzIconModule,
+    NzDrawerModule,
+    NzSpinModule,
+    CommonModule,
+    NzSwitchModule,
+    NzSelectModule,
+    NzEmptyModule,
+  ],
+  templateUrl: './doctor.component.html',
+  styleUrls: ['./doctor.component.css', '/src/animations/styles.css']
 })
 export class DoctorComponent {
   form: UntypedFormGroup;
@@ -219,8 +219,7 @@ export class DoctorComponent {
   }
 
   update(id: number, data: any) {
-    this.doctorService
-      .update(id, data)
+    this.doctorService.update(id, data)
       .pipe(
         finalize(() => {
           this.drawerLoader = false;
@@ -249,14 +248,13 @@ export class DoctorComponent {
       return;
     }
 
-    this.drawerLoader = false;
+    this.drawerLoader = true;
 
     if (this.isUpdating) {
       return this.update(this.dataDrawerCache.id, this.form.value);
     }
 
-    this.doctorService
-      .create(this.form.value)
+    this.doctorService.create(this.form.value)
       .pipe(
         finalize(() => {
           this.drawerLoader = false;
@@ -340,6 +338,7 @@ export class DoctorComponent {
             email: 'Email',
             phone: 'Phone',
             license_number: 'License Number',
+            supplier: 'Supplier',
             created: 'Created',
             active: 'Status',
           };
@@ -357,6 +356,12 @@ export class DoctorComponent {
                   day: 'numeric',
                   year: 'numeric',
                 });
+              } else if (key === 'supplier') {
+                const supplier = this.suppliers.find(s => s.id == doctor.supplier);
+                if (supplier && supplier.user) {
+                  const supUser = supplier.user;
+                  obj[headers[key]] = `${supUser.first_name} ${supUser.last_name}`.trim();
+                }
               } else {
                 obj[headers[key]] = doctor[key];
               }

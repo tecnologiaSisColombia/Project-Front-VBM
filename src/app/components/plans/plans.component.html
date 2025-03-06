@@ -240,7 +240,8 @@
   (nzOnCancel)="handleCancelModal()"
   (nzOnOk)="handleOkModal()"
   nzWidth="1550px"
-  nzMaskClosable="false">
+  nzMaskClosable="false"
+  [nzBodyStyle]="{'max-height': '80vh', 'overflow': 'auto'}">
   <ng-container *nzModalContent>
     <app-subplans 
       [planData]="dataCacheModal">

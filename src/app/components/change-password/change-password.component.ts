@@ -19,18 +19,18 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzCardModule } from 'ng-zorro-antd/card';
 
 @Component({
-    selector: 'app-change-password',
-    imports: [
-        ReactiveFormsModule,
-        CommonModule,
-        NzButtonModule,
-        NzInputModule,
-        NzFormModule,
-        NzIconModule,
-        NzCardModule,
-    ],
-    templateUrl: './change-password.component.html',
-    styleUrls: ['./change-password.component.css', '/src/animations/styles.css']
+  selector: 'app-change-password',
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    NzButtonModule,
+    NzInputModule,
+    NzFormModule,
+    NzIconModule,
+    NzCardModule,
+  ],
+  templateUrl: './change-password.component.html',
+  styleUrls: ['./change-password.component.css', '/src/animations/styles.css']
 })
 export class ChangePasswordComponent implements OnInit {
   form: FormGroup;

@@ -22,7 +22,6 @@ import { Input } from '@angular/core';
 })
 export class PlanDetailsComponent {
     @Input() claimData: any;
-
     @ViewChild('childContent', { static: false }) childContent!: ElementRef;
     currentTime: string = '';
 

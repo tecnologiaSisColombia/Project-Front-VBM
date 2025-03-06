@@ -8,6 +8,7 @@ import {
   Validators,
   AbstractControl
 } from '@angular/forms';
+import { LocalityService } from 'app/services/config/localities.service';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
@@ -18,36 +19,35 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { debounceTime, Subject } from 'rxjs';
-import Swal from 'sweetalert2';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import { LocalityService } from 'app/services/config/localities.service';
-import * as XLSX from 'xlsx';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { debounceTime, Subject } from 'rxjs';
+import * as XLSX from 'xlsx';
+import Swal from 'sweetalert2';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-localities',
-    imports: [
-        NzBreadCrumbModule,
-        NzFormModule,
-        FormsModule,
-        ReactiveFormsModule,
-        NzButtonComponent,
-        NzTableModule,
-        NzPaginationModule,
-        NzDividerModule,
-        NzInputModule,
-        NzIconModule,
-        NzDrawerModule,
-        NzSpinModule,
-        CommonModule,
-        NzSwitchModule,
-        NzEmptyModule
-    ],
-    templateUrl: './localities.component.html',
-    styleUrls: ['./localities.component.css', '/src/animations/styles.css']
+  selector: 'app-localities',
+  imports: [
+    NzBreadCrumbModule,
+    NzFormModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NzButtonComponent,
+    NzTableModule,
+    NzPaginationModule,
+    NzDividerModule,
+    NzInputModule,
+    NzIconModule,
+    NzDrawerModule,
+    NzSpinModule,
+    CommonModule,
+    NzSwitchModule,
+    NzEmptyModule
+  ],
+  templateUrl: './localities.component.html',
+  styleUrls: ['./localities.component.css', '/src/animations/styles.css']
 })
 export class LocalitiesComponent implements OnInit {
   form: UntypedFormGroup;
@@ -277,9 +277,12 @@ export class LocalitiesComponent implements OnInit {
           this.exportLoader = true;
 
           const headers = {
-            name: 'Localities',
-            created: 'Created',
+            name: 'Name',
+            address: 'Address',
+            postal_code: 'Postal Code',
+            state: 'State',
             active: 'Status',
+            created: 'Created',
           };
 
           const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];

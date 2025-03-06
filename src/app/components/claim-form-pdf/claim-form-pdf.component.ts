@@ -36,7 +36,7 @@ export class ClaimFormPdfComponent {
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
     const form = pdfDoc.getForm();
 
-    console.log(form.getFields().map(f => f.getName()));
+    // console.log(form.getFields().map(f => f.getName()));
 
     const patientData = this.claimDataView?.patient_data;
 
@@ -271,20 +271,21 @@ export class ClaimFormPdfComponent {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['claimDataView'] && this.claimDataView) {
-      console.log(this.claimDataView)
+      // console.log(this.claimDataView)
       this.fillPdf();
     }
   }
 
   getModifiers(): void {
-    this.modifiersService.get({}, null, null, true).subscribe({
-      next: (res: any) => {
-        this.modifiersInput = res;
-      },
-      error: (err) => {
-        this.msgService.error(JSON.stringify(err.error));
-      },
-    });
+    this.modifiersService.get({ active: 1 }, null, null, true)
+      .subscribe({
+        next: (res: any) => {
+          this.modifiersInput = res;
+        },
+        error: (err) => {
+          this.msgService.error(JSON.stringify(err.error));
+        },
+      });
   }
 
   getModifierCodeById(id: number): string | undefined {

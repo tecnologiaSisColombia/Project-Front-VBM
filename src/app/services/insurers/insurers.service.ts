@@ -11,7 +11,7 @@ export class InsurersService {
   constructor(private http: HttpClient) { }
 
   getInsurers(
-    { name, address, phone, payer_id, active }: any,
+    { name, address, phone, active, payer_id }: any,
     page: number | null = 1,
     pageSize: number | null = 10,
     init = false,
