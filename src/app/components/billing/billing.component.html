@@ -56,7 +56,7 @@
     </nz-input-group>
 
     <nz-select
-      style="width: 100%; margin-left: 20px;"
+      style="width: 100%; gap: 20px;"
       [(ngModel)]="originSearch"
       (ngModelChange)="search($event, 'origin')"
       nzAllowClear
@@ -72,7 +72,7 @@
     </nz-select>
 
     <nz-select
-      style="width: 100%; margin-left: 20px;"
+      style="width: 100%; gap: 20px;"
       [(ngModel)]="statusSearch"
       (ngModelChange)="search($event, 'status')"
       nzAllowClear
@@ -102,6 +102,8 @@
       <tr>
         <th>Date service</th>
         <th>Id claim</th>
+        <th>Suscriber ID</th>
+        <th>Suscriber Name</th>
         <th>Source</th>
         <th>Status</th>
         <th>Actions</th>
@@ -118,8 +120,10 @@
       <tr *ngFor="let data of basicTable.data">
         <td>{{ data.date_service | date: 'dd-MM-yyyy' }}</td>
         <td>{{ data.id_claim }}</td>
-        <td>{{ data.origin == 1 ? 'VISTALINKVX' : (data.origin == 2 ? 'VISTANET' : data.origin) }}</td>
-        <td>{{ data.status == 1 ? 'PENDING' : (data.status == 2 ? 'IN_PROCCESS' : data.status) }}</td>
+        <td>{{ data.patient_data.primary_subscriber_id }}</td>
+        <td>{{ `${data.patient_data.first_name} ${data.patient_data.last_name}`.trim() }}</td>
+        <td>{{ ['VISTALINKVX', 'VISTANET'][data.origin - 1] || data.origin }}</td>
+        <td>{{ ['PENDING', 'IN_PROCESS'][data.status - 1] || data.status }}</td>
         <td>
           <a>
             <span
@@ -131,7 +135,7 @@
             </span>
           </a>
         </td>
-        <td>
+        <td *ngIf="data.status === 1">
           <input 
             type="checkbox"
             [(ngModel)]="data.checked" 

@@ -20,7 +20,7 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { EligibilityService } from 'app/services/eligibility/eligibility.service';
 import { BillingService } from 'app/services/billing/billing.service';
 import { ClaimFormPdfComponent } from 'app/components/claim-form-pdf/claim-form-pdf.component';
-import { finalize, map } from 'rxjs/operators';
+import { finalize } from 'rxjs/operators';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 
@@ -59,6 +59,7 @@ export class BillingComponent {
   page_size = 10;
   page = 1;
   idClaimsSearch: any = null;
+  suscriberSearch: any = null;
   originSearch: any = null;
   statusSearch: any = null;
   allChecked = false;
@@ -67,6 +68,7 @@ export class BillingComponent {
   [key: string]: any;
   searchFields = [
     { placeholder: 'Id Claim...', model: 'idClaimsSearch', key: 'id_claim' },
+    { placeholder: 'Suscriber ID...', model: 'suscriberSearch', key: 'suscriber_id' },
   ];
   private searchNameSubject = new Subject<{ type: string; value: string | number | null }>();
 
@@ -82,6 +84,7 @@ export class BillingComponent {
           id_claim: () => (this.idClaimsSearch = value),
           origin: () => (this.originSearch = value),
           status: () => (this.statusSearch = value),
+          suscriber_id: () => (this.suscriberSearch = value)
         };
         (fields as Record<string, () => void>)[type]?.();
         this.page = 1;
@@ -102,7 +105,8 @@ export class BillingComponent {
         {
           id_claim: this.idClaimsSearch,
           origin: this.originSearch,
-          status: this.statusSearch
+          status: this.statusSearch,
+          suscriber_id: this.suscriberSearch
         },
         this.page,
         this.page_size
@@ -146,39 +150,26 @@ export class BillingComponent {
           },
         });
 
-        const completeObservables = this.selectedRows.map(claim => forkJoin({
-          cpts: this.eligibilityService.getClaimCpt({ id_claim: claim.id }, null, null, true),
-          dx: this.eligibilityService.getClaimDx({ id_claim: claim.id }, null, null, true),
-          patient: this.eligibilityService.getPatients({ patient_id: claim.patient }, null, null, true)
-        }).pipe(map(res => ({
-          ...claim,
-          cpts: res.cpts,
-          dx: res.dx,
-          patient_data: (res.patient as any[])[0],
-          provider_data: (((res.patient as any[])[0].suppliers) as any[])[0],
-        })))
-        );
+        const claimsToSend = JSON.stringify({ claims: this.selectedRows.map(row => row.id_claim) });
 
-        forkJoin(completeObservables).subscribe({
-          next: (completeClaims) => {
-            this.billingService.convertX12(completeClaims).subscribe({
-              next: (res) => {
-                console.log(completeClaims)
-                // Swal.fire({
-                //   icon: 'success',
-                //   title: 'Envío exitoso',
-                //   text: 'Las reclamaciones han sido enviadas correctamente.',
-                // });
-                // this.clearSelections(); // Limpiar selección después del envío
-              },
-              error: (err) => {
-                Swal.close()
-                this.msgService.error(JSON.stringify(err.error));
-              }
+        this.billingService.convertX12(claimsToSend).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Sending successfuly',
+              text: 'The claims have been sent successfully',
+              allowOutsideClick: false,
             });
+            this.clearSelections();
           },
           error: (err) => {
-            this.msgService.error(JSON.stringify(err.error));
+            Swal.fire({
+              icon: 'error',
+              title: 'Error sending',
+              text: `${JSON.stringify(err.error)}`,
+              allowOutsideClick: false,
+            });
+            this.clearSelections();
           }
         });
       }
@@ -187,10 +178,14 @@ export class BillingComponent {
 
   checkAll(checked: boolean): void {
     this.allChecked = checked;
+
     this.dataToDisplay.forEach(item => {
-      item.checked = checked;
+      if (item.status === 1) {
+        item.checked = checked;
+      }
     });
-    this.selectedRows = checked ? [...this.dataToDisplay] : [];
+
+    this.selectedRows = checked ? this.dataToDisplay.filter(item => item.status === 1) : [];
   }
 
   updateSelection(record: any): void {
@@ -259,10 +254,6 @@ export class BillingComponent {
           this.msgService.error(JSON.stringify(err.error));
         }
       });
-  }
-
-  sendClaim(data: any): void {
-
   }
 
   closePdf(): void {

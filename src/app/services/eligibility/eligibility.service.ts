@@ -45,7 +45,7 @@ export class EligibilityService {
     }
 
     getClaim(
-        { patient, id_claim, active, origin, status }: any,
+        { patient, id_claim, active, origin, status, suscriber_id }: any,
         page: number | null = 1,
         pageSize: number | null = 10,
         init = false
@@ -75,6 +75,10 @@ export class EligibilityService {
             params = params.set('active', active);
         }
 
+        if (suscriber_id != null) {
+            params = params.set('suscriber_id', suscriber_id);
+        }
+        
         return this.http.get(`${this.hostname}eligibility/claim`, { params })
     }
 
