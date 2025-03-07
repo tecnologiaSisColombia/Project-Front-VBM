@@ -102,7 +102,7 @@
               nz-icon
               nzType="unordered-list"
               nzTheme="outline"
-              (click)="openModalMember()"
+              (click)="openModalMember(data)"
               title="Show Member">
             </span>
           </a>
@@ -202,7 +202,8 @@
   nzMaskClosable="false"
   [nzBodyStyle]="{'max-height': '80vh', 'overflow': 'auto'}">
   <ng-container *nzModalContent>
-    <app-member>
+    <app-member
+    [claimData]="selectedClaim">
     </app-member>
   </ng-container>
 </nz-modal>

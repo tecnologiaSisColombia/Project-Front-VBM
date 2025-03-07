@@ -54,14 +54,12 @@ export class ViewClaimsComponent {
   page_size = 10;
   page = 1;
   idClaimsSearch: any = null;
-  suscriberSearch: any = null;
   originSearch: any = null;
   statusSearch: any = null;
   selectedClaim: any = {};
   [key: string]: any;
   searchFields = [
     { placeholder: 'Id Claim...', model: 'idClaimsSearch', key: 'id_claim' },
-    { placeholder: 'Suscriber ID...', model: 'suscriberSearch', key: 'suscriber_id' },
   ];
   private searchNameSubject = new Subject<{ type: string; value: string | number | null }>();
 
@@ -74,7 +72,6 @@ export class ViewClaimsComponent {
         id_claim: () => (this.idClaimsSearch = value),
         origin: () => (this.originSearch = value),
         status: () => (this.statusSearch = value),
-        suscriber_id: () => (this.suscriberSearch = value)
       };
       (fields as Record<string, () => void>)[type]?.();
       this.page = 1;
@@ -96,7 +93,6 @@ export class ViewClaimsComponent {
           patient: this.claimData.patient_id,
           origin: this.originSearch,
           status: this.statusSearch,
-          suscriber_id: this.suscriberSearch
         },
         this.page,
         this.page_size

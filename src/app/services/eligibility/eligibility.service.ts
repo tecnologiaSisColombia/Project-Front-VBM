@@ -78,12 +78,12 @@ export class EligibilityService {
         if (suscriber_id != null) {
             params = params.set('suscriber_id', suscriber_id);
         }
-        
+
         return this.http.get(`${this.hostname}eligibility/claim`, { params })
     }
 
     getClaimCpt(
-        { id_claim, active }: any,
+        { id_claim, active, claim_ids }: any,
         page: number | null = 1,
         pageSize: number | null = 10,
         init = false
@@ -91,17 +91,19 @@ export class EligibilityService {
         let params = new HttpParams()
             .set('page', (page ?? 1).toString())
             .set('page_size', (pageSize ?? 10).toString())
-            .set('init', init)
+            .set('init', init);
 
-        if (id_claim != null) {
-            params = params.set('claim', id_claim)
+        if (claim_ids && claim_ids.length > 0) {
+            params = params.set('claim_ids', claim_ids.join(','));
+        } else if (id_claim != null) {
+            params = params.set('claim', id_claim);
         }
 
         if (active != null) {
             params = params.set('active', active);
         }
 
-        return this.http.get(`${this.hostname}eligibility/claim-cpt`, { params })
+        return this.http.get(`${this.hostname}eligibility/claim-cpt`, { params });
     }
 
     getClaimDx(

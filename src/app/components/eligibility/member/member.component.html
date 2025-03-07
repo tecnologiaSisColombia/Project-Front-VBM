@@ -5,7 +5,7 @@
       <nz-breadcrumb-item>Show Member</nz-breadcrumb-item>
     </nz-breadcrumb>
   
-    <div class="btn-container">
+    <!-- <div class="btn-container">
       <button
         nz-button
         [style.background-color]="'#00a651'"
@@ -18,11 +18,11 @@
         </i>
         Export Member
       </button>
-    </div>
+    </div> -->
 </div>
   
 <div class="layout-container">
-  <div class="table-filters">
+  <!-- <div class="table-filters">
     <nz-input-group
       *ngFor="let field of searchFields"
       [nzSuffix]="suffixIconSearch">
@@ -41,7 +41,43 @@
         </span>
       </ng-template>
     </nz-input-group>
-  </div>
+
+    <nz-select
+      [(ngModel)]="originSearch"
+      (ngModelChange)="search($event, 'origin')"
+      nzAllowClear
+      style="width: 100%; gap: 20px;"
+      nzPlaceHolder="Select Source">
+      <nz-option
+        nzValue="1" 
+        nzLabel="VISTALINKVX">
+      </nz-option>
+      <nz-option 
+        nzValue="2" 
+        nzLabel="VISTANET">
+      </nz-option>
+    </nz-select>
+
+    <nz-select
+      [(ngModel)]="statusSearch"
+      (ngModelChange)="search($event, 'status')"
+      nzAllowClear
+      style="width: 100%; gap: 20px;"
+      nzPlaceHolder="Select Status">
+      <nz-option
+        nzValue="1" 
+        nzLabel="PENDING">
+      </nz-option>
+      <nz-option 
+        nzValue="2" 
+        nzLabel="IN_PROCCESS">
+      </nz-option>
+      <nz-option 
+        nzValue="3" 
+        nzLabel="FINISHED">
+      </nz-option>
+    </nz-select>
+  </div> -->
 
   <nz-table
     #basicTable
@@ -51,21 +87,26 @@
     [nzFrontPagination]="false">
     <thead>
       <tr>
+        <th>Claim ID</th>
+        <th>Status</th>
+        <th>Source</th>
         <th>DOS</th>
-        <th>Service</th>
+        <th>Services</th>
         <th>ICD</th>
       </tr>
     </thead>
     <tbody>
-      <tr>
-          <!-- <td></td>
-          <td></td>
-          <td></td>
-          <td></td>      -->
+      <tr *ngFor="let claim of basicTable.data">
+        <td>{{ claim.id_claim }}</td>
+        <td>{{ ['PENDING', 'IN_PROCESS'][claim.status - 1] || claim.status }}</td>
+        <td>{{ ['VISTALINKVX', 'VISTANET'][claim.origin - 1] || claim.origin }}</td>
+        <td>{{ claim.date_service | date: 'dd-MM-yyyy' }}</td>
+        <td>{{ claim.services?.join(' - ') || '' }}</td>
+        <td>{{ claim.diags?.join(' - ') || '' }}</td>        
       </tr>
     </tbody>
   </nz-table>
-  
+
   <ng-template #noDataTemplate>
     <nz-empty
       nzNotFoundImage="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
@@ -84,6 +125,8 @@
     [nzTotal]="count_records"
     [nzPageSize]="page_size"
     (nzPageIndexChange)="pageChange($event)"
+    (nzPageSizeChange)="pageSizeChange($event)"
+    [nzShowSizeChanger]="true"
     nzShowQuickJumper>
-    </nz-pagination>
+  </nz-pagination>
 </div>

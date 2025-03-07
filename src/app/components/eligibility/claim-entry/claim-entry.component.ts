@@ -473,12 +473,12 @@ export class ClaimEntryComponent {
   }
 
   calculateTotalCharges(): void {
-    this.form.get('total_charge')?.setValue(
-      this.rowsControls.controls.reduce((acc: number, control: AbstractControl) => {
-        const charge = (control as UntypedFormGroup).get('charges')?.value;
-        return acc + (charge ? Number(charge) : 0);
-      }, 0)
-    );
+    const total = this.rowsControls.controls.reduce((acc: number, control: AbstractControl) => {
+      const charge = (control as UntypedFormGroup).get('charges')?.value;
+      return acc + (charge ? Number(charge) : 0);
+    }, 0);
+
+    this.form.get('total_charge')?.setValue(parseFloat(total.toFixed(2)));
   }
 
   submit(): void {

@@ -259,7 +259,11 @@ export class EligibilityComponent {
     this.isVisibleModalListClaims = false;
   }
 
-  openModalMember(): void {
+  openModalMember(data: any): void {
+    this.selectedClaim = {
+      patient_id: data?.id,
+    };
+
     this.isVisibleModalMember = true;
   }
 
