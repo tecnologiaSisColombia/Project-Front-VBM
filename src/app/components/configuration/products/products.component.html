@@ -66,6 +66,7 @@
       <tr>
         <th>Code</th>
         <th>Description</th>
+        <th>Value</th>
         <th>Created</th>
         <th>Action</th>
       </tr>
@@ -74,6 +75,7 @@
       <tr *ngFor="let data of basicTable.data">
         <td>{{ data.code }}</td>
         <td>{{ data.description }}</td>
+        <td>{{ data.value }}</td>
         <td>{{ data.created | date }}</td>
         <td>
           <a>
@@ -184,6 +186,28 @@
               nz-input 
               formControlName="description" 
               id="description" 
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label
+            [nzSm]="8"
+            [nzXs]="24"
+            nzFor="value"
+            style="text-align: center">
+            Value
+          </nz-form-label>
+
+          <nz-form-control 
+            [nzSm]="16" 
+            [nzXs]="24" 
+            [nzErrorTip]="errorTemplate"
+            [nzHasFeedback]="hasFeedback('value')">
+            <input 
+              nz-input 
+              formControlName="value" 
+              id="value" 
             />
           </nz-form-control>
         </nz-form-item>

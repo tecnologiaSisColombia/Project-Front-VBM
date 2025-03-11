@@ -81,6 +81,7 @@ export class ProductsComponent implements OnInit {
     this.form = this.fb.group({
       code: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       description: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      value: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
     });
 
     this.searchNameSubject.pipe(debounceTime(1000)).subscribe((data) => {
