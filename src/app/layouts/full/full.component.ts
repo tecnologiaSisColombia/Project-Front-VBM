@@ -12,21 +12,22 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { CommonModule } from '@angular/common';
 
 @Component({
-    selector: 'app-full',
-    templateUrl: './full.component.html',
-    styleUrls: ['./full.component.css', '/src/animations/styles.css'],
-    imports: [
-        NzBreadCrumbModule,
-        NzIconModule,
-        NzMenuModule,
-        NzLayoutModule,
-        RouterOutlet,
-        RouterLink,
-        NzButtonModule,
-        NzDropDownModule,
-        NzAvatarModule,
-        CommonModule,
-    ]
+  selector: 'app-full',
+  standalone: true,
+  templateUrl: './full.component.html',
+  styleUrls: ['./full.component.css', '/src/animations/styles.css'],
+  imports: [
+    NzBreadCrumbModule,
+    NzIconModule,
+    NzMenuModule,
+    NzLayoutModule,
+    RouterOutlet,
+    RouterLink,
+    NzButtonModule,
+    NzDropDownModule,
+    NzAvatarModule,
+    CommonModule,
+  ],
 })
 export class FullComponent implements OnInit {
   currentDate: Date = new Date();
@@ -39,6 +40,7 @@ export class FullComponent implements OnInit {
     eligibility: false,
     doctors: false,
     localities: false,
+    billing: false,
   };
   role: string = '';
   username: string = '';
@@ -46,7 +48,7 @@ export class FullComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private message: NzMessageService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.authService.getProfile().subscribe({
@@ -87,6 +89,9 @@ export class FullComponent implements OnInit {
           }
           if (e.modulo__modulo == 'doctors') {
             this.access.doctors = e.admin;
+          }
+          if (e.modulo__modulo == 'billing') {
+            this.access.billing = e.admin;
           }
         });
       },
