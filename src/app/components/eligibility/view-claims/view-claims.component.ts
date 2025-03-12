@@ -12,6 +12,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { debounceTime, Subject, forkJoin } from 'rxjs';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { FormsModule } from '@angular/forms';
 import { NzModalModule } from 'ng-zorro-antd/modal';
@@ -38,7 +39,8 @@ import { finalize, } from 'rxjs/operators';
     FormsModule,
     NzModalModule,
     NzEmptyModule,
-    ClaimFormPdfComponent
+    ClaimFormPdfComponent,
+    NzPopoverModule
   ],
   templateUrl: './view-claims.component.html',
   styleUrl: './view-claims.component.css'

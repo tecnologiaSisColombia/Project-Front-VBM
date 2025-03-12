@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
@@ -7,25 +8,25 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { debounceTime, Subject } from 'rxjs';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
-import { FormsModule } from '@angular/forms';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 import { MemberComponent } from './member/member.component';
 import { PlanDetailsComponent } from './plan-details/plan-details.component';
 import { ViewClaimsComponent } from './view-claims/view-claims.component';
 import { EligibilityService } from 'app/services/eligibility/eligibility.service';
-import * as XLSX from 'xlsx';
+import { debounceTime, Subject } from 'rxjs';
 import { ClaimEntryComponent } from './claim-entry/claim-entry.component';
-import { NzEmptyModule } from 'ng-zorro-antd/empty';
-import { NzButtonModule } from 'ng-zorro-antd/button';
 import { S3Service } from 'app/services/upload-s3/upload-s3.service';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { finalize } from 'rxjs/operators';
 import Swal from 'sweetalert2';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-eligibility',
@@ -47,7 +48,8 @@ import Swal from 'sweetalert2';
     ClaimEntryComponent,
     NzEmptyModule,
     NzButtonModule,
-    ViewClaimsComponent
+    ViewClaimsComponent,
+    NzPopoverModule
   ],
   templateUrl: './eligibility.component.html',
   styleUrls: ['./eligibility.component.css', '/src/animations/styles.css']

@@ -79,26 +79,29 @@
           <a>
             <span
               nz-icon
+              nz-popover
+              nzPopoverContent="Show Subplans"
               nzType="plus-circle"
               nzTheme="outline"
-              title="Show Subplans"
               (click)="openModal(data)">
             </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
             <nz-switch
-              title="Status"
+              nz-popover
+              nzPopoverContent="Status Plan"
               [(ngModel)]="data.active"
               nzSize="small"
-              (ngModelChange)="changeStatus(data.id, data)">
+              (ngModelChange)="changeStatus(data.id, data.active)">
             </nz-switch>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
             <span
-              title="Edit"
               nz-icon
+              nz-popover
+              nzPopoverContent="Edit Plan"
               nzType="edit"
               nzTheme="outline"
               (click)="openEditDrawer(data)">
@@ -107,8 +110,9 @@
           <nz-divider nzType="vertical"></nz-divider>
           <a>
             <span
-              title="Delete"
               nz-icon
+              nz-popover
+              nzPopoverContent="Delete Plan"
               nzType="delete"
               nzTheme="outline"
               (click)="delete(data.id)">

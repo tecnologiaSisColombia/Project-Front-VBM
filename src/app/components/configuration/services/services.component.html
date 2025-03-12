@@ -80,17 +80,19 @@
         <td>
           <a>
             <nz-switch
-              title="Status"
+              nz-popover
+              nzPopoverContent="Status Service"
               [(ngModel)]="data.active"
               nzSize="small"
-              (ngModelChange)="changeStatus(data.id, data)">
+              (ngModelChange)="changeStatus(data.id, data.active)">
             </nz-switch>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
             <span
               nz-icon
-              title="Edit"
+              nz-popover
+              nzPopoverContent="Edit Service"
               nzType="edit"
               nzTheme="outline"
               (click)="openEditDrawer(data)">
@@ -100,7 +102,8 @@
           <a>
             <span
               nz-icon
-              title="Delete"
+              nz-popover
+              nzPopoverContent="Delete Service"
               nzType="delete"
               nzTheme="outline"
               (click)="delete(data.id)">

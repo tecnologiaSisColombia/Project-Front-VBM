@@ -22,6 +22,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { debounceTime, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
@@ -45,6 +46,7 @@ import { finalize } from 'rxjs/operators';
     CommonModule,
     NzSwitchModule,
     NzEmptyModule,
+    NzPopoverModule
   ],
   templateUrl: './place-of-service.component.html',
   styleUrls: ['./place-of-service.component.css', '/src/animations/styles.css']
@@ -180,7 +182,7 @@ export class LocationComponent {
     });
   }
 
-  update(id: number, data: any) {
+  update(id: number, data: any, reloadData?: string) {
     this.locationService.update(id, data)
       .pipe(finalize(() => {
         this.drawerLoader = false;
@@ -189,7 +191,10 @@ export class LocationComponent {
         next: () => {
           this.msgService.success('Location updated successfully');
           this.closeDrawer();
-          this.getInitData();
+
+          if (reloadData === 'reload') {
+            this.getInitData();
+          }
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
@@ -211,7 +216,7 @@ export class LocationComponent {
     this.drawerLoader = true;
 
     if (this.isUpdating) {
-      return this.update(this.dataDrawerCache.id, this.form.value);
+      return this.update(this.dataDrawerCache.id, this.form.value, 'reload');
     }
 
     this.locationService.create(this.form.value)
@@ -230,8 +235,8 @@ export class LocationComponent {
       });
   }
 
-  changeStatus(id: number, data: any) {
-    this.update(id, data);
+  changeStatus(id: number, isActive: boolean): void {
+    this.update(id, { active: isActive });
   }
 
   search(value: string, type: string) {

@@ -16,6 +16,7 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzTableModule } from 'ng-zorro-antd/table';
@@ -51,7 +52,8 @@ import Swal from 'sweetalert2';
     NzSelectModule,
     NzModalModule,
     SubplansComponent,
-    NzEmptyModule
+    NzEmptyModule,
+    NzPopoverModule
   ],
   templateUrl: './plans.component.html',
   styleUrls: ['./plans.component.css', '/src/animations/styles.css']
@@ -198,7 +200,7 @@ export class PlansComponent implements OnInit {
     });
   }
 
-  update(id: number, data: any): void {
+  update(id: number, data: any, reloadData?: string) {
     this.planService.updatePlan(id, data)
       .pipe(finalize(() => {
         this.drawerLoader = false;
@@ -207,7 +209,10 @@ export class PlansComponent implements OnInit {
         next: () => {
           this.msgService.success('Coverage updated successfully');
           this.closeDrawer();
-          this.getInitData();
+
+          if (reloadData === 'reload') {
+            this.getInitData();
+          }
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
@@ -229,7 +234,7 @@ export class PlansComponent implements OnInit {
     this.drawerLoader = true;
 
     if (this.isUpdating) {
-      return this.update(this.dataDrawerCahe.id, this.form.value);
+      return this.update(this.dataDrawerCahe.id, this.form.value, 'reload');
     }
 
     this.planService.createPlan(this.form.value)
@@ -248,9 +253,8 @@ export class PlansComponent implements OnInit {
       });
   }
 
-  changeStatus(id: number, data: any): void {
-    const { insurer_data, ...filteredData } = data;
-    this.update(id, filteredData);
+  changeStatus(id: number, isActive: boolean): void {
+    this.update(id, { active: isActive });
   }
 
   search(value: string, type: string) {

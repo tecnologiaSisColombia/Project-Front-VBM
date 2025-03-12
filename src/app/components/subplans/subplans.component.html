@@ -93,17 +93,19 @@
         <td>
           <a>
             <nz-switch
-              title="Status"
+              nz-popover
+              nzPopoverContent="Status Subplan"
               [(ngModel)]="data.active"
               nzSize="small"
-              (ngModelChange)="changeStatus(data.group, data)">
+              (ngModelChange)="changeStatus(data.group, data.active)">
             </nz-switch>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
             <span
-              title="Edit"
               nz-icon
+              nz-popover
+              nzPopoverContent="Edit Subplan"
               nzType="edit"
               nzTheme="outline"
               (click)="openEditDrawer(data)">
@@ -112,8 +114,9 @@
           <nz-divider nzType="vertical"></nz-divider>
           <a>
             <span
-              title="Delete"
               nz-icon
+              nz-popover
+              nzPopoverContent="Delete Subplan"
               nzType="delete"
               nzTheme="outline"
               (click)="delete(data.group)">
