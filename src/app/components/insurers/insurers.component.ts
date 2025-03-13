@@ -6,7 +6,7 @@ import {
   UntypedFormBuilder,
   UntypedFormGroup,
   Validators,
-  AbstractControl
+  AbstractControl,
 } from '@angular/forms';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
@@ -53,7 +53,7 @@ import { debounceTime, Subject } from 'rxjs';
     NzEmptyModule,
   ],
   templateUrl: './insurers.component.html',
-  styleUrls: ['./insurers.component.css', '/src/animations/styles.css']
+  styleUrls: ['./insurers.component.css', '/src/animations/styles.css'],
 })
 export class InsurersComponent implements OnInit {
   form: UntypedFormGroup;
@@ -84,7 +84,8 @@ export class InsurersComponent implements OnInit {
     { placeholder: 'Phone...', model: 'phoneSearch', key: 'phone' },
     { placeholder: 'Payer ID...', model: 'payerIdSearch', key: 'payer_id' },
   ];
-  private searchNameSubject: Subject<{ type: string; value: string }> = new Subject();
+  private searchNameSubject: Subject<{ type: string; value: string }> =
+    new Subject();
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -96,7 +97,10 @@ export class InsurersComponent implements OnInit {
     this.form = this.fb.group({
       services: [null, [Validators.required]],
       products: [null, [Validators.required]],
-      payer_id: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
+      payer_id: [
+        null,
+        [Validators.required, Validators.pattern(/^(?!\s*$).+/)],
+      ],
       phone: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       address: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
       name: [null, [Validators.required, Validators.pattern(/^(?!\s*$).+/)]],
@@ -127,10 +131,13 @@ export class InsurersComponent implements OnInit {
 
   getServices() {
     this.isDataLoading = true;
-    this.serviceService.get({ active: 1 }, null, null, true)
-      .pipe(finalize(() => {
-        this.isDataLoading = false;
-      }))
+    this.serviceService
+      .get({ active: 1 }, null, null, true)
+      .pipe(
+        finalize(() => {
+          this.isDataLoading = false;
+        })
+      )
       .subscribe({
         next: (res: any) => {
           this.services = res;
@@ -143,10 +150,13 @@ export class InsurersComponent implements OnInit {
 
   getProducts() {
     this.isDataLoading = true;
-    this.productService.get({ active: 1 }, null, null, true)
-      .pipe(finalize(() => {
-        this.isDataLoading = false;
-      }))
+    this.productService
+      .get({ active: 1 }, null, null, true)
+      .pipe(
+        finalize(() => {
+          this.isDataLoading = false;
+        })
+      )
       .subscribe({
         next: (res: any) => {
           this.products = res;
@@ -170,9 +180,11 @@ export class InsurersComponent implements OnInit {
         this.page,
         this.page_size
       )
-      .pipe(finalize(() => {
-        this.isDataLoading = false;
-      }))
+      .pipe(
+        finalize(() => {
+          this.isDataLoading = false;
+        })
+      )
       .subscribe({
         next: (res: any) => {
           this.dataToDisplay = res.results;
@@ -220,10 +232,13 @@ export class InsurersComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.isDataLoading = true;
-        this.insurerService.deleteInsurer(id)
-          .pipe(finalize(() => {
-            this.isDataLoading = false;
-          }))
+        this.insurerService
+          .deleteInsurer(id)
+          .pipe(
+            finalize(() => {
+              this.isDataLoading = false;
+            })
+          )
           .subscribe({
             next: () => {
               this.msgService.success('Insurer deleted successfully');
@@ -243,10 +258,13 @@ export class InsurersComponent implements OnInit {
   }
 
   update(id: number, data: any): void {
-    this.insurerService.updateInsurer(id, data)
-      .pipe(finalize(() => {
-        this.drawerLoader = false;
-      }))
+    this.insurerService
+      .updateInsurer(id, data)
+      .pipe(
+        finalize(() => {
+          this.drawerLoader = false;
+        })
+      )
       .subscribe({
         next: () => {
           this.msgService.success('Insurer updated successfully');
@@ -273,11 +291,15 @@ export class InsurersComponent implements OnInit {
     const formData = { ...this.form.value };
 
     if (formData.services) {
-      formData.services = formData.services.filter((item: any) => item !== 'ALL');
+      formData.services = formData.services.filter(
+        (item: any) => item !== 'ALL'
+      );
     }
 
     if (formData.products) {
-      formData.products = formData.products.filter((item: any) => item !== 'ALL');
+      formData.products = formData.products.filter(
+        (item: any) => item !== 'ALL'
+      );
     }
 
     this.drawerLoader = true;
@@ -286,10 +308,13 @@ export class InsurersComponent implements OnInit {
       return this.update(this.dataDrawerCahe.id, formData);
     }
 
-    this.insurerService.createInsurer(formData)
-      .pipe(finalize(() => {
-        this.drawerLoader = false;
-      }))
+    this.insurerService
+      .createInsurer(formData)
+      .pipe(
+        finalize(() => {
+          this.drawerLoader = false;
+        })
+      )
       .subscribe({
         next: () => {
           this.msgService.success('Insurer created successfully');
@@ -302,10 +327,19 @@ export class InsurersComponent implements OnInit {
       });
   }
 
-  changeStatus(id: number, data: any): void {
-    data.services = data.services.map((e: any) => e.id);
-    data.products = data.products.map((e: any) => e.id);
-    this.update(id, data);
+  changeStatus(id: number, status: boolean): void {
+    const data: any = {
+      status,
+    };
+    this.insurerService.changeStatus(id, data).subscribe({
+      next: () => {
+        this.msgService.success('Insurer updated successfully');
+        //this.getInitData();
+      },
+      error: (err) => {
+        this.msgService.error(JSON.stringify(err.error));
+      },
+    });
   }
 
   search(value: string, type: string) {
@@ -366,14 +400,19 @@ export class InsurersComponent implements OnInit {
 
   hasFeedback(controlName: string): boolean {
     const control = this.form.get(controlName);
-    return control?.invalid && (control.dirty || control.touched) ? true : false;
+    return control?.invalid && (control.dirty || control.touched)
+      ? true
+      : false;
   }
 
   exporInsurers(): void {
-    this.insurerService.getInsurers({}, null, null, true)
-      .pipe(finalize(() => {
-        this.exportLoader = false;
-      }))
+    this.insurerService
+      .getInsurers({}, null, null, true)
+      .pipe(
+        finalize(() => {
+          this.exportLoader = false;
+        })
+      )
       .subscribe({
         next: (res: any) => {
           if (res.length === 0) {
@@ -396,7 +435,9 @@ export class InsurersComponent implements OnInit {
             active: 'Status',
           };
 
-          const selectedColumns = Object.keys(headers) as (keyof typeof headers)[];
+          const selectedColumns = Object.keys(
+            headers
+          ) as (keyof typeof headers)[];
 
           const filteredData = res.map((insurer: any) =>
             selectedColumns.reduce((obj: Record<string, any>, key) => {
@@ -409,8 +450,17 @@ export class InsurersComponent implements OnInit {
                   day: 'numeric',
                   year: 'numeric',
                 });
-              } else if (['modifiers', 'orderring_npi', 'refering_npi', 'auth'].includes(key)) {
-                obj[headers[key]] = insurer[key] === 1 ? 'Yes' : insurer[key] === 2 ? 'No' : insurer[key];
+              } else if (
+                ['modifiers', 'orderring_npi', 'refering_npi', 'auth'].includes(
+                  key
+                )
+              ) {
+                obj[headers[key]] =
+                  insurer[key] === 1
+                    ? 'Yes'
+                    : insurer[key] === 2
+                    ? 'No'
+                    : insurer[key];
               } else {
                 obj[headers[key]] = insurer[key];
               }
@@ -418,7 +468,8 @@ export class InsurersComponent implements OnInit {
             }, {})
           );
 
-          const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(filteredData);
+          const worksheet: XLSX.WorkSheet =
+            XLSX.utils.json_to_sheet(filteredData);
           const workbook: XLSX.WorkBook = XLSX.utils.book_new();
           XLSX.utils.book_append_sheet(workbook, worksheet, 'Insurers');
 
@@ -427,7 +478,9 @@ export class InsurersComponent implements OnInit {
             type: 'array',
           });
 
-          const blob = new Blob([excelBuffer], { type: 'application/octet-stream', });
+          const blob = new Blob([excelBuffer], {
+            type: 'application/octet-stream',
+          });
           const url = URL.createObjectURL(blob);
 
           const link = document.createElement('a');
