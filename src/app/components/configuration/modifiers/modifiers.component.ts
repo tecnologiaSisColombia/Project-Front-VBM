@@ -21,6 +21,7 @@ import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { debounceTime, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
@@ -45,6 +46,7 @@ import { finalize } from 'rxjs/operators';
     CommonModule,
     NzSwitchModule,
     NzEmptyModule,
+    NzPopoverModule
   ],
   templateUrl: './modifiers.component.html',
   styleUrl: './modifiers.component.css'
@@ -180,7 +182,7 @@ export class ModifiersComponent {
     });
   }
 
-  update(id: number, data: any) {
+  update(id: number, data: any, reloadData?: string) {
     this.modifiersService.update(id, data)
       .pipe(finalize(() => {
         this.drawerLoader = false;
@@ -189,7 +191,10 @@ export class ModifiersComponent {
         next: () => {
           this.msgService.success('Modifier updated successfully');
           this.closeDrawer();
-          this.getInitData();
+
+          if (reloadData === 'reload') {
+            this.getInitData();
+          }
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
@@ -211,7 +216,7 @@ export class ModifiersComponent {
     this.drawerLoader = true;
 
     if (this.isUpdating) {
-      return this.update(this.dataDrawerCache.id, this.form.value);
+      return this.update(this.dataDrawerCache.id, this.form.value, 'reload');
     }
 
     this.modifiersService.create(this.form.value)
@@ -230,8 +235,8 @@ export class ModifiersComponent {
       });
   }
 
-  changeStatus(id: number, data: any) {
-    this.update(id, data);
+  changeStatus(id: number, isActive: boolean): void {
+    this.update(id, { active: isActive });
   }
 
   search(value: string, type: string) {

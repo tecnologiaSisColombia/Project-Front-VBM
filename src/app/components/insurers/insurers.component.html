@@ -86,17 +86,19 @@
           <a>
             <span
               nz-icon
+              nz-popover
+              nzPopoverContent="Show Catalog"
               nzType="plus-circle"
               nzTheme="outline"
               (click)="openCatalog(data)"
-              title="Show Catalog"
             >
             </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
             <nz-switch
-              title="Status"
+              nz-popover
+              nzPopoverContent="Status Insurer"
               [(ngModel)]="data.active"
               nzSize="small"
               (ngModelChange)="changeStatus(data.id, data.active)"
@@ -107,7 +109,8 @@
           <a>
             <span
               nz-icon
-              title="Edit"
+              nz-popover
+              nzPopoverContent="Edit Insurer"
               nzType="edit"
               nzTheme="outline"
               (click)="openEditDrawer(data)"
@@ -118,7 +121,8 @@
           <a>
             <span
               nz-icon
-              title="Delete"
+              nz-popover
+              nzPopoverContent="Delete Insurer"
               nzType="delete"
               nzTheme="outline"
               (click)="delete(data.id)"

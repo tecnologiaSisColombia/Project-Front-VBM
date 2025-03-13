@@ -19,6 +19,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
@@ -44,7 +45,8 @@ import { finalize } from 'rxjs/operators';
     NzSpinModule,
     CommonModule,
     NzSwitchModule,
-    NzEmptyModule
+    NzEmptyModule,
+    NzPopoverModule
   ],
   templateUrl: './localities.component.html',
   styleUrls: ['./localities.component.css', '/src/animations/styles.css']
@@ -171,7 +173,7 @@ export class LocalitiesComponent implements OnInit {
     });
   }
 
-  update(id: number, data: any) {
+  update(id: number, data: any, reloadData?: string) {
     this.localitiesService.update(id, data)
       .pipe(finalize(() => {
         this.drawerLoader = false;
@@ -180,7 +182,10 @@ export class LocalitiesComponent implements OnInit {
         next: () => {
           this.msgService.success('Locality updated successfully');
           this.closeDrawer();
-          this.getInitData();
+
+          if (reloadData === 'reload') {
+            this.getInitData();
+          }
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
@@ -221,8 +226,8 @@ export class LocalitiesComponent implements OnInit {
       });
   }
 
-  changeStatus(id: number, data: any) {
-    this.update(id, data);
+  changeStatus(id: number, isActive: boolean): void {
+    this.update(id, { active: isActive });
   }
 
   search(value: string, type: string) {

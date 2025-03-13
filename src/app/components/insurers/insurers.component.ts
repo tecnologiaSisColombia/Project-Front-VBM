@@ -16,6 +16,7 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { InsurersService } from 'app/services/insurers/insurers.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -51,6 +52,7 @@ import { debounceTime, Subject } from 'rxjs';
     NzSelectModule,
     NzModalModule,
     NzEmptyModule,
+    NzPopoverModule,
   ],
   templateUrl: './insurers.component.html',
   styleUrls: ['./insurers.component.css', '/src/animations/styles.css'],
@@ -257,7 +259,7 @@ export class InsurersComponent implements OnInit {
     });
   }
 
-  update(id: number, data: any): void {
+  update(id: number, data: any, reloadData?: string) {
     this.insurerService
       .updateInsurer(id, data)
       .pipe(
@@ -269,7 +271,10 @@ export class InsurersComponent implements OnInit {
         next: () => {
           this.msgService.success('Insurer updated successfully');
           this.closeDrawer();
-          this.getInitData();
+
+          if (reloadData === 'reload') {
+            this.getInitData();
+          }
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
@@ -305,7 +310,7 @@ export class InsurersComponent implements OnInit {
     this.drawerLoader = true;
 
     if (this.isUpdating) {
-      return this.update(this.dataDrawerCahe.id, formData);
+      return this.update(this.dataDrawerCahe.id, formData, 'reload');
     }
 
     this.insurerService

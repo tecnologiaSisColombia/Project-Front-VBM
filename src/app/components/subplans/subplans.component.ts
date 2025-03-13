@@ -16,6 +16,7 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
+import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
@@ -48,6 +49,7 @@ import * as XLSX from 'xlsx';
     NzSwitchModule,
     NzSelectModule,
     NzEmptyModule,
+    NzPopoverModule
   ],
   templateUrl: './subplans.component.html',
   styleUrl: './subplans.component.css'
@@ -212,7 +214,7 @@ export class SubplansComponent implements OnInit {
     });
   }
 
-  update(id: number, data: any): void {
+  update(id: number, data: any, reloadData?: string) {
     this.subplanService.updateSubPlan(id, data)
       .pipe(finalize(() => {
         this.drawerLoader = false;
@@ -221,7 +223,10 @@ export class SubplansComponent implements OnInit {
         next: () => {
           this.msgService.success('Subplan updated successfully');
           this.closeDrawer();
-          this.getInitData();
+
+          if (reloadData === 'reload') {
+            this.getInitData();
+          }
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
@@ -243,7 +248,7 @@ export class SubplansComponent implements OnInit {
     this.drawerLoader = true;
 
     if (this.isUpdating) {
-      return this.update(this.dataDrawerCahe.group, this.form.value);
+      return this.update(this.dataDrawerCahe.group, this.form.value, 'reload');
     }
 
     this.subplanService.createSubPlan(this.form.value)
@@ -262,9 +267,8 @@ export class SubplansComponent implements OnInit {
       });
   }
 
-  changeStatus(id: number, data: any): void {
-    delete data.plan_data;
-    this.update(id, data);
+  changeStatus(id: number, isActive: boolean): void {
+    this.update(id, { active: isActive });
   }
 
   search(value: string, type: string) {

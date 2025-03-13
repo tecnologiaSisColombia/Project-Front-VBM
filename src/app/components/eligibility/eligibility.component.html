@@ -90,40 +90,44 @@
           <a>
             <span
               nz-icon
+              nz-popover
+              nzPopoverContent="Show Plan Details"
               nzType="plus-circle"
               nzTheme="outline"
-              (click)="openPlanDetails(data)"
-              title="Show Plan Details">
+              (click)="openPlanDetails(data)">
           </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
             <span
               nz-icon
+              nz-popover
+              nzPopoverContent="Show Member"
               nzType="unordered-list"
               nzTheme="outline"
-              (click)="openModalMember(data)"
-              title="Show Member">
+              (click)="openModalMember(data)">
             </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
             <span
               nz-icon
+              nz-popover
+              nzPopoverContent="Claim entry"
               nzType="form"
               nzTheme="outline"
-              (click)="openModalClaimEntry(data)"
-              title="Claim entry">
+              (click)="openModalClaimEntry(data)">
             </span>
           </a>
           <nz-divider nzType="vertical"></nz-divider>
           <a>
             <span
               nz-icon
+              nz-popover
+              nzPopoverContent="View Claims"
               nzType="read"
               nzTheme="outline"
-              (click)="openModalViewClaims(data)"
-              title="View Claims">
+              (click)="openModalViewClaims(data)">
             </span>
           </a>
         </td>

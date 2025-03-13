@@ -19,6 +19,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -47,6 +48,7 @@ import { finalize } from 'rxjs/operators';
     NzSwitchModule,
     NzSelectModule,
     NzEmptyModule,
+    NzPopoverModule
   ],
   templateUrl: './doctor.component.html',
   styleUrls: ['./doctor.component.css', '/src/animations/styles.css']
@@ -218,7 +220,7 @@ export class DoctorComponent {
     });
   }
 
-  update(id: number, data: any) {
+  update(id: number, data: any, reloadData?: string) {
     this.doctorService.update(id, data)
       .pipe(
         finalize(() => {
@@ -229,7 +231,10 @@ export class DoctorComponent {
         next: () => {
           this.msgService.success('Doctor updated successfully');
           this.closeDrawer();
-          this.getInitData();
+
+          if (reloadData === 'reload') {
+            this.getInitData();
+          }
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
@@ -251,7 +256,7 @@ export class DoctorComponent {
     this.drawerLoader = true;
 
     if (this.isUpdating) {
-      return this.update(this.dataDrawerCache.id, this.form.value);
+      return this.update(this.dataDrawerCache.id, this.form.value, 'reload');
     }
 
     this.doctorService.create(this.form.value)
@@ -272,9 +277,8 @@ export class DoctorComponent {
       });
   }
 
-  changeStatus(id: number, data: any) {
-    delete data.store_data;
-    this.update(id, data);
+  changeStatus(id: number, isActive: boolean): void {
+    this.update(id, { active: isActive });
   }
 
   search(value: string, type: string) {

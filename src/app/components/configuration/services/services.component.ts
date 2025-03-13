@@ -22,6 +22,7 @@ import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { ServicesService } from 'app/services/config/services.service';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { NzPopoverModule } from 'ng-zorro-antd/popover';
 import { debounceTime, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
@@ -44,7 +45,8 @@ import { finalize } from 'rxjs/operators';
     NzSpinModule,
     CommonModule,
     NzSwitchModule,
-    NzEmptyModule
+    NzEmptyModule,
+    NzPopoverModule
   ],
   templateUrl: './services.component.html',
   styleUrls: ['./services.component.css', '/src/animations/styles.css']
@@ -180,7 +182,7 @@ export class ServicesComponent implements OnInit {
     });
   }
 
-  update(id: number, data: any) {
+  update(id: number, data: any, reloadData?: string) {
     this.serviceService.update(id, data)
       .pipe(finalize(() => {
         this.drawerLoader = false;
@@ -189,7 +191,10 @@ export class ServicesComponent implements OnInit {
         next: () => {
           this.msgService.success('Service updated successfully');
           this.closeDrawer();
-          this.getInitData();
+
+          if (reloadData === 'reload') {
+            this.getInitData();
+          }
         },
         error: (err) => {
           this.msgService.error(JSON.stringify(err.error));
@@ -211,7 +216,7 @@ export class ServicesComponent implements OnInit {
     this.drawerLoader = true;
 
     if (this.isUpdating) {
-      return this.update(this.dataDrawerCache.id, this.form.value);
+      return this.update(this.dataDrawerCache.id, this.form.value, 'reload');
     }
 
     this.serviceService.create(this.form.value)
@@ -230,9 +235,8 @@ export class ServicesComponent implements OnInit {
       });
   }
 
-  changeStatus(id: number, data: any) {
-    delete data.store_data;
-    this.update(id, data);
+  changeStatus(id: number, isActive: boolean): void {
+    this.update(id, { active: isActive });
   }
 
   search(value: string, type: string) {
