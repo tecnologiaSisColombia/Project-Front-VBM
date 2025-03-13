@@ -49,7 +49,7 @@ import { finalize } from 'rxjs/operators';
     NzPopoverModule
   ],
   templateUrl: './localities.component.html',
-  styleUrls: ['./localities.component.css', '/src/animations/styles.css']
+  styleUrls: ['./localities.component.css']
 })
 export class LocalitiesComponent implements OnInit {
   form: UntypedFormGroup;

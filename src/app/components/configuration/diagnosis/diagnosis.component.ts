@@ -49,7 +49,7 @@ import { finalize } from 'rxjs/operators';
     NzPopoverModule
   ],
   templateUrl: './diagnosis.component.html',
-  styleUrls: ['./diagnosis.component.css', '/src/animations/styles.css']
+  styleUrls: ['./diagnosis.component.css']
 })
 export class DiagnosisComponent {
   form: UntypedFormGroup;

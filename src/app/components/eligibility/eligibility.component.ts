@@ -52,7 +52,7 @@ import * as XLSX from 'xlsx';
     NzPopoverModule
   ],
   templateUrl: './eligibility.component.html',
-  styleUrls: ['./eligibility.component.css', '/src/animations/styles.css']
+  styleUrls: ['./eligibility.component.css']
 })
 export class EligibilityComponent {
   isDataLoading = false;

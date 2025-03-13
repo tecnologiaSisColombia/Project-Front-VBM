@@ -26,7 +26,7 @@ import { finalize } from 'rxjs/operators';
     RouterLink
   ],
   templateUrl: './reset-password.component.html',
-  styleUrls: ['./reset-password.component.css', '/src/animations/styles.css']
+  styleUrls: ['./reset-password.component.css']
 })
 export class ResetPasswordComponent {
   form: FormGroup;

@@ -56,7 +56,7 @@ import Swal from 'sweetalert2';
     NzPopoverModule
   ],
   templateUrl: './plans.component.html',
-  styleUrls: ['./plans.component.css', '/src/animations/styles.css']
+  styleUrls: ['./plans.component.css',]
 })
 export class PlansComponent implements OnInit {
   form: UntypedFormGroup;

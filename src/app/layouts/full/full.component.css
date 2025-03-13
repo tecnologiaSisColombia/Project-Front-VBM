@@ -1,3 +1,13 @@
+@keyframes fadeInBackground {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 .layout-container {
   font-family: 'Source Sans Pro', sans-serif;
   padding: 0;
@@ -6,6 +16,8 @@
   height: 100%;
   display: flex;
   justify-content: center;
+  animation: fadeInBackground 1.2s ease-in-out;
+  min-width: 900px;
 }
 
 :host {

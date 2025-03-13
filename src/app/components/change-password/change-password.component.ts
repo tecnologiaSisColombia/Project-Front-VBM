@@ -30,7 +30,7 @@ import { NzCardModule } from 'ng-zorro-antd/card';
     NzCardModule,
   ],
   templateUrl: './change-password.component.html',
-  styleUrls: ['./change-password.component.css', '/src/animations/styles.css']
+  styleUrls: ['./change-password.component.css']
 })
 export class ChangePasswordComponent implements OnInit {
   form: FormGroup;

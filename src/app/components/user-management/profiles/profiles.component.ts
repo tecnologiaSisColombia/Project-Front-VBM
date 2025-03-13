@@ -24,28 +24,28 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-profiles',
-    imports: [
-        NzBreadCrumbModule,
-        NzFormModule,
-        FormsModule,
-        ReactiveFormsModule,
-        NzButtonComponent,
-        NzTableModule,
-        NzPaginationModule,
-        NzDividerModule,
-        NzInputModule,
-        NzIconModule,
-        NzDrawerModule,
-        NzSpinModule,
-        CommonModule,
-        NzSwitchModule,
-        NzModalModule,
-        NzSelectModule,
-        NzEmptyModule,
-    ],
-    templateUrl: './profiles.component.html',
-    styleUrls: ['./profiles.component.css', '/src/animations/styles.css']
+  selector: 'app-profiles',
+  imports: [
+    NzBreadCrumbModule,
+    NzFormModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NzButtonComponent,
+    NzTableModule,
+    NzPaginationModule,
+    NzDividerModule,
+    NzInputModule,
+    NzIconModule,
+    NzDrawerModule,
+    NzSpinModule,
+    CommonModule,
+    NzSwitchModule,
+    NzModalModule,
+    NzSelectModule,
+    NzEmptyModule,
+  ],
+  templateUrl: './profiles.component.html',
+  styleUrls: ['./profiles.component.css']
 })
 export class ProfilesComponent implements OnInit {
   listOfDisplayData: any[] = [];

@@ -49,7 +49,7 @@ import { finalize } from 'rxjs/operators';
     NzPopoverModule
   ],
   templateUrl: './modifiers.component.html',
-  styleUrl: './modifiers.component.css'
+  styleUrls: ['./modifiers.component.css']
 })
 export class ModifiersComponent {
   form: UntypedFormGroup;

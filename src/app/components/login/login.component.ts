@@ -30,7 +30,7 @@ import { NzCardModule } from 'ng-zorro-antd/card';
     NzCardModule
   ],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css', '/src/animations/styles.css']
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
   form: FormGroup;

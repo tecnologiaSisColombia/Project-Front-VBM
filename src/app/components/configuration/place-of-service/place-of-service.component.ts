@@ -49,7 +49,7 @@ import { finalize } from 'rxjs/operators';
     NzPopoverModule
   ],
   templateUrl: './place-of-service.component.html',
-  styleUrls: ['./place-of-service.component.css', '/src/animations/styles.css']
+  styleUrls: ['./place-of-service.component.css']
 })
 export class LocationComponent {
   form: UntypedFormGroup;

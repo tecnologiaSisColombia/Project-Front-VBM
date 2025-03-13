@@ -51,7 +51,7 @@ import { finalize } from 'rxjs/operators';
     NzPopoverModule
   ],
   templateUrl: './doctor.component.html',
-  styleUrls: ['./doctor.component.css', '/src/animations/styles.css']
+  styleUrls: ['./doctor.component.css']
 })
 export class DoctorComponent {
   form: UntypedFormGroup;

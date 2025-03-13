@@ -15,7 +15,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-full',
   standalone: true,
   templateUrl: './full.component.html',
-  styleUrls: ['./full.component.css', '/src/animations/styles.css'],
+  styleUrls: ['./full.component.css',],
   imports: [
     NzBreadCrumbModule,
     NzIconModule,

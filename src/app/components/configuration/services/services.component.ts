@@ -49,7 +49,7 @@ import { finalize } from 'rxjs/operators';
     NzPopoverModule
   ],
   templateUrl: './services.component.html',
-  styleUrls: ['./services.component.css', '/src/animations/styles.css']
+  styleUrls: ['./services.component.css']
 })
 export class ServicesComponent implements OnInit {
   form: UntypedFormGroup;

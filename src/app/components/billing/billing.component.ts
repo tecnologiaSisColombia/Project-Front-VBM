@@ -46,7 +46,7 @@ import Swal from 'sweetalert2';
     ClaimFormPdfComponent
   ],
   templateUrl: './billing.component.html',
-  styleUrls: ['./billing.component.css', '/src/animations/styles.css']
+  styleUrls: ['./billing.component.css']
 })
 export class BillingComponent {
   isDataLoading = false;

@@ -1,3 +1,18 @@
+@keyframes fadeInBackground {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.layout-container {
+  animation: fadeInBackground 1.2s ease-in-out;
+  min-width: 900px;
+}
+
 .title-page {
   display: flex;
   justify-content: space-between;

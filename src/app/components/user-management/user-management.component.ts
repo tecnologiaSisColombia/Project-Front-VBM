@@ -33,27 +33,27 @@ import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
-    selector: 'app-user-management',
-    imports: [
-        CommonModule,
-        FormsModule,
-        NzButtonModule,
-        NzFormModule,
-        NzIconModule,
-        NzInputModule,
-        NzTableModule,
-        NzSelectModule,
-        NzDrawerModule,
-        NzBreadCrumbModule,
-        NzSwitchModule,
-        ReactiveFormsModule,
-        NzSpinModule,
-        NzPaginationModule,
-        NzEmptyModule,
-        NzDividerModule,
-    ],
-    templateUrl: './user-management.component.html',
-    styleUrls: ['./user-management.component.css', '/src/animations/styles.css']
+  selector: 'app-user-management',
+  imports: [
+    CommonModule,
+    FormsModule,
+    NzButtonModule,
+    NzFormModule,
+    NzIconModule,
+    NzInputModule,
+    NzTableModule,
+    NzSelectModule,
+    NzDrawerModule,
+    NzBreadCrumbModule,
+    NzSwitchModule,
+    ReactiveFormsModule,
+    NzSpinModule,
+    NzPaginationModule,
+    NzEmptyModule,
+    NzDividerModule,
+  ],
+  templateUrl: './user-management.component.html',
+  styleUrls: ['./user-management.component.css']
 })
 export class UserManagementComponent implements OnInit {
   form: UntypedFormGroup;
@@ -175,7 +175,7 @@ export class UserManagementComponent implements OnInit {
       (e) => e.id === this.dataDrawerCahe.user_type
     );
 
-    
+
     if (selectedUserType) {
       const userType = selectedUserType.code_type;
       const fieldsToClear = this.fieldsToClearMap[userType] || this.fieldsToClearMap['1'];
